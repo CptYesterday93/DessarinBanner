@@ -91,8 +91,31 @@ h1{
 
 .topbar{
   display:flex;
-  align-items:center;
+  flex-direction:column;
+  align-items:flex-start;
   margin-bottom:14px;
+}
+
+.sheet-switcher{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.sheet-btn{
+  width:auto;
+  padding:10px 18px;
+  background:#333;
+  border:1px solid #555;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.sheet-btn.active{
+  background:#4f46e5;
+  border-color:#7c74ff;
 }
 
 .toggle-sidebar{
@@ -217,48 +240,18 @@ tr:hover{
   text-align:center;
 }
 
-th:nth-child(1),
-td:nth-child(1){
-  width:560px;
-}
-
-th:nth-child(2),
-td:nth-child(2){
-  width:150px;
-}
-
-th:nth-child(3),
-td:nth-child(3){
-  width:240px;
-}
-
-th:nth-child(4),
-td:nth-child(4){
-  width:140px;
-}
-
-th:nth-child(5),
-td:nth-child(5){
-  width:130px;
-}
-
-th:nth-child(6),
-td:nth-child(6){
-  width:150px;
-}
-
-th:nth-child(7),
-td:nth-child(7){
-  width:100px;
-}
-
-th:nth-child(8),
-td:nth-child(8){
-  width:80px;
-}
-
-.price{
+.price-gp{
   color:gold;
+  font-weight:bold;
+}
+
+.price-sp{
+  color:silver;
+  font-weight:bold;
+}
+
+.price-cp{
+  color:#c47a3a;
   font-weight:bold;
 }
 
@@ -405,7 +398,27 @@ id="toggleSidebar"
 <div class="table-section">
 
 <div class="topbar">
+
 <h1>DnD Item Preisliste – DM</h1>
+
+<div class="sheet-switcher">
+
+<button
+class="sheet-btn active"
+data-sheet="magic"
+>
+Magic Items
+</button>
+
+<button
+class="sheet-btn"
+data-sheet="mundane"
+>
+Nonmagic Items
+</button>
+
+</div>
+
 </div>
 
 <table>
@@ -428,12 +441,16 @@ id="toggleSidebar"
   <span class="sort-indicator"></span>
 </th>
 
-<th class="sortable" data-sort="rarity">
+<th
+class="sortable"
+data-sort="rarity"
+id="rarityHeader"
+>
   Rarity
   <span class="sort-indicator"></span>
 </th>
 
-<th>
+<th id="attuneHeader">
   Attunement
 </th>
 
@@ -469,7 +486,7 @@ id="toggleSidebar"
 <div id="typeFilter" class="multi-select"></div>
 </div>
 
-<div class="filter-group">
+<div class="filter-group" id="rarityGroup">
 <label>Rarity</label>
 <div id="rarityFilter" class="multi-select"></div>
 </div>
@@ -494,7 +511,7 @@ Nur kaufbare Items
 
 </div>
 
-<div class="filter-group">
+<div class="filter-group" id="attuneGroup">
 
 <label>Attunement</label>
 
@@ -559,14 +576,21 @@ Suchergebnisse:
 
 <script>
 
-const SHEET_ID =
-"1yWXMERywTtgi-fKcmfTYgkSZ3abmnM0pNnZgYTfjToY";
+const SHEETS = {
 
-const SHEET_NAME =
-"Magic Items";
+  magic:{
+    id:"1yWXMERywTtgi-fKcmfTYgkSZ3abmnM0pNnZgYTfjToY",
+    name:"Magic Items"
+  },
 
-const url =
-`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}`;
+  mundane:{
+    id:"154iNJR9P_rwltW24M3hXyge33G_ym3cdMQVmPwQe4Bk",
+    name:"Nonmagic Items"
+  }
+
+};
+
+let currentSheet = "magic";
 
 let items = [];
 
@@ -581,7 +605,72 @@ let currentSort = {
   direction:"asc"
 };
 
+function isMundaneSheet(){
+  return currentSheet === "mundane";
+}
+
+function formatPrice(price){
+
+  if(price >= 1){
+
+    return {
+      text:`${price} GP`,
+      className:"price-gp"
+    };
+
+  }
+
+  if(price >= 0.1){
+
+    return {
+      text:`${Math.round(price * 10)} SP`,
+      className:"price-sp"
+    };
+
+  }
+
+  return {
+    text:`${Math.round(price * 100)} CP`,
+    className:"price-cp"
+  };
+
+}
+
+function updateFilterVisibility(){
+
+  document.getElementById("rarityGroup")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "block";
+
+  document.getElementById("attuneGroup")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "block";
+
+  document.getElementById("rarityHeader")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "";
+
+  document.getElementById("attuneHeader")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "";
+
+}
+
 async function loadSheet(){
+
+  const config =
+    SHEETS[currentSheet];
+
+  const url =
+    `https://docs.google.com/spreadsheets/d/${config.id}/gviz/tq?sheet=${encodeURIComponent(config.name)}`;
 
   const response = await fetch(url);
 
@@ -614,6 +703,7 @@ async function loadSheet(){
   });
 
   buildFilters();
+  updateFilterVisibility();
   filterItems();
   updateSortIndicators();
 
@@ -836,11 +926,15 @@ function filterItems(){
     if(!item.price || item.price <= 0)
       return false;
 
-    if(item.rarity === "Varies")
+    if(
+      !isMundaneSheet() &&
+      item.rarity === "Varies"
+    )
       return false;
 
     if(
       buyableOnly &&
+      !isMundaneSheet() &&
       !["Common","Uncommon","Rare"]
         .includes(item.rarity)
     )
@@ -853,6 +947,7 @@ function filterItems(){
       return false;
 
     if(
+      !isMundaneSheet() &&
       selectedRarities.length &&
       !selectedRarities.includes(item.rarity)
     )
@@ -868,17 +963,21 @@ function filterItems(){
     )
       return false;
 
-    if(
-      attune === "Ja" &&
-      item.attunement === ""
-    )
-      return false;
+    if(!isMundaneSheet()){
 
-    if(
-      attune === "Nein" &&
-      item.attunement !== ""
-    )
-      return false;
+      if(
+        attune === "Ja" &&
+        item.attunement === ""
+      )
+        return false;
+
+      if(
+        attune === "Nein" &&
+        item.attunement !== ""
+      )
+        return false;
+
+    }
 
     if(item.price < priceMin)
       return false;
@@ -960,12 +1059,12 @@ function renderTable(data){
       `
       : item.name;
 
-    const priceDisplay =
-      `${item.price} GP`;
+    const priceData =
+      formatPrice(item.price);
 
     const itemTier =
       String(item.tier)
-        .match(/T10\+|T10|T9|T8|T7|T6|T5|T4|T3|T2|T1/i)?.[0] || "";
+        .match(/T10\\+|T10|T9|T8|T7|T6|T5|T4|T3|T2|T1/i)?.[0] || "";
 
     tr.innerHTML = `
       <td>${itemName}</td>
@@ -974,14 +1073,20 @@ function renderTable(data){
 
       <td>${item.subtype}</td>
 
-      <td class="rarity-${rarityClass}">
-        ${item.rarity}
-      </td>
+      ${
+        isMundaneSheet()
+          ? ""
+          : `
+            <td class="rarity-${rarityClass}">
+              ${item.rarity}
+            </td>
 
-      <td>${item.attunement}</td>
+            <td>${item.attunement}</td>
+          `
+      }
 
-      <td class="price">
-        ${priceDisplay}
+      <td class="${priceData.className}">
+        ${priceData.text}
       </td>
 
       <td>${item.extra}</td>
@@ -1132,6 +1237,37 @@ document
 
       filterItems();
       updateSortIndicators();
+
+    });
+
+  });
+
+document
+  .querySelectorAll(".sheet-btn")
+  .forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+      document
+        .querySelectorAll(".sheet-btn")
+        .forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+      button.classList.add("active");
+
+      currentSheet =
+        button.dataset.sheet;
+
+      selectedTypes = [];
+      selectedRarities = [];
+      selectedTiers = [];
+
+      attuneState = "Alle";
+
+      updateAttuneButtons();
+
+      loadSheet();
 
     });
 
