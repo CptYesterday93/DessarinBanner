@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+
+<title>DnD Item Shop – DM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:#181818;
+  color:white;
+  font-family:Arial,sans-serif;
+}
+
+body *{
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    width 0.22s ease,
+    max-width 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.container{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 340px;
+  gap:20px;
+  padding:20px;
+  align-items:start;
+}
+
+.container.sidebar-collapsed{
+  grid-template-columns:minmax(0,1fr) 0px;
+}
+
+.table-section{
+  min-width:0;
+  overflow-x:auto;
+}
+
+.sidebar{
+  background:#242424;
+  border-radius:16px;
+  padding:22px;
+  position:sticky;
+  top:20px;
+  height:fit-content;
+  border:1px solid #3a3a3a;
+  box-shadow:0 0 24px rgba(0,0,0,0.4);
+
+  width:340px;
+  max-width:340px;
+
+  overflow:hidden;
+  opacity:1;
+}
+
+.sidebar *{
+  transition:none !important;
+}
+
+.container.sidebar-collapsed .sidebar{
+  width:0;
+  max-width:0;
+  padding-left:0;
+  padding-right:0;
+  border-width:0;
+  opacity:0;
+}
+
+.sidebar h2,
+h1{
+  font-family:"Cinzel",serif;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.toggle-sidebar{
+  position:fixed;
+
+  top:20px;
+  right:20px;
+
+  z-index:999;
+
+  width:auto;
+  padding:10px 14px;
+
+  background:#333;
+  border:1px solid #555;
+  border-radius:10px;
+
+  cursor:pointer;
+  font-weight:bold;
+  white-space:nowrap;
+
+  box-shadow:
+    0 4px 14px rgba(0,0,0,0.35);
+}
+
+.filter-group{
+  margin-bottom:18px;
+}
+
+.filter-group label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+
+input,
+button{
+  width:100%;
+  padding:11px;
+  border-radius:10px;
+  border:1px solid #444;
+  font-size:15px;
+  background:#1d1d1d;
+  color:white;
+}
+
+.price-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+button{
+  background:#4f46e5;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+button:hover{
+  background:#665dff;
+}
+
+table{
+  width:100%;
+  table-layout:fixed;
+  border-collapse:collapse;
+  background:#222;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+th,
+td{
+  padding:12px;
+  border-bottom:1px solid #3f3f3f;
+  border-right:1px solid #353535;
+
+  box-shadow:
+    inset -1px 0 4px rgba(0,0,0,0.35),
+    1px 0 2px rgba(255,255,255,0.03);
+
+  text-align:left;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  position:relative;
+}
+
+th:last-child,
+td:last-child{
+  border-right:none;
+}
+
+th{
+  background:#303030;
+}
+
+tbody tr:nth-child(even){
+  background:#242424;
+}
+
+tbody tr:nth-child(odd){
+  background:#2c2c2c;
+}
+
+tr:hover{
+  background:#3a3a3a !important;
+}
+
+.sortable{
+  cursor:pointer;
+  user-select:none;
+}
+
+.sort-indicator{
+  display:inline-block;
+  margin-left:6px;
+  font-size:11px;
+  opacity:0.55;
+  width:12px;
+  text-align:center;
+}
+
+th:nth-child(1),
+td:nth-child(1){
+  width:560px;
+}
+
+th:nth-child(2),
+td:nth-child(2){
+  width:150px;
+}
+
+th:nth-child(3),
+td:nth-child(3){
+  width:240px;
+}
+
+th:nth-child(4),
+td:nth-child(4){
+  width:140px;
+}
+
+th:nth-child(5),
+td:nth-child(5){
+  width:130px;
+}
+
+th:nth-child(6),
+td:nth-child(6){
+  width:150px;
+}
+
+th:nth-child(7),
+td:nth-child(7){
+  width:100px;
+}
+
+th:nth-child(8),
+td:nth-child(8){
+  width:80px;
+}
+
+.price{
+  color:gold;
+  font-weight:bold;
+}
+
+.item-link{
+  color:#8ecbff;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.item-link:hover{
+  text-decoration:underline;
+}
+
+.hover-full{
+  position:absolute;
+  left:10px;
+  top:100%;
+  z-index:50;
+
+  background:#111;
+  color:white;
+
+  padding:8px 10px;
+  border-radius:8px;
+
+  border:1px solid #555;
+
+  white-space:normal;
+  max-width:500px;
+
+  opacity:0;
+  pointer-events:none;
+
+  transform:translateY(4px);
+
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease !important;
+
+  box-shadow:
+    0 6px 18px rgba(0,0,0,0.45);
+}
+
+td:hover .hover-full{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.rarity-common{
+  color:#cfcfcf;
+  font-weight:bold;
+}
+
+.rarity-uncommon{
+  color:#57d657;
+  font-weight:bold;
+}
+
+.rarity-rare{
+  color:#5ea0ff;
+  font-weight:bold;
+}
+
+.rarity-very-rare{
+  color:#b46cff;
+  font-weight:bold;
+}
+
+.rarity-legendary{
+  color:#ff9b42;
+  font-weight:bold;
+}
+
+.rarity-artifact{
+  color:#ff4f4f;
+  font-weight:bold;
+}
+
+.multi-select{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.multi-select button{
+  width:auto;
+  padding:8px 12px;
+  background:#333;
+  border:1px solid #555;
+}
+
+.multi-select button.active{
+  background:#4f46e5;
+  border-color:#7c74ff;
+}
+
+#buyableToggle{
+  accent-color:#4f46e5;
+}
+
+.buyable-label{
+  display:flex !important;
+  align-items:center;
+  gap:8px;
+  cursor:pointer;
+}
+
+.buyable-label input{
+  width:auto;
+  margin:0;
+}
+
+@media (max-width:1100px){
+
+  .container{
+    grid-template-columns:1fr;
+  }
+
+  .sidebar{
+    position:static;
+    width:100%;
+    max-width:100%;
+  }
+
+  .container.sidebar-collapsed .sidebar{
+    max-height:0;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<button
+class="toggle-sidebar"
+id="toggleSidebar"
+>
+☰ Suchfilter
+</button>
+
+<div class="container" id="mainContainer">
+
+<div class="table-section">
+
+<div class="topbar">
+<h1>DnD Item Preisliste – DM</h1>
+</div>
+
+<table>
+
+<thead>
+<tr>
+
+<th class="sortable" data-sort="name">
+  Item
+  <span class="sort-indicator"></span>
+</th>
+
+<th class="sortable" data-sort="type">
+  Type
+  <span class="sort-indicator"></span>
+</th>
+
+<th class="sortable" data-sort="subtype">
+  Subtype
+  <span class="sort-indicator"></span>
+</th>
+
+<th class="sortable" data-sort="rarity">
+  Rarity
+  <span class="sort-indicator"></span>
+</th>
+
+<th>
+  Attunement
+</th>
+
+<th class="sortable" data-sort="price">
+  Preis
+  <span class="sort-indicator"></span>
+</th>
+
+<th>
+  Anmerkung
+</th>
+
+<th class="sortable" data-sort="tier">
+  Tier
+  <span class="sort-indicator"></span>
+</th>
+
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+</div>
+
+<div class="sidebar" id="sidebar">
+
+<h2>Suchfilter</h2>
+
+<div class="filter-group">
+<label>Type</label>
+<div id="typeFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group">
+<label>Rarity</label>
+<div id="rarityFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group">
+<label>Tier</label>
+<div id="tierFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group">
+
+<label class="buyable-label">
+
+<input
+type="checkbox"
+id="buyableToggle"
+>
+
+Nur kaufbare Items
+
+</label>
+
+</div>
+
+<div class="filter-group">
+
+<label>Attunement</label>
+
+<div id="attuneButtons" class="multi-select">
+
+<button
+type="button"
+class="attune-btn active"
+data-value="Alle"
+>
+Alle
+</button>
+
+<button
+type="button"
+class="attune-btn"
+data-value="Ja"
+>
+Ja
+</button>
+
+<button
+type="button"
+class="attune-btn"
+data-value="Nein"
+>
+Nein
+</button>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+<label>Preis</label>
+
+<div class="price-grid">
+<input type="number" id="priceMin" placeholder="von">
+<input type="number" id="priceMax" placeholder="bis">
+</div>
+</div>
+
+<div class="filter-group">
+<label>Suchbegriff</label>
+<input type="text" id="searchInput">
+</div>
+
+<div class="filter-group">
+<button id="resetButton">
+Filter zurücksetzen
+</button>
+</div>
+
+<div>
+Suchergebnisse:
+<span id="resultCount">0</span>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const SHEET_ID =
+"1yWXMERywTtgi-fKcmfTYgkSZ3abmnM0pNnZgYTfjToY";
+
+const SHEET_NAME =
+"Magic Items";
+
+const url =
+`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${SHEET_NAME}`;
+
+let items = [];
+
+let selectedTypes = [];
+let selectedRarities = [];
+let selectedTiers = [];
+
+let attuneState = "Alle";
+
+let currentSort = {
+  field:"name",
+  direction:"asc"
+};
+
+async function loadSheet(){
+
+  const response = await fetch(url);
+
+  const text = await response.text();
+
+  const json = JSON.parse(
+    text.substring(47).slice(0,-2)
+  );
+
+  const rows = json.table.rows;
+
+  items = rows.map(row => {
+
+    const cells = row.c || [];
+
+    return {
+
+      name:cells[0]?.v ?? "",
+      link:cells[1]?.v ?? "",
+      type:cells[2]?.v ?? "",
+      subtype:cells[3]?.v ?? "",
+      rarity:cells[4]?.v ?? "",
+      attunement:cells[5]?.v ?? "",
+      price:Number(cells[6]?.v ?? 0),
+      extra:cells[7]?.v ?? "",
+      tier:cells[8]?.v ?? ""
+
+    };
+
+  });
+
+  buildFilters();
+  filterItems();
+  updateSortIndicators();
+
+}
+
+function buildFilters(){
+
+  buildMultiSelect(
+    "typeFilter",
+    [...new Set(items.map(i => i.type))],
+    selectedTypes
+  );
+
+  buildMultiSelect(
+    "rarityFilter",
+    [...new Set(items.map(i => i.rarity))]
+      .filter(r => r !== "Varies"),
+    selectedRarities,
+    true
+  );
+
+  buildMultiSelect(
+    "tierFilter",
+    [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8",
+      "T9",
+      "T10",
+      "T10+"
+    ],
+    selectedTiers,
+    false,
+    true
+  );
+
+}
+
+function buildMultiSelect(
+  id,
+  values,
+  selectedArray,
+  raritySort=false,
+  preserveOrder=false
+){
+
+  const container =
+    document.getElementById(id);
+
+  container.innerHTML = "";
+
+  values = values.filter(Boolean);
+
+  if(raritySort){
+
+    values.sort((a,b)=>
+      getRarityRank(a)-getRarityRank(b)
+    );
+
+  }else if(!preserveOrder){
+
+    values.sort();
+
+  }
+
+  values.forEach(value => {
+
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+
+    button.textContent = value;
+
+    if(selectedArray.includes(value)){
+      button.classList.add("active");
+    }
+
+    button.addEventListener("click",()=>{
+
+      if(selectedArray.includes(value)){
+
+        selectedArray.splice(
+          selectedArray.indexOf(value),
+          1
+        );
+
+        button.classList.remove("active");
+
+      }else{
+
+        selectedArray.push(value);
+
+        button.classList.add("active");
+
+      }
+
+      filterItems();
+
+    });
+
+    container.appendChild(button);
+
+  });
+
+}
+
+function updateSortIndicators(){
+
+  document
+    .querySelectorAll(".sortable")
+    .forEach(header => {
+
+      const indicator =
+        header.querySelector(".sort-indicator");
+
+      const field =
+        header.dataset.sort;
+
+      if(field === currentSort.field){
+
+        indicator.textContent =
+          currentSort.direction === "asc"
+            ? "▲"
+            : "▼";
+
+        indicator.style.opacity = "1";
+
+      }else{
+
+        indicator.textContent = "⇅";
+        indicator.style.opacity = "0.35";
+
+      }
+
+    });
+
+}
+
+function updateAttuneButtons(){
+
+  document
+    .querySelectorAll(".attune-btn")
+    .forEach(button => {
+
+      if(
+        button.dataset.value === attuneState
+      ){
+
+        button.classList.add("active");
+
+      }else{
+
+        button.classList.remove("active");
+
+      }
+
+    });
+
+}
+
+function getRarityRank(rarity){
+
+  const ranks = {
+
+    "Common":1,
+    "Uncommon":2,
+    "Rare":3,
+    "Very Rare":4,
+    "Legendary":5,
+    "Artifact":6,
+    "Unknown Rarity":7
+
+  };
+
+  return ranks[rarity] || 999;
+
+}
+
+function getRarityClass(rarity){
+
+  return String(rarity)
+    .toLowerCase()
+    .replace(/\s+/g,"-");
+
+}
+
+function filterItems(){
+
+  const attune = attuneState;
+
+  const buyableOnly =
+    document.getElementById("buyableToggle").checked;
+
+  const priceMin =
+    Number(
+      document.getElementById("priceMin").value || 0
+    );
+
+  const priceMaxRaw =
+    document.getElementById("priceMax").value;
+
+  const priceMax =
+    priceMaxRaw === ""
+      ? Infinity
+      : Number(priceMaxRaw);
+
+  const search =
+    document.getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+  let filtered = items.filter(item => {
+
+    if(!item.price || item.price <= 0)
+      return false;
+
+    if(item.rarity === "Varies")
+      return false;
+
+    if(
+      buyableOnly &&
+      !["Common","Uncommon","Rare"]
+        .includes(item.rarity)
+    )
+      return false;
+
+    if(
+      selectedTypes.length &&
+      !selectedTypes.includes(item.type)
+    )
+      return false;
+
+    if(
+      selectedRarities.length &&
+      !selectedRarities.includes(item.rarity)
+    )
+      return false;
+
+    const itemTier =
+      String(item.tier)
+        .match(/T10\+|T10|T9|T8|T7|T6|T5|T4|T3|T2|T1/i)?.[0] || "";
+
+    if(
+      selectedTiers.length &&
+      !selectedTiers.includes(itemTier)
+    )
+      return false;
+
+    if(
+      attune === "Ja" &&
+      item.attunement === ""
+    )
+      return false;
+
+    if(
+      attune === "Nein" &&
+      item.attunement !== ""
+    )
+      return false;
+
+    if(item.price < priceMin)
+      return false;
+
+    if(item.price > priceMax)
+      return false;
+
+    const combinedSearch =
+      `${item.name} ${item.subtype}`
+        .toLowerCase();
+
+    if(
+      search &&
+      !combinedSearch.includes(search)
+    )
+      return false;
+
+    return true;
+
+  });
+
+  filtered.sort((a,b)=>{
+
+    let valA = a[currentSort.field];
+    let valB = b[currentSort.field];
+
+    if(currentSort.field === "rarity"){
+
+      valA = getRarityRank(a.rarity);
+      valB = getRarityRank(b.rarity);
+
+    }
+
+    if(typeof valA === "number"){
+
+      return currentSort.direction === "asc"
+        ? valA-valB
+        : valB-valA;
+
+    }
+
+    return currentSort.direction === "asc"
+      ? String(valA).localeCompare(String(valB))
+      : String(valB).localeCompare(String(valA));
+
+  });
+
+  renderTable(filtered);
+
+  document.getElementById("resultCount")
+    .textContent = filtered.length;
+
+}
+
+function renderTable(data){
+
+  const body =
+    document.getElementById("tableBody");
+
+  body.innerHTML = "";
+
+  data.forEach(item => {
+
+    const tr =
+      document.createElement("tr");
+
+    const rarityClass =
+      getRarityClass(item.rarity);
+
+    const itemName = item.link
+      ? `
+      <a class="item-link" href="${item.link}" target="_blank">
+        ${item.name}
+      </a>
+
+      <div class="hover-full">
+        ${item.name}
+      </div>
+      `
+      : item.name;
+
+    const priceDisplay =
+      `${item.price} GP`;
+
+    const itemTier =
+      String(item.tier)
+        .match(/T10\+|T10|T9|T8|T7|T6|T5|T4|T3|T2|T1/i)?.[0] || "";
+
+    tr.innerHTML = `
+      <td>${itemName}</td>
+
+      <td>${item.type}</td>
+
+      <td>${item.subtype}</td>
+
+      <td class="rarity-${rarityClass}">
+        ${item.rarity}
+      </td>
+
+      <td>${item.attunement}</td>
+
+      <td class="price">
+        ${priceDisplay}
+      </td>
+
+      <td>${item.extra}</td>
+
+      <td>
+        ${itemTier}
+      </td>
+    `;
+
+    body.appendChild(tr);
+
+  });
+
+}
+
+function resetFilters(){
+
+  selectedTypes = [];
+  selectedRarities = [];
+  selectedTiers = [];
+
+  attuneState = "Alle";
+
+  updateAttuneButtons();
+
+  document.getElementById("buyableToggle").checked =
+    false;
+
+  document.getElementById("priceMin").value = "";
+  document.getElementById("priceMax").value = "";
+
+  document.getElementById("searchInput").value = "";
+
+  currentSort.field = "name";
+  currentSort.direction = "asc";
+
+  buildFilters();
+  filterItems();
+  updateSortIndicators();
+
+}
+
+[
+  "priceMin",
+  "priceMax"
+].forEach(id => {
+
+  document
+    .getElementById(id)
+    .addEventListener("input",filterItems);
+
+  document
+    .getElementById(id)
+    .addEventListener("change",filterItems);
+
+});
+
+document
+  .getElementById("searchInput")
+  .addEventListener("input",filterItems);
+
+document
+  .getElementById("resetButton")
+  .addEventListener("click",resetFilters);
+
+document
+  .getElementById("buyableToggle")
+  .addEventListener("change",()=>{
+
+    if(
+      document.getElementById("buyableToggle").checked
+    ){
+
+      selectedRarities = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+    }else{
+
+      selectedRarities = [];
+
+    }
+
+    buildFilters();
+
+    filterItems();
+
+  });
+
+document
+  .querySelectorAll(".attune-btn")
+  .forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+      const value =
+        button.dataset.value;
+
+      if(value === "Alle"){
+
+        attuneState = "Alle";
+
+      }else{
+
+        if(attuneState === value){
+
+          attuneState = "Alle";
+
+        }else{
+
+          attuneState = value;
+
+        }
+
+      }
+
+      updateAttuneButtons();
+
+      filterItems();
+
+    });
+
+  });
+
+document
+  .querySelectorAll(".sortable")
+  .forEach(header => {
+
+    header.addEventListener("click",()=>{
+
+      const field = header.dataset.sort;
+
+      if(currentSort.field === field){
+
+        currentSort.direction =
+          currentSort.direction === "asc"
+            ? "desc"
+            : "asc";
+
+      }else{
+
+        currentSort.field = field;
+        currentSort.direction = "asc";
+
+      }
+
+      filterItems();
+      updateSortIndicators();
+
+    });
+
+  });
+
+document
+  .getElementById("toggleSidebar")
+  .addEventListener("click",()=>{
+
+    document
+      .getElementById("mainContainer")
+      .classList.toggle("sidebar-collapsed");
+
+  });
+
+loadSheet();
+
+</script>
+
+</body>
+</html>
