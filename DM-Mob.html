@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DnD Item Shop – DM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:#181818;
+  color:white;
+  font-family:Arial,sans-serif;
+}
+
+.container{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 340px;
+  gap:20px;
+  padding:20px;
+  align-items:start;
+}
+
+.table-section{
+  min-width:0;
+  overflow-x:auto;
+}
+
+.sidebar{
+  background:#242424;
+  border-radius:16px;
+  padding:22px;
+  position:sticky;
+  top:20px;
+  height:fit-content;
+  border:1px solid #3a3a3a;
+}
+
+h1,h2{
+  font-family:"Cinzel",serif;
+}
+
+.topbar{
+  margin-bottom:16px;
+}
+
+.sheet-switcher{
+  display:flex;
+  gap:10px;
+  margin-top:12px;
+}
+
+.sheet-btn{
+  width:auto;
+  padding:10px 18px;
+  background:#333;
+  border:1px solid #555;
+  border-radius:10px;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.sheet-btn.active{
+  background:#4f46e5;
+  border-color:#7c74ff;
+}
+
+.filter-group{
+  margin-bottom:18px;
+}
+
+.filter-group label{
+  display:block;
+  margin-bottom:6px;
+  font-weight:bold;
+}
+
+input,
+button{
+  width:100%;
+  padding:11px;
+  border-radius:10px;
+  border:1px solid #444;
+  background:#1d1d1d;
+  color:white;
+  font-size:15px;
+}
+
+button{
+  cursor:pointer;
+}
+
+.price-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  background:#222;
+  border-radius:14px;
+  overflow:hidden;
+}
+
+th,
+td{
+  padding:12px;
+  border-bottom:1px solid #3f3f3f;
+  text-align:left;
+  white-space:nowrap;
+}
+
+th{
+  background:#303030;
+}
+
+tbody tr:nth-child(even){
+  background:#242424;
+}
+
+tbody tr:nth-child(odd){
+  background:#2c2c2c;
+}
+
+.item-link{
+  color:#8ecbff;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.item-link:hover{
+  text-decoration:underline;
+}
+
+.price-gp{
+  color:gold;
+  font-weight:bold;
+}
+
+.price-sp{
+  color:silver;
+  font-weight:bold;
+}
+
+.price-cp{
+  color:#c47a3a;
+  font-weight:bold;
+}
+
+.rarity-common{
+  color:#cfcfcf;
+  font-weight:bold;
+}
+
+.rarity-uncommon{
+  color:#57d657;
+  font-weight:bold;
+}
+
+.rarity-rare{
+  color:#5ea0ff;
+  font-weight:bold;
+}
+
+.rarity-very-rare{
+  color:#b46cff;
+  font-weight:bold;
+}
+
+.rarity-legendary{
+  color:#ff9b42;
+  font-weight:bold;
+}
+
+.rarity-artifact{
+  color:#ff4f4f;
+  font-weight:bold;
+}
+
+.multi-select{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.multi-select button{
+  width:auto;
+  background:#333;
+}
+
+.multi-select button.active{
+  background:#4f46e5;
+}
+
+.toggle-sidebar{
+  display:none;
+
+  position:fixed;
+  top:16px;
+  right:16px;
+
+  z-index:10000;
+
+  width:auto;
+
+  padding:12px 16px;
+
+  border:none;
+  border-radius:12px;
+
+  background:#4f46e5;
+  color:white;
+
+  font-weight:bold;
+}
+
+.mobile-cards{
+  display:none;
+}
+
+.mobile-card{
+  background:#242424;
+  border:1px solid #3f3f3f;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.mobile-card-title{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.mobile-card-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.mobile-label{
+  font-size:12px;
+  opacity:0.7;
+}
+
+.mobile-value{
+  font-size:14px;
+}
+
+.mobile-price{
+  font-size:18px;
+  font-weight:bold;
+}
+
+.mobile-link{
+  display:inline-block;
+  margin-top:14px;
+
+  padding:10px 14px;
+
+  background:#4f46e5;
+  border-radius:10px;
+
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+@media (max-width:700px){
+
+  .container{
+    display:flex !important;
+    flex-direction:column !important;
+    padding:14px;
+  }
+
+  .sidebar{
+
+    order:-1;
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    max-width:100%;
+    height:100vh;
+
+    overflow-y:auto;
+
+    z-index:9999;
+
+    border-radius:0;
+
+    transform:translateX(100%);
+
+    transition:transform 0.25s ease;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .toggle-sidebar{
+    display:block;
+  }
+
+  .table-section table{
+    display:none !important;
+  }
+
+  thead,
+  tbody{
+    display:none !important;
+  }
+
+  .mobile-cards{
+    display:block;
+  }
+
+  h1{
+    font-size:28px;
+    line-height:1.2;
+    margin-right:90px;
+  }
+
+  .sheet-switcher{
+    width:100%;
+  }
+
+  .sheet-btn{
+    flex:1;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<button
+class="toggle-sidebar"
+id="toggleSidebar"
+>
+☰ Filter
+</button>
+
+<div class="container">
+
+<div class="table-section">
+
+<div class="topbar">
+
+<h1>DnD Item Preisliste – DM</h1>
+
+<div class="sheet-switcher">
+
+<button
+class="sheet-btn active"
+data-sheet="magic"
+>
+Magic Items
+</button>
+
+<button
+class="sheet-btn"
+data-sheet="mundane"
+>
+Nonmagic Items
+</button>
+
+</div>
+
+</div>
+
+<table>
+
+<thead>
+<tr>
+
+<th>Item</th>
+<th>Type</th>
+<th>Subtype</th>
+<th id="rarityHeader">Rarity</th>
+<th id="attuneHeader">Attunement</th>
+<th>Preis</th>
+<th>Anmerkung</th>
+<th>Tier</th>
+
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+<div id="mobileCards" class="mobile-cards"></div>
+
+</div>
+
+<div class="sidebar">
+
+<h2>Suchfilter</h2>
+
+<div class="filter-group">
+<label>Type</label>
+<div id="typeFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group" id="rarityGroup">
+<label>Rarity</label>
+<div id="rarityFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group">
+<label>Tier</label>
+<div id="tierFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group" id="attuneGroup">
+
+<label>Attunement</label>
+
+<div id="attuneButtons" class="multi-select">
+
+<button
+type="button"
+class="attune-btn active"
+data-value="Alle"
+>
+Alle
+</button>
+
+<button
+type="button"
+class="attune-btn"
+data-value="Ja"
+>
+Ja
+</button>
+
+<button
+type="button"
+class="attune-btn"
+data-value="Nein"
+>
+Nein
+</button>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Preis</label>
+
+<div class="price-grid">
+<input type="number" id="priceMin" placeholder="von">
+<input type="number" id="priceMax" placeholder="bis">
+</div>
+
+</div>
+
+<div class="filter-group">
+<label>Suchbegriff</label>
+<input type="text" id="searchInput">
+</div>
+
+<div>
+Suchergebnisse:
+<span id="resultCount">0</span>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const SHEETS = {
+
+  magic:{
+    id:"1yWXMERywTtgi-fKcmfTYgkSZ3abmnM0pNnZgYTfjToY",
+    name:"Magic Items"
+  },
+
+  mundane:{
+    id:"154iNJR9P_rwltW24M3hXyge33G_ym3cdMQVmPwQe4Bk",
+    name:"Nonmagic Items"
+  }
+
+};
+
+let currentSheet = "magic";
+
+let items = [];
+
+let selectedTypes = [];
+let selectedRarities = [];
+let selectedTiers = [];
+
+let attuneState = "Alle";
+
+function isMundaneSheet(){
+  return currentSheet === "mundane";
+}
+
+function formatPrice(price){
+
+  if(price >= 1){
+
+    return {
+      text:`${price} GP`,
+      className:"price-gp"
+    };
+
+  }
+
+  if(price >= 0.1){
+
+    return {
+      text:`${Math.round(price * 10)} SP`,
+      className:"price-sp"
+    };
+
+  }
+
+  return {
+    text:`${Math.round(price * 100)} CP`,
+    className:"price-cp"
+  };
+
+}
+
+function updateFilterVisibility(){
+
+  document.getElementById("rarityGroup")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "block";
+
+  document.getElementById("attuneGroup")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "block";
+
+  document.getElementById("rarityHeader")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "";
+
+  document.getElementById("attuneHeader")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "";
+
+}
+
+async function loadSheet(){
+
+  const config =
+    SHEETS[currentSheet];
+
+  const url =
+    `https://docs.google.com/spreadsheets/d/${config.id}/gviz/tq?sheet=${encodeURIComponent(config.name)}`;
+
+  const response =
+    await fetch(url);
+
+  const text =
+    await response.text();
+
+  const json =
+    JSON.parse(
+      text.substring(47).slice(0,-2)
+    );
+
+  const rows =
+    json.table.rows;
+
+  items = rows.map(row => {
+
+    const cells = row.c || [];
+
+    return {
+
+      name:cells[0]?.v ?? "",
+      link:cells[1]?.v ?? "",
+      type:cells[2]?.v ?? "",
+      subtype:cells[3]?.v ?? "",
+      rarity:cells[4]?.v ?? "",
+      attunement:cells[5]?.v ?? "",
+      price:Number(cells[6]?.v ?? 0),
+      extra:cells[7]?.v ?? "",
+      tier:cells[8]?.v ?? ""
+
+    };
+
+  });
+
+  buildFilters();
+  updateFilterVisibility();
+  filterItems();
+
+}
+
+function buildFilters(){
+
+  buildMultiSelect(
+    "typeFilter",
+    [...new Set(items.map(i => i.type))],
+    selectedTypes
+  );
+
+  buildMultiSelect(
+    "rarityFilter",
+    [...new Set(items.map(i => i.rarity))]
+      .filter(Boolean),
+    selectedRarities
+  );
+
+  buildMultiSelect(
+    "tierFilter",
+    [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8",
+      "T9",
+      "T10",
+      "T10+"
+    ],
+    selectedTiers
+  );
+
+}
+
+function buildMultiSelect(
+  id,
+  values,
+  selectedArray
+){
+
+  const container =
+    document.getElementById(id);
+
+  container.innerHTML = "";
+
+  if(id === "rarityFilter"){
+
+    const rarityOrder = [
+      "Common",
+      "Uncommon",
+      "Rare",
+      "Very Rare",
+      "Legendary",
+      "Artifact",
+      "Unknown Rarity",
+      "Varies"
+    ];
+
+    values.sort((a,b)=>
+      rarityOrder.indexOf(a) -
+      rarityOrder.indexOf(b)
+    );
+
+  }else if(id === "tierFilter"){
+
+    const tierOrder = [
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8",
+      "T9",
+      "T10",
+      "T10+"
+    ];
+
+    values.sort((a,b)=>
+      tierOrder.indexOf(a) -
+      tierOrder.indexOf(b)
+    );
+
+  }else{
+
+    values.sort();
+
+  }
+
+  values.forEach(value => {
+
+    const button =
+      document.createElement("button");
+
+    button.textContent = value;
+
+    if(selectedArray.includes(value)){
+      button.classList.add("active");
+    }
+
+    button.addEventListener("click",()=>{
+
+      if(selectedArray.includes(value)){
+
+        selectedArray.splice(
+          selectedArray.indexOf(value),
+          1
+        );
+
+      }else{
+
+        selectedArray.push(value);
+
+      }
+
+      buildFilters();
+      filterItems();
+
+    });
+
+    container.appendChild(button);
+
+  });
+
+}
+
+function filterItems(){
+
+  const search =
+    document.getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+  let filtered = items.filter(item => {
+
+    if(!item.price || item.price <= 0)
+      return false;
+
+    if(
+      selectedTypes.length &&
+      !selectedTypes.includes(item.type)
+    )
+      return false;
+
+    const itemTier =
+      String(item.tier)
+        .match(/T10\\+|T10|T9|T8|T7|T6|T5|T4|T3|T2|T1/i)?.[0] || "";
+
+    if(
+      selectedTiers.length &&
+      !selectedTiers.includes(itemTier)
+    )
+      return false;
+
+    if(
+      !isMundaneSheet() &&
+      selectedRarities.length &&
+      !selectedRarities.includes(item.rarity)
+    )
+      return false;
+
+    if(!isMundaneSheet()){
+
+      if(
+        attuneState === "Ja" &&
+        item.attunement === ""
+      )
+        return false;
+
+      if(
+        attuneState === "Nein" &&
+        item.attunement !== ""
+      )
+        return false;
+
+    }
+
+    const combined =
+      `${item.name} ${item.subtype}`
+        .toLowerCase();
+
+    if(
+      search &&
+      !combined.includes(search)
+    )
+      return false;
+
+    return true;
+
+  });
+
+  renderTable(filtered);
+  renderMobileCards(filtered);
+
+  document.getElementById("resultCount")
+    .textContent = filtered.length;
+
+}
+
+function renderTable(data){
+
+  const body =
+    document.getElementById("tableBody");
+
+  body.innerHTML = "";
+
+  data.forEach(item => {
+
+    const tr =
+      document.createElement("tr");
+
+    const rarityClass =
+      String(item.rarity)
+        .toLowerCase()
+        .replace(/\s+/g,"-");
+
+    const priceData =
+      formatPrice(item.price);
+
+    tr.innerHTML = `
+
+      <td>
+        <a
+        class="item-link"
+        href="${item.link}"
+        target="_blank"
+        >
+          ${item.name}
+        </a>
+      </td>
+
+      <td>${item.type}</td>
+
+      <td>${item.subtype}</td>
+
+      ${
+        isMundaneSheet()
+        ? ""
+        : `
+          <td class="rarity-${rarityClass}">
+            ${item.rarity}
+          </td>
+
+          <td>
+            ${item.attunement || "-"}
+          </td>
+        `
+      }
+
+      <td class="${priceData.className}">
+        ${priceData.text}
+      </td>
+
+      <td>${item.extra}</td>
+
+      <td>${item.tier}</td>
+
+    `;
+
+    body.appendChild(tr);
+
+  });
+
+}
+
+function renderMobileCards(data){
+
+  const container =
+    document.getElementById("mobileCards");
+
+  container.innerHTML = "";
+
+  data.forEach(item => {
+
+    const rarityClass =
+      String(item.rarity)
+        .toLowerCase()
+        .replace(/\s+/g,"-");
+
+    const priceData =
+      formatPrice(item.price);
+
+    const card =
+      document.createElement("div");
+
+    card.className = "mobile-card";
+
+    card.innerHTML = `
+
+      <div class="mobile-card-title">
+        ${item.name}
+      </div>
+
+      <div class="mobile-card-grid">
+
+        <div>
+          <div class="mobile-label">Type</div>
+          <div class="mobile-value">
+            ${item.type}
+          </div>
+        </div>
+
+        <div>
+          <div class="mobile-label">Subtype</div>
+          <div class="mobile-value">
+            ${item.subtype}
+          </div>
+        </div>
+
+        ${
+          isMundaneSheet()
+            ? ""
+            : `
+            <div>
+              <div class="mobile-label">Rarity</div>
+              <div class="mobile-value rarity-${rarityClass}">
+                ${item.rarity}
+              </div>
+            </div>
+
+            <div>
+              <div class="mobile-label">Attunement</div>
+              <div class="mobile-value">
+                ${item.attunement || "-"}
+              </div>
+            </div>
+            `
+        }
+
+        <div>
+          <div class="mobile-label">Preis</div>
+          <div class="mobile-price ${priceData.className}">
+            ${priceData.text}
+          </div>
+        </div>
+
+        <div>
+          <div class="mobile-label">Tier</div>
+          <div class="mobile-value">
+            ${item.tier || "-"}
+          </div>
+        </div>
+
+      </div>
+
+      ${
+        item.link
+          ? `
+          <a
+          class="mobile-link"
+          href="${item.link}"
+          target="_blank"
+          >
+            Öffnen
+          </a>
+          `
+          : ""
+      }
+
+    `;
+
+    container.appendChild(card);
+
+  });
+
+}
+
+document
+  .querySelectorAll(".sheet-btn")
+  .forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+      document
+        .querySelectorAll(".sheet-btn")
+        .forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+      button.classList.add("active");
+
+      currentSheet =
+        button.dataset.sheet;
+
+      selectedTypes = [];
+      selectedRarities = [];
+      selectedTiers = [];
+
+      loadSheet();
+
+    });
+
+  });
+
+document
+  .querySelectorAll(".attune-btn")
+  .forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+      document
+        .querySelectorAll(".attune-btn")
+        .forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+      button.classList.add("active");
+
+      attuneState =
+        button.dataset.value;
+
+      filterItems();
+
+    });
+
+  });
+
+document
+  .getElementById("searchInput")
+  .addEventListener("input",filterItems);
+
+document
+  .getElementById("toggleSidebar")
+  .addEventListener("click",()=>{
+
+    document
+      .querySelector(".sidebar")
+      .classList.toggle("open");
+
+  });
+
+loadSheet();
+
+</script>
+
+</body>
+</html>
