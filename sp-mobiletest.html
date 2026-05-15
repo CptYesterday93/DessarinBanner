@@ -400,9 +400,10 @@ tbody tr:hover{
     height:auto;
   }
 
-  .table-section{
-    height:auto;
-    overflow:visible;
+ .table-section{
+  height:auto;
+  max-height:none;
+  overflow:visible;
   }
 
   .sidebar{
@@ -1313,20 +1314,21 @@ loadSheet();
 const scrollTopBtn =
   document.getElementById("scrollTopBtn");
 
-const tableSection =
-  document.querySelector(".table-section");
-
 function isMobile(){
   return window.innerWidth <= 700;
 }
 
+function getCurrentScroll(){
+
+  return isMobile()
+    ? document.documentElement.scrollTop || window.pageYOffset
+    : document.querySelector(".table-section").scrollTop;
+
+}
+
 function toggleScrollButton(){
 
-  const scrollPos = isMobile()
-    ? window.scrollY
-    : tableSection.scrollTop;
-
-  if(scrollPos > 300){
+  if(getCurrentScroll() > 300){
 
     scrollTopBtn.classList.add("show");
 
@@ -1344,10 +1346,11 @@ window.addEventListener(
   { passive:true }
 );
 
-tableSection.addEventListener(
-  "scroll",
-  toggleScrollButton,
-  { passive:true }
+document.querySelector(".table-section")
+  .addEventListener(
+    "scroll",
+    toggleScrollButton,
+    { passive:true }
 );
 
 scrollTopBtn.addEventListener("click",()=>{
@@ -1359,12 +1362,18 @@ scrollTopBtn.addEventListener("click",()=>{
       behavior:"smooth"
     });
 
-  }else{
-
-    tableSection.scrollTo({
+    document.documentElement.scrollTo({
       top:0,
       behavior:"smooth"
     });
+
+  }else{
+
+    document.querySelector(".table-section")
+      .scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
 
   }
 
