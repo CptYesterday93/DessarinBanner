@@ -1221,75 +1221,70 @@ loadSheet();
 const scrollTopBtn =
   document.getElementById("scrollTopBtn");
 
-const tableSection =
-  document.querySelector(".table-section");
+function isMobile(){
+  return window.innerWidth <= 700;
+}
 
-if(scrollTopBtn && tableSection){
+function getCurrentScroll(){
 
-  function isMobile(){
-    return window.innerWidth <= 700;
-  }
-
-  function getCurrentScroll(){
-
-    return isMobile()
-      ? document.documentElement.scrollTop || window.pageYOffset
-      : tableSection.scrollTop;
-
-  }
-
-  function toggleScrollButton(){
-
-    if(getCurrentScroll() > 300){
-
-      scrollTopBtn.classList.add("show");
-
-    }else{
-
-      scrollTopBtn.classList.remove("show");
-
-    }
-
-  }
-
-  window.addEventListener(
-    "scroll",
-    toggleScrollButton,
-    { passive:true }
-  );
-
-  tableSection.addEventListener(
-    "scroll",
-    toggleScrollButton,
-    { passive:true }
-  );
-
-  scrollTopBtn.addEventListener("click",()=>{
-
-    if(isMobile()){
-
-      window.scrollTo({
-        top:0,
-        behavior:"smooth"
-      });
-
-      document.documentElement.scrollTo({
-        top:0,
-        behavior:"smooth"
-      });
-
-    }else{
-
-      tableSection.scrollTo({
-        top:0,
-        behavior:"smooth"
-      });
-
-    }
-
-  });
+  return isMobile()
+    ? document.documentElement.scrollTop || window.pageYOffset
+    : document.querySelector(".table-section").scrollTop;
 
 }
+
+function toggleScrollButton(){
+
+  if(getCurrentScroll() > 300){
+
+    scrollTopBtn.classList.add("show");
+
+  }else{
+
+    scrollTopBtn.classList.remove("show");
+
+  }
+
+}
+
+window.addEventListener(
+  "scroll",
+  toggleScrollButton,
+  { passive:true }
+);
+
+document.querySelector(".table-section")
+  .addEventListener(
+    "scroll",
+    toggleScrollButton,
+    { passive:true }
+);
+
+scrollTopBtn.addEventListener("click",()=>{
+
+  if(isMobile()){
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    document.documentElement.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }else{
+
+    document.querySelector(".table-section")
+      .scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+  }
+
+});
 
 </script>
 
