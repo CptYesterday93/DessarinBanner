@@ -107,6 +107,23 @@ h1{
   background:#4f46e5;
 }
 
+.filter-toggle-btn{
+  width:100%;
+  background:#333;
+  border:1px solid #555;
+  border-radius:12px;
+  color:white;
+  font-weight:bold;
+  padding:12px;
+  cursor:pointer;
+  transition:0.15s ease;
+}
+
+.filter-toggle-btn.active{
+  background:#4f46e5;
+  border-color:#7c74ff;
+}
+
 input{
   width:100%;
   padding:10px;
@@ -122,17 +139,6 @@ input{
   gap:10px;
 }
 
-.checkbox-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-top:10px;
-}
-
-.checkbox-row input{
-  width:auto;
-}
-
 table{
   width:100%;
   border-collapse:collapse;
@@ -144,7 +150,7 @@ table{
 th,
 td{
   padding:12px;
-  border-bottom:1px solid #3f3f3f;
+  border:1px solid #3f3f3f;
   text-align:left;
   white-space:nowrap;
 }
@@ -220,8 +226,6 @@ tbody tr:nth-child(odd){
   color:#ff4f4f;
   font-weight:bold;
 }
-
-/* MOBILE */
 
 .toggle-sidebar{
   display:none;
@@ -437,11 +441,16 @@ Nonmagic Items
 <div id="rarityFilter" class="multi-select"></div>
 </div>
 
-<div class="checkbox-row">
-<input type="checkbox" id="buyableOnly">
-<label for="buyableOnly">
+<div class="filter-group">
+
+<button
+type="button"
+id="buyableToggle"
+class="filter-toggle-btn"
+>
 Nur kaufbare Items
-</label>
+</button>
+
 </div>
 
 <div class="filter-group" id="attuneGroup">
@@ -533,6 +542,8 @@ let selectedTypes = [];
 let selectedRarities = [];
 
 let attuneState = "Alle";
+
+window.buyableOnly = false;
 
 function isMundaneSheet(){
   return currentSheet === "mundane";
@@ -745,10 +756,12 @@ function filterItems(){
       .toLowerCase();
 
   const buyableOnly =
-    document.getElementById("buyableOnly")
-      .checked;
+    window.buyableOnly || false;
 
   let filtered = items.filter(item => {
+
+    if(!item.price || item.price <= 0)
+      return false;
 
     if(
       selectedTypes.length &&
@@ -806,6 +819,36 @@ function filterItems(){
     .textContent = filtered.length;
 
 }
+
+document
+  .getElementById("buyableToggle")
+  .addEventListener("click",()=>{
+
+    window.buyableOnly =
+      !window.buyableOnly;
+
+    document
+      .getElementById("buyableToggle")
+      .classList.toggle("active");
+
+    if(window.buyableOnly){
+
+      selectedRarities = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+    }else{
+
+      selectedRarities = [];
+
+    }
+
+    buildFilters();
+    filterItems();
+
+  });
 
 function renderTable(data){
 
@@ -1062,32 +1105,6 @@ document
 document
   .getElementById("searchInput")
   .addEventListener("input",filterItems);
-
-document
-  .getElementById("buyableOnly")
-  .addEventListener("change",()=>{
-
-    if(
-      document.getElementById("buyableOnly")
-        .checked
-    ){
-
-      selectedRarities = [
-        "Common",
-        "Uncommon",
-        "Rare"
-      ];
-
-    }else{
-
-      selectedRarities = [];
-
-    }
-
-    buildFilters();
-    filterItems();
-
-  });
 
 document
   .getElementById("toggleSidebar")
