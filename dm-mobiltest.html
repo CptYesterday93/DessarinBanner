@@ -35,7 +35,6 @@ body{
   padding:20px;
   height:100vh;
   align-items:start;
-
   transition:grid-template-columns 0.25s ease;
 }
 
@@ -47,7 +46,6 @@ body{
   min-width:0;
   height:calc(100vh - 40px);
   overflow:auto;
-
   border-radius:16px;
 }
 
@@ -135,14 +133,10 @@ button{
 
 table{
   width:100%;
-
   border-collapse:separate;
   border-spacing:0;
-
   background:#222;
-
   border-radius:14px;
-
   overflow:visible;
 }
 
@@ -167,10 +161,8 @@ td:last-child{
 
 th{
   background:#303030;
-
   position:sticky;
   top:0;
-
   z-index:50;
 
   box-shadow:
@@ -192,7 +184,6 @@ tbody tr{
 }
 
 tbody tr:hover{
-
   background:#353535;
 
   box-shadow:
@@ -253,6 +244,11 @@ tbody tr:hover{
 .rarity-artifact{
   color:#ff4f4f;
   font-weight:bold;
+}
+
+.rarity-unbuyable{
+  color:#8a8a8a;
+  font-style:italic;
 }
 
 .multi-select{
@@ -348,6 +344,49 @@ tbody tr:hover{
   font-weight:bold;
 }
 
+/* SCROLL TO TOP BUTTON */
+
+#scrollTopBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+
+  width:54px;
+  height:54px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#4f46e5;
+  color:white;
+
+  font-size:24px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  z-index:10001;
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.35);
+}
+
+#scrollTopBtn.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#scrollTopBtn:hover{
+  transform:translateY(-2px);
+}
+
 @media (max-width:700px){
 
   body{
@@ -361,11 +400,11 @@ tbody tr:hover{
     height:auto;
   }
 
-.table-section{
+ .table-section{
   height:auto;
   max-height:none;
   overflow:visible;
-}
+  }
 
   .sidebar{
 
@@ -449,8 +488,9 @@ id="desktopToggleSidebar"
 >
 ⇔ Filter
 </button>
+
 <button id="scrollTopBtn">↑</button>
-  
+
 <div class="container">
 
 <div class="table-section">
@@ -491,7 +531,6 @@ Nonmagic Items
 <th id="attuneHeader">Attunement</th>
 <th>Preis</th>
 <th>Anmerkung</th>
-<th>Tier</th>
 
 </tr>
 </thead>
@@ -516,11 +555,6 @@ Nonmagic Items
 <div class="filter-group" id="rarityGroup">
 <label>Rarity</label>
 <div id="rarityFilter" class="multi-select"></div>
-</div>
-
-<div class="filter-group">
-<label>Tier</label>
-<div id="tierFilter" class="multi-select"></div>
 </div>
 
 <div class="filter-group" id="attuneGroup">
@@ -627,7 +661,6 @@ let items = [];
 
 let selectedTypes = [];
 let selectedRarities = [];
-let selectedTiers = [];
 
 let attuneState = "Alle";
 
@@ -725,8 +758,7 @@ async function loadSheet(){
       rarity:cells[4]?.v ?? "",
       attunement:cells[5]?.v ?? "",
       price:Number(cells[6]?.v ?? 0),
-      extra:cells[7]?.v ?? "",
-      tier:cells[8]?.v ?? ""
+      extra:cells[7]?.v ?? ""
 
     };
 
@@ -747,36 +779,28 @@ function buildFilters(){
   );
 
   const rarityOrder = [
-    "Common",
-    "Uncommon",
-    "Rare",
-    "Very Rare",
-    "Legendary",
-    "Artifact",
-    "Unknown Rarity",
-    "Varies"
-  ];
+  "Common",
+  "Uncommon",
+  "Rare",
+  "Very Rare",
+  "Legendary",
+  "Artifact",
+  "Varies",
+  "Unknown Rarity"
+];
+
+const rarityValues =
+  [...new Set(items.map(i => i.rarity))]
+    .filter(r => r)
+    .sort((a,b)=>
+      rarityOrder.indexOf(a) -
+      rarityOrder.indexOf(b)
+    );
 
   buildMultiSelect(
     "rarityFilter",
-    [...new Set(items.map(i => i.rarity))]
-      .filter(Boolean)
-      .sort((a,b)=>
-        rarityOrder.indexOf(a) -
-        rarityOrder.indexOf(b)
-      ),
+    rarityValues,
     selectedRarities
-  );
-
-  const tierOrder = [
-    "T1","T2","T3","T4","T5",
-    "T6","T7","T8","T9","T10","T10+"
-  ];
-
-  buildMultiSelect(
-    "tierFilter",
-    tierOrder,
-    selectedTiers
   );
 
 }
@@ -791,10 +815,6 @@ function buildMultiSelect(
     document.getElementById(id);
 
   container.innerHTML = "";
-
-  if(id !== "tierFilter" && id !== "rarityFilter"){
-    values.sort();
-  }
 
   values.forEach(value => {
 
@@ -822,6 +842,7 @@ function buildMultiSelect(
 
       }
 
+
       buildFilters();
       filterItems();
 
@@ -848,16 +869,6 @@ function filterItems(){
     if(
       selectedTypes.length &&
       !selectedTypes.includes(item.type)
-    )
-      return false;
-
-    const itemTier =
-      String(item.tier)
-        .match(/T10\+|T10|T9|T8|T7|T6|T5|T4|T3|T2|T1/i)?.[0] || "";
-
-    if(
-      selectedTiers.length &&
-      !selectedTiers.includes(itemTier)
     )
       return false;
 
@@ -923,8 +934,7 @@ function renderTable(data){
         .toLowerCase()
         .replace(/\s+/g,"-");
 
-    const priceData =
-      formatPrice(item.price);
+    const priceData = formatPrice(item.price);
 
     tr.innerHTML = `
 
@@ -962,8 +972,6 @@ function renderTable(data){
 
       <td>${item.extra}</td>
 
-      <td>${item.tier}</td>
-
     `;
 
     body.appendChild(tr);
@@ -986,8 +994,7 @@ function renderMobileCards(data){
         .toLowerCase()
         .replace(/\s+/g,"-");
 
-    const priceData =
-      formatPrice(item.price);
+    const priceData = formatPrice(item.price);
 
     const card =
       document.createElement("div");
@@ -1043,13 +1050,6 @@ function renderMobileCards(data){
           </div>
         </div>
 
-        <div>
-          <div class="mobile-label">Tier</div>
-          <div class="mobile-value">
-            ${item.tier || "-"}
-          </div>
-        </div>
-
         <div style="grid-column:1 / -1;">
           <div class="mobile-label">Anmerkung</div>
           <div class="mobile-value">
@@ -1099,8 +1099,8 @@ document
         button.dataset.sheet;
 
       selectedTypes = [];
-      selectedRarities = [];
-      selectedTiers = [];
+
+   selectedRarities = [];
 
       loadSheet();
 
@@ -1131,6 +1131,11 @@ document
 
   });
 
+document
+  .getElementById("buyableToggle")
+  .addEventListener("click",()=>{
+
+   
 document
   .getElementById("searchInput")
   .addEventListener("input",filterItems);
@@ -1163,58 +1168,14 @@ document
     document.getElementById("priceMin").value = "";
     document.getElementById("priceMax").value = "";
 
+    selectedRarities = [];
+
+    buildFilters();
     filterItems();
 
   });
 
 loadSheet();
-
-<style>
-
-#scrollTopBtn{
-  position:fixed;
-  bottom:20px;
-  right:20px;
-
-  width:54px;
-  height:54px;
-
-  border:none;
-  border-radius:50%;
-
-  background:#4f46e5;
-  color:white;
-
-  font-size:24px;
-  font-weight:bold;
-
-  cursor:pointer;
-
-  z-index:10001;
-
-  opacity:0;
-  pointer-events:none;
-
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-
-  box-shadow:
-    0 4px 12px rgba(0,0,0,0.35);
-}
-
-#scrollTopBtn.show{
-  opacity:1;
-  pointer-events:auto;
-}
-
-#scrollTopBtn:hover{
-  transform:translateY(-2px);
-}
-
-</style>
-
-<script>
 
 /* SCROLL TO TOP BUTTON */
 
