@@ -764,13 +764,12 @@ function buildFilters(){
     "Very Rare",
     "Legendary",
     "Artifact",
-    "Unknown Rarity",
-    "Varies"
+    "Unknown Rarity"
   ];
 
   const rarityValues =
     [...new Set(items.map(i => i.rarity))]
-      .filter(Boolean)
+      .filter(r => r && r !== "Varies")
       .sort((a,b)=>
         rarityOrder.indexOf(a) -
         rarityOrder.indexOf(b)
@@ -855,6 +854,9 @@ function filterItems(){
     if(!item.price || item.price <= 0)
       return false;
 
+    if(item.rarity === "Varies")
+      return false;
+
     if(
       selectedTypes.length &&
       !selectedTypes.includes(item.type)
@@ -927,8 +929,7 @@ function renderTable(data){
       "Very Rare",
       "Legendary",
       "Artifact",
-      "Unknown Rarity",
-      "Varies"
+      "Unknown Rarity"
     ];
 
     const isUnbuyable =
@@ -1004,8 +1005,7 @@ function renderMobileCards(data){
       "Very Rare",
       "Legendary",
       "Artifact",
-      "Unknown Rarity",
-      "Varies"
+      "Unknown Rarity"
     ];
 
     const isUnbuyable =
