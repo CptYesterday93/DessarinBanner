@@ -184,7 +184,6 @@ tbody tr{
 }
 
 tbody tr:hover{
-
   background:#353535;
 
   box-shadow:
@@ -345,7 +344,6 @@ tbody tr:hover{
   font-weight:bold;
 }
 
-
 /* SCROLL TO TOP BUTTON */
 
 #scrollTopBtn{
@@ -388,7 +386,6 @@ tbody tr:hover{
 #scrollTopBtn:hover{
   transform:translateY(-2px);
 }
-
 
 @media (max-width:700px){
 
@@ -1311,7 +1308,6 @@ document
 
 loadSheet();
 
-
 /* SCROLL TO TOP BUTTON */
 
 const scrollTopBtn =
@@ -1320,9 +1316,17 @@ const scrollTopBtn =
 const tableSection =
   document.querySelector(".table-section");
 
-tableSection.addEventListener("scroll",()=>{
+function isMobile(){
+  return window.innerWidth <= 700;
+}
 
-  if(tableSection.scrollTop > 300){
+function toggleScrollButton(){
+
+  const scrollPos = isMobile()
+    ? window.scrollY
+    : tableSection.scrollTop;
+
+  if(scrollPos > 300){
 
     scrollTopBtn.classList.add("show");
 
@@ -1332,17 +1336,39 @@ tableSection.addEventListener("scroll",()=>{
 
   }
 
-});
+}
+
+window.addEventListener(
+  "scroll",
+  toggleScrollButton,
+  { passive:true }
+);
+
+tableSection.addEventListener(
+  "scroll",
+  toggleScrollButton,
+  { passive:true }
+);
 
 scrollTopBtn.addEventListener("click",()=>{
 
-  tableSection.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+  if(isMobile()){
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }else{
+
+    tableSection.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }
 
 });
-
 
 </script>
 
