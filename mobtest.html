@@ -45,10 +45,6 @@ body *{
   align-items:start;
 }
 
-.container.sidebar-collapsed{
-  grid-template-columns:minmax(0,1fr) 0px;
-}
-
 .table-section{
   min-width:0;
   overflow-x:auto;
@@ -67,22 +63,6 @@ body *{
 
   width:340px;
   max-width:340px;
-
-  overflow:hidden;
-  opacity:1;
-}
-
-.sidebar *{
-  transition:none !important;
-}
-
-.container.sidebar-collapsed .sidebar{
-  width:0;
-  max-width:0;
-  padding-left:0;
-  padding-right:0;
-  border-width:0;
-  opacity:0;
 }
 
 .sidebar h2,
@@ -117,29 +97,6 @@ h1{
 .sheet-btn.active{
   background:#4f46e5;
   border-color:#7c74ff;
-}
-
-.toggle-sidebar{
-  position:fixed;
-
-  top:20px;
-  right:20px;
-
-  z-index:999;
-
-  width:auto;
-  padding:10px 14px;
-
-  background:#333;
-  border:1px solid #555;
-  border-radius:10px;
-
-  cursor:pointer;
-  font-weight:bold;
-  white-space:nowrap;
-
-  box-shadow:
-    0 4px 14px rgba(0,0,0,0.35);
 }
 
 .filter-group{
@@ -228,20 +185,6 @@ tr:hover{
   background:#3a3a3a !important;
 }
 
-.sortable{
-  cursor:pointer;
-  user-select:none;
-}
-
-.sort-indicator{
-  display:inline-block;
-  margin-left:6px;
-  font-size:11px;
-  opacity:0.55;
-  width:12px;
-  text-align:center;
-}
-
 .price-gp{
   color:gold;
   font-weight:bold;
@@ -265,41 +208,6 @@ tr:hover{
 
 .item-link:hover{
   text-decoration:underline;
-}
-
-.hover-full{
-  position:absolute;
-  left:10px;
-  top:100%;
-  z-index:50;
-
-  background:#111;
-  color:white;
-
-  padding:8px 10px;
-  border-radius:8px;
-
-  border:1px solid #555;
-
-  white-space:normal;
-  max-width:500px;
-
-  opacity:0;
-  pointer-events:none;
-
-  transform:translateY(4px);
-
-  transition:
-    opacity 0.12s ease,
-    transform 0.12s ease !important;
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.45);
-}
-
-td:hover .hover-full{
-  opacity:1;
-  transform:translateY(0);
 }
 
 .rarity-common{
@@ -350,33 +258,22 @@ td:hover .hover-full{
   border-color:#7c74ff;
 }
 
-#buyableToggle{
-  accent-color:#4f46e5;
-}
-
-.buyable-label{
-  display:flex !important;
-  align-items:center;
-  gap:8px;
-  cursor:pointer;
-}
-
-.buyable-label input{
-  width:auto;
-  margin:0;
-}
-
 @media (max-width:1100px){
 
   .container{
-    grid-template-columns:1fr;
+    display:flex;
+    flex-direction:column;
   }
 
   .sidebar{
+    order:-1;
+
     position:sticky;
     top:0;
+
     width:100%;
     max-width:100%;
+
     z-index:100;
   }
 
@@ -410,13 +307,6 @@ td:hover .hover-full{
 
   .sidebar{
     padding:16px;
-  }
-
-  .toggle-sidebar{
-    top:10px;
-    right:10px;
-    padding:8px 10px;
-    font-size:13px;
   }
 
   .multi-select{
