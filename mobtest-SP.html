@@ -253,7 +253,6 @@ tbody tr:nth-child(odd){
 tbody tr{
   transition:
     background 0.15s ease,
-    transform 0.12s ease,
     box-shadow 0.15s ease;
 }
 
@@ -359,10 +358,6 @@ tbody tr:hover td:nth-last-child(2){
   color:white;
 
   font-weight:bold;
-}
-
-.mobile-cards{
-  display:none;
 }
 
 @media (max-width:700px){
@@ -488,6 +483,73 @@ Nonmagic Items
 <h2>Suchfilter</h2>
 
 <div class="filter-group">
+<label>Type</label>
+<div id="typeFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group" id="rarityGroup">
+<label>Rarity</label>
+<div id="rarityFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group">
+
+<button
+type="button"
+id="buyableToggle"
+class="filter-toggle-btn"
+>
+Nur kaufbare Items
+</button>
+
+</div>
+
+<div class="filter-group" id="attuneGroup">
+
+<label>Attunement</label>
+
+<div id="attuneButtons" class="multi-select">
+
+<button
+type="button"
+class="attune-btn active"
+data-value="Alle"
+>
+Alle
+</button>
+
+<button
+type="button"
+class="attune-btn"
+data-value="Ja"
+>
+Ja
+</button>
+
+<button
+type="button"
+class="attune-btn"
+data-value="Nein"
+>
+Nein
+</button>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Preis</label>
+
+<div class="price-grid">
+<input type="number" id="priceMin" placeholder="von">
+<input type="number" id="priceMax" placeholder="bis">
+</div>
+
+</div>
+
+<div class="filter-group">
 <label>Suchbegriff</label>
 <input type="text" id="searchInput">
 </div>
@@ -517,46 +579,32 @@ const SHEETS = {
 
 };
 
+const BUYABLE_RARITIES = [
+  "Common",
+  "Uncommon",
+  "Rare"
+];
+
 let currentSheet = "magic";
+
 let items = [];
 
-async function loadSheet(){
+let selectedTypes = [];
+let selectedRarities = [];
 
-  const config = SHEETS[currentSheet];
+let attuneState = "Alle";
 
-  const url =
-    `https://docs.google.com/spreadsheets/d/${config.id}/gviz/tq?sheet=${encodeURIComponent(config.name)}`;
+window.buyableOnly = false;
 
-  const response = await fetch(url);
-  const text = await response.text();
+function isMundaneSheet(){
+  return currentSheet === "mundane";
+}
 
-  const json =
-    JSON.parse(
-      text.substring(47).slice(0,-2)
-    );
+function isBuyable(item){
 
-  const rows = json.table.rows;
-
-  items = rows.map(row => {
-
-    const cells = row.c || [];
-
-    return {
-
-      name:cells[0]?.v ?? "",
-      link:cells[1]?.v ?? "",
-      type:cells[2]?.v ?? "",
-      subtype:cells[3]?.v ?? "",
-      rarity:cells[4]?.v ?? "",
-      attunement:cells[5]?.v ?? "",
-      price:Number(cells[6]?.v ?? 0),
-      extra:cells[7]?.v ?? ""
-
-    };
-
-  });
-
-  filterItems();
+  return BUYABLE_RARITIES.includes(
+    item.rarity
+  );
 
 }
 
@@ -590,13 +638,145 @@ function formatPrice(price){
 
 }
 
-function isBuyable(item){
+function updateFilterVisibility(){
 
-  return [
-    "Common",
-    "Uncommon",
-    "Rare"
-  ].includes(item.rarity);
+  document.getElementById("rarityGroup")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "block";
+
+  document.getElementById("attuneGroup")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "block";
+
+  document.getElementById("rarityHeader")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "";
+
+  document.getElementById("attuneHeader")
+    .style.display =
+      isMundaneSheet()
+        ? "none"
+        : "";
+
+}
+
+async function loadSheet(){
+
+  const config =
+    SHEETS[currentSheet];
+
+  const url =
+    `https://docs.google.com/spreadsheets/d/${config.id}/gviz/tq?sheet=${encodeURIComponent(config.name)}`;
+
+  const response =
+    await fetch(url);
+
+  const text =
+    await response.text();
+
+  const json =
+    JSON.parse(
+      text.substring(47).slice(0,-2)
+    );
+
+  const rows =
+    json.table.rows;
+
+  items = rows.map(row => {
+
+    const cells = row.c || [];
+
+    return {
+
+      name:cells[0]?.v ?? "",
+      link:cells[1]?.v ?? "",
+      type:cells[2]?.v ?? "",
+      subtype:cells[3]?.v ?? "",
+      rarity:cells[4]?.v ?? "",
+      attunement:cells[5]?.v ?? "",
+      price:Number(cells[6]?.v ?? 0),
+      extra:cells[7]?.v ?? ""
+
+    };
+
+  });
+
+  buildFilters();
+  updateFilterVisibility();
+  filterItems();
+
+}
+
+function buildFilters(){
+
+  buildMultiSelect(
+    "typeFilter",
+    [...new Set(items.map(i => i.type))],
+    selectedTypes
+  );
+
+  buildMultiSelect(
+    "rarityFilter",
+    [...new Set(items.map(i => i.rarity))]
+      .filter(Boolean),
+    selectedRarities
+  );
+
+}
+
+function buildMultiSelect(
+  id,
+  values,
+  selectedArray
+){
+
+  const container =
+    document.getElementById(id);
+
+  container.innerHTML = "";
+
+  values.sort();
+
+  values.forEach(value => {
+
+    const button =
+      document.createElement("button");
+
+    button.textContent = value;
+
+    if(selectedArray.includes(value)){
+      button.classList.add("active");
+    }
+
+    button.addEventListener("click",()=>{
+
+      if(selectedArray.includes(value)){
+
+        selectedArray.splice(
+          selectedArray.indexOf(value),
+          1
+        );
+
+      }else{
+
+        selectedArray.push(value);
+
+      }
+
+      buildFilters();
+      filterItems();
+
+    });
+
+    container.appendChild(button);
+
+  });
 
 }
 
@@ -608,17 +788,79 @@ function filterItems(){
       .value
       .toLowerCase();
 
+  const min =
+    Number(
+      document.getElementById("priceMin")
+        .value || 0
+    );
+
+  const max =
+    Number(
+      document.getElementById("priceMax")
+        .value || Infinity
+    );
+
+  const buyableOnly =
+    window.buyableOnly || false;
+
   const filtered =
     items.filter(item => {
 
       if(!item.price || item.price <= 0)
         return false;
 
+      if(
+        selectedTypes.length &&
+        !selectedTypes.includes(item.type)
+      )
+        return false;
+
+      if(
+        !isMundaneSheet() &&
+        selectedRarities.length &&
+        !selectedRarities.includes(item.rarity)
+      )
+        return false;
+
+      if(
+        buyableOnly &&
+        !isBuyable(item)
+      )
+        return false;
+
+      if(!isMundaneSheet()){
+
+        if(
+          attuneState === "Ja" &&
+          item.attunement === ""
+        )
+          return false;
+
+        if(
+          attuneState === "Nein" &&
+          item.attunement !== ""
+        )
+          return false;
+
+      }
+
+      if(item.price < min)
+        return false;
+
+      if(item.price > max)
+        return false;
+
       const combined =
         `${item.name} ${item.subtype}`
           .toLowerCase();
 
-      return combined.includes(search);
+      if(
+        search &&
+        !combined.includes(search)
+      )
+        return false;
+
+      return true;
 
     });
 
@@ -630,6 +872,36 @@ function filterItems(){
       filtered.length;
 
 }
+
+document
+  .getElementById("buyableToggle")
+  .addEventListener("click",()=>{
+
+    window.buyableOnly =
+      !window.buyableOnly;
+
+    document
+      .getElementById("buyableToggle")
+      .classList.toggle("active");
+
+    if(window.buyableOnly){
+
+      selectedRarities = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+    }else{
+
+      selectedRarities = [];
+
+    }
+
+    buildFilters();
+    filterItems();
+
+  });
 
 function renderTable(data){
 
@@ -727,6 +999,9 @@ document
       currentSheet =
         button.dataset.sheet;
 
+      selectedTypes = [];
+      selectedRarities = [];
+
       loadSheet();
 
     });
@@ -734,7 +1009,38 @@ document
   });
 
 document
+  .querySelectorAll(".attune-btn")
+  .forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+      document
+        .querySelectorAll(".attune-btn")
+        .forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+      button.classList.add("active");
+
+      attuneState =
+        button.dataset.value;
+
+      filterItems();
+
+    });
+
+  });
+
+document
   .getElementById("searchInput")
+  .addEventListener("input",filterItems);
+
+document
+  .getElementById("priceMin")
+  .addEventListener("input",filterItems);
+
+document
+  .getElementById("priceMax")
   .addEventListener("input",filterItems);
 
 document
