@@ -361,10 +361,11 @@ tbody tr:hover{
     height:auto;
   }
 
-  .table-section{
-    height:auto;
-    overflow:visible;
-  }
+.table-section{
+  height:auto;
+  max-height:none;
+  overflow:visible;
+}
 
   .sidebar{
 
@@ -1166,7 +1167,126 @@ document
   });
 
 loadSheet();
+<button id="scrollTopBtn">↑</button>
 
+<style>
+
+#scrollTopBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+
+  width:54px;
+  height:54px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#4f46e5;
+  color:white;
+
+  font-size:24px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  z-index:10001;
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.35);
+}
+
+#scrollTopBtn.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#scrollTopBtn:hover{
+  transform:translateY(-2px);
+}
+
+</style>
+
+<script>
+
+/* SCROLL TO TOP BUTTON */
+
+const scrollTopBtn =
+  document.getElementById("scrollTopBtn");
+
+function isMobile(){
+  return window.innerWidth <= 700;
+}
+
+function getCurrentScroll(){
+
+  return isMobile()
+    ? document.documentElement.scrollTop || window.pageYOffset
+    : document.querySelector(".table-section").scrollTop;
+
+}
+
+function toggleScrollButton(){
+
+  if(getCurrentScroll() > 300){
+
+    scrollTopBtn.classList.add("show");
+
+  }else{
+
+    scrollTopBtn.classList.remove("show");
+
+  }
+
+}
+
+window.addEventListener(
+  "scroll",
+  toggleScrollButton,
+  { passive:true }
+);
+
+document.querySelector(".table-section")
+  .addEventListener(
+    "scroll",
+    toggleScrollButton,
+    { passive:true }
+);
+
+scrollTopBtn.addEventListener("click",()=>{
+
+  if(isMobile()){
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    document.documentElement.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }else{
+
+    document.querySelector(".table-section")
+      .scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+  }
+
+});
+
+</script>
 </script>
 
 </body>
