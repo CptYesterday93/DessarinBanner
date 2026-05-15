@@ -229,8 +229,6 @@ td{
   text-align:left;
   white-space:nowrap;
 
-  /* VERTICAL LINE SHADOW */
-
   box-shadow:
     inset -1px 0 0 rgba(255,255,255,0.03),
     inset 1px 0 0 rgba(0,0,0,0.35);
@@ -367,56 +365,6 @@ tbody tr:hover td:nth-last-child(2){
   display:none;
 }
 
-.mobile-card{
-  background:#242424;
-  border:1px solid #3f3f3f;
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:14px;
-}
-
-.mobile-card-title{
-  font-size:18px;
-  font-weight:bold;
-  margin-bottom:12px;
-}
-
-.mobile-card-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-
-.mobile-label{
-  font-size:12px;
-  opacity:0.7;
-}
-
-.mobile-value{
-  font-size:14px;
-}
-
-.mobile-price{
-  font-size:18px;
-  font-weight:bold;
-}
-
-.mobile-link{
-  display:inline-block;
-  margin-top:14px;
-
-  padding:10px 14px;
-
-  background:#4f46e5;
-  border-radius:10px;
-
-  color:white;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-/* MOBILE LAYOUT */
-
 @media (max-width:700px){
 
   .desktop-toggle{
@@ -463,31 +411,10 @@ tbody tr:hover td:nth-last-child(2){
     max-height:none;
   }
 
-  .table-section table{
-    display:none !important;
-  }
-
-  thead,
-  tbody{
-    display:none !important;
-  }
-
-  .mobile-cards{
-    display:block;
-  }
-
   h1{
     font-size:30px;
     line-height:1.2;
     margin-right:90px;
-  }
-
-  .sheet-switcher{
-    width:100%;
-  }
-
-  .sheet-btn{
-    flex:1;
   }
 
 }
@@ -500,7 +427,7 @@ tbody tr:hover td:nth-last-child(2){
 class="desktop-toggle"
 id="desktopToggle"
 >
-Filter ein/aus
+Suchfilter
 </button>
 
 <button
@@ -554,80 +481,11 @@ Nonmagic Items
 
 </table>
 
-<div id="mobileCards" class="mobile-cards"></div>
-
 </div>
 
 <div class="sidebar">
 
 <h2>Suchfilter</h2>
-
-<div class="filter-group">
-<label>Type</label>
-<div id="typeFilter" class="multi-select"></div>
-</div>
-
-<div class="filter-group" id="rarityGroup">
-<label>Rarity</label>
-<div id="rarityFilter" class="multi-select"></div>
-</div>
-
-<div class="filter-group">
-
-<button
-type="button"
-id="buyableToggle"
-class="filter-toggle-btn"
->
-Nur kaufbare Items
-</button>
-
-</div>
-
-<div class="filter-group" id="attuneGroup">
-
-<label>Attunement</label>
-
-<div id="attuneButtons" class="multi-select">
-
-<button
-type="button"
-class="attune-btn active"
-data-value="Alle"
->
-Alle
-</button>
-
-<button
-type="button"
-class="attune-btn"
-data-value="Ja"
->
-Ja
-</button>
-
-<button
-type="button"
-class="attune-btn"
-data-value="Nein"
->
-Nein
-</button>
-
-</div>
-
-</div>
-
-<div class="filter-group">
-
-<label>Preis</label>
-
-<div class="price-grid">
-<input type="number" id="priceMin" placeholder="von">
-<input type="number" id="priceMax" placeholder="bis">
-</div>
-
-</div>
 
 <div class="filter-group">
 <label>Suchbegriff</label>
@@ -645,7 +503,239 @@ Suchergebnisse:
 
 <script>
 
-/* DEIN BISHERIGES JS BLEIBT HIER UNVERÄNDERT */
+const SHEETS = {
+
+  magic:{
+    id:"1yWXMERywTtgi-fKcmfTYgkSZ3abmnM0pNnZgYTfjToY",
+    name:"Magic Items"
+  },
+
+  mundane:{
+    id:"154iNJR9P_rwltW24M3hXyge33G_ym3cdMQVmPwQe4Bk",
+    name:"Nonmagic Items"
+  }
+
+};
+
+let currentSheet = "magic";
+let items = [];
+
+async function loadSheet(){
+
+  const config = SHEETS[currentSheet];
+
+  const url =
+    `https://docs.google.com/spreadsheets/d/${config.id}/gviz/tq?sheet=${encodeURIComponent(config.name)}`;
+
+  const response = await fetch(url);
+  const text = await response.text();
+
+  const json =
+    JSON.parse(
+      text.substring(47).slice(0,-2)
+    );
+
+  const rows = json.table.rows;
+
+  items = rows.map(row => {
+
+    const cells = row.c || [];
+
+    return {
+
+      name:cells[0]?.v ?? "",
+      link:cells[1]?.v ?? "",
+      type:cells[2]?.v ?? "",
+      subtype:cells[3]?.v ?? "",
+      rarity:cells[4]?.v ?? "",
+      attunement:cells[5]?.v ?? "",
+      price:Number(cells[6]?.v ?? 0),
+      extra:cells[7]?.v ?? ""
+
+    };
+
+  });
+
+  filterItems();
+
+}
+
+function formatPrice(price){
+
+  if(price >= 1){
+
+    return `
+      <span class="price-gp">
+        ${price} GP
+      </span>
+    `;
+
+  }
+
+  if(price >= 0.1){
+
+    return `
+      <span class="price-sp">
+        ${Math.round(price * 10)} SP
+      </span>
+    `;
+
+  }
+
+  return `
+    <span class="price-cp">
+      ${Math.round(price * 100)} CP
+    </span>
+  `;
+
+}
+
+function isBuyable(item){
+
+  return [
+    "Common",
+    "Uncommon",
+    "Rare"
+  ].includes(item.rarity);
+
+}
+
+function filterItems(){
+
+  const search =
+    document
+      .getElementById("searchInput")
+      .value
+      .toLowerCase();
+
+  const filtered =
+    items.filter(item => {
+
+      if(!item.price || item.price <= 0)
+        return false;
+
+      const combined =
+        `${item.name} ${item.subtype}`
+          .toLowerCase();
+
+      return combined.includes(search);
+
+    });
+
+  renderTable(filtered);
+
+  document
+    .getElementById("resultCount")
+    .textContent =
+      filtered.length;
+
+}
+
+function renderTable(data){
+
+  const body =
+    document.getElementById("tableBody");
+
+  body.innerHTML = "";
+
+  data.forEach(item => {
+
+    const tr =
+      document.createElement("tr");
+
+    const rarityClass =
+      String(item.rarity)
+        .toLowerCase()
+        .replace(/\s+/g,"-");
+
+    let priceHtml = "";
+
+    if(
+      currentSheet === "mundane" ||
+      isBuyable(item)
+    ){
+
+      priceHtml =
+        formatPrice(item.price);
+
+    }else{
+
+      priceHtml = `
+        <span class="not-buyable">
+          Nicht kaufbar
+        </span>
+      `;
+
+    }
+
+    tr.innerHTML = `
+
+      <td>
+        <a
+        class="item-link"
+        href="${item.link}"
+        target="_blank"
+        >
+          ${item.name}
+        </a>
+      </td>
+
+      <td>${item.type}</td>
+
+      <td>${item.subtype}</td>
+
+      ${
+        currentSheet === "mundane"
+        ? ""
+        : `
+          <td class="rarity-${rarityClass}">
+            ${item.rarity}
+          </td>
+
+          <td>
+            ${item.attunement || "-"}
+          </td>
+        `
+      }
+
+      <td>${priceHtml}</td>
+
+      <td>${item.extra}</td>
+
+    `;
+
+    body.appendChild(tr);
+
+  });
+
+}
+
+document
+  .querySelectorAll(".sheet-btn")
+  .forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+      document
+        .querySelectorAll(".sheet-btn")
+        .forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+      button.classList.add("active");
+
+      currentSheet =
+        button.dataset.sheet;
+
+      loadSheet();
+
+    });
+
+  });
+
+document
+  .getElementById("searchInput")
+  .addEventListener("input",filterItems);
 
 document
   .getElementById("desktopToggle")
@@ -660,6 +750,18 @@ document
       .classList.toggle("sidebar-hidden");
 
   });
+
+document
+  .getElementById("toggleSidebar")
+  .addEventListener("click",()=>{
+
+    document
+      .querySelector(".sidebar")
+      .classList.toggle("open");
+
+  });
+
+loadSheet();
 
 </script>
 
