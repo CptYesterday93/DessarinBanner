@@ -347,7 +347,46 @@ tbody tr:hover{
   text-decoration:none;
   font-weight:bold;
 }
+#scrollTopBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
 
+  width:54px;
+  height:54px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#4f46e5;
+  color:white;
+
+  font-size:24px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  z-index:10001;
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.35);
+}
+
+#scrollTopBtn.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#scrollTopBtn:hover{
+  transform:translateY(-2px);
+}
 @media (max-width:700px){
 
   body{
@@ -456,7 +495,7 @@ id="desktopToggleSidebar"
 
 <div class="topbar">
 
-<h1>DnD Item Preisliste – ganzsupertoll DM</h1>
+<h1>DnD Item Preisliste – ganzsupertoll DM II </h1>
 
 <div class="sheet-switcher">
 
