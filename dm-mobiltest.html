@@ -1221,70 +1221,75 @@ loadSheet();
 const scrollTopBtn =
   document.getElementById("scrollTopBtn");
 
-function isMobile(){
-  return window.innerWidth <= 700;
-}
+const tableSection =
+  document.querySelector(".table-section");
 
-function getCurrentScroll(){
+if(scrollTopBtn && tableSection){
 
-  return isMobile()
-    ? document.documentElement.scrollTop || window.pageYOffset
-    : document.querySelector(".table-section").scrollTop;
+  function isMobile(){
+    return window.innerWidth <= 700;
+  }
 
-}
+  function getCurrentScroll(){
 
-function toggleScrollButton(){
-
-  if(getCurrentScroll() > 300){
-
-    scrollTopBtn.classList.add("show");
-
-  }else{
-
-    scrollTopBtn.classList.remove("show");
+    return isMobile()
+      ? document.documentElement.scrollTop || window.pageYOffset
+      : tableSection.scrollTop;
 
   }
 
-}
+  function toggleScrollButton(){
 
-window.addEventListener(
-  "scroll",
-  toggleScrollButton,
-  { passive:true }
-);
+    if(getCurrentScroll() > 300){
 
-document.querySelector(".table-section")
-  .addEventListener(
+      scrollTopBtn.classList.add("show");
+
+    }else{
+
+      scrollTopBtn.classList.remove("show");
+
+    }
+
+  }
+
+  window.addEventListener(
     "scroll",
     toggleScrollButton,
     { passive:true }
-);
+  );
 
-scrollTopBtn.addEventListener("click",()=>{
+  tableSection.addEventListener(
+    "scroll",
+    toggleScrollButton,
+    { passive:true }
+  );
 
-  if(isMobile()){
+  scrollTopBtn.addEventListener("click",()=>{
 
-    window.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
+    if(isMobile()){
 
-    document.documentElement.scrollTo({
-      top:0,
-      behavior:"smooth"
-    });
-
-  }else{
-
-    document.querySelector(".table-section")
-      .scrollTo({
+      window.scrollTo({
         top:0,
         behavior:"smooth"
       });
 
-  }
+      document.documentElement.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
 
-});
+    }else{
+
+      tableSection.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+    }
+
+  });
+
+}
 
 </script>
 
