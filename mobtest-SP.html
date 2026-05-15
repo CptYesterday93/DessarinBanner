@@ -22,8 +22,6 @@ body{
   font-family:Arial,sans-serif;
 }
 
-/* LAYOUT */
-
 .container{
   display:grid;
   grid-template-columns:minmax(0,1fr) 320px;
@@ -43,8 +41,6 @@ body{
   max-height:calc(100vh - 36px);
 }
 
-/* SIDEBAR */
-
 .sidebar{
   background:#242424;
   border-radius:18px;
@@ -59,8 +55,6 @@ body{
   display:none;
 }
 
-/* TITLES */
-
 h1,h2{
   font-family:"Cinzel",serif;
   margin-top:0;
@@ -70,8 +64,6 @@ h1{
   font-size:28px;
   margin-bottom:18px;
 }
-
-/* DESKTOP FILTER BUTTON */
 
 .desktop-toggle{
   position:fixed;
@@ -93,8 +85,6 @@ h1{
   box-shadow:
     0 4px 12px rgba(0,0,0,0.35);
 }
-
-/* SHEET SWITCH */
 
 .sheet-switcher{
   display:flex;
@@ -122,8 +112,6 @@ h1{
   background:#4f46e5;
   border-color:#7c74ff;
 }
-
-/* FILTERS */
 
 .filter-group{
   margin-bottom:18px;
@@ -197,17 +185,14 @@ input{
   gap:10px;
 }
 
-/* TABLE */
-
 table{
   width:100%;
   border-collapse:collapse;
   background:#222;
-  border-radius:14px;
-  overflow:hidden;
-}
 
-/* STICKY HEADER */
+  border-radius:0;
+  overflow:visible;
+}
 
 thead th{
   position:sticky;
@@ -219,8 +204,6 @@ thead th{
   box-shadow:
     0 2px 0 rgba(0,0,0,0.35);
 }
-
-/* TABLE CELLS */
 
 th,
 td{
@@ -238,8 +221,6 @@ th{
   background:#303030;
 }
 
-/* ZEBRA */
-
 tbody tr:nth-child(even){
   background:#242424;
 }
@@ -247,8 +228,6 @@ tbody tr:nth-child(even){
 tbody tr:nth-child(odd){
   background:#2c2c2c;
 }
-
-/* HOVER EFFECT */
 
 tbody tr{
   transition:
@@ -270,8 +249,6 @@ tbody tr:hover td:nth-last-child(2){
   background:rgba(124,116,255,0.06);
 }
 
-/* LINKS */
-
 .item-link{
   color:#8ecbff;
   text-decoration:none;
@@ -281,8 +258,6 @@ tbody tr:hover td:nth-last-child(2){
 .item-link:hover{
   text-decoration:underline;
 }
-
-/* PRICES */
 
 .price-gp{
   color:gold;
@@ -303,8 +278,6 @@ tbody tr:hover td:nth-last-child(2){
   color:#8b8b8b;
   font-style:italic;
 }
-
-/* RARITY COLORS */
 
 .rarity-common{
   color:#d6d6d6;
@@ -335,8 +308,6 @@ tbody tr:hover td:nth-last-child(2){
   color:#ff4f4f;
   font-weight:bold;
 }
-
-/* MOBILE */
 
 .toggle-sidebar{
   display:none;
@@ -585,6 +556,16 @@ const BUYABLE_RARITIES = [
   "Rare"
 ];
 
+const RARITY_ORDER = [
+  "Common",
+  "Uncommon",
+  "Rare",
+  "Very Rare",
+  "Legendary",
+  "Artifact",
+  "Unknown Rarity"
+];
+
 let currentSheet = "magic";
 
 let items = [];
@@ -724,7 +705,7 @@ function buildFilters(){
   buildMultiSelect(
     "rarityFilter",
     [...new Set(items.map(i => i.rarity))]
-      .filter(Boolean),
+      .filter(v => v && v !== "Varies"),
     selectedRarities
   );
 
@@ -741,7 +722,22 @@ function buildMultiSelect(
 
   container.innerHTML = "";
 
-  values.sort();
+  if(id === "rarityFilter"){
+
+    values.sort((a,b)=>{
+
+      return (
+        RARITY_ORDER.indexOf(a) -
+        RARITY_ORDER.indexOf(b)
+      );
+
+    });
+
+  }else{
+
+    values.sort();
+
+  }
 
   values.forEach(value => {
 
@@ -805,6 +801,9 @@ function filterItems(){
 
   const filtered =
     items.filter(item => {
+
+      if(item.rarity === "Varies")
+        return false;
 
       if(!item.price || item.price <= 0)
         return false;
