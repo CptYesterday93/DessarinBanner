@@ -448,7 +448,8 @@ id="desktopToggleSidebar"
 >
 ⇔ Filter
 </button>
-
+<button id="scrollTopBtn">↑</button>
+  
 <div class="container">
 
 <div class="table-section">
@@ -1166,7 +1167,76 @@ document
   });
 
 loadSheet();
+/* SCROLL TO TOP BUTTON */
 
+const scrollTopBtn =
+  document.getElementById("scrollTopBtn");
+
+function isMobile(){
+  return window.innerWidth <= 700;
+}
+
+function getCurrentScroll(){
+
+  return isMobile()
+    ? document.documentElement.scrollTop || window.pageYOffset
+    : document.querySelector(".table-section").scrollTop;
+
+}
+
+function toggleScrollButton(){
+
+  if(getCurrentScroll() > 300){
+
+    scrollTopBtn.classList.add("show");
+
+  }else{
+
+    scrollTopBtn.classList.remove("show");
+
+  }
+
+}
+
+window.addEventListener(
+  "scroll",
+  toggleScrollButton,
+  { passive:true }
+);
+
+document.querySelector(".table-section")
+  .addEventListener(
+    "scroll",
+    toggleScrollButton,
+    { passive:true }
+);
+
+scrollTopBtn.addEventListener("click",()=>{
+
+  if(isMobile()){
+
+    window.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+    document.documentElement.scrollTo({
+      top:0,
+      behavior:"smooth"
+    });
+
+  }else{
+
+    document.querySelector(".table-section")
+      .scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+  }
+
+});
+  
 </script>
 
 </body>
