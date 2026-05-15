@@ -671,17 +671,8 @@ function buildFilters(){
   buildMultiSelect(
     "tierFilter",
     [
-      "T1",
-      "T2",
-      "T3",
-      "T4",
-      "T5",
-      "T6",
-      "T7",
-      "T8",
-      "T9",
-      "T10",
-      "T10+"
+      "T1","T2","T3","T4","T5",
+      "T6","T7","T8","T9","T10","T10+"
     ],
     selectedTiers
   );
@@ -860,6 +851,11 @@ function renderMobileCards(data){
 
   data.forEach(item => {
 
+    const rarityClass =
+      String(item.rarity)
+        .toLowerCase()
+        .replace(/\s+/g,"-");
+
     const priceData =
       formatPrice(item.price);
 
@@ -884,13 +880,68 @@ function renderMobileCards(data){
         </div>
 
         <div>
+          <div class="mobile-label">Subtype</div>
+          <div class="mobile-value">
+            ${item.subtype || "-"}
+          </div>
+        </div>
+
+        ${
+          isMundaneSheet()
+            ? ""
+            : `
+            <div>
+              <div class="mobile-label">Rarity</div>
+              <div class="mobile-value rarity-${rarityClass}">
+                ${item.rarity || "-"}
+              </div>
+            </div>
+
+            <div>
+              <div class="mobile-label">Attunement</div>
+              <div class="mobile-value">
+                ${item.attunement || "-"}
+              </div>
+            </div>
+            `
+        }
+
+        <div>
           <div class="mobile-label">Preis</div>
           <div class="mobile-price ${priceData.className}">
             ${priceData.text}
           </div>
         </div>
 
+        <div>
+          <div class="mobile-label">Tier</div>
+          <div class="mobile-value">
+            ${item.tier || "-"}
+          </div>
+        </div>
+
+        <div style="grid-column:1 / -1;">
+          <div class="mobile-label">Anmerkung</div>
+          <div class="mobile-value">
+            ${item.extra || "-"}
+          </div>
+        </div>
+
       </div>
+
+      ${
+        item.link
+          ? `
+          <a
+          class="mobile-link"
+          href="${item.link}"
+          target="_blank"
+          >
+            Öffnen
+          </a>
+          `
+          : ""
+      }
 
     `;
 
