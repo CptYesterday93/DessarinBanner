@@ -345,6 +345,51 @@ tbody tr:hover{
   font-weight:bold;
 }
 
+
+/* SCROLL TO TOP BUTTON */
+
+#scrollTopBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+
+  width:54px;
+  height:54px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#4f46e5;
+  color:white;
+
+  font-size:24px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  z-index:10001;
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.35);
+}
+
+#scrollTopBtn.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#scrollTopBtn:hover{
+  transform:translateY(-2px);
+}
+
+
 @media (max-width:700px){
 
   body{
@@ -445,6 +490,8 @@ id="desktopToggleSidebar"
 >
 ⇔ Filter
 </button>
+
+<button id="scrollTopBtn">↑</button>
 
 <div class="container">
 
@@ -1263,6 +1310,39 @@ document
   });
 
 loadSheet();
+
+
+/* SCROLL TO TOP BUTTON */
+
+const scrollTopBtn =
+  document.getElementById("scrollTopBtn");
+
+const tableSection =
+  document.querySelector(".table-section");
+
+tableSection.addEventListener("scroll",()=>{
+
+  if(tableSection.scrollTop > 300){
+
+    scrollTopBtn.classList.add("show");
+
+  }else{
+
+    scrollTopBtn.classList.remove("show");
+
+  }
+
+});
+
+scrollTopBtn.addEventListener("click",()=>{
+
+  tableSection.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+});
+
 
 </script>
 
