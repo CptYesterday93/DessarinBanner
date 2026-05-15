@@ -33,6 +33,7 @@ body{
 .table-section{
   min-width:0;
   overflow-x:auto;
+  max-height:calc(100vh - 36px);
 }
 
 .sidebar{
@@ -69,6 +70,11 @@ h1{
   color:white;
   cursor:pointer;
   font-weight:bold;
+  transition:0.15s ease;
+}
+
+.sheet-btn:hover{
+  background:#404040;
 }
 
 .sheet-btn.active{
@@ -101,6 +107,11 @@ h1{
   color:white;
   cursor:pointer;
   font-weight:bold;
+  transition:0.15s ease;
+}
+
+.multi-select button:hover{
+  background:#404040;
 }
 
 .multi-select button.active{
@@ -117,6 +128,10 @@ h1{
   padding:12px;
   cursor:pointer;
   transition:0.15s ease;
+}
+
+.filter-toggle-btn:hover{
+  background:#404040;
 }
 
 .filter-toggle-btn.active{
@@ -139,12 +154,27 @@ input{
   gap:10px;
 }
 
+/* TABLE */
+
 table{
   width:100%;
   border-collapse:collapse;
   background:#222;
   border-radius:14px;
   overflow:hidden;
+}
+
+/* STICKY HEADER */
+
+thead th{
+  position:sticky;
+  top:0;
+  z-index:20;
+
+  background:#303030;
+
+  box-shadow:
+    0 2px 0 rgba(0,0,0,0.35);
 }
 
 th,
@@ -155,9 +185,7 @@ td{
   white-space:nowrap;
 }
 
-th{
-  background:#303030;
-}
+/* ZEBRA */
 
 tbody tr:nth-child(even){
   background:#242424;
@@ -165,6 +193,29 @@ tbody tr:nth-child(even){
 
 tbody tr:nth-child(odd){
   background:#2c2c2c;
+}
+
+/* HOVER EFFECT */
+
+tbody tr{
+  transition:
+    background 0.15s ease,
+    transform 0.12s ease,
+    box-shadow 0.15s ease;
+}
+
+tbody tr:hover{
+
+  background:#353535 !important;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(124,116,255,0.35);
+
+}
+
+tbody tr:hover td:last-child,
+tbody tr:hover td:nth-last-child(2){
+  background:rgba(124,116,255,0.06);
 }
 
 .item-link{
@@ -226,6 +277,8 @@ tbody tr:nth-child(odd){
   color:#ff4f4f;
   font-weight:bold;
 }
+
+/* MOBILE */
 
 .toggle-sidebar{
   display:none;
@@ -337,6 +390,10 @@ tbody tr:nth-child(odd){
 
   .toggle-sidebar{
     display:block;
+  }
+
+  .table-section{
+    max-height:none;
   }
 
   .table-section table{
