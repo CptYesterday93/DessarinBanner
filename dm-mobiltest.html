@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DnD Item Shop – DM</title>
+<title>DnD Item Shop – Spieler</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -497,7 +497,7 @@ id="desktopToggleSidebar"
 
 <div class="topbar">
 
-<h1>DnD Item Preisliste – DM</h1>
+<h1>DnD Item Preisliste – Spieler</h1>
 
 <div class="sheet-switcher">
 
@@ -555,6 +555,24 @@ Nonmagic Items
 <div class="filter-group" id="rarityGroup">
 <label>Rarity</label>
 <div id="rarityFilter" class="multi-select"></div>
+</div>
+
+<div class="filter-group">
+
+<label>Kaufbarkeit</label>
+
+<div class="multi-select">
+
+<button
+type="button"
+id="buyableToggle"
+class="active"
+>
+Nur kaufbare
+</button>
+
+</div>
+
 </div>
 
 <div class="filter-group" id="attuneGroup">
@@ -660,7 +678,13 @@ let currentSheet = "magic";
 let items = [];
 
 let selectedTypes = [];
-let selectedRarities = [];
+let selectedRarities = [
+  "Common",
+  "Uncommon",
+  "Rare"
+];
+
+let buyableOnly = true;
 
 let attuneState = "Alle";
 
@@ -779,23 +803,33 @@ function buildFilters(){
   );
 
   const rarityOrder = [
-  "Common",
-  "Uncommon",
-  "Rare",
-  "Very Rare",
-  "Legendary",
-  "Artifact",
-  "Varies",
-  "Unknown Rarity"
-];
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Very Rare",
+    "Legendary",
+    "Artifact",
+    "Unknown Rarity"
+  ];
 
-const rarityValues =
-  [...new Set(items.map(i => i.rarity))]
-    .filter(r => r)
-    .sort((a,b)=>
-      rarityOrder.indexOf(a) -
-      rarityOrder.indexOf(b)
-    );
+  const rarityValues =
+    [...new Set(items.map(i => i.rarity))]
+      .filter(r => r && r !== "Varies")
+      .sort((a,b)=>
+        rarityOrder.indexOf(a) -
+        rarityOrder.indexOf(b)
+      );
+
+  if(
+    buyableOnly &&
+    selectedRarities.length === 0
+  ){
+    selectedRarities = [
+      "Common",
+      "Uncommon",
+      "Rare"
+    ];
+  }
 
   buildMultiSelect(
     "rarityFilter",
@@ -842,6 +876,26 @@ function buildMultiSelect(
 
       }
 
+      const buyableSet = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+      const hasExactBuyableSelection =
+        selectedRarities.length === 3 &&
+        buyableSet.every(r =>
+          selectedRarities.includes(r)
+        );
+
+      buyableOnly = hasExactBuyableSelection;
+
+      document
+        .getElementById("buyableToggle")
+        .classList.toggle(
+          "active",
+          buyableOnly
+        );
 
       buildFilters();
       filterItems();
@@ -864,6 +918,9 @@ function filterItems(){
   let filtered = items.filter(item => {
 
     if(!item.price || item.price <= 0)
+      return false;
+
+    if(item.rarity === "Varies")
       return false;
 
     if(
@@ -934,7 +991,23 @@ function renderTable(data){
         .toLowerCase()
         .replace(/\s+/g,"-");
 
-    const priceData = formatPrice(item.price);
+    const unbuyableRarities = [
+      "Very Rare",
+      "Legendary",
+      "Artifact",
+      "Unknown Rarity"
+    ];
+
+    const isUnbuyable =
+      unbuyableRarities.includes(item.rarity);
+
+    const priceData =
+      isUnbuyable
+        ? {
+            text:"Nicht kaufbar",
+            className:"rarity-unbuyable"
+          }
+        : formatPrice(item.price);
 
     tr.innerHTML = `
 
@@ -994,7 +1067,23 @@ function renderMobileCards(data){
         .toLowerCase()
         .replace(/\s+/g,"-");
 
-    const priceData = formatPrice(item.price);
+    const unbuyableRarities = [
+      "Very Rare",
+      "Legendary",
+      "Artifact",
+      "Unknown Rarity"
+    ];
+
+    const isUnbuyable =
+      unbuyableRarities.includes(item.rarity);
+
+    const priceData =
+      isUnbuyable
+        ? {
+            text:"Nicht kaufbar",
+            className:"rarity-unbuyable"
+          }
+        : formatPrice(item.price);
 
     const card =
       document.createElement("div");
@@ -1100,7 +1189,13 @@ document
 
       selectedTypes = [];
 
-   selectedRarities = [];
+      selectedRarities = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+      buyableOnly = true;
 
       loadSheet();
 
@@ -1131,7 +1226,38 @@ document
 
   });
 
-   
+document
+  .getElementById("buyableToggle")
+  .addEventListener("click",()=>{
+
+    buyableOnly = !buyableOnly;
+
+    document
+      .getElementById("buyableToggle")
+      .classList.toggle(
+        "active",
+        buyableOnly
+      );
+
+    if(buyableOnly){
+
+      selectedRarities = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+    }else{
+
+      selectedRarities = [];
+
+    }
+
+    buildFilters();
+    filterItems();
+
+  });
+
 document
   .getElementById("searchInput")
   .addEventListener("input",filterItems);
@@ -1164,7 +1290,17 @@ document
     document.getElementById("priceMin").value = "";
     document.getElementById("priceMax").value = "";
 
-    selectedRarities = [];
+    buyableOnly = true;
+
+    selectedRarities = [
+      "Common",
+      "Uncommon",
+      "Rare"
+    ];
+
+    document
+      .getElementById("buyableToggle")
+      .classList.add("active");
 
     buildFilters();
     filterItems();
