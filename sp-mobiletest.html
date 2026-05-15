@@ -831,6 +831,27 @@ function buildMultiSelect(
 
       }
 
+      const buyableSet = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+      const hasExactBuyableSelection =
+        selectedRarities.length === 3 &&
+        buyableSet.every(r =>
+          selectedRarities.includes(r)
+        );
+
+      buyableOnly = hasExactBuyableSelection;
+
+      document
+        .getElementById("buyableToggle")
+        .classList.toggle(
+          "active",
+          buyableOnly
+        );
+
       buildFilters();
       filterItems();
 
