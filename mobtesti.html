@@ -22,7 +22,7 @@ body{
   font-family:Arial,sans-serif;
 }
 
-/* DESKTOP LAYOUT */
+/* DESKTOP */
 
 .container{
   display:grid;
@@ -658,7 +658,29 @@ function buildMultiSelect(
 
   container.innerHTML = "";
 
-  values.sort();
+  if(id === "rarityFilter"){
+
+    const rarityOrder = [
+      "Common",
+      "Uncommon",
+      "Rare",
+      "Very Rare",
+      "Legendary",
+      "Artifact",
+      "Unknown Rarity",
+      "Varies"
+    ];
+
+    values.sort((a,b)=>
+      rarityOrder.indexOf(a) -
+      rarityOrder.indexOf(b)
+    );
+
+  }else{
+
+    values.sort();
+
+  }
 
   values.forEach(value => {
 
