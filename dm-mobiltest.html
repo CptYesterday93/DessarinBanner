@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DnD Item Shop – DM</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -124,7 +124,8 @@ button{
 
 table{
   width:100%;
-  border-collapse:collapse;
+  border-collapse:separate;
+  border-spacing:0;
   background:#222;
   border-radius:14px;
   overflow:hidden;
@@ -133,13 +134,27 @@ table{
 th,
 td{
   padding:12px;
-  border-bottom:1px solid #3f3f3f;
   text-align:left;
   white-space:nowrap;
+
+  border-bottom:1px solid #3f3f3f;
+
+  border-right:1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    inset -1px 0 0 rgba(255,255,255,0.03);
+}
+
+th:last-child,
+td:last-child{
+  border-right:none;
 }
 
 th{
   background:#303030;
+  position:sticky;
+  top:0;
+  z-index:2;
 }
 
 tbody tr:nth-child(even){
@@ -148,6 +163,24 @@ tbody tr:nth-child(even){
 
 tbody tr:nth-child(odd){
   background:#2c2c2c;
+}
+
+tbody tr{
+  transition:
+    background 0.18s ease,
+    transform 0.12s ease,
+    box-shadow 0.18s ease;
+}
+
+tbody tr:hover{
+
+  background:#353535;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,0.05),
+    0 0 18px rgba(0,0,0,0.28);
+
+  transform:translateY(-1px);
 }
 
 .item-link{
@@ -661,19 +694,36 @@ function buildFilters(){
     selectedTypes
   );
 
+  const rarityOrder = [
+    "Common",
+    "Uncommon",
+    "Rare",
+    "Very Rare",
+    "Legendary",
+    "Artifact",
+    "Unknown Rarity",
+    "Varies"
+  ];
+
   buildMultiSelect(
     "rarityFilter",
     [...new Set(items.map(i => i.rarity))]
-      .filter(Boolean),
+      .filter(Boolean)
+      .sort((a,b)=>
+        rarityOrder.indexOf(a) -
+        rarityOrder.indexOf(b)
+      ),
     selectedRarities
   );
 
+  const tierOrder = [
+    "T1","T2","T3","T4","T5",
+    "T6","T7","T8","T9","T10","T10+"
+  ];
+
   buildMultiSelect(
     "tierFilter",
-    [
-      "T1","T2","T3","T4","T5",
-      "T6","T7","T8","T9","T10","T10+"
-    ],
+    tierOrder,
     selectedTiers
   );
 
@@ -690,7 +740,9 @@ function buildMultiSelect(
 
   container.innerHTML = "";
 
-  values.sort();
+  if(id !== "tierFilter" && id !== "rarityFilter"){
+    values.sort();
+  }
 
   values.forEach(value => {
 
@@ -747,12 +799,38 @@ function filterItems(){
     )
       return false;
 
+    const itemTier =
+      String(item.tier)
+        .match(/T10\+|T10|T9|T8|T7|T6|T5|T4|T3|T2|T1/i)?.[0] || "";
+
+    if(
+      selectedTiers.length &&
+      !selectedTiers.includes(itemTier)
+    )
+      return false;
+
     if(
       !isMundaneSheet() &&
       selectedRarities.length &&
       !selectedRarities.includes(item.rarity)
     )
       return false;
+
+    if(!isMundaneSheet()){
+
+      if(
+        attuneState === "Ja" &&
+        item.attunement === ""
+      )
+        return false;
+
+      if(
+        attuneState === "Nein" &&
+        item.attunement !== ""
+      )
+        return false;
+
+    }
 
     const combined =
       `${item.name} ${item.subtype}`
