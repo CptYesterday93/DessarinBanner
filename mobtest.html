@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
-
 <title>DnD Item Shop – DM</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,23 +17,12 @@
 
 body{
   margin:0;
-  min-height:100vh;
   background:#181818;
   color:white;
   font-family:Arial,sans-serif;
 }
 
-body *{
-  transition:
-    background 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.22s ease,
-    box-shadow 0.22s ease,
-    width 0.22s ease,
-    max-width 0.22s ease,
-    opacity 0.22s ease;
-}
+/* DESKTOP LAYOUT */
 
 .container{
   display:grid;
@@ -58,22 +45,14 @@ body *{
   top:20px;
   height:fit-content;
   border:1px solid #3a3a3a;
-  box-shadow:0 0 24px rgba(0,0,0,0.4);
-
-  width:340px;
-  max-width:340px;
 }
 
-.sidebar h2,
-h1{
+h1,h2{
   font-family:"Cinzel",serif;
 }
 
 .topbar{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
-  margin-bottom:14px;
+  margin-bottom:16px;
 }
 
 .sheet-switcher{
@@ -98,31 +77,6 @@ h1{
   border-color:#7c74ff;
 }
 
-.toggle-sidebar{
-  display:none;
-
-  position:fixed;
-  top:16px;
-  right:16px;
-
-  z-index:10000;
-
-  width:auto;
-
-  padding:12px 16px;
-
-  border:none;
-  border-radius:12px;
-
-  background:#4f46e5;
-  color:white;
-
-  font-weight:bold;
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.4);
-}
-
 .filter-group{
   margin-bottom:18px;
 }
@@ -139,9 +93,13 @@ button{
   padding:11px;
   border-radius:10px;
   border:1px solid #444;
-  font-size:15px;
   background:#1d1d1d;
   color:white;
+  font-size:15px;
+}
+
+button{
+  cursor:pointer;
 }
 
 .price-grid{
@@ -150,20 +108,8 @@ button{
   gap:10px;
 }
 
-button{
-  background:#4f46e5;
-  color:white;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-button:hover{
-  background:#665dff;
-}
-
 table{
   width:100%;
-  table-layout:fixed;
   border-collapse:collapse;
   background:#222;
   border-radius:14px;
@@ -174,17 +120,8 @@ th,
 td{
   padding:12px;
   border-bottom:1px solid #3f3f3f;
-  border-right:1px solid #353535;
-
   text-align:left;
-  overflow:hidden;
-  text-overflow:ellipsis;
   white-space:nowrap;
-}
-
-th:last-child,
-td:last-child{
-  border-right:none;
 }
 
 th{
@@ -199,9 +136,17 @@ tbody tr:nth-child(odd){
   background:#2c2c2c;
 }
 
-tr:hover{
-  background:#3a3a3a !important;
+.item-link{
+  color:#8ecbff;
+  text-decoration:none;
+  font-weight:bold;
 }
+
+.item-link:hover{
+  text-decoration:underline;
+}
+
+/* PRICE COLORS */
 
 .price-gp{
   color:gold;
@@ -218,15 +163,7 @@ tr:hover{
   font-weight:bold;
 }
 
-.item-link{
-  color:#8ecbff;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-.item-link:hover{
-  text-decoration:underline;
-}
+/* RARITY */
 
 .rarity-common{
   color:#cfcfcf;
@@ -258,6 +195,8 @@ tr:hover{
   font-weight:bold;
 }
 
+/* FILTER BUTTONS */
+
 .multi-select{
   display:flex;
   flex-wrap:wrap;
@@ -266,14 +205,35 @@ tr:hover{
 
 .multi-select button{
   width:auto;
-  padding:8px 12px;
   background:#333;
-  border:1px solid #555;
 }
 
 .multi-select button.active{
   background:#4f46e5;
-  border-color:#7c74ff;
+}
+
+/* MOBILE BUTTON */
+
+.toggle-sidebar{
+  display:none;
+
+  position:fixed;
+  top:16px;
+  right:16px;
+
+  z-index:10000;
+
+  width:auto;
+
+  padding:12px 16px;
+
+  border:none;
+  border-radius:12px;
+
+  background:#4f46e5;
+  color:white;
+
+  font-weight:bold;
 }
 
 /* MOBILE CARDS */
@@ -288,32 +248,27 @@ tr:hover{
   border-radius:16px;
   padding:16px;
   margin-bottom:14px;
-
-  box-shadow:
-    0 6px 18px rgba(0,0,0,0.35);
 }
 
 .mobile-card-title{
   font-size:18px;
   font-weight:bold;
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 
 .mobile-card-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
+  gap:12px;
 }
 
 .mobile-label{
   font-size:12px;
   opacity:0.7;
-  margin-bottom:2px;
 }
 
 .mobile-value{
   font-size:14px;
-  word-break:break-word;
 }
 
 .mobile-price{
@@ -326,34 +281,28 @@ tr:hover{
   margin-top:14px;
 
   padding:10px 14px;
-  border-radius:10px;
 
   background:#4f46e5;
-  color:white;
+  border-radius:10px;
 
+  color:white;
   text-decoration:none;
   font-weight:bold;
 }
 
-.mobile-link:hover{
-  background:#665dff;
-}
+/* MOBILE */
 
 @media (max-width:700px){
 
-  .toggle-sidebar{
-    display:block;
-  }
-
-  .table-section table{
-    display:none;
-  }
-
-  .mobile-cards{
-    display:block;
+  .container{
+    display:flex !important;
+    flex-direction:column !important;
+    padding:14px;
   }
 
   .sidebar{
+
+    order:-1;
 
     position:fixed;
 
@@ -379,9 +328,21 @@ tr:hover{
     transform:translateX(0);
   }
 
-  .container{
+  .toggle-sidebar{
     display:block;
-    padding:14px;
+  }
+
+  .table-section table{
+    display:none !important;
+  }
+
+  thead,
+  tbody{
+    display:none !important;
+  }
+
+  .mobile-cards{
+    display:block;
   }
 
   h1{
@@ -408,7 +369,7 @@ tr:hover{
 class="toggle-sidebar"
 id="toggleSidebar"
 >
-☰ Suchfilter
+☰ Filter
 </button>
 
 <div class="container">
@@ -447,15 +408,8 @@ Nonmagic Items
 <th>Item</th>
 <th>Type</th>
 <th>Subtype</th>
-
-<th id="rarityHeader">
-Rarity
-</th>
-
-<th id="attuneHeader">
-Attunement
-</th>
-
+<th id="rarityHeader">Rarity</th>
+<th id="attuneHeader">Attunement</th>
 <th>Preis</th>
 <th>Anmerkung</th>
 <th>Tier</th>
@@ -520,12 +474,14 @@ Nein
 </div>
 
 <div class="filter-group">
+
 <label>Preis</label>
 
 <div class="price-grid">
 <input type="number" id="priceMin" placeholder="von">
 <input type="number" id="priceMax" placeholder="bis">
 </div>
+
 </div>
 
 <div class="filter-group">
@@ -748,16 +704,6 @@ function filterItems(){
       .value
       .toLowerCase();
 
-  const priceMin =
-    Number(
-      document.getElementById("priceMin").value || 0
-    );
-
-  const priceMax =
-    Number(
-      document.getElementById("priceMax").value || Infinity
-    );
-
   let filtered = items.filter(item => {
 
     if(!item.price || item.price <= 0)
@@ -791,12 +737,6 @@ function filterItems(){
         return false;
 
     }
-
-    if(item.price < priceMin)
-      return false;
-
-    if(item.price > priceMax)
-      return false;
 
     const combined =
       `${item.name} ${item.subtype}`
@@ -934,7 +874,6 @@ function renderMobileCards(data){
           isMundaneSheet()
             ? ""
             : `
-
             <div>
               <div class="mobile-label">Rarity</div>
               <div class="mobile-value rarity-${rarityClass}">
@@ -955,13 +894,6 @@ function renderMobileCards(data){
           <div class="mobile-label">Preis</div>
           <div class="mobile-price ${priceData.className}">
             ${priceData.text}
-          </div>
-        </div>
-
-        <div>
-          <div class="mobile-label">Tier</div>
-          <div class="mobile-value">
-            ${item.tier || "-"}
           </div>
         </div>
 
@@ -1040,14 +972,6 @@ document
 
 document
   .getElementById("searchInput")
-  .addEventListener("input",filterItems);
-
-document
-  .getElementById("priceMin")
-  .addEventListener("input",filterItems);
-
-document
-  .getElementById("priceMax")
   .addEventListener("input",filterItems);
 
 document
