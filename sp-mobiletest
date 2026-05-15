@@ -633,7 +633,11 @@ let currentSheet = "magic";
 let items = [];
 
 let selectedTypes = [];
-let selectedRarities = [];
+let selectedRarities = [
+  "Common",
+  "Uncommon",
+  "Rare"
+];
 
 let buyableOnly = true;
 
@@ -764,14 +768,28 @@ function buildFilters(){
     "Varies"
   ];
 
-  buildMultiSelect(
-    "rarityFilter",
+  const rarityValues =
     [...new Set(items.map(i => i.rarity))]
       .filter(Boolean)
       .sort((a,b)=>
         rarityOrder.indexOf(a) -
         rarityOrder.indexOf(b)
-      ),
+      );
+
+  if(
+    buyableOnly &&
+    selectedRarities.length === 0
+  ){
+    selectedRarities = [
+      "Common",
+      "Uncommon",
+      "Rare"
+    ];
+  }
+
+  buildMultiSelect(
+    "rarityFilter",
+    rarityValues,
     selectedRarities
   );
 
@@ -787,8 +805,6 @@ function buildMultiSelect(
     document.getElementById(id);
 
   container.innerHTML = "";
-
-  values.sort();
 
   values.forEach(value => {
 
@@ -851,22 +867,6 @@ function filterItems(){
       !selectedRarities.includes(item.rarity)
     )
       return false;
-
-    if(buyableOnly){
-
-      const allowedRarities = [
-        "Common",
-        "Uncommon",
-        "Rare"
-      ];
-
-      if(
-        !allowedRarities.includes(item.rarity)
-      ){
-        return false;
-      }
-
-    }
 
     if(!isMundaneSheet()){
 
@@ -1122,7 +1122,14 @@ document
         button.dataset.sheet;
 
       selectedTypes = [];
-      selectedRarities = [];
+
+      selectedRarities = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+      buyableOnly = true;
 
       loadSheet();
 
@@ -1166,6 +1173,21 @@ document
         buyableOnly
       );
 
+    if(buyableOnly){
+
+      selectedRarities = [
+        "Common",
+        "Uncommon",
+        "Rare"
+      ];
+
+    }else{
+
+      selectedRarities = [];
+
+    }
+
+    buildFilters();
     filterItems();
 
   });
@@ -1204,10 +1226,17 @@ document
 
     buyableOnly = true;
 
+    selectedRarities = [
+      "Common",
+      "Uncommon",
+      "Rare"
+    ];
+
     document
       .getElementById("buyableToggle")
       .classList.add("active");
 
+    buildFilters();
     filterItems();
 
   });
