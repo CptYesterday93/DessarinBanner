@@ -914,7 +914,8 @@ function filterItems(){
     document.getElementById("searchInput")
       .value
       .toLowerCase();
-
+const minPrice = parseFloat(document.getElementById("priceMin").value);
+const maxPrice = parseFloat(document.getElementById("priceMax").value);
   let filtered = items.filter(item => {
 
     if(!item.price || item.price <= 0)
@@ -961,7 +962,11 @@ function filterItems(){
       !combined.includes(search)
     )
       return false;
+if (!isNaN(minPrice) && item.price < minPrice)
+  return false;
 
+if (!isNaN(maxPrice) && item.price > maxPrice)
+  return false;
     return true;
 
   });
@@ -1261,7 +1266,13 @@ document
 document
   .getElementById("searchInput")
   .addEventListener("input",filterItems);
+document
+  .getElementById("priceMin")
+  .addEventListener("input",filterItems);
 
+document
+  .getElementById("priceMax")
+  .addEventListener("input",filterItems);
 document
   .getElementById("toggleSidebar")
   .addEventListener("click",()=>{
