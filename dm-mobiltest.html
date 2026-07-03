@@ -169,6 +169,22 @@ th{
     0 2px 10px rgba(0,0,0,0.35);
 }
 
+.sortable{
+  cursor:pointer;
+  user-select:none;
+}
+
+.sortable:hover{
+  background:#3b3b3b;
+}
+
+.sort-arrow{
+  margin-left:6px;
+  font-size:12px;
+  opacity:.8;
+}
+  
+
 tbody tr:nth-child(even){
   background:#242424;
 }
@@ -524,12 +540,22 @@ Nonmagic Items
 <thead>
 <tr>
 
-<th>Item</th>
-<th>Type</th>
+<th class="sortable" data-sort="name">
+  Item <span class="sort-arrow">▲</span>
+</th>
+<th class="sortable" data-sort="type">
+  Type <span class="sort-arrow"></span>
+</th>
 <th>Subtype</th>
-<th id="rarityHeader">Rarity</th>
+<th id="rarityHeader"
+    class="sortable"
+    data-sort="rarity">
+  Rarity <span class="sort-arrow"></span>
+</th>
 <th id="attuneHeader">Attunement</th>
-<th>Preis</th>
+<th class="sortable" data-sort="price">
+  Preis <span class="sort-arrow"></span>
+</th>
 <th>Anmerkung</th>
 
 </tr>
@@ -663,7 +689,8 @@ let selectedTypes = [];
 let selectedRarities = [];
 
 let attuneState = "Alle";
-
+let sortColumn = "name";
+let sortDirection = "asc";
 function isMundaneSheet(){
   return currentSheet === "mundane";
 }
@@ -914,7 +941,62 @@ if (!isNaN(maxPrice) && item.price > maxPrice)
     return true;
 
   });
+const rarityOrder = {
+  "Common":0,
+  "Uncommon":1,
+  "Rare":2,
+  "Very Rare":3,
+  "Legendary":4,
+  "Artifact":5,
+  "Unknown Rarity":6
+};
 
+filtered.sort((a,b)=>{
+
+  let x,y;
+
+  switch(sortColumn){
+
+    case "price":
+      x=a.price;
+      y=b.price;
+      break;
+
+    case "rarity":
+      x=rarityOrder[a.rarity] ?? 999;
+      y=rarityOrder[b.rarity] ?? 999;
+      break;
+
+    case "type":
+      x=a.type;
+      y=b.type;
+      break;
+
+    case "subtype":
+      x=a.subtype;
+      y=b.subtype;
+      break;
+
+    default:
+      x=a.name;
+      y=b.name;
+
+  }
+
+  if(typeof x==="string"){
+    x=x.toLowerCase();
+    y=y.toLowerCase();
+  }
+
+  if(x<y)
+    return sortDirection==="asc" ? -1 : 1;
+
+  if(x>y)
+    return sortDirection==="asc" ? 1 : -1;
+
+  return 0;
+
+});
   renderTable(filtered);
   renderMobileCards(filtered);
 
@@ -1229,7 +1311,45 @@ document.querySelector(".table-section")
     toggleScrollButton,
     { passive:true }
 );
+document
+  .querySelectorAll(".sortable")
+  .forEach(header=>{
 
+    header.addEventListener("click",()=>{
+
+      const column =
+        header.dataset.sort;
+
+      if(sortColumn===column){
+
+        sortDirection =
+          sortDirection==="asc"
+            ? "desc"
+            : "asc";
+
+      }else{
+
+        sortColumn = column;
+        sortDirection = "asc";
+
+      }
+
+      document
+        .querySelectorAll(".sort-arrow")
+        .forEach(a=>a.textContent="");
+
+      header
+        .querySelector(".sort-arrow")
+        .textContent =
+          sortDirection==="asc"
+            ? "▲"
+            : "▼";
+
+      filterItems();
+
+    });
+
+});
 scrollTopBtn.addEventListener("click",()=>{
 
   if(isMobile()){
