@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Charakterfragebogen – Für das Dessarin Banner</title>
+<style>
+:root{
+ --ink:#171717; --muted:#666; --line:#aeb4c0; --field:#e8edfc;
+ --accent:#3157a6; --paper:#fff; --page:#f2f2f2; --help:#fffdf0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.35}
+.sheet{width:min(920px,calc(100% - 28px));margin:24px auto 40px;background:var(--paper);padding:40px 48px 60px;box-shadow:0 2px 18px #0001}
+h1{text-align:center;font-size:30px;letter-spacing:.03em;margin:0}
+.subtitle{text-align:center;color:#444;margin:3px 0 22px;font-size:16px}
+.intro{margin:0 0 22px;max-width:820px}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 26px}
+.action{border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
+.action:hover{background:#f5f5f5}
+.status{font-size:12px;color:var(--muted);margin-left:auto}.danger-action{margin-left:0;color:#777;font-size:12px}
+.section-title{font-size:22px;margin:28px 0 18px;padding:9px 12px;background:#ededed;border-radius:10px;font-weight:700}
+.question{margin:0 0 22px;position:relative}
+.question-title{font-size:18px;font-weight:700;margin:0 0 7px}
+.subquestion{margin:0 0 15px}
+.subquestion-label{font-size:14px;margin:0 0 7px}
+.field{width:100%;border:1px solid #9da4b2;background:var(--field);color:#111;padding:9px 11px;font:inherit;border-radius:0;outline:none}
+.field:focus{border-color:var(--accent);box-shadow:0 0 0 2px #3157a61a}
+input.field{height:38px}
+textarea.field{min-height:86px;resize:vertical}
+textarea.large{min-height:120px}
+.helpbtn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:7px;border:1px solid #666;border-radius:50%;background:#fff;color:#444;font-size:12px;font-weight:700;cursor:pointer;vertical-align:1px}
+.helpbox{display:none;position:absolute;z-index:20;right:0;top:28px;width:min(420px,calc(100vw - 44px));padding:14px 16px;background:var(--help);border:1px solid #c8c09e;box-shadow:0 7px 24px #0002;font-size:13px}
+.helpbox.open{display:block}
+.helpbox strong{display:block;margin-bottom:5px}
+.example{margin-top:8px;color:#555;font-style:italic}
+.identity-heading{font-size:18px;margin:0 0 12px}.identity-top{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 16px;margin-bottom:14px}
+.identity-top .question{margin:0}
+.identity-top .question-title{font-size:15px;margin-bottom:6px}
+.identity-bottom{display:grid;grid-template-columns:150px 150px minmax(0,1fr);gap:14px 16px;margin-bottom:24px}
+.identity-bottom .question{margin:0}
+.identity-bottom .question-title{font-size:15px;margin-bottom:6px}
+.identity-bottom input.field{height:36px}
+.conversion-row{display:flex;align-items:center;gap:8px}
+.conversion-row .field{min-width:0;flex:1}
+.conversion{font-size:12px;color:#555;white-space:nowrap}
+.birth-row{display:flex;align-items:stretch;gap:10px}
+.birth-input-wrap{flex:1;min-width:0}
+.year-info{flex:0 0 138px;padding:7px 10px;background:#f7f7f7;border:1px solid #d0d0d0;font-size:12px;line-height:1.3}
+.year-formula{color:var(--muted);font-size:11px;margin-top:2px}
+.birth-result{margin-top:7px;padding:7px 10px;background:#f7f7f7;border:1px solid #d0d0d0;font-size:13px}
+.traits{width:min(620px,100%);margin:8px auto 4px}
+.trait-instruction{margin:0 0 6px;text-align:center;color:var(--muted);font-size:12px;font-style:italic}
+.trait-row{display:grid;grid-template-columns:minmax(0,1fr) 24px 24px minmax(0,1fr);align-items:center;column-gap:10px;min-height:34px;border-bottom:1px solid #e3e3e3}
+.trait-row:last-child{border-bottom:0}
+.trait-word{font-size:14px;cursor:pointer}
+.trait-word.left{text-align:right;grid-column:1}
+.trait-word.right{text-align:left;grid-column:4}
+.trait-row input{width:18px;height:18px;accent-color:var(--accent);margin:0;cursor:pointer}
+.trait-row input:nth-of-type(1){grid-column:2}
+.trait-row input:nth-of-type(2){grid-column:3}
+.note{font-size:12px;color:var(--muted);margin-top:25px;padding:10px 13px;border-left:4px solid var(--accent);background:#f3f5fb}
+.footer-note{margin-top:36px;text-align:center;font-size:11px;color:#777}
+@media(max-width:700px){
+ .sheet{padding:28px 22px 48px}
+ .identity-top{grid-template-columns:1fr 1fr}
+ .identity-bottom{grid-template-columns:1fr 1fr}
+ .identity-bottom .question:last-child{grid-column:1/-1}
+ .birth-row{display:block}
+ .year-info{margin-top:8px}
+ .traits{gap:9px 20px}
+}
+@media(max-width:500px){
+ .identity-top,.identity-bottom{grid-template-columns:1fr}
+ .identity-bottom .question:last-child{grid-column:auto}
+ .traits{width:100%}
+ .trait-row{grid-template-columns:minmax(0,1fr) 20px 20px minmax(0,1fr);column-gap:6px}
+ .status{width:100%;margin-left:0}
+}
+@media print{
+ body{background:#fff}
+ .sheet{width:auto;margin:0;padding:24px;box-shadow:none}
+ .toolbar{display:none}
+ .helpbox{display:none!important}
+ .section-title{break-after:avoid}
+ .question{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<main class="sheet">
+<h1>CHARAKTERFRAGEBOGEN</h1>
+<div class="subtitle">Für das Dessarin Banner</div>
+<p class="intro">Die folgenden Fragen sollen dir dabei helfen, deinen Charakter besser kennenzulernen und ihm mehr Tiefe zu geben. Sie sind als Denkanstöße gedacht – du musst nicht jede Frage ausführlich beantworten. Auch ein „Nein“, ein kurzer Satz oder eine knappe Entscheidung kann eine vollständige Antwort sein.</p>
+
+<div class="toolbar">
+<button class="action" onclick="saveFile()">Antworten speichern</button>
+<button class="action" onclick="loadFile()">Antworten laden</button>
+<button class="action" onclick="window.print()">Drucken / als PDF speichern</button>
+<button class="action danger-action" onclick="resetForm()">Alle Antworten löschen</button>
+<span class="status" id="status">Änderungen werden automatisch gespeichert.</span>
+</div>
+<h2 class="section-title">I. Steckbrief &amp; Erscheinungsbild</h2><div class="identity-top"><div class="question"><h3 class="question-title">Name</h3><input class="field" data-key="name"></div><div class="question"><h3 class="question-title">Rasse</h3><input class="field" data-key="rasse"></div><div class="question"><h3 class="question-title">Geschlecht</h3><input class="field" data-key="geschlecht"></div></div><div class="identity-bottom"><div class="question"><h3 class="question-title">Größe</h3><div class="conversion-row"><input id="height" class="field" data-key="groesse" placeholder="z.B. 1,72"><span class="conversion" id="heightImperial">–</span></div></div><div class="question"><h3 class="question-title">Gewicht</h3><div class="conversion-row"><input id="weight" class="field" data-key="gewicht" placeholder="z.B. 70 kg"><span class="conversion" id="weightImperial">–</span></div></div><div class="question"><h3 class="question-title">Geburtsdatum</h3><div class="birth-row"><div class="birth-input-wrap"><input id="birthDate" class="field" data-key="geburtsdatum" placeholder="z.B. 14.05.1466 DR"></div><div class="year-info"><div><strong>Derzeitiges Jahr:</strong> <span id="currentDR">-</span> DR</div><div class="year-formula">Reales Jahr - 530</div></div></div><div class="birth-result" id="birthResult">Aktuelles Alter: –</div></div></div><section class="question"><h2 class="question-title">2. Wie sieht dein Charakter aus?</h2><div class="subquestion"><p class="subquestion-label">Beschreibe das äußere Erscheinungsbild deines Charakters. <button class="helpbtn" type="button" onclick="toggleHelp(this)" aria-label="Denkanstoß">i</button></p><div class="helpbox"><strong>Denkanstoß</strong>Konzentriere dich auf Haut, Haare, Augen, Gesicht, Körperbau und andere auffällige körperliche Merkmale.<div class="example">z.B. Ein schmaler, drahtiger Mann mit langen Armen und einer leicht gebeugten Haltung. Sein Gesicht ist schmal und kantig, mit einer schiefen Nase. Er hat dunkelbraune, schulterlange Haare und graugrüne Augen. Seine Haut ist ungewöhnlich blass. Über der linken Augenbraue zieht sich eine ältere Narbe bis zur Schläfe, außerdem trägt er ein verblasstes Tattoo am rechten Unterarm.</div></div><textarea class="field" data-key="q2_0"></textarea></div></section><section class="question"><h2 class="question-title">3. Wie kleidet sich dein Charakter?</h2><div class="subquestion"><p class="subquestion-label">Beschreibe die Kleidung, die dein Charakter normalerweise trägt. <button class="helpbtn" type="button" onclick="toggleHelp(this)" aria-label="Denkanstoß">i</button></p><div class="helpbox"><strong>Denkanstoß</strong><div class="example">z.B. Er trägt meistens dunkle, praktische Kleidung, die schon bessere Tage gesehen hat. Seinen alten Mantel flickt er lieber selbst, als einen neuen zu kaufen. Zu besonderen Anlässen trägt er allerdings ein altes, gut erhaltenes Hemd, das er von seinem Vater geerbt hat.</div></div><textarea class="field" data-key="q3_0"></textarea></div></section><section class="question"><h2 class="question-title">4. Wie pflegt sich dein Charakter?</h2><div class="subquestion"><p class="subquestion-label">Beschreibe, wie dein Charakter mit seiner Körperpflege und Hygiene umgeht. <button class="helpbtn" type="button" onclick="toggleHelp(this)" aria-label="Denkanstoß">i</button></p><div class="helpbox"><strong>Denkanstoß</strong><div class="example">z.B. Er legt großen Wert auf Sauberkeit, auch wenn er auf Reisen nicht immer die Möglichkeit dazu hat. Seine Haare sind meistens etwas zerzaust, weil er sich wenig darum kümmert. Dafür benutzt er jeden Morgen ein duftendes Öl, das nach Kräutern und Blumen riecht.</div></div><textarea class="field" data-key="q4_0"></textarea></div></section><section class="question"><h2 class="question-title">5. Was fällt an deinem Charakter besonders auf?</h2><textarea class="field" data-key="q5_0"></textarea></section><h2 class="section-title">II. Herkunft &amp; Vergangenheit</h2><section class="question"><h2 class="question-title">6. Woher kommt dein Charakter?</h2><div class="subquestion"><p class="subquestion-label">Wo wurde dein Charakter geboren und wo ist er aufgewachsen?</p><textarea class="field" data-key="q6_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was betrachtet dein Charakter als seine Heimat?</p><textarea class="field" data-key="q6_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie groß war die Welt, die dein Charakter bisher kennengelernt hat? Hat er seine Heimat kaum verlassen, kennt er nur seine unmittelbare Umgebung oder ist er bereits weit herumgekommen?</p><textarea class="field" data-key="q6_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Hat dein Charakter seine Heimat bereits verlassen? Weshalb?</p><textarea class="field" data-key="q6_3"></textarea></div></section><section class="question"><h2 class="question-title">7. Wie ist dein Charakter aufgewachsen?</h2><div class="subquestion"><p class="subquestion-label">Wer hat ihn großgezogen?</p><textarea class="field" data-key="q7_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Leben seine Eltern noch?</p><textarea class="field" data-key="q7_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Hat er Geschwister?</p><textarea class="field" data-key="q7_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie ist sein Verhältnis zu seiner Familie?</p><textarea class="field" data-key="q7_3"></textarea></div><div class="subquestion"><p class="subquestion-label">War seine Kindheit wohlbehütet? Weshalb?</p><textarea class="field" data-key="q7_4"></textarea></div><div class="subquestion"><p class="subquestion-label">Was aus seiner Kindheit prägt ihn bis heute?</p><textarea class="field" data-key="q7_5"></textarea></div></section><section class="question"><h2 class="question-title">8. Welche Personen haben deinen Charakter geprägt?</h2><div class="subquestion"><p class="subquestion-label">Wer hat deinem Charakter etwas Wichtiges beigebracht?</p><textarea class="field" data-key="q8_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Wen hat dein Charakter bewundert oder verehrt?</p><textarea class="field" data-key="q8_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Wer hat deinen Charakter enttäuscht oder verletzt?</p><textarea class="field" data-key="q8_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Von wem wollte dein Charakter sich bewusst unterscheiden?</p><textarea class="field" data-key="q8_3"></textarea></div></section><section class="question"><h2 class="question-title">9. Welche Personen aus seiner Vergangenheit spielen heute noch eine Rolle?</h2><div class="subquestion"><p class="subquestion-label">Welche Personen aus seiner Vergangenheit spielen heute noch eine Rolle in seinem Leben?</p><textarea class="field" data-key="q9_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Gibt es jemanden aus seiner Vergangenheit, den er vermisst?</p><textarea class="field" data-key="q9_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Gibt es jemanden aus seiner Vergangenheit, den er heute lieber nicht wiedersehen würde?</p><textarea class="field" data-key="q9_2"></textarea></div></section><section class="question"><h2 class="question-title">10. Welche Ereignisse haben deinen Charakter geprägt?</h2><div class="subquestion"><p class="subquestion-label">Was war das schönste Erlebnis im bisherigen Leben deines Charakters?</p><textarea class="field" data-key="q10_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was war das schlimmste Erlebnis im bisherigen Leben deines Charakters?</p><textarea class="field" data-key="q10_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was war die größte Leistung deines Charakters?</p><textarea class="field" data-key="q10_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Was war der größte Fehler deines Charakters?</p><textarea class="field" data-key="q10_3"></textarea></div><div class="subquestion"><p class="subquestion-label">Welches Ereignis hat deinen Charakter am stärksten verändert?</p><textarea class="field" data-key="q10_4"></textarea></div></section><section class="question"><h2 class="question-title">11. Worauf ist dein Charakter stolz?</h2><textarea class="field" data-key="q11_0"></textarea></section><section class="question"><h2 class="question-title">12. Wofür schämt sich dein Charakter?</h2><textarea class="field" data-key="q12_0"></textarea></section><h2 class="section-title">III. Gegenwart &amp; Abenteuer</h2><section class="question"><h2 class="question-title">13. Warum ist dein Charakter Abenteurer geworden?</h2><div class="subquestion"><p class="subquestion-label">Was hat deinen Charakter dazu gebracht, ein Leben als Abenteurer zu wählen?</p><textarea class="field" data-key="q13_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was reizt deinen Charakter am Leben als Abenteurer?</p><textarea class="field" data-key="q13_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was erhofft er sich davon?</p><textarea class="field" data-key="q13_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Was möchte dein Charakter als Abenteurer erleben, erreichen oder herausfinden?</p><textarea class="field" data-key="q13_3"></textarea></div></section><section class="question"><h2 class="question-title">14. Warum reist dein Charakter mit anderen?</h2><div class="subquestion"><p class="subquestion-label">Warum hat sich dein Charakter einer Abenteurergilde angeschlossen, statt auf eigene Faust zu arbeiten?</p><textarea class="field" data-key="q14_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was bietet ihm die Gilde, das er allein nicht hätte?</p><textarea class="field" data-key="q14_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was erwartet er von der Gilde und ihren Mitgliedern?</p><textarea class="field" data-key="q14_2"></textarea></div></section><section class="question"><h2 class="question-title">15. Was wäre dein Charakter geworden, wenn er niemals Abenteurer geworden wäre?</h2><textarea class="field" data-key="q15_0"></textarea></section><section class="question"><h2 class="question-title">16. Was will dein Charakter erreichen?</h2><div class="subquestion"><p class="subquestion-label">Was ist ein konkretes Ziel, das dein Charakter erreichen möchte?</p><textarea class="field" data-key="q16_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was ist sein größeres, langfristiges Ziel?</p><textarea class="field" data-key="q16_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Warum ist ihm dieses Ziel wichtig?</p><textarea class="field" data-key="q16_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Woran würde dein Charakter erkennen, dass er sein Ziel erreicht hat?</p><textarea class="field" data-key="q16_3"></textarea></div></section><section class="question"><h2 class="question-title">17. Was ist der größte Wunsch deines Charakters?</h2><textarea class="field" data-key="q17_0"></textarea></section><section class="question"><h2 class="question-title">18. Was möchte dein Charakter in seinem Leben unbedingt noch erleben?</h2><textarea class="field" data-key="q18_0"></textarea></section><h2 class="section-title">IV. Weltbild</h2><section class="question"><h2 class="question-title">19. Wie steht dein Charakter zu Göttern und Religion?</h2><div class="subquestion"><p class="subquestion-label">Welche Bedeutung haben Götter und Religion im Leben deines Charakters?</p><textarea class="field" data-key="q19_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Gehört dein Charakter einer bestimmten Religion oder einem Kult an?</p><textarea class="field" data-key="q19_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Hat dein Charakter persönliche Erfahrungen mit Religion oder Göttern gemacht, die seine Einstellung geprägt haben?</p><textarea class="field" data-key="q19_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Hat sich seine Einstellung zu Göttern oder Religion im Laufe seines Lebens verändert?</p><textarea class="field" data-key="q19_3"></textarea></div></section><section class="question"><h2 class="question-title">20. Wie steht dein Charakter zu Magie?</h2><div class="subquestion"><p class="subquestion-label">Welche Erfahrungen hat dein Charakter bisher mit Magie gemacht?</p><textarea class="field" data-key="q20_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie fühlt er sich in Gegenwart von Magie oder magischen Wesen?</p><textarea class="field" data-key="q20_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was hält dein Charakter von Personen, die Magie wirken?</p><textarea class="field" data-key="q20_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Würde dein Charakter selbst Magie erlernen oder nutzen, wenn er die Möglichkeit dazu hätte?</p><textarea class="field" data-key="q20_3"></textarea></div></section><section class="question"><h2 class="question-title">21. Wie verhält sich dein Charakter gegenüber Fremden?</h2><div class="subquestion"><p class="subquestion-label">Wie leicht spricht dein Charakter fremde Personen an?</p><textarea class="field" data-key="q21_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie viel erzählt er einer fremden Person über sich selbst?</p><textarea class="field" data-key="q21_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie verhält er sich, wenn eine fremde Person seine Hilfe braucht?</p><textarea class="field" data-key="q21_2"></textarea></div></section><section class="question"><h2 class="question-title">22. Wie steht dein Charakter zu anderen Völkern?</h2><div class="subquestion"><p class="subquestion-label">Gibt es Völker, denen dein Charakter besonders positiv oder negativ gegenübersteht?</p><textarea class="field" data-key="q22_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Welche Erfahrungen hat er mit diesen Völkern gemacht?</p><textarea class="field" data-key="q22_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Gibt es ein Volk, dessen Lebensweise oder Eigenschaften er besonders bewundert?</p><textarea class="field" data-key="q22_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Hat dein Charakter seine Meinung über ein Volk schon einmal geändert?</p><textarea class="field" data-key="q22_3"></textarea></div></section><section class="question"><h2 class="question-title">23. Wie steht dein Charakter zu anderen Kulturen?</h2><div class="subquestion"><p class="subquestion-label">Gibt es Kulturen oder Lebensweisen, die dein Charakter besonders bewundert?</p><textarea class="field" data-key="q23_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Gibt es Bräuche oder Traditionen, die er nicht versteht oder ablehnt?</p><textarea class="field" data-key="q23_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie wichtig sind ihm die Bräuche und Traditionen seiner eigenen Kultur?</p><textarea class="field" data-key="q23_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie verhält er sich, wenn andere Menschen ihre Kultur anders leben als er?</p><textarea class="field" data-key="q23_3"></textarea></div></section><section class="question"><h2 class="question-title">24. Welche Vorurteile hat dein Charakter?</h2><div class="subquestion"><p class="subquestion-label">Gibt es Völker, Kulturen oder Gruppen, denen dein Charakter mit Vorurteilen begegnet?</p><textarea class="field" data-key="q24_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was glaubt dein Charakter über diese Gruppen, obwohl er nicht weiß, ob es stimmt?</p><textarea class="field" data-key="q24_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Woher kommen diese Vorurteile?</p><textarea class="field" data-key="q24_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Hat dein Charakter schon einmal erlebt, dass eines seiner Vorurteile nicht zutraf?</p><textarea class="field" data-key="q24_3"></textarea></div></section><h2 class="section-title">V. Moral &amp; Entscheidungen</h2><section class="question"><h2 class="question-title">25. Würde dein Charakter stehlen, wenn …?</h2><div class="subquestion"><p class="subquestion-label">… er sicher wäre, nicht erwischt zu werden?</p><textarea class="field" data-key="q25_0"></textarea></div><div class="subquestion"><p class="subquestion-label">… er das Geld dringend benötigen würde?</p><textarea class="field" data-key="q25_1"></textarea></div><div class="subquestion"><p class="subquestion-label">… er mit dem gestohlenen Geld jemand anderem helfen könnte?</p><textarea class="field" data-key="q25_2"></textarea></div><div class="subquestion"><p class="subquestion-label">… er wüsste, dass der Besitzer das Geld selbst auf unehrliche Weise erworben hat?</p><textarea class="field" data-key="q25_3"></textarea></div></section><section class="question"><h2 class="question-title">26. Unter welchen Umständen würde dein Charakter lügen?</h2><div class="subquestion"><p class="subquestion-label">… um sich selbst vor einer Strafe zu schützen?</p><textarea class="field" data-key="q26_0"></textarea></div><div class="subquestion"><p class="subquestion-label">… um einen Freund oder Verbündeten zu schützen?</p><textarea class="field" data-key="q26_1"></textarea></div><div class="subquestion"><p class="subquestion-label">… um einen Fremden vor Schaden zu bewahren?</p><textarea class="field" data-key="q26_2"></textarea></div><div class="subquestion"><p class="subquestion-label">… um sich selbst einen Vorteil zu verschaffen?</p><textarea class="field" data-key="q26_3"></textarea></div></section><section class="question"><h2 class="question-title">27. Was tut dein Charakter, wenn Gesetz und Gerechtigkeit nicht dasselbe sind?</h2><div class="subquestion"><p class="subquestion-label">Ein Gesetz ist offensichtlich ungerecht, aber dein Charakter könnte es gefahrlos brechen.</p><textarea class="field" data-key="q27_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Eine Autoritätsperson missbraucht ihre Macht, aber niemand sonst greift ein.</p><textarea class="field" data-key="q27_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Ein Schuldiger wird von einer einflussreichen Person geschützt und kommt deshalb ungestraft davon.</p><textarea class="field" data-key="q27_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Dein Charakter könnte durch einen Gesetzesbruch einem Unschuldigen helfen, würde dafür aber selbst bestraft werden.</p><textarea class="field" data-key="q27_3"></textarea></div></section><section class="question"><h2 class="question-title">28. Wie entscheidet dein Charakter, wenn er nicht alle retten kann?</h2><div class="subquestion"><p class="subquestion-label">Du kannst entweder einen Freund oder mehrere Fremde retten.</p><textarea class="field" data-key="q28_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Du kannst entweder einen Unschuldigen oder mehrere Schuldige retten.</p><textarea class="field" data-key="q28_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Du kannst mehrere andere retten, musst dafür aber selbst zurückbleiben und kannst nicht wissen, ob du überleben wirst.</p><textarea class="field" data-key="q28_2"></textarea></div></section><section class="question"><h2 class="question-title">29. Welche Grenze würde dein Charakter niemals überschreiten?</h2><textarea class="field" data-key="q29_0"></textarea></section><section class="question"><h2 class="question-title">30. Wie steht dein Charakter zu Gewalt?</h2><div class="subquestion"><p class="subquestion-label">Würde dein Charakter Gewalt einsetzen, um seinen Willen durchzusetzen?</p><textarea class="field" data-key="q30_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Würde er jemanden verletzen, um an Informationen zu gelangen?</p><textarea class="field" data-key="q30_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Würde er einen Gegner töten, wenn es nicht notwendig wäre?</p><textarea class="field" data-key="q30_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Würde er einen besiegten oder wehrlosen Gegner töten?</p><textarea class="field" data-key="q30_3"></textarea></div></section><h2 class="section-title">VI. Ängste &amp; innere Welt</h2><section class="question"><h2 class="question-title">31. Wovor hat dein Charakter Angst?</h2><textarea class="field" data-key="q31_0"></textarea></section><section class="question"><h2 class="question-title">32. Was ist die größte Angst deines Charakters?</h2><textarea class="field" data-key="q32_0"></textarea></section><section class="question"><h2 class="question-title">33. Was hält deinen Charakter nachts wach?</h2><textarea class="field" data-key="q33_0"></textarea></section><section class="question"><h2 class="question-title">34. Was ist ein wunder Punkt deines Charakters?</h2><textarea class="field" data-key="q34_0"></textarea></section><h2 class="section-title">VII. Persönlichkeit &amp; Verhalten</h2><section class="question"><h2 class="question-title">35. Wann ist dein Charakter besonders gut gelaunt?</h2><textarea class="field" data-key="q35_0"></textarea></section><section class="question"><h2 class="question-title">36. Wann ist dein Charakter schlecht gelaunt?</h2><textarea class="field" data-key="q36_0"></textarea></section><section class="question"><h2 class="question-title">37. Unter welchen Umständen verliert dein Charakter die Beherrschung?</h2><textarea class="field" data-key="q37_0"></textarea></section><section class="question"><h2 class="question-title">38. Was macht deinen Charakter neugierig?</h2><textarea class="field" data-key="q38_0"></textarea></section><section class="question"><h2 class="question-title">39. Wie reagiert dein Charakter auf Lob?</h2><textarea class="field" data-key="q39_0"></textarea></section><section class="question"><h2 class="question-title">40. Wie reagiert dein Charakter auf Misserfolg oder Niederlagen?</h2><textarea class="field" data-key="q40_0"></textarea></section><section class="question"><h2 class="question-title">41. Wie reagiert dein Charakter, wenn etwas völlig anders läuft als geplant?</h2><textarea class="field" data-key="q41_0"></textarea></section><section class="question"><h2 class="question-title">42. Welche Charaktereigenschaften beschreiben deinen Charakter?</h2><div class="traits">
+<p class="trait-instruction">Pro Zeile bitte genau eine Eigenschaft auswählen.</p><div class="trait-row">
+<label class="trait-word left" for="trait_0_left">beherrscht</label>
+<input id="trait_0_left" type="radio" name="trait_0" value="beherrscht" data-key="q42_trait_0">
+<input id="trait_0_right" type="radio" name="trait_0" value="jähzornig" data-key="q42_trait_0">
+<label class="trait-word right" for="trait_0_right">jähzornig</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_1_left">lebenslustig</label>
+<input id="trait_1_left" type="radio" name="trait_1" value="lebenslustig" data-key="q42_trait_1">
+<input id="trait_1_right" type="radio" name="trait_1" value="verbittert" data-key="q42_trait_1">
+<label class="trait-word right" for="trait_1_right">verbittert</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_2_left">bescheiden</label>
+<input id="trait_2_left" type="radio" name="trait_2" value="bescheiden" data-key="q42_trait_2">
+<input id="trait_2_right" type="radio" name="trait_2" value="stolz" data-key="q42_trait_2">
+<label class="trait-word right" for="trait_2_right">stolz</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_3_left">nachdenklich</label>
+<input id="trait_3_left" type="radio" name="trait_3" value="nachdenklich" data-key="q42_trait_3">
+<input id="trait_3_right" type="radio" name="trait_3" value="impulsiv" data-key="q42_trait_3">
+<label class="trait-word right" for="trait_3_right">impulsiv</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_4_left">ernst</label>
+<input id="trait_4_left" type="radio" name="trait_4" value="ernst" data-key="q42_trait_4">
+<input id="trait_4_right" type="radio" name="trait_4" value="verspielt" data-key="q42_trait_4">
+<label class="trait-word right" for="trait_4_right">verspielt</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_5_left">neugierig</label>
+<input id="trait_5_left" type="radio" name="trait_5" value="neugierig" data-key="q42_trait_5">
+<input id="trait_5_right" type="radio" name="trait_5" value="gleichgültig" data-key="q42_trait_5">
+<label class="trait-word right" for="trait_5_right">gleichgültig</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_6_left">selbstbewusst</label>
+<input id="trait_6_left" type="radio" name="trait_6" value="selbstbewusst" data-key="q42_trait_6">
+<input id="trait_6_right" type="radio" name="trait_6" value="unsicher" data-key="q42_trait_6">
+<label class="trait-word right" for="trait_6_right">unsicher</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_7_left">höflich</label>
+<input id="trait_7_left" type="radio" name="trait_7" value="höflich" data-key="q42_trait_7">
+<input id="trait_7_right" type="radio" name="trait_7" value="grob" data-key="q42_trait_7">
+<label class="trait-word right" for="trait_7_right">grob</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_8_left">sanftmütig</label>
+<input id="trait_8_left" type="radio" name="trait_8" value="sanftmütig" data-key="q42_trait_8">
+<input id="trait_8_right" type="radio" name="trait_8" value="aggressiv" data-key="q42_trait_8">
+<label class="trait-word right" for="trait_8_right">aggressiv</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_9_left">nachsichtig</label>
+<input id="trait_9_left" type="radio" name="trait_9" value="nachsichtig" data-key="q42_trait_9">
+<input id="trait_9_right" type="radio" name="trait_9" value="nachtragend" data-key="q42_trait_9">
+<label class="trait-word right" for="trait_9_right">nachtragend</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_10_left">misstrauisch</label>
+<input id="trait_10_left" type="radio" name="trait_10" value="misstrauisch" data-key="q42_trait_10">
+<input id="trait_10_right" type="radio" name="trait_10" value="vertrauensselig" data-key="q42_trait_10">
+<label class="trait-word right" for="trait_10_right">vertrauensselig</label>
+</div><div class="trait-row">
+<label class="trait-word left" for="trait_11_left">fleißig</label>
+<input id="trait_11_left" type="radio" name="trait_11" value="fleißig" data-key="q42_trait_11">
+<input id="trait_11_right" type="radio" name="trait_11" value="bequem" data-key="q42_trait_11">
+<label class="trait-word right" for="trait_11_right">bequem</label>
+</div></div></section><h2 class="section-title">VIII. Alltag &amp; Eigenheiten</h2><section class="question"><h2 class="question-title">43. Welche Angewohnheiten hat dein Charakter?</h2><textarea class="field" data-key="q43_0"></textarea></section><section class="question"><h2 class="question-title">44. Was tut dein Charakter, wenn niemand hinsieht?</h2><textarea class="field" data-key="q44_0"></textarea></section><section class="question"><h2 class="question-title">45. Was kann dein Charakter überhaupt nicht?</h2><textarea class="field" data-key="q45_0"></textarea></section><section class="question"><h2 class="question-title">46. Was isst und trinkt dein Charakter am liebsten?</h2><div class="subquestion"><p class="subquestion-label">Was isst dein Charakter gerne?</p><textarea class="field" data-key="q46_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was trinkt dein Charakter gerne?</p><textarea class="field" data-key="q46_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Gibt es etwas, das er überhaupt nicht mag?</p><textarea class="field" data-key="q46_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Was sind seine Ansichten zu Alkohol und wie geht er mit Alkohol um? <button class="helpbtn" type="button" onclick="toggleHelp(this)" aria-label="Denkanstoß">i</button></p><div class="helpbox"><strong>Denkanstoß</strong><div class="example">z.B. Er trinkt selbst gerne, hält aber wenig von Betrunkenen und würde niemals so viel trinken, dass er die Kontrolle verliert.</div></div><textarea class="field" data-key="q46_3"></textarea></div></section><section class="question"><h2 class="question-title">47. Was macht dein Charakter in seiner Freizeit?</h2><textarea class="field" data-key="q47_0"></textarea></section><section class="question"><h2 class="question-title">48. Was findet dein Charakter schön?</h2><textarea class="field" data-key="q48_0"></textarea></section><section class="question"><h2 class="question-title">49. Wie steht dein Charakter zu Tieren?</h2><div class="subquestion"><p class="subquestion-label">Welche Tiere mag dein Charakter besonders?</p><textarea class="field" data-key="q49_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Welche Tiere mag er überhaupt nicht oder fürchtet er?</p><textarea class="field" data-key="q49_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie behandelt er Tiere, die ihm nichts nützen?</p><textarea class="field" data-key="q49_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Hatte dein Charakter schon einmal ein Tier als Gefährten oder Haustier?</p><textarea class="field" data-key="q49_3"></textarea></div></section><h2 class="section-title">IX. Beziehungen</h2><section class="question"><h2 class="question-title">50. Wie leicht vertraut dein Charakter anderen?</h2><div class="subquestion"><p class="subquestion-label">Wie leicht vertraut dein Charakter jemandem, den er gerade erst kennengelernt hat?</p><textarea class="field" data-key="q50_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Was muss jemand tun, damit dein Charakter ihm vertraut?</p><textarea class="field" data-key="q50_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was kann das Vertrauen deines Charakters zerstören?</p><textarea class="field" data-key="q50_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie lange braucht dein Charakter, um nach einem Vertrauensbruch wieder zu vertrauen?</p><textarea class="field" data-key="q50_3"></textarea></div></section><section class="question"><h2 class="question-title">51. Für wen oder was würde dein Charakter große persönliche Risiken eingehen?</h2><textarea class="field" data-key="q51_0"></textarea></section><section class="question"><h2 class="question-title">52. Wie steht dein Charakter zu Liebe und Beziehungen?</h2><div class="subquestion"><p class="subquestion-label">Interessiert sich dein Charakter überhaupt für Beziehungen?</p><textarea class="field" data-key="q52_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Verliebt sich dein Charakter leicht oder schwer?</p><textarea class="field" data-key="q52_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was erwartet dein Charakter von einer Beziehung?</p><textarea class="field" data-key="q52_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie zeigt dein Charakter Zuneigung?</p><textarea class="field" data-key="q52_3"></textarea></div><div class="subquestion"><p class="subquestion-label">Wie wichtig sind ihm Treue und Verbindlichkeit?</p><textarea class="field" data-key="q52_4"></textarea></div></section><h2 class="section-title">X. Geheimnisse &amp; Schattenseiten</h2><section class="question"><h2 class="question-title">53. Gibt es etwas, das dein Charakter vor anderen verbirgt?</h2><div class="subquestion"><p class="subquestion-label">Was verbirgt dein Charakter?</p><textarea class="field" data-key="q53_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Vor wem verbirgt er es?</p><textarea class="field" data-key="q53_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Warum möchte er, dass niemand davon erfährt?</p><textarea class="field" data-key="q53_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Was würde passieren, wenn es herauskäme?</p><textarea class="field" data-key="q53_3"></textarea></div></section><section class="question"><h2 class="question-title">54. Hat dein Charakter sich Feinde gemacht?</h2><div class="subquestion"><p class="subquestion-label">Wer ist sein Feind?</p><textarea class="field" data-key="q54_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Warum sind sie zu Feinden geworden?</p><textarea class="field" data-key="q54_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was will diese Person von deinem Charakter?</p><textarea class="field" data-key="q54_2"></textarea></div><div class="subquestion"><p class="subquestion-label">Weiß dein Charakter, wo sich sein Feind aufhält?</p><textarea class="field" data-key="q54_3"></textarea></div></section><section class="question"><h2 class="question-title">55. Gibt es etwas, womit man deinen Charakter erpressen könnte?</h2><div class="subquestion"><p class="subquestion-label">Was könnte man gegen deinen Charakter in der Hand haben?</p><textarea class="field" data-key="q55_0"></textarea></div><div class="subquestion"><p class="subquestion-label">Wer könnte davon wissen?</p><textarea class="field" data-key="q55_1"></textarea></div><div class="subquestion"><p class="subquestion-label">Was würde dein Charakter tun, wenn jemand ihn damit erpresst?</p><textarea class="field" data-key="q55_2"></textarea></div></section><h2 class="section-title">XI. Abschluss</h2><section class="question"><h2 class="question-title">56. Gibt es etwas Wichtiges über deinen Charakter, das bisher nicht gefragt wurde?</h2><textarea class="field" data-key="q56_0"></textarea></section>
+<div class="note"><strong>Hinweis:</strong> Die Antworten werden automatisch in diesem Browser gespeichert. Mit „Antworten speichern“ kannst du zusätzlich eine Datei mit deinen Antworten sichern und später wieder laden.</div>
+<div class="footer-note">Charakterfragebogen · Für das Dessarin Banner</div>
+</main>
+<script>
+const STORAGE_KEY='dessarin-held-v1';
+
+function fields(){
+  return [...document.querySelectorAll('[data-key]')];
+}
+function persist(){
+  const data={};
+  fields().forEach(el=>{
+    if(el.type==='radio'){
+      if(el.checked) data[el.dataset.key]=el.value;
+    }else if(el.type==='checkbox'){
+      data[el.dataset.key]=el.checked;
+    }else{
+      data[el.dataset.key]=el.value;
+    }
+  });
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+  const s=document.getElementById('status');
+  if(s) s.textContent='Gespeichert – '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+}
+function restore(){
+  try{
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    fields().forEach(el=>{
+      if(data[el.dataset.key]===undefined) return;
+      if(el.type==='radio') el.checked=(el.value===data[el.dataset.key]);
+      else if(el.type==='checkbox') el.checked=!!data[el.dataset.key];
+      else el.value=data[el.dataset.key];
+    });
+    document.getElementById('currentDR').textContent=new Date().getFullYear()-530;
+    updateBirthAge(); updateHeight(); updateWeight();
+    if(Object.keys(data).length){
+      document.getElementById('status').textContent='Gespeicherte Antworten geladen.';
+    }
+  }catch(e){}
+}
+function toggleHelp(btn){
+  const box=btn.closest('.question').querySelector('.helpbox');
+  document.querySelectorAll('.helpbox.open').forEach(x=>{if(x!==box)x.classList.remove('open')});
+  box.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.question')) document.querySelectorAll('.helpbox.open').forEach(x=>x.classList.remove('open'));
+});
+function updateBirthAge(){
+  const input=document.getElementById('birthDate');
+  const result=document.getElementById('birthResult');
+  const currentDR=new Date().getFullYear()-530;
+  document.getElementById('currentDR').textContent=currentDR;
+  const value=input.value.trim();
+  if(!value){result.textContent='Aktuelles Alter: –';return;}
+  const m=value.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})\s*(?:DR)?$/i);
+  if(!m){result.textContent='Bitte als TT.MM.JJJJ DR eingeben.';return;}
+  const day=+m[1], month=+m[2], birthDR=+m[3];
+  const now=new Date();
+  let age=currentDR-birthDR;
+  if(month>now.getMonth()+1 || (month===now.getMonth()+1 && day>now.getDate())) age--;
+  if(age<0 || month<1 || month>12 || day<1 || day>31){
+    result.textContent='Bitte ein gültiges Geburtsdatum eingeben.';return;
+  }
+  result.textContent=`Aktuelles Alter: ${age} Jahre`;
+}
+function updateHeight(){
+  const value=document.getElementById('height').value.trim().replace(',','.');
+  const out=document.getElementById('heightImperial');
+  const m=value.match(/(\d+(?:\.\d+)?)\s*m?/i);
+  if(!m){out.textContent='–';return;}
+  const cm=+m[1]*100;
+  if(!Number.isFinite(cm)||cm<30||cm>300){out.textContent='–';return;}
+  const total=cm/2.54;
+  const feet=Math.floor(total/12);
+  let inches=Math.round(total-feet*12);
+  if(inches===12){out.textContent=`${feet+1}' 0"`;}else out.textContent=`${feet}' ${inches}"`;
+}
+function updateWeight(){
+  const value=document.getElementById('weight').value.trim().replace(',','.');
+  const out=document.getElementById('weightImperial');
+  const m=value.match(/(\d+(?:\.\d+)?)\s*(?:kg)?/i);
+  if(!m){out.textContent='–';return;}
+  const kg=+m[1];
+  if(!Number.isFinite(kg)||kg<=0||kg>1000){out.textContent='–';return;}
+  out.textContent=`${Math.round(kg*2.2046226218)} lb`;
+}
+function saveFile(){
+  const data={};
+  fields().forEach(el=>{
+    if(el.type==='radio'){if(el.checked)data[el.dataset.key]=el.value;}
+    else if(el.type==='checkbox')data[el.dataset.key]=el.checked;
+    else data[el.dataset.key]=el.value;
+  });
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='charakterbogen-antworten.json';a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function loadFile(){
+  const input=document.createElement('input');
+  input.type='file';input.accept='.json,application/json';
+  input.onchange=()=>{
+    const file=input.files[0];if(!file)return;
+    const r=new FileReader();
+    r.onload=()=>{
+      try{
+        const data=JSON.parse(r.result);
+        fields().forEach(el=>{
+          if(data[el.dataset.key]===undefined) return;
+          if(el.type==='radio') el.checked=(el.value===data[el.dataset.key]);
+          else if(el.type==='checkbox') el.checked=!!data[el.dataset.key];
+          else el.value=data[el.dataset.key];
+        });
+        persist();updateBirthAge();updateHeight();updateWeight();
+        alert('Antworten geladen.');
+      }catch(e){alert('Die Datei konnte nicht gelesen werden.');}
+    };
+    r.readAsText(file);
+  };
+  input.click();
+}
+function resetForm(){
+  if(!confirm('Wirklich alle Antworten in diesem Browser löschen?')) return;
+  fields().forEach(el=>{if(el.type==='checkbox'||el.type==='radio')el.checked=false;else el.value=''});
+  localStorage.removeItem(STORAGE_KEY);
+  updateBirthAge();updateHeight();updateWeight();
+  document.getElementById('status').textContent='Antworten gelöscht.';
+}
+fields().forEach(el=>el.addEventListener('input',persist));
+document.getElementById('birthDate').addEventListener('input',updateBirthAge);
+document.getElementById('height').addEventListener('input',updateHeight);
+document.getElementById('weight').addEventListener('input',updateWeight);
+document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(el=>el.addEventListener('change',persist));
+restore();
+</script>
+</body>
+</html>
