@@ -21,14 +21,17 @@ h1{text-align:center;font-size:30px;letter-spacing:.03em;margin:0}
 .choice input,.danger-option input{accent-color:var(--accent)}
 .fixed-value{height:38px;display:flex;align-items:center;padding:9px 11px;background:#f7f7f7;border:1px solid #d0d0d0;font-weight:700}
 .danger-group{margin-top:14px}
-.danger-row{display:flex;align-items:center;justify-content:space-between;gap:6px;max-width:520px;padding:4px 0}
+.danger-row{display:flex;align-items:center;justify-content:space-between;gap:6px;max-width:520px;padding:4px 0;flex-wrap:wrap}
 .danger-option{position:relative;display:block;margin:0;cursor:pointer}
 .danger-option input{position:absolute;opacity:0;pointer-events:none}
 .danger-option span{display:flex;align-items:center;justify-content:center;width:34px;height:34px;border:1px solid #b8bdc7;background:#f7f7f7;border-radius:6px;font-weight:700;transition:.12s}
 .danger-option input:checked + span{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 0 3px #3157a62b}
 .danger-option:hover span{border-color:var(--accent)}
 .dates-grid{display:grid;grid-template-columns:180px 34px minmax(220px,1.35fr) 100px minmax(220px,1.25fr);gap:10px 12px;margin-top:14px;align-items:end;min-width:0}.date-field{min-width:0;overflow:hidden}.chain-button{align-self:end;margin-bottom:2px;width:34px;height:34px;padding:0;border:1px solid #b8bdc7;background:#f4f4f4;color:#777;border-radius:6px;cursor:pointer;display:grid;place-items:center;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:1;text-align:center;transition:background .15s ease,color .15s ease,box-shadow .15s ease,border-color .15s ease}
-.chain-button.connected{background:#3157a6!important;color:#fff!important;border-color:#3157a6!important;box-shadow:0 0 0 3px rgba(49,87,166,.22),0 0 10px rgba(49,87,166,.35)}
+.chain-button.connected{background:#3157a6!important;color:#fff!important;border:2px solid #23457f!important;box-shadow:0 0 0 3px rgba(49,87,166,.28),0 0 12px rgba(49,87,166,.45)}
+.chain-button::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:#aaa;top:3px;right:3px}
+.chain-button.connected::after{background:#fff;box-shadow:0 0 5px #fff}
+.chain-button{position:relative}
 .chain-button:hover{border-color:#3157a6;color:#3157a6}.chain-button.connected:hover{color:#fff;background:#3157a6!important}
 .ooc-date{max-width:180px}.duration-field .field{max-width:110px}.date-part:disabled{opacity:.72;background:#f2f2f2;cursor:not-allowed}.date-part[readonly]{background:#f4f4f4;color:#333;cursor:default}
 .date-parts{display:flex;align-items:center;gap:4px;min-height:38px}
@@ -47,7 +50,7 @@ input.field,select.field{height:38px}textarea.field{min-height:125px;resize:vert
 button{border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer;font:inherit}
 button:hover{background:#f5f5f5}.danger{color:#777;font-size:12px}.status{font-size:12px;color:var(--muted);margin-left:auto;align-self:center}
 .footer{margin-top:36px;text-align:center;font-size:11px;color:#777}
-@media(max-width:700px){.sheet{padding:28px 22px 48px}.meta,.mission-grid,.reward-grid,.dates-grid,.approval-grid{grid-template-columns:1fr}.danger-row{max-width:none}.duration-field .field{max-width:none}.chain-button{justify-self:start;margin:0 0 -4px 0}}
+@media(max-width:700px){.sheet{padding:28px 22px 48px}.meta,.mission-grid,.reward-grid,.dates-grid,.approval-grid{grid-template-columns:1fr}.danger-row{max-width:none;display:grid;grid-template-columns:repeat(5,34px);justify-content:start;gap:8px}.danger-option span{width:34px;height:34px}.duration-field .field{max-width:none}.chain-button{justify-self:start;margin:0 0 -4px 0}}
 @media(max-width:500px){h1{font-size:24px;letter-spacing:.01em;white-space:nowrap}.subtitle{font-size:14px}.sheet{width:calc(100% - 18px);padding:24px 16px 40px}.status{width:100%;margin-left:0}}
 @media print{body{background:#fff}.sheet{width:auto;margin:0;padding:24px;box-shadow:none}.actions{display:none}}
 </style>
@@ -92,7 +95,7 @@ button:hover{background:#f5f5f5}.danger{color:#777;font-size:12px}.status{font-s
   </div>
 
   
-  <button type="button" id="linkIC" class="chain-button" onclick="toggleICLink()" aria-label="OOC- und IC-Datum verbinden" title="OOC- und IC-Datum verbinden">🔗</button>
+  <button type="button" id="linkIC" class="chain-button connected" onclick="toggleICLink()" aria-label="Verbunden: IC-Datum folgt dem OOC-Datum" title="Verbunden: IC-Datum folgt dem OOC-Datum" aria-pressed="true">🔗</button>
 
   <div class="date-field">
 <label>Missionsstart (IC)</label>
@@ -162,7 +165,7 @@ button:hover{background:#f5f5f5}.danger{color:#777;font-size:12px}.status{font-s
 </main>
 <script>
 const KEY='dessarin-mission-v1';
-const LINK_KEY='dessarin-mission-ic-linked-v2';
+const LINK_KEY='dessarin-mission-ic-linked-v3';
 const fields=()=>[...document.querySelectorAll('[data-key]')];
 function data(){
  const d={};
@@ -200,9 +203,11 @@ function setICLinked(linked){
  localStorage.setItem(LINK_KEY,String(linked));
 }
 function toggleICLink(){
- const linked=localStorage.getItem(LINK_KEY) !== 'false';
- setICLinked(!linked);
- if(!linked) updateICStart(true);
+ const btn=document.getElementById('linkIC');
+ const linked=btn.getAttribute('aria-pressed') === 'true';
+ const next=!linked;
+ setICLinked(next);
+ if(next) updateICStart(true);
  persist();
 }
 function normalizeICDate(){
@@ -285,7 +290,8 @@ document.getElementById('icDay').addEventListener('input',normalizeICDate);
 document.getElementById('icMonth').addEventListener('input',normalizeICDate);
 document.getElementById('duration').addEventListener('input',()=>{calculateReturn();persist();});
 restore();
-if(localStorage.getItem(LINK_KEY)===null)localStorage.setItem(LINK_KEY,'true');
+const savedLinked=localStorage.getItem(LINK_KEY);
+setICLinked(savedLinked === 'false' ? false : true);
 updateICStart(true);
 calculateReturn();
 </script>
