@@ -13,9 +13,9 @@
   --muted:#6b6b6b;
   --line:#d8d8d8;
   --soft:#f5f5f5;
-  --blue:#1769aa;
-  --orange:#c65d00;
-  --accent:#3157a6;
+  --blue:#3157a6;
+  --positive:#155fa0;
+  --negative:#c45b00;
 }
 
 *{
@@ -52,7 +52,7 @@ h1{
 .notice{
   padding:11px 13px;
   background:#f3f5fb;
-  border-left:3px solid var(--accent);
+  border-left:3px solid var(--blue);
   margin-bottom:20px;
 }
 
@@ -79,6 +79,16 @@ h1{
   font-size:13px;
   line-height:20px;
   cursor:pointer;
+}
+
+.search-box{
+  margin:10px 0 10px;
+}
+
+.search-box input{
+  width:100%;
+  max-width:420px;
+  padding:9px 11px;
 }
 
 .table-wrap{
@@ -113,20 +123,50 @@ th{
 }
 
 .positive{
-  color:var(--blue);
+  color:var(--positive);
 }
 
 .negative{
-  color:var(--orange);
+  color:var(--negative);
 }
 
-.place-main{
+.region-name{
+  display:flex;
+  align-items:center;
+  gap:6px;
   font-weight:700;
 }
 
-.child td:first-child{
-  padding-left:38px;
+.region-toggle{
+  border:0;
+  background:transparent;
+  padding:0;
+  width:18px;
+  height:20px;
   font-size:13px;
+  cursor:pointer;
+  color:#333;
+}
+
+.region-toggle:hover{
+  background:transparent;
+}
+
+.child td:first-child{
+  padding-left:42px;
+  font-size:13px;
+}
+
+.child-name{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
 }
 
 button{
@@ -143,9 +183,9 @@ button:hover{
 }
 
 .primary{
-  background:var(--accent);
+  background:var(--blue);
   color:#fff;
-  border-color:var(--accent);
+  border-color:var(--blue);
   font-weight:700;
 }
 
@@ -154,14 +194,8 @@ button:hover{
 }
 
 .danger{
-  color:var(--orange);
+  color:var(--negative);
   border-color:#d99a6c;
-}
-
-.actions{
-  display:flex;
-  gap:6px;
-  flex-wrap:wrap;
 }
 
 .toolbar{
@@ -204,9 +238,7 @@ textarea{
   width:155px;
 }
 
-/* =========================
-   REP-EINGABE
-   ========================= */
+/* REP-Eingabe */
 
 .change-header{
   display:grid;
@@ -214,23 +246,12 @@ textarea{
   gap:10px;
   align-items:end;
   margin-top:16px;
+  padding-bottom:4px;
 }
 
 .change-header > div{
   font-weight:700;
   font-size:13px;
-}
-
-.change-header .header-main{
-  grid-column:1;
-}
-
-.change-header .header-effect{
-  grid-column:2;
-}
-
-.change-header .header-actions{
-  grid-column:3;
 }
 
 .change-row{
@@ -250,10 +271,7 @@ textarea{
   white-space:nowrap;
 }
 
-.change-row select.invalid{
-  border-color:var(--orange);
-  background:#fff7f1;
-}
+/* Verlauf */
 
 .log-group{
   border:1px solid var(--line);
@@ -322,9 +340,17 @@ textarea{
 }
 
 .badge.invalid{
-  color:var(--orange);
+  color:var(--negative);
   background:#fff0e7;
 }
+
+.statusbar{
+  margin-left:auto;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* Modal */
 
 .modal-backdrop{
   position:fixed;
@@ -365,16 +391,6 @@ textarea{
   margin-top:16px;
 }
 
-.statusbar{
-  margin-left:auto;
-  color:var(--muted);
-  font-size:12px;
-}
-
-.retcon-button{
-  margin-top:8px;
-}
-
 .empty{
   color:var(--muted);
 }
@@ -388,18 +404,6 @@ textarea{
   .change-header,
   .change-row{
     grid-template-columns:1fr 1fr;
-  }
-
-  .change-header .header-main{
-    grid-column:1;
-  }
-
-  .change-header .header-effect{
-    grid-column:2;
-  }
-
-  .change-header .header-actions{
-    display:none;
   }
 
   .change-row .remove{
@@ -460,6 +464,18 @@ textarea{
 
   </div>
 
+  <div class="search-box">
+
+    <input
+      id="regionSearch"
+      type="search"
+      placeholder="🔎 Region suchen …"
+      autocomplete="off"
+      oninput="renderRegions()"
+    >
+
+  </div>
+
   <div class="table-wrap">
 
     <table>
@@ -481,9 +497,11 @@ textarea{
   </div>
 
   <div class="toolbar">
+
     <button onclick="addFaction('place')">
       ＋ Region hinzufügen
     </button>
+
   </div>
 
 
@@ -593,24 +611,21 @@ textarea{
   ></textarea>
 
 
-  <!-- EINMALIGE ÜBERSCHRIFT -->
   <div class="change-header">
 
-    <div class="header-main">
+    <div>
       Auswirkung auf
     </div>
 
-    <div class="header-effect">
+    <div>
       Auswirkung
     </div>
 
-    <div class="header-actions"></div>
+    <div></div>
 
   </div>
 
-
   <div id="changeRows"></div>
-
 
   <div class="toolbar">
 
@@ -664,9 +679,7 @@ textarea{
 
     <div class="modal-actions">
 
-      <button
-        onclick="closeModal()"
-      >
+      <button onclick="closeModal()">
         Abbrechen
       </button>
 
@@ -700,16 +713,16 @@ let pendingAction = null;
 
 
 /* =========================================================
-   VERFALL
+   WIRKUNGSDAUER
    ========================================================= */
 
 const EFFECTS = {
-  1: 30,
-  2: 60,
-  3: 90,
-  '-1': 40,
-  '-2': 80,
-  '-3': 120
+  1:30,
+  2:60,
+  3:90,
+  '-1':40,
+  '-2':80,
+  '-3':120
 };
 
 
@@ -742,7 +755,6 @@ function slugify(value){
     .replace(/[^a-z0-9]+/g,'-')
     .replace(/^-+|-+$/g,'')
     || 'neu';
-
 
 }
 
@@ -784,7 +796,7 @@ function fmtRep(value){
 }
 
 
-function cls(value){
+function valueClass(value){
 
   const n =
     Number(value) || 0;
@@ -812,8 +824,35 @@ function statusFor(rep){
 }
 
 
+/*
+ * Wichtig:
+ * Bestehende Regionen können "info" haben.
+ * Der Worker verwendet bei /faction aber "description".
+ * Deshalb unterstützen wir hier beides.
+ */
+
+function itemDescription(item, type){
+
+  if(type === 'place'){
+
+    return (
+      item.info ??
+      item.description ??
+      'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.'
+    );
+
+  }
+
+  return (
+    item.description ??
+    'Keine Beschreibung vorhanden.'
+  );
+
+}
+
+
 /* =========================================================
-   API REQUEST
+   API
    ========================================================= */
 
 async function api(path, options = {}){
@@ -830,6 +869,7 @@ async function api(path, options = {}){
       }
     );
 
+
   const data =
     await response
       .json()
@@ -838,6 +878,7 @@ async function api(path, options = {}){
           error:'Ungültige Serverantwort'
         })
       );
+
 
   if(
     !response.ok ||
@@ -851,13 +892,14 @@ async function api(path, options = {}){
 
   }
 
+
   return data;
 
 }
 
 
 /* =========================================================
-   DATEN LADEN
+   DATEN
    ========================================================= */
 
 async function load(){
@@ -874,6 +916,7 @@ async function load(){
 
     render();
 
+
     if(
       !document.querySelector(
         '.change-row'
@@ -883,6 +926,7 @@ async function load(){
       addChangeRow();
 
     }
+
 
   }catch(error){
 
@@ -902,22 +946,35 @@ async function load(){
 
 
 /* =========================================================
-   EINHEITEN
+   ZIELE FÜR REP
    ========================================================= */
 
 function allUnits(){
 
   const result = [];
 
+
   for(
     const place
     of state.places || []
   ){
 
+    /*
+     * Bei Yartar bleiben die echten IDs erhalten.
+     * Angezeigt werden aber nur die Namen der Untergruppen.
+     */
+
     if(
-      place.id === 'yartar' &&
-      place.children?.length
+      Array.isArray(place.children) &&
+      place.children.length
     ){
+
+      result.push({
+        id:place.id,
+        name:place.name,
+        type:'place'
+      });
+
 
       for(
         const child
@@ -926,9 +983,9 @@ function allUnits(){
 
         result.push({
           id:child.id,
-          name:
-            `${place.name} – ${child.name}`,
-          type:'child'
+          name:child.name,
+          type:'child',
+          parentId:place.id
         });
 
       }
@@ -941,23 +998,10 @@ function allUnits(){
         type:'place'
       });
 
-      for(
-        const child
-        of place.children || []
-      ){
-
-        result.push({
-          id:child.id,
-          name:
-            `${place.name} – ${child.name}`,
-          type:'child'
-        });
-
-      }
-
     }
 
   }
+
 
   for(
     const organization
@@ -972,6 +1016,7 @@ function allUnits(){
 
   }
 
+
   return result;
 
 }
@@ -979,13 +1024,16 @@ function allUnits(){
 
 function unitName(id){
 
-  return (
+  const found =
     allUnits()
       .find(
         unit => unit.id === id
-      )?.name
-    || id
-  );
+      );
+
+
+  return found
+    ? found.name
+    : id;
 
 }
 
@@ -1014,8 +1062,45 @@ function renderRegions(){
       'regionsBody'
     );
 
-  body.innerHTML =
+
+  const search =
+    document
+      .getElementById(
+        'regionSearch'
+      )
+      .value
+      .trim()
+      .toLocaleLowerCase('de-DE');
+
+
+  const places =
     (state.places || [])
+      .filter(place => {
+
+        if(!search){
+          return true;
+        }
+
+        /*
+         * Die Suche gilt nur für Regionen,
+         * nicht für die Yartar-Untergruppen.
+         */
+
+        const haystack = [
+          place.name,
+          itemDescription(place,'place')
+        ]
+          .join(' ')
+          .toLocaleLowerCase('de-DE');
+
+
+        return haystack.includes(search);
+
+      });
+
+
+  body.innerHTML =
+    places
       .map(place => {
 
         const rep =
@@ -1023,8 +1108,33 @@ function renderRegions(){
           place.rep ??
           0;
 
-        const canDelete =
-          place.id !== 'yartar';
+
+        const hasChildren =
+          Array.isArray(place.children) &&
+          place.children.length > 0;
+
+
+        const isCollapsed =
+          place.id !== 'yartar'
+            ? Boolean(
+                collapsedRegions[place.id]
+              )
+            : Boolean(
+                collapsedRegions[place.id]
+              );
+
+
+        const childrenVisible =
+          hasChildren &&
+          !isCollapsed;
+
+
+        const infoText =
+          itemDescription(
+            place,
+            'place'
+          );
+
 
         let html = `
 
@@ -1032,18 +1142,47 @@ function renderRegions(){
 
             <td>
 
-              <div class="place-main">
+              <div class="region-name">
 
-                ${esc(place.name)}
+                ${
+                  hasChildren
+                    ? `
+                      <button
+                        class="region-toggle"
+                        onclick="toggleRegion(
+                          '${esc(place.id)}'
+                        )"
+                        aria-label="${
+                          isCollapsed
+                            ? 'Region aufklappen'
+                            : 'Region einklappen'
+                        }"
+                      >
+                        ${
+                          isCollapsed
+                            ? '▶'
+                            : '▼'
+                        }
+                      </button>
+                    `
+                    : `
+                      <span
+                        style="width:18px"
+                      ></span>
+                    `
+                }
+
+
+                <strong>
+                  ${esc(place.name)}
+                </strong>
+
 
                 <button
                   class="info-btn"
                   onclick="showInfo(
                     '${esc(place.name)}',
-                    '${esc(
-                      place.info ||
-                      'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.'
-                    )}'
+                    '${esc(infoText)}'
                   )"
                   aria-label="Informationen"
                 >
@@ -1054,14 +1193,16 @@ function renderRegions(){
 
             </td>
 
+
             <td
-              class="num ${cls(rep)}"
+              class="num ${valueClass(rep)}"
             >
               ${fmtRep(rep)}
             </td>
 
+
             <td
-              class="status ${cls(rep)}"
+              class="status ${valueClass(rep)}"
             >
               ${esc(
                 place.status ||
@@ -1069,11 +1210,13 @@ function renderRegions(){
               )}
             </td>
 
+
             <td>
               ${fmtDate(
                 place.lastChange
               )}
             </td>
+
 
             <td>
 
@@ -1089,8 +1232,9 @@ function renderRegions(){
                 </button>
 
                 ${
-                  canDelete
-                    ? `
+                  place.id === 'yartar'
+                    ? ''
+                    : `
                       <button
                         class="danger"
                         onclick="deleteFaction(
@@ -1101,7 +1245,6 @@ function renderRegions(){
                         Löschen
                       </button>
                     `
-                    : ''
                 }
 
               </div>
@@ -1113,68 +1256,109 @@ function renderRegions(){
         `;
 
 
-        for(
-          const child
-          of place.children || []
+        if(
+          childrenVisible
         ){
 
-          const childRep =
-            child.effectiveRep ??
-            child.rep ??
-            0;
+          for(
+            const child
+            of place.children
+          ){
 
-          html += `
+            const childRep =
+              child.effectiveRep ??
+              child.rep ??
+              0;
 
-            <tr class="child">
 
-              <td>
-                ${esc(child.name)}
-              </td>
+            html += `
 
-              <td
-                class="num ${cls(childRep)}"
-              >
-                ${fmtRep(childRep)}
-              </td>
+              <tr class="child">
 
-              <td
-                class="status ${cls(childRep)}"
-              >
-                ${esc(
-                  child.status ||
-                  statusFor(childRep)
-                )}
-              </td>
+                <td>
 
-              <td>
-                ${fmtDate(
-                  child.lastChange
-                )}
-              </td>
+                  <div class="child-name">
 
-              <td></td>
+                    ${esc(child.name)}
 
-            </tr>
+                  </div>
 
-          `;
+                </td>
+
+
+                <td
+                  class="num ${valueClass(childRep)}"
+                >
+                  ${fmtRep(childRep)}
+                </td>
+
+
+                <td
+                  class="status ${valueClass(childRep)}"
+                >
+                  ${esc(
+                    child.status ||
+                    statusFor(childRep)
+                  )}
+                </td>
+
+
+                <td>
+                  ${fmtDate(
+                    child.lastChange
+                  )}
+                </td>
+
+
+                <td></td>
+
+              </tr>
+
+            `;
+
+          }
 
         }
+
 
         return html;
 
       })
-      .join('')
-    ||
-    `
+      .join('');
+
+
+  if(!body.innerHTML){
+
+    body.innerHTML = `
+
       <tr>
+
         <td
           colspan="5"
           class="empty"
         >
-          Keine Regionen vorhanden.
+          Keine passende Region gefunden.
+
         </td>
+
       </tr>
+
     `;
+
+  }
+
+}
+
+
+const collapsedRegions = {};
+
+
+function toggleRegion(id){
+
+  collapsedRegions[id] =
+    !collapsedRegions[id];
+
+  renderRegions();
 
 }
 
@@ -1190,6 +1374,7 @@ function renderOrganizations(){
       'orgsBody'
     );
 
+
   body.innerHTML =
     (state.organizations || [])
       .map(org => {
@@ -1198,6 +1383,14 @@ function renderOrganizations(){
           org.effectiveRep ??
           org.rep ??
           0;
+
+
+        const infoText =
+          itemDescription(
+            org,
+            'organization'
+          );
+
 
         return `
 
@@ -1211,10 +1404,7 @@ function renderOrganizations(){
                 class="info-btn"
                 onclick="showInfo(
                   '${esc(org.name)}',
-                  '${esc(
-                    org.description ||
-                    'Keine Beschreibung vorhanden.'
-                  )}'
+                  '${esc(infoText)}'
                 )"
                 aria-label="Informationen"
               >
@@ -1223,14 +1413,16 @@ function renderOrganizations(){
 
             </td>
 
+
             <td
-              class="num ${cls(rep)}"
+              class="num ${valueClass(rep)}"
             >
               ${fmtRep(rep)}
             </td>
 
+
             <td
-              class="status ${cls(rep)}"
+              class="status ${valueClass(rep)}"
             >
               ${esc(
                 org.status ||
@@ -1238,11 +1430,13 @@ function renderOrganizations(){
               )}
             </td>
 
+
             <td>
               ${fmtDate(
                 org.lastChange
               )}
             </td>
+
 
             <td>
 
@@ -1256,6 +1450,7 @@ function renderOrganizations(){
                 >
                   Bearbeiten
                 </button>
+
 
                 <button
                   class="danger"
@@ -1276,24 +1471,14 @@ function renderOrganizations(){
         `;
 
       })
-      .join('')
-    ||
-    `
-      <tr>
-        <td
-          colspan="5"
-          class="empty"
-        >
-          Keine Organisationen vorhanden.
-        </td>
-      </tr>
-    `;
+      .join('');
+
 
 }
 
 
 /* =========================================================
-   REP-ZEILE
+   REP-ZEILEN
    ========================================================= */
 
 function addChangeRow(){
@@ -1303,25 +1488,12 @@ function addChangeRow(){
       'changeRows'
     );
 
+
   const row =
     document.createElement('div');
 
   row.className =
     'change-row';
-
-
-  const options =
-    allUnits()
-      .map(
-        unit => `
-          <option
-            value="${esc(unit.id)}"
-          >
-            ${esc(unit.name)}
-          </option>
-        `
-      )
-      .join('');
 
 
   row.innerHTML = `
@@ -1331,14 +1503,12 @@ function addChangeRow(){
       <select
         class="target"
         aria-label="Auswirkung auf"
-        onchange="updateTargetOptions()"
+        onchange="refreshTargetOptions()"
       >
 
         <option value="">
           Bitte auswählen
         </option>
-
-        ${options}
 
       </select>
 
@@ -1389,7 +1559,7 @@ function addChangeRow(){
       class="remove"
       onclick="
         this.parentElement.remove();
-        updateTargetOptions();
+        refreshTargetOptions();
       "
     >
       Entfernen
@@ -1400,16 +1570,19 @@ function addChangeRow(){
 
   container.appendChild(row);
 
-  updateTargetOptions();
+  refreshTargetOptions();
 
 }
 
 
-/* =========================================================
-   DOPPELTE ZIELE VERHINDERN
-   ========================================================= */
+/*
+ * Bereits verwendete Einträge werden komplett
+ * aus den anderen Auswahlfeldern entfernt.
+ *
+ * Sie werden NICHT ausgegraut.
+ */
 
-function updateTargetOptions(){
+function refreshTargetOptions(){
 
   const selects =
     [
@@ -1418,12 +1591,19 @@ function updateTargetOptions(){
       )
     ];
 
+
   const selected =
     new Set(
       selects
-        .map(select => select.value)
+        .map(
+          select => select.value
+        )
         .filter(Boolean)
     );
+
+
+  const units =
+    allUnits();
 
 
   for(
@@ -1431,28 +1611,56 @@ function updateTargetOptions(){
     of selects
   ){
 
-    const ownValue =
+    const current =
       select.value;
 
+
+    select.innerHTML = `
+
+      <option value="">
+        Bitte auswählen
+      </option>
+
+    `;
+
+
     for(
-      const option
-      of select.options
+      const unit
+      of units
     ){
 
       if(
-        !option.value
+        selected.has(unit.id) &&
+        unit.id !== current
       ){
 
-        option.disabled = false;
         continue;
 
       }
 
-      option.disabled =
-        selected.has(option.value) &&
-        option.value !== ownValue;
+
+      const option =
+        document.createElement(
+          'option'
+        );
+
+
+      option.value =
+        unit.id;
+
+      option.textContent =
+        unit.name;
+
+
+      select.appendChild(
+        option
+      );
 
     }
+
+
+    select.value =
+      current || '';
 
   }
 
@@ -1460,7 +1668,7 @@ function updateTargetOptions(){
 
 
 /* =========================================================
-   CHANGES AUSLESEN
+   CHANGES
    ========================================================= */
 
 function getChanges(){
@@ -1499,23 +1707,33 @@ function getChanges(){
    MODAL
    ========================================================= */
 
-function showInfo(title,text){
+function showInfo(
+  title,
+  text
+){
 
   document
     .getElementById('modalTitle')
-    .textContent = title;
+    .textContent =
+      title;
+
 
   document
     .getElementById('modalText')
-    .textContent = text;
+    .textContent =
+      text;
+
 
   document
     .getElementById('modalConfirm')
-    .style.display = 'none';
+    .style.display =
+      'none';
+
 
   document
     .getElementById('modalBackdrop')
-    .classList.add('open');
+    .classList
+    .add('open');
 
 }
 
@@ -1529,21 +1747,29 @@ function openModal(
   pendingAction =
     action;
 
+
   document
     .getElementById('modalTitle')
-    .textContent = title;
+    .textContent =
+      title;
+
 
   document
     .getElementById('modalText')
-    .textContent = text;
+    .textContent =
+      text;
+
 
   document
     .getElementById('modalConfirm')
-    .style.display = '';
+    .style.display =
+      '';
+
 
   document
     .getElementById('modalBackdrop')
-    .classList.add('open');
+    .classList
+    .add('open');
 
 }
 
@@ -1552,7 +1778,9 @@ function closeModal(){
 
   document
     .getElementById('modalBackdrop')
-    .classList.remove('open');
+    .classList
+    .remove('open');
+
 
   pendingAction =
     null;
@@ -1602,10 +1830,17 @@ async function confirmModal(){
     return;
   }
 
+
   const action =
     pendingAction;
 
+
+  pendingAction =
+    null;
+
+
   closeModal();
+
 
   try{
 
@@ -1636,11 +1871,13 @@ function previewApply(){
       .value
       .trim();
 
+
   const reason =
     document
       .getElementById('reason')
       .value
       .trim();
+
 
   const date =
     document
@@ -1657,10 +1894,6 @@ function previewApply(){
     ];
 
 
-  const changes =
-    getChanges();
-
-
   if(!mission){
 
     alert(
@@ -1672,19 +1905,8 @@ function previewApply(){
   }
 
 
-  if(!changes.length){
-
-    alert(
-      'Bitte mindestens eine REP-Änderung auswählen.'
-    );
-
-    return;
-
-  }
-
-
   /*
-   * Prüfen, ob eine Zeile unvollständig ist.
+   * Unvollständige Zeilen verhindern.
    */
 
   for(
@@ -1696,6 +1918,7 @@ function previewApply(){
       row.querySelector(
         '.target'
       ).value;
+
 
     const effect =
       row.querySelector(
@@ -1719,8 +1942,23 @@ function previewApply(){
   }
 
 
+  const changes =
+    getChanges();
+
+
+  if(!changes.length){
+
+    alert(
+      'Bitte mindestens eine REP-Änderung auswählen.'
+    );
+
+    return;
+
+  }
+
+
   /*
-   * Doppelte Ziele explizit verhindern.
+   * Sicherheitshalber zusätzlich doppelte IDs prüfen.
    */
 
   const ids =
@@ -1729,16 +1967,14 @@ function previewApply(){
         change.factionId
     );
 
-  const uniqueIds =
-    new Set(ids);
-
 
   if(
-    uniqueIds.size !== ids.length
+    new Set(ids).size !==
+    ids.length
   ){
 
     alert(
-      'Eine REP-Einheit wurde mehrfach ausgewählt. Bitte jede Einheit nur einmal pro Ereignis verwenden.'
+      'Eine REP-Einheit wurde mehrfach ausgewählt.'
     );
 
     return;
@@ -1755,10 +1991,12 @@ function previewApply(){
             ? '+'
             : '';
 
+
         const days =
           EFFECTS[
             change.delta
           ] || 30;
+
 
         return (
           `${unitName(change.factionId)}: ` +
@@ -1771,6 +2009,7 @@ function previewApply(){
 
 
   openModal(
+
     'Änderungen übernehmen',
 
     `${mission}\n\n` +
@@ -1801,13 +2040,16 @@ function previewApply(){
         .getElementById('mission')
         .value = '';
 
+
       document
         .getElementById('reason')
         .value = '';
 
+
       document
         .getElementById('changeRows')
         .innerHTML = '';
+
 
       addChangeRow();
 
@@ -1819,7 +2061,7 @@ function previewApply(){
 
 
 /* =========================================================
-   REGION / ORGANISATION HINZUFÜGEN
+   REGION / ORGANISATION ANLEGEN
    ========================================================= */
 
 function addFaction(type){
@@ -1851,7 +2093,16 @@ function addFaction(type){
       isPlace
         ? 'Info zur Region (optional):'
         : 'Beschreibung der Organisation (optional):'
-    ) || '';
+    );
+
+
+  if(
+    description === null
+  ){
+
+    return;
+
+  }
 
 
   const id =
@@ -1864,7 +2115,7 @@ function addFaction(type){
       ? 'Region hinzufügen'
       : 'Organisation hinzufügen',
 
-    `${name}\n\n` +
+    `${name.trim()}\n\n` +
     `${description || 'Keine Beschreibung.'}\n\n` +
     `Diese Stammdaten werden zentral gespeichert.`,
 
@@ -1877,13 +2128,26 @@ function addFaction(type){
 
           body:
             JSON.stringify({
+
               action:'create',
+
               type,
+
               id,
+
               name:name.trim(),
-              description,
+
+              /*
+               * Der Worker erwartet hier description.
+               */
+
+              description:
+                description.trim(),
+
               rep:0,
+
               date:todayISO()
+
             })
 
         }
@@ -1905,22 +2169,43 @@ function editFaction(
   type
 ){
 
-  const item =
-    type === 'place'
-      ? (
-          state.places || []
-        ).find(
-          x => x.id === id
-        )
-      : (
-          state.organizations || []
-        ).find(
-          x => x.id === id
+  /*
+   * Yartar selbst darf bearbeitet,
+   * aber nicht gelöscht werden.
+   */
+
+  let item = null;
+
+
+  if(type === 'place'){
+
+    item =
+      (state.places || [])
+        .find(
+          place =>
+            place.id === id
         );
+
+  }else{
+
+    item =
+      (state.organizations || [])
+        .find(
+          org =>
+            org.id === id
+        );
+
+  }
 
 
   if(!item){
+
+    alert(
+      'Eintrag nicht gefunden.'
+    );
+
     return;
+
   }
 
 
@@ -1936,14 +2221,15 @@ function editFaction(
   }
 
 
+  /*
+   * Bestehendes info ODER description lesen.
+   */
+
   const oldDescription =
-    type === 'place'
-      ? (
-          item.info || ''
-        )
-      : (
-          item.description || ''
-        );
+    itemDescription(
+      item,
+      type
+    );
 
 
   const description =
@@ -1964,10 +2250,19 @@ function editFaction(
 
     'Änderung speichern',
 
-    `${name}\n\n` +
-    `Die Stammdaten werden zentral geändert.`,
+    `${name.trim()}\n\n` +
+    `${description || 'Keine Beschreibung.'}\n\n` +
+    `Der bestehende REP-Wert wird nicht verändert.`,
 
     async () => {
+
+      /*
+       * Ganz bewusst KEIN startRep,
+       * KEIN rep und KEIN baseRep.
+       *
+       * Der Worker-Update-Endpunkt ändert nur
+       * die Stammdaten und lässt REP unverändert.
+       */
 
       await api(
         '/faction',
@@ -1976,11 +2271,19 @@ function editFaction(
 
           body:
             JSON.stringify({
+
               action:'update',
+
               type,
+
               id,
-              name:name.trim(),
-              description
+
+              name:
+                name.trim(),
+
+              description:
+                description.trim()
+
             })
 
         }
@@ -2002,11 +2305,6 @@ function deleteFaction(
   type
 ){
 
-  /*
-   * Yartar ist eine feste Kernregion
-   * und kann nicht gelöscht werden.
-   */
-
   if(
     type === 'place' &&
     id === 'yartar'
@@ -2021,18 +2319,18 @@ function deleteFaction(
   }
 
 
-  const item =
+  const collection =
     type === 'place'
-      ? (
-          state.places || []
-        ).find(
-          x => x.id === id
-        )
-      : (
-          state.organizations || []
-        ).find(
-          x => x.id === id
-        );
+      ? state.places
+      : state.organizations;
+
+
+  const item =
+    (collection || [])
+      .find(
+        entry =>
+          entry.id === id
+      );
 
 
   if(!item){
@@ -2056,9 +2354,13 @@ function deleteFaction(
 
           body:
             JSON.stringify({
+
               action:'delete',
+
               type,
+
               id
+
             })
 
         }
@@ -2075,7 +2377,7 @@ function deleteFaction(
    RETCON
    ========================================================= */
 
-async function setEventStatus(
+function setEventStatus(
   eventId,
   valid
 ){
@@ -2099,8 +2401,11 @@ async function setEventStatus(
 
           body:
             JSON.stringify({
+
               eventId,
+
               valid
+
             })
 
         }
@@ -2127,10 +2432,15 @@ function renderLog(){
       (a,b) => {
 
         const dateCompare =
-          String(b.date || '')
-            .localeCompare(
-              String(a.date || '')
-            );
+          String(
+            b.date || ''
+          )
+          .localeCompare(
+            String(
+              a.date || ''
+            )
+          );
+
 
         if(
           dateCompare !== 0
@@ -2140,12 +2450,6 @@ function renderLog(){
 
         }
 
-
-        /*
-         * Bei gleichem Datum:
-         * createdAt entscheidet,
-         * sofern vorhanden.
-         */
 
         return String(
           b.createdAt || ''
@@ -2171,6 +2475,7 @@ function renderLog(){
     const date =
       event.date ||
       'unknown';
+
 
     const month =
       date === 'unknown'
@@ -2262,12 +2567,15 @@ function renderLog(){
                     </span>
 
                     <span class="muted">
+
                       ${groups[key].length}
+
                       ${
                         groups[key].length === 1
                           ? 'Änderung'
                           : 'Änderungen'
                       }
+
                     </span>
 
                   </summary>
@@ -2313,10 +2621,11 @@ function renderLog(){
                                 </strong>
 
                                 <span
-                                  class="${cls(
+                                  class="${valueClass(
                                     change.delta
                                   )}"
                                 >
+
                                   ${
                                     Number(
                                       change.delta
@@ -2326,6 +2635,7 @@ function renderLog(){
                                   }${esc(
                                     change.delta
                                   )}
+
                                 </span>
 
                                 · ${days} Tage
@@ -2346,13 +2656,9 @@ function renderLog(){
 
                         return `
 
-                          <div
-                            class="log-entry"
-                          >
+                          <div class="log-entry">
 
-                            <div
-                              class="log-head"
-                            >
+                            <div class="log-head">
 
                               <strong>
                                 ${esc(
@@ -2361,9 +2667,7 @@ function renderLog(){
                                 )}
                               </strong>
 
-                              <span
-                                class="muted"
-                              >
+                              <span class="muted">
                                 ${fmtDate(
                                   event.date
                                 )}
@@ -2379,19 +2683,23 @@ function renderLog(){
                                   : 'badge invalid'
                               }"
                             >
+
                               ${
                                 valid
                                   ? 'gültig'
                                   : 'RETCON – ungültig'
                               }
+
                             </div>
 
 
                             <div>
+
                               ${esc(
                                 event.reason ||
                                 'Keine Begründung angegeben.'
                               )}
+
                             </div>
 
 
@@ -2399,25 +2707,28 @@ function renderLog(){
 
 
                             <div
-                              class="actions retcon-button"
+                              class="actions"
+                              style="margin-top:8px"
                             >
 
                               <button
-                                ${
+                                class="${
                                   valid
-                                    ? 'class="danger"'
+                                    ? 'danger'
                                     : ''
-                                }
+                                }"
                                 onclick="setEventStatus(
                                   '${esc(event.id)}',
                                   ${!valid}
                                 )"
                               >
+
                                 ${
                                   valid
                                     ? 'Als Retcon ungültig machen'
                                     : 'Wieder gültig machen'
                                 }
+
                               </button>
 
                             </div>
@@ -2440,9 +2751,11 @@ function renderLog(){
           .join('')
 
       : `
+
           <p class="muted">
             Noch keine Rufänderungen gespeichert.
           </p>
+
         `;
 
 }
