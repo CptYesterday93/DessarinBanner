@@ -87,10 +87,10 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="section-title">Orte</div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Ort</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
+<thead><tr><th>Region</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
 <tbody id="placesBody"></tbody>
 </table>
-<div class="toolbar"><button onclick="addPlace()">＋ Ort hinzufügen</button></div>
+<div class="toolbar"><button onclick="addPlace()">＋ Region hinzufügen</button></div>
 </div>
 
 <div class="section-title">Organisationen</div>
@@ -383,7 +383,7 @@ function openManage(mode,id){
  const title=document.getElementById('manageTitle');
  const name=document.getElementById('manageName');
  const desc=document.getElementById('manageDescription');
- if(mode==='new-place'){title.textContent='Ort hinzufügen';name.value='';desc.value='';}
+ if(mode==='new-place'){title.textContent='Region hinzufügen';name.value='';desc.value='';}
  else if(mode==='new-organization'){title.textContent='Organisation hinzufügen';name.value='';desc.value='';}
  else{
   const u=unitById(id);
