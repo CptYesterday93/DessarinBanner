@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="de">
+
 <head>
 
 <meta charset="utf-8">
@@ -34,69 +35,99 @@ body{
   margin:0;
   background:var(--page);
   color:var(--ink);
-  font:14px/1.4 Arial,Helvetica,sans-serif;
+  font:14px/1.45 Arial,Helvetica,sans-serif;
 }
 
 .sheet{
-  width:min(1100px,calc(100% - 28px));
-  margin:24px auto 40px;
+  width:min(1150px,calc(100% - 20px));
+  margin:20px auto 40px;
   background:var(--paper);
-  padding:36px 42px 48px;
+  padding:32px 38px 50px;
   box-shadow:0 2px 18px #0001;
 }
 
 h1{
+  margin:0;
   text-align:center;
   font-size:29px;
   letter-spacing:.03em;
-  margin:0;
 }
 
 .subtitle{
   text-align:center;
-  color:#555;
-  margin:3px 0 28px;
+  color:var(--muted);
+  margin:4px 0 28px;
 }
 
 .section-title{
   font-size:20px;
-  margin:28px 0 10px;
+  margin:28px 0 11px;
   padding:9px 12px;
   background:#ededed;
-  border-radius:9px;
+  border-radius:8px;
+}
+
+.notice{
+  padding:11px 13px;
+  background:#f3f5fb;
+  border-left:4px solid var(--accent);
+  margin:12px 0;
+}
+
+.notice.warning{
+  background:var(--warning);
+  border-left-color:#b88900;
+}
+
+.hidden{
+  display:none!important;
 }
 
 .toolbar{
   display:flex;
-  gap:8px;
+  gap:9px;
   align-items:end;
   flex-wrap:wrap;
-  margin-bottom:18px;
+}
+
+.field{
+  min-width:180px;
+}
+
+.field.grow{
+  flex:1;
+  min-width:250px;
 }
 
 label{
   display:block;
-  font-weight:700;
   font-size:13px;
+  font-weight:bold;
   margin-bottom:5px;
 }
 
 input,
 select,
 textarea{
+  width:100%;
   font:inherit;
-  border:1px solid #9da4b2;
-  background:#fff;
-  color:#111;
   padding:8px 10px;
-  border-radius:3px;
+  border:1px solid #9da4b2;
+  border-radius:4px;
+  background:white;
+  color:#111;
+}
+
+textarea{
+  min-height:80px;
+  resize:vertical;
 }
 
 button{
   font:inherit;
-  border:1px solid #999;
-  background:#fff;
   padding:8px 12px;
+  border:1px solid #999;
+  background:white;
   border-radius:4px;
   cursor:pointer;
 }
@@ -112,14 +143,9 @@ button:disabled{
 
 button.primary{
   background:var(--accent);
-  color:#fff;
+  color:white;
   border-color:var(--accent);
-  font-weight:700;
-}
-
-button.small{
-  padding:5px 8px;
-  font-size:12px;
+  font-weight:bold;
 }
 
 button.danger{
@@ -127,19 +153,9 @@ button.danger{
   border-color:#c99;
 }
 
-.mission-field{
-  flex:1;
-  min-width:260px;
-}
-
-.date-field{
-  width:150px;
-}
-
-textarea{
-  width:100%;
-  min-height:72px;
-  resize:vertical;
+button.small{
+  padding:5px 8px;
+  font-size:12px;
 }
 
 .table-wrap{
@@ -149,8 +165,8 @@ textarea{
 
 table{
   width:100%;
+  min-width:850px;
   border-collapse:collapse;
-  min-width:900px;
 }
 
 th,
@@ -158,7 +174,6 @@ td{
   padding:9px 10px;
   border-bottom:1px solid var(--line);
   text-align:left;
-  vertical-align:middle;
 }
 
 th{
@@ -171,10 +186,6 @@ th{
   white-space:nowrap;
 }
 
-.status{
-  font-weight:700;
-}
-
 .positive{
   color:var(--success);
 }
@@ -183,76 +194,8 @@ th{
   color:var(--danger);
 }
 
-.change-row{
-  display:grid;
-  grid-template-columns:minmax(180px,1fr) 180px auto;
-  gap:10px;
-  align-items:end;
-  padding:10px 0;
-  border-bottom:1px solid var(--line);
-}
-
-.log-entry{
-  border:1px solid var(--line);
-  border-radius:7px;
-  padding:12px 14px;
-  margin:8px 0;
-  background:#fff;
-}
-
-.log-entry.retconned{
-  background:#fafafa;
-  opacity:.75;
-}
-
-.log-entry.excluded{
-  background:#f8f8f8;
-  opacity:.55;
-}
-
-.log-head{
-  display:flex;
-  justify-content:space-between;
-  gap:12px;
-  align-items:baseline;
-}
-
-.log-head strong{
-  font-size:15px;
-}
-
-.log-detail{
-  margin-top:8px;
-  color:#444;
-}
-
-.log-detail div{
-  margin:3px 0;
-}
-
-.log-actions{
-  margin-top:10px;
-  display:flex;
-  gap:7px;
-  flex-wrap:wrap;
-}
-
-.notice{
-  padding:10px 12px;
-  background:#f3f5fb;
-  border-left:4px solid var(--accent);
-  margin:12px 0;
-  color:#444;
-}
-
-.notice.warning{
-  background:var(--warning);
-  border-left-color:#b88900;
-}
-
-.muted{
-  color:var(--muted);
-  font-size:12px;
+.status{
+  font-weight:bold;
 }
 
 .statusbar{
@@ -261,14 +204,94 @@ th{
   font-size:12px;
 }
 
+.change-row{
+  display:grid;
+  grid-template-columns:minmax(200px,1fr) 190px auto;
+  gap:10px;
+  align-items:end;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.restore-box{
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:14px;
+  background:#fafafa;
+}
+
+.restore-box select{
+  max-width:800px;
+}
+
+.log-entry{
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:13px 14px;
+  margin:8px 0;
+}
+
+.log-entry.retconned{
+  background:#fafafa;
+  opacity:.72;
+}
+
+.log-entry.excluded{
+  background:#f7f7f7;
+  opacity:.62;
+}
+
+.log-entry.restore{
+  background:#f3f5fb;
+  border-left:4px solid var(--accent);
+}
+
+.log-entry.audit{
+  background:#fafafa;
+}
+
+.log-head{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.log-title{
+  font-weight:bold;
+  font-size:15px;
+}
+
+.log-description{
+  color:#444;
+  margin-top:7px;
+}
+
+.log-change{
+  margin-top:8px;
+  padding-left:5px;
+}
+
+.log-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+
 .badge{
   display:inline-block;
+  margin-left:6px;
   padding:2px 7px;
   border-radius:10px;
-  font-size:11px;
   background:#eee;
   color:#555;
-  margin-left:5px;
+  font-size:11px;
+  font-weight:normal;
+}
+
+.badge.valid{
+  background:#e1eee1;
+  color:#27662d;
 }
 
 .badge.retcon{
@@ -280,41 +303,33 @@ th{
   background:#e6e6e6;
 }
 
-.badge.valid{
-  background:#e1eee1;
-  color:#27662d;
+.badge.restore{
+  background:#dce5f8;
+  color:#3157a6;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:12px;
 }
 
 .empty{
-  padding:18px;
   text-align:center;
   color:var(--muted);
+  padding:18px;
 }
 
-.restore-panel{
-  border:1px solid var(--line);
-  border-radius:7px;
-  padding:14px;
-  margin-top:12px;
-  background:#fafafa;
-}
-
-.restore-panel select{
-  width:100%;
-  max-width:700px;
-}
-
-.restore-current{
-  margin-top:7px;
-  color:var(--muted);
-  font-size:12px;
+hr{
+  border:0;
+  border-top:1px solid var(--line);
+  margin:18px 0;
 }
 
 @media(max-width:700px){
 
   .sheet{
-    width:calc(100% - 16px);
-    padding:26px 16px 40px;
+    width:calc(100% - 12px);
+    padding:25px 15px 40px;
   }
 
   h1{
@@ -326,8 +341,8 @@ th{
     grid-template-columns:1fr;
   }
 
-  .mission-field,
-  .date-field{
+  .field,
+  .field.grow{
     width:100%;
     min-width:0;
   }
@@ -336,7 +351,7 @@ th{
     grid-template-columns:1fr 1fr;
   }
 
-  .change-row .remove{
+  .change-row button{
     grid-column:2;
   }
 
@@ -344,10 +359,6 @@ th{
     display:block;
   }
 
-  .log-head .muted{
-    display:block;
-    margin-top:3px;
-  }
 }
 
 </style>
@@ -364,29 +375,31 @@ th{
 </h1>
 
 <div class="subtitle">
-  Für das Dessarin Banner
-</div>
-
-
-<div class="notice">
-
-  Der Ruf wird über historische
-  <strong>Reputationspunkte (REP)</strong>
-  aus der Ereignishistorie berechnet.
-
-  Alle 30 vergangenen Tage verfällt ein REP
-  Richtung 0.
-
-  Der Verfall wird bei jeder historischen
-  Neuberechnung automatisch berücksichtigt.
-
+  Dessarin Banner · Reputationspunkte (REP)
 </div>
 
 
 <div
   id="errorBox"
-  class="notice warning"
-  style="display:none">
+  class="notice warning hidden">
+</div>
+
+
+<div class="notice">
+
+  <strong>REP</strong> sind die Reputationspunkte
+  einer Fraktion.
+
+  Der effektive REP wird automatisch aus der
+  gültigen Ereignishistorie und dem Rufverfall
+  berechnet.
+
+  Alle 30 vergangenen Tage verfällt ein REP
+  Richtung 0.
+
+  Der Verfall ist kein eigenes Ereignis und wird
+  deshalb bei Retcons automatisch neu berechnet.
+
 </div>
 
 
@@ -423,15 +436,20 @@ th{
 </div>
 
 
-<div class="toolbar" style="margin-top:10px">
+<div
+  class="toolbar"
+  style="margin-top:10px">
 
-<button onclick="addFaction()">
+<button
+  onclick="addFaction()">
+
   ＋ Fraktion hinzufügen
+
 </button>
 
 <span
-  class="statusbar"
-  id="loadStatus">
+  id="loadStatus"
+  class="statusbar">
 
   Daten werden geladen…
 
@@ -441,7 +459,7 @@ th{
 
 
 <!-- =====================================================
-     RÜCKSETZUNG
+     HISTORISCHER STAND
      ===================================================== -->
 
 <div class="section-title">
@@ -449,31 +467,38 @@ th{
 </div>
 
 
-<div class="restore-panel">
+<div class="restore-box">
+
+<div class="field">
 
 <label for="restoreTarget">
-  Stand
+  Kampagnenstand
 </label>
-
 
 <select id="restoreTarget">
 
   <option value="">
-    Aktuellen Stand beibehalten
+    Aktuellen Verlauf verwenden
   </option>
 
 </select>
 
+</div>
 
-<div class="restore-current"
-     id="restoreInfo">
+
+<div
+  id="restoreInfo"
+  class="muted"
+  style="margin-top:8px">
 
   Keine historische Rücksetzung aktiv.
 
 </div>
 
 
-<div style="margin-top:10px">
+<div
+  class="field"
+  style="margin-top:12px">
 
 <label for="restoreReason">
   Begründung
@@ -481,12 +506,13 @@ th{
 
 <textarea
   id="restoreReason"
-  placeholder="Warum soll der Kampagnenstand auf diesen Zeitpunkt zurückgesetzt werden?"></textarea>
+  placeholder="Warum wird die Kampagnenhistorie auf diesen Stand zurückgesetzt?"></textarea>
 
 </div>
 
 
-<div style="margin-top:10px">
+<div
+  style="margin-top:10px">
 
 <button
   class="danger"
@@ -496,13 +522,22 @@ th{
 
 </button>
 
+
+<button
+  style="margin-left:7px"
+  onclick="restoreCurrent()">
+
+  Aktuellen Verlauf wiederherstellen
+
+</button>
+
 </div>
 
 </div>
 
 
 <!-- =====================================================
-     MISSION
+     NEUE MISSION
      ===================================================== -->
 
 <div class="section-title">
@@ -512,7 +547,7 @@ th{
 
 <div class="toolbar">
 
-<div class="mission-field">
+<div class="field grow">
 
 <label for="mission">
   Mission / Ereignis
@@ -525,7 +560,9 @@ th{
 </div>
 
 
-<div class="date-field">
+<div
+  class="field"
+  style="width:155px">
 
 <label for="changeDate">
   Datum
@@ -540,7 +577,9 @@ th{
 </div>
 
 
-<div>
+<div
+  class="field"
+  style="margin-top:12px">
 
 <label for="reason">
   Beschreibung / Begründung
@@ -548,18 +587,24 @@ th{
 
 <textarea
   id="reason"
-  placeholder="z. B. Die Gilde hat den Diebesanführer eingekerkert und an die Stadtwache übergeben."></textarea>
+  placeholder="z. B. Die Diebesgilde hat den Anführer gefasst und an die Stadtwache ausgeliefert."></textarea>
 
 </div>
 
 
-<div id="changeRows"></div>
+<div
+  id="changeRows"
+  style="margin-top:8px">
+</div>
 
 
 <div style="margin-top:10px">
 
-<button onclick="addChangeRow()">
+<button
+  onclick="addChangeRow()">
+
   ＋ Fraktion hinzufügen
+
 </button>
 
 </div>
@@ -595,10 +640,6 @@ th{
 
 <script>
 
-/* =========================================================
-   API
-   ========================================================= */
-
 const API_URL =
   "https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev";
 
@@ -607,13 +648,13 @@ let state = null;
 
 
 const effects = [
-  ["Sehr positiv",3],
-  ["Positiv",2],
-  ["Leicht positiv",1],
-  ["Neutral",0],
-  ["Leicht negativ",-1],
-  ["Negativ",-2],
-  ["Sehr negativ",-3]
+  ["Sehr positiv", 3],
+  ["Positiv", 2],
+  ["Leicht positiv", 1],
+  ["Neutral", 0],
+  ["Leicht negativ", -1],
+  ["Negativ", -2],
+  ["Sehr negativ", -3]
 ];
 
 
@@ -626,15 +667,14 @@ function esc(value){
   return String(value ?? "")
     .replace(
       /[&<>"']/g,
-      c => ({
+      char => ({
         "&":"&amp;",
         "<":"&lt;",
         ">":"&gt;",
         '"':"&quot;",
         "'":"&#39;"
-      }[c])
+      }[char])
     );
-
 }
 
 
@@ -643,44 +683,115 @@ function todayISO(){
   return new Date()
     .toISOString()
     .slice(0,10);
-
 }
 
 
-function fmtDate(value){
+function formatDate(value){
 
   if(!value){
     return "–";
   }
 
-  const d =
+  const date =
     new Date(
       value +
       "T00:00:00"
     );
 
-  return isNaN(d)
-    ? "–"
-    : d.toLocaleDateString(
-        "de-DE"
-      );
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+    return "–";
+  }
 
+  return date.toLocaleDateString(
+    "de-DE"
+  );
+}
+
+
+function formatDateTime(value){
+
+  if(!value){
+    return "–";
+  }
+
+  const date =
+    new Date(value);
+
+  if(
+    Number.isNaN(
+      date.getTime()
+    )
+  ){
+    return "–";
+  }
+
+  return date.toLocaleString(
+    "de-DE"
+  );
 }
 
 
 function formatREP(value){
 
-  const n =
+  const number =
     Number(value) || 0;
 
-  return n > 0
-    ? "+" + n
-    : String(n);
-
+  return number > 0
+    ? "+" + number
+    : String(number);
 }
 
 
-function showStatus(text){
+function repClass(value){
+
+  const number =
+    Number(value) || 0;
+
+  if(number > 0){
+    return "positive";
+  }
+
+  if(number < 0){
+    return "negative";
+  }
+
+  return "";
+}
+
+
+function showError(message){
+
+  const box =
+    document.getElementById(
+      "errorBox"
+    );
+
+  box.textContent =
+    message;
+
+  box.classList.remove(
+    "hidden"
+  );
+}
+
+
+function clearError(){
+
+  document
+    .getElementById(
+      "errorBox"
+    )
+    .classList.add(
+      "hidden"
+    );
+}
+
+
+function setStatus(text){
 
   document
     .getElementById(
@@ -688,39 +799,6 @@ function showStatus(text){
     )
     .textContent =
       text;
-
-}
-
-
-function showError(text){
-
-  const box =
-    document.getElementById(
-      "errorBox"
-    );
-
-  box.textContent =
-    text;
-
-  box.style.display =
-    "block";
-
-}
-
-
-function clearError(){
-
-  const box =
-    document.getElementById(
-      "errorBox"
-    );
-
-  box.textContent =
-    "";
-
-  box.style.display =
-    "none";
-
 }
 
 
@@ -732,9 +810,9 @@ function render(){
 
   renderFactions();
 
-  renderLog();
-
   renderRestoreSelector();
+
+  renderLog();
 
 }
 
@@ -755,8 +833,8 @@ function renderFactions(){
     !state.factions.length
   ){
 
-    body.innerHTML =
-      `<tr>
+    body.innerHTML = `
+      <tr>
         <td
           colspan="6"
           class="empty">
@@ -764,7 +842,8 @@ function renderFactions(){
           Noch keine Fraktionen angelegt.
 
         </td>
-      </tr>`;
+      </tr>
+    `;
 
     return;
   }
@@ -775,26 +854,21 @@ function renderFactions(){
       .map(
         faction => {
 
+          const active =
+            faction.active !==
+            false;
+
+
           const rep =
             Number(
               faction.rep
             ) || 0;
 
-          const effective =
+
+          const effectiveRep =
             Number(
               faction.effectiveRep
             ) || 0;
-
-          const cls =
-            effective > 0
-              ? "positive"
-              : effective < 0
-                ? "negative"
-                : "";
-
-          const active =
-            faction.active !==
-            false;
 
 
           return `
@@ -803,7 +877,9 @@ function renderFactions(){
               <td>
 
                 <strong>
-                  ${esc(faction.name)}
+                  ${esc(
+                    faction.name
+                  )}
                 </strong>
 
                 ${
@@ -819,7 +895,8 @@ function renderFactions(){
               </td>
 
 
-              <td class="num">
+              <td
+                class="num ${repClass(rep)}">
 
                 ${formatREP(rep)}
 
@@ -827,7 +904,7 @@ function renderFactions(){
 
 
               <td
-                class="status ${cls}">
+                class="status ${repClass(effectiveRep)}">
 
                 ${esc(
                   faction.status
@@ -837,10 +914,10 @@ function renderFactions(){
 
 
               <td
-                class="num ${cls}">
+                class="num ${repClass(effectiveRep)}">
 
                 ${formatREP(
-                  effective
+                  effectiveRep
                 )}
 
               </td>
@@ -848,7 +925,7 @@ function renderFactions(){
 
               <td>
 
-                ${fmtDate(
+                ${formatDate(
                   faction.lastChange
                 )}
 
@@ -860,7 +937,7 @@ function renderFactions(){
                 <button
                   class="small"
                   onclick="toggleFaction(
-                    '${esc(faction.id)}',
+                    '${faction.id}',
                     ${active}
                   )">
 
@@ -879,261 +956,6 @@ function renderFactions(){
         }
       )
       .join("");
-
-}
-
-
-/* =========================================================
-   LOG
-   ========================================================= */
-
-function renderLog(){
-
-  const el =
-    document.getElementById(
-      "log"
-    );
-
-
-  if(
-    !state.log.length
-  ){
-
-    el.innerHTML =
-      `<p class="muted">
-        Noch keine Ereignisse gespeichert.
-      </p>`;
-
-    return;
-  }
-
-
-  el.innerHTML =
-    state.log
-      .map(
-        entry => {
-
-          const retconned =
-            entry.displayStatus ===
-            "retconned";
-
-
-          const excluded =
-            entry.displayStatus ===
-            "excluded-by-restore";
-
-
-          let badge = "";
-
-
-          if(retconned){
-
-            badge =
-              `<span
-                class="badge retcon">
-
-                RETCON
-
-              </span>`;
-
-          }else if(excluded){
-
-            badge =
-              `<span
-                class="badge excluded">
-
-                außerhalb des aktuellen Stands
-
-              </span>`;
-
-          }else{
-
-            badge =
-              `<span
-                class="badge valid">
-
-                gültig
-
-              </span>`;
-          }
-
-
-          const changes =
-            (entry.changes || [])
-              .map(
-                c => {
-
-                  const delta =
-                    Number(
-                      c.delta
-                    ) || 0;
-
-
-                  return `
-                    <div>
-
-                      <strong>
-                        ${esc(
-                          c.factionName
-                        )}
-                      </strong>
-
-                      <span class="${
-                        delta > 0
-                          ? "positive"
-                          : delta < 0
-                            ? "negative"
-                            : ""
-                      }">
-
-                        ${formatREP(
-                          delta
-                        )}
-
-                      </span>
-
-                      REP
-
-                    </div>
-                  `;
-
-                }
-              )
-              .join("");
-
-
-          let action = "";
-
-
-          if(
-            !retconned &&
-            !excluded
-          ){
-
-            action =
-              `
-                <button
-                  class="small danger"
-                  onclick="retconMission(
-                    '${esc(entry.id)}'
-                  )">
-
-                  Mission ungültig machen
-
-                </button>
-              `;
-          }
-
-
-          return `
-            <div
-              class="
-                log-entry
-                ${retconned
-                  ? "retconned"
-                  : ""}
-                ${excluded
-                  ? "excluded"
-                  : ""}
-              ">
-
-
-              <div class="log-head">
-
-                <strong>
-
-                  ${esc(
-                    entry.mission ||
-                    "Ohne Missionsangabe"
-                  )}
-
-                  ${badge}
-
-                </strong>
-
-
-                <span class="muted">
-
-                  ${fmtDate(
-                    entry.date
-                  )}
-
-                </span>
-
-              </div>
-
-
-              <div class="log-detail">
-
-                ${
-                  entry.reason
-                    ? esc(
-                        entry.reason
-                      )
-                    : "Keine Begründung angegeben."
-                }
-
-
-                ${
-                  changes
-                    ? `
-                      <div
-                        style="margin-top:8px">
-
-                        ${changes}
-
-                      </div>
-                    `
-                    : ""
-                }
-
-
-                ${
-                  entry.retcon
-                    ? `
-                      <div
-                        class="muted"
-                        style="margin-top:8px">
-
-                        Retconned am
-                        ${new Date(
-                          entry.retcon.createdAt
-                        ).toLocaleString(
-                          "de-DE"
-                        )}
-
-                        ·
-                        ${esc(
-                          entry.retcon.reason
-                        )}
-
-                      </div>
-                    `
-                    : ""
-                }
-
-              </div>
-
-
-              ${
-                action
-                  ? `
-                    <div
-                      class="log-actions">
-
-                      ${action}
-
-                    </div>
-                  `
-                  : ""
-              }
-
-            </div>
-          `;
-        }
-      )
-      .join("");
-
 }
 
 
@@ -1156,51 +978,39 @@ function renderRestoreSelector(){
           event.type ===
           "mission"
       )
-      .filter(
-        event =>
-          event.status !==
-          "retconned"
-      )
       .sort(
-        (a,b) => {
-
-          const date =
-            a.date.localeCompare(
-              b.date
-            );
-
-          if(date !== 0){
-            return date;
-          }
-
-          return String(
-            a.createdAt || ""
-          ).localeCompare(
-            String(
-              b.createdAt || ""
-            )
-          );
-        }
+        compareEvents
       );
 
 
-  select.innerHTML =
-    `<option value="">
-      Aktueller Stand
-    </option>` +
-    missions
-      .map(
-        event =>
-          `<option
-            value="${esc(event.date)}">
+  select.innerHTML = `
+    <option value="">
+      Aktuellen Verlauf verwenden
+    </option>
 
-            ${fmtDate(event.date)}
-            ·
-            ${esc(event.mission)}
+    ${
+      missions
+        .map(
+          event => `
+            <option
+              value="${esc(
+                event.date
+              )}">
 
-          </option>`
-      )
-      .join("");
+              ${formatDate(
+                event.date
+              )}
+              ·
+              ${esc(
+                event.mission
+              )}
+
+            </option>
+          `
+        )
+        .join("")
+    }
+  `;
 
 
   const restore =
@@ -1211,11 +1021,492 @@ function renderRestoreSelector(){
     "restoreInfo"
   ).textContent =
     restore
-      ? `Aktuell ist die Historie auf ${fmtDate(
+      ? `Aktueller Kampagnenstand: ${formatDate(
           restore.targetDate
-        )} begrenzt.`
+        )}.`
       : "Keine historische Rücksetzung aktiv.";
+}
 
+
+/* =========================================================
+   LOG
+   ========================================================= */
+
+function renderLog(){
+
+  const container =
+    document.getElementById(
+      "log"
+    );
+
+
+  if(
+    !state.log.length
+  ){
+
+    container.innerHTML = `
+      <div class="empty">
+        Noch keine Ereignisse vorhanden.
+      </div>
+    `;
+
+    return;
+  }
+
+
+  container.innerHTML =
+    state.log
+      .map(
+        entry => {
+
+          if(
+            entry.type ===
+            "restore"
+          ){
+
+            return renderRestoreLog(
+              entry
+            );
+          }
+
+
+          if(
+            entry.type ===
+            "event-status"
+          ){
+
+            return renderAuditLog(
+              entry
+            );
+          }
+
+
+          if(
+            entry.type ===
+            "faction-status"
+          ){
+
+            return renderAuditLog(
+              entry
+            );
+          }
+
+
+          if(
+            entry.type !==
+            "mission"
+          ){
+
+            return "";
+          }
+
+
+          return renderMissionLog(
+            entry
+          );
+        }
+      )
+      .join("");
+}
+
+
+/* =========================================================
+   MISSIONS-LOG
+   ========================================================= */
+
+function renderMissionLog(
+  entry
+){
+
+  const status =
+    entry.displayStatus;
+
+
+  let badge = "";
+
+
+  if(
+    status ===
+    "retconned"
+  ){
+
+    badge = `
+      <span class="badge retcon">
+        RETCONNED
+      </span>
+    `;
+
+  }else if(
+    status ===
+    "excluded"
+  ){
+
+    badge = `
+      <span class="badge excluded">
+        außerhalb des aktuellen Stands
+      </span>
+    `;
+
+  }else{
+
+    badge = `
+      <span class="badge valid">
+        gültig
+      </span>
+    `;
+  }
+
+
+  const changes =
+    (entry.changes || [])
+      .map(
+        change => {
+
+          const delta =
+            Number(
+              change.delta
+            ) || 0;
+
+
+          const before =
+            change.beforeRep;
+
+
+          const after =
+            change.afterRep;
+
+
+          return `
+            <div class="log-change">
+
+              <strong>
+                ${esc(
+                  change.factionName
+                )}
+              </strong>
+
+              <span
+                class="${repClass(delta)}">
+
+                ${formatREP(
+                  delta
+                )}
+
+              </span>
+
+              REP
+
+
+              ${
+                before !== null &&
+                after !== null
+                  ? `
+                    ·
+                    ${formatREP(before)}
+                    →
+                    ${formatREP(after)}
+                  `
+                  : ""
+              }
+
+            </div>
+          `;
+        }
+      )
+      .join("");
+
+
+  const canChangeStatus =
+    status ===
+    "valid" ||
+    status ===
+    "retconned";
+
+
+  let action = "";
+
+
+  if(
+    canChangeStatus
+  ){
+
+    if(
+      status ===
+      "valid"
+    ){
+
+      action = `
+        <button
+          class="small danger"
+          onclick="setEventStatus(
+            '${entry.id}',
+            'retconned'
+          )">
+
+          Mission ungültig machen
+
+        </button>
+      `;
+
+    }else{
+
+      action = `
+        <button
+          class="small"
+          onclick="setEventStatus(
+            '${entry.id}',
+            'valid'
+          )">
+
+          Mission wieder werten
+
+        </button>
+      `;
+    }
+  }
+
+
+  let statusHistory = "";
+
+
+  if(
+    Array.isArray(
+      entry.statusHistory
+    ) &&
+    entry.statusHistory.length
+  ){
+
+    statusHistory = `
+      <div
+        class="muted"
+        style="margin-top:9px">
+
+        Statusverlauf:
+
+        ${
+          entry.statusHistory
+            .map(
+              item => `
+                <div>
+                  ${formatDateTime(
+                    item.date
+                  )}
+                  ·
+                  ${item.status === "retconned"
+                    ? "retconned"
+                    : "gültig"}
+                  ·
+                  ${esc(
+                    item.reason
+                  )}
+                </div>
+              `
+            )
+            .join("")
+        }
+
+      </div>
+    `;
+  }
+
+
+  return `
+    <div
+      class="
+        log-entry
+        ${status === "retconned"
+          ? "retconned"
+          : ""}
+        ${status === "excluded"
+          ? "excluded"
+          : ""}
+      ">
+
+      <div class="log-head">
+
+        <div class="log-title">
+
+          ${esc(
+            entry.mission
+          )}
+
+          ${badge}
+
+        </div>
+
+        <div class="muted">
+
+          ${formatDate(
+            entry.date
+          )}
+
+        </div>
+
+      </div>
+
+
+      ${
+        entry.reason
+          ? `
+            <div class="log-description">
+              ${esc(
+                entry.reason
+              )}
+            </div>
+          `
+          : ""
+      }
+
+
+      <div>
+        ${changes}
+      </div>
+
+
+      ${statusHistory}
+
+
+      ${
+        action
+          ? `
+            <div class="log-actions">
+              ${action}
+            </div>
+          `
+          : ""
+      }
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   RESTORE-LOG
+   ========================================================= */
+
+function renderRestoreLog(
+  entry
+){
+
+  return `
+    <div
+      class="log-entry restore">
+
+      <div class="log-head">
+
+        <div class="log-title">
+
+          ↶
+          ${esc(
+            entry.mission
+          )}
+
+          <span class="badge restore">
+            RÜCKSETZUNG
+          </span>
+
+        </div>
+
+
+        <div class="muted">
+
+          ${formatDate(
+            entry.date
+          )}
+
+        </div>
+
+      </div>
+
+
+      <div class="log-description">
+
+        Stand bis:
+
+        <strong>
+          ${formatDate(
+            entry.targetDate
+          )}
+        </strong>
+
+      </div>
+
+
+      ${
+        entry.reason
+          ? `
+            <div class="log-description">
+              ${esc(
+                entry.reason
+              )}
+            </div>
+          `
+          : ""
+      }
+
+
+      <div
+        class="muted"
+        style="margin-top:8px">
+
+        ${
+          (entry.excludedEventIds || [])
+            .length
+        }
+        ältere Ereignisse wurden durch diese
+        Rücksetzung aus der aktuellen Wertung genommen.
+
+      </div>
+
+    </div>
+  `;
+}
+
+
+/* =========================================================
+   AUDIT-LOG
+   ========================================================= */
+
+function renderAuditLog(
+  entry
+){
+
+  return `
+    <div
+      class="log-entry audit">
+
+      <div class="log-head">
+
+        <div class="log-title">
+          ${esc(
+            entry.mission
+          )}
+        </div>
+
+        <div class="muted">
+          ${formatDate(
+            entry.date
+          )}
+        </div>
+
+      </div>
+
+
+      ${
+        entry.reason
+          ? `
+            <div class="log-description">
+              ${esc(
+                entry.reason
+              )}
+            </div>
+          `
+          : ""
+      }
+
+    </div>
+  `;
 }
 
 
@@ -1254,7 +1545,9 @@ async function addFaction(){
 
 
   const baseRep =
-    Number(base);
+    Number(
+      base
+    );
 
 
   if(
@@ -1271,74 +1564,52 @@ async function addFaction(){
   }
 
 
-  clearError();
+  const createdDate =
+    prompt(
+      "Datum des Start-REP:",
+      todayISO()
+    );
 
-  showStatus(
-    "Fraktion wird angelegt…"
-  );
+
+  if(
+    createdDate ===
+    null
+  ){
+    return;
+  }
 
 
   try{
 
-    const response =
-      await fetch(
-        API_URL +
+    const result =
+      await api(
         "/faction",
         {
-          method:"POST",
+          name:
+            name.trim(),
 
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
+          baseRep,
 
-          body:
-            JSON.stringify({
-              name:
-                name.trim(),
-
-              baseRep
-            })
+          createdDate
         }
       );
-
-
-    const result =
-      await response.json();
-
-
-    if(!response.ok){
-
-      throw new Error(
-        result.error ||
-        "Fraktion konnte nicht angelegt werden."
-      );
-
-    }
 
 
     await load(
       "Fraktion angelegt."
     );
 
-
   }catch(error){
-
-    showStatus(
-      "Fehler"
-    );
 
     showError(
       error.message
     );
-
   }
-
 }
 
 
 /* =========================================================
-   FRAKTIONSSTATUS
+   FRAKTION AKTIV / INAKTIV
    ========================================================= */
 
 async function toggleFaction(
@@ -1348,8 +1619,8 @@ async function toggleFaction(
 
   const faction =
     state.factions.find(
-      f =>
-        f.id ===
+      faction =>
+        faction.id ===
         factionId
     );
 
@@ -1376,56 +1647,27 @@ async function toggleFaction(
 
   try{
 
-    const response =
-      await fetch(
-        API_URL +
-        "/faction/status",
-        {
-          method:"POST",
+    await api(
+      "/faction/status",
+      {
+        factionId,
 
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify({
-              factionId,
-
-              active:
-                !active
-            })
-        }
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if(!response.ok){
-
-      throw new Error(
-        result.error ||
-        "Statusänderung fehlgeschlagen."
-      );
-
-    }
+        active:
+          !active
+      }
+    );
 
 
     await load(
-      "Gespeichert."
+      "Fraktionsstatus geändert."
     );
-
 
   }catch(error){
 
     showError(
       error.message
     );
-
   }
-
 }
 
 
@@ -1435,27 +1677,27 @@ async function toggleFaction(
 
 function addChangeRow(){
 
-  const activeFactions =
+  const factions =
     state.factions.filter(
-      f =>
-        f.active !==
+      faction =>
+        faction.active !==
         false
     );
 
 
   if(
-    !activeFactions.length
+    !factions.length
   ){
 
     alert(
-      "Keine aktive Fraktion vorhanden."
+      "Es gibt keine aktive Fraktion."
     );
 
     return;
   }
 
 
-  const wrap =
+  const container =
     document.getElementById(
       "changeRows"
     );
@@ -1483,15 +1725,20 @@ function addChangeRow(){
         class="faction-select">
 
         ${
-          activeFactions
+          factions
             .map(
-              f =>
-                `<option
-                  value="${esc(f.id)}">
+              faction => `
+                <option
+                  value="${esc(
+                    faction.id
+                  )}">
 
-                  ${esc(f.name)}
+                  ${esc(
+                    faction.name
+                  )}
 
-                </option>`
+                </option>
+              `
             )
             .join("")
         }
@@ -1513,16 +1760,15 @@ function addChangeRow(){
         ${
           effects
             .map(
-              e =>
-                `<option
-                  value="${e[1]}">
+              effect => `
+                <option
+                  value="${effect[1]}">
 
-                  ${e[0]}
-                  (${e[1] > 0
-                    ? "+"
-                    : ""}${e[1]})
+                  ${effect[0]}
+                  (${effect[1] > 0 ? "+" : ""}${effect[1]})
 
-                </option>`
+                </option>
+              `
             )
             .join("")
         }
@@ -1544,10 +1790,9 @@ function addChangeRow(){
   `;
 
 
-  wrap.appendChild(
+  container.appendChild(
     row
   );
-
 }
 
 
@@ -1615,6 +1860,7 @@ async function applyChanges(){
   const changes =
     rows.map(
       row => ({
+
         factionId:
           row
             .querySelector(
@@ -1636,8 +1882,8 @@ async function applyChanges(){
 
   const ids =
     changes.map(
-      c =>
-        c.factionId
+      change =>
+        change.factionId
     );
 
 
@@ -1666,41 +1912,21 @@ async function applyChanges(){
 
   try{
 
-    const response =
-      await fetch(
-        API_URL +
-        "/change",
-        {
-          method:"POST",
+    await api(
+      "/change",
+      {
+        mission,
 
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
+        date,
 
-          body:
-            JSON.stringify({
-              mission,
-              date,
-              reason,
-              changes
-            })
-        }
-      );
+        reason,
 
+        changes,
 
-    const result =
-      await response.json();
-
-
-    if(!response.ok){
-
-      throw new Error(
-        result.error ||
-        "Mission konnte nicht gespeichert werden."
-      );
-
-    }
+        by:
+          "DM"
+      }
+    );
 
 
     document.getElementById(
@@ -1733,24 +1959,23 @@ async function applyChanges(){
 
     button.disabled =
       false;
-
   }
-
 }
 
 
 /* =========================================================
-   RETCON
+   RETCON / WIEDER GÜLTIG
    ========================================================= */
 
-async function retconMission(
-  eventId
+async function setEventStatus(
+  eventId,
+  status
 ){
 
   const event =
     state.events.find(
-      e =>
-        e.id ===
+      event =>
+        event.id ===
         eventId
     );
 
@@ -1760,87 +1985,79 @@ async function retconMission(
   }
 
 
+  const retcon =
+    status ===
+    "retconned";
+
+
+  const question =
+    retcon
+      ? `Warum soll "${event.mission}" retconned werden?`
+      : `Warum soll "${event.mission}" wieder gewertet werden?`;
+
+
   const reason =
     prompt(
-      `Warum soll "${event.mission}" ungültig werden?`
+      question
     );
 
 
   if(
-    reason === null ||
+    reason ===
+    null ||
     !reason.trim()
   ){
-
     return;
   }
 
 
+  const confirmation =
+    retcon
+
+      ? `Die Mission "${event.mission}" wird aus der aktuellen REP-Berechnung genommen. Die Mission bleibt im Log erhalten. Fortfahren?`
+
+      : `Die Mission "${event.mission}" wird wieder in die REP-Berechnung aufgenommen. Dadurch wird auch eventuell durch den Retcon entstandener REP-Verfall neu berechnet. Fortfahren?`;
+
+
   if(
     !confirm(
-      `Mission "${event.mission}" wirklich retconnen?\n\n` +
-      `Die Mission bleibt im Log erhalten, zählt aber künftig nicht mehr zur REP-Berechnung.`
+      confirmation
     )
   ){
-
     return;
   }
 
 
   try{
 
-    const response =
-      await fetch(
-        API_URL +
-        "/retcon",
-        {
-          method:"POST",
+    await api(
+      "/event/status",
+      {
+        eventId,
 
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
+        status,
 
-          body:
-            JSON.stringify({
-              eventId,
+        reason:
+          reason.trim(),
 
-              reason:
-                reason.trim(),
-
-              by:
-                "DM"
-            })
-        }
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if(!response.ok){
-
-      throw new Error(
-        result.error ||
-        "Retcon fehlgeschlagen."
-      );
-
-    }
+        by:
+          "DM"
+      }
+    );
 
 
     await load(
-      "Mission retconned."
+      retcon
+        ? "Mission retconned."
+        : "Mission wieder gültig."
     );
-
 
   }catch(error){
 
     showError(
       error.message
     );
-
   }
-
 }
 
 
@@ -1851,9 +2068,11 @@ async function retconMission(
 async function restoreStand(){
 
   const targetDate =
-    document.getElementById(
-      "restoreTarget"
-    ).value;
+    document
+      .getElementById(
+        "restoreTarget"
+      )
+      .value;
 
 
   if(!targetDate){
@@ -1867,10 +2086,12 @@ async function restoreStand(){
 
 
   const reason =
-    document.getElementById(
-      "restoreReason"
-    ).value
-    .trim();
+    document
+      .getElementById(
+        "restoreReason"
+      )
+      .value
+      .trim();
 
 
   if(!reason){
@@ -1885,56 +2106,32 @@ async function restoreStand(){
 
   if(
     !confirm(
-      `Reputation wirklich auf den Stand vom ${fmtDate(
+      `REP wirklich auf den Stand vom ${formatDate(
         targetDate
       )} zurücksetzen?\n\n` +
-      `Missionen danach bleiben im Log erhalten, zählen aber für den aktuellen Stand nicht mehr.`
+
+      `Spätere bereits vorhandene Missionen bleiben im Log, zählen aber ab dieser Rücksetzung nicht mehr zum aktuellen Kampagnenstand.\n\n` +
+
+      `Neue Missionen, die danach eingetragen werden, können wieder ganz normal gewertet werden.`
     )
   ){
-
     return;
   }
 
 
   try{
 
-    const response =
-      await fetch(
-        API_URL +
-        "/restore",
-        {
-          method:"POST",
+    await api(
+      "/restore",
+      {
+        targetDate,
 
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
+        reason,
 
-          body:
-            JSON.stringify({
-              targetDate,
-
-              reason,
-
-              by:
-                "DM"
-            })
-        }
-      );
-
-
-    const result =
-      await response.json();
-
-
-    if(!response.ok){
-
-      throw new Error(
-        result.error ||
-        "Rücksetzung fehlgeschlagen."
-      );
-
-    }
+        by:
+          "DM"
+      }
+    );
 
 
     document.getElementById(
@@ -1943,39 +2140,151 @@ async function restoreStand(){
 
 
     await load(
-      "Historischer Stand wiederhergestellt."
+      `Auf Stand vom ${formatDate(
+        targetDate
+      )} zurückgesetzt.`
     );
-
 
   }catch(error){
 
     showError(
       error.message
     );
-
   }
-
 }
 
 
 /* =========================================================
-   LADEN
+   RESTORE AUF AKTUELLEN VERLAUF
+   ========================================================= */
+
+async function restoreCurrent(){
+
+  const reason =
+    prompt(
+      "Warum soll die historische Rücksetzung aufgehoben und der aktuelle Verlauf wieder vollständig gewertet werden?"
+    );
+
+
+  if(
+    reason ===
+    null ||
+    !reason.trim()
+  ){
+    return;
+  }
+
+
+  if(
+    !confirm(
+      "Den aktuellen Verlauf wieder vollständig verwenden?"
+    )
+  ){
+    return;
+  }
+
+
+  try{
+
+    await api(
+      "/restore",
+      {
+        targetDate:
+          todayISO(),
+
+        reason:
+          reason.trim(),
+
+        by:
+          "DM"
+      }
+    );
+
+
+    await load(
+      "Aktueller Verlauf wiederhergestellt."
+    );
+
+  }catch(error){
+
+    showError(
+      error.message
+    );
+  }
+}
+
+
+/* =========================================================
+   API
+   ========================================================= */
+
+async function api(
+  path,
+  body
+){
+
+  const response =
+    await fetch(
+      API_URL +
+      path,
+      {
+        method:
+          "POST",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify(
+            body
+          )
+      }
+    );
+
+
+  const result =
+    await response
+      .json()
+      .catch(
+        () => ({
+          error:
+            "Ungültige Serverantwort."
+        })
+      );
+
+
+  if(
+    !response.ok
+  ){
+
+    throw new Error(
+      result.error ||
+      `HTTP-Fehler ${response.status}`
+    );
+  }
+
+
+  return result;
+}
+
+
+/* =========================================================
+   DATEN LADEN
    ========================================================= */
 
 async function load(
-  successMessage = null
+  message = null
 ){
 
   clearError();
 
 
-  if(!successMessage){
-
-    showStatus(
-      "Daten werden geladen…"
-    );
-
-  }
+  setStatus(
+    message ||
+    "Zentralen Stand laden…"
+  );
 
 
   try{
@@ -1985,22 +2294,25 @@ async function load(
         API_URL +
         "/data",
         {
-          cache:"no-store"
+          cache:
+            "no-store"
         }
       );
 
 
     const result =
-      await response.json();
+      await response
+        .json();
 
 
-    if(!response.ok){
+    if(
+      !response.ok
+    ){
 
       throw new Error(
         result.error ||
         "Daten konnten nicht geladen werden."
       );
-
     }
 
 
@@ -2008,44 +2320,100 @@ async function load(
       result;
 
 
-    document.getElementById(
-      "changeDate"
-    ).value =
-      todayISO();
-
-
     render();
 
+
+    /*
+     * Standarddatum der Mission.
+     */
+
+    const dateField =
+      document.getElementById(
+        "changeDate"
+      );
+
+
+    if(
+      !dateField.value
+    ){
+
+      dateField.value =
+        todayISO();
+    }
+
+
+    /*
+     * Eine erste Änderungszeile
+     * bereitstellen.
+     */
 
     if(
       !document.querySelector(
         ".change-row"
+      ) &&
+      state.factions.some(
+        faction =>
+          faction.active !== false
       )
     ){
 
       addChangeRow();
-
     }
 
 
-    showStatus(
-      successMessage ||
+    setStatus(
+      message ||
       "Zentraler Stand geladen."
     );
 
-
   }catch(error){
 
-    showStatus(
+    setStatus(
       "Fehler beim Laden."
     );
 
     showError(
       error.message
     );
+  }
+}
 
+
+/* =========================================================
+   SORTIERUNG
+   ========================================================= */
+
+function compareEvents(
+  a,
+  b
+){
+
+  const date =
+    String(
+      a.date || ""
+    ).localeCompare(
+      String(
+        b.date || ""
+      )
+    );
+
+
+  if(
+    date !== 0
+  ){
+    return date;
   }
 
+
+  return String(
+    a.createdAt ||
+    ""
+  ).localeCompare(
+    String(
+      b.createdAt ||
+      ""
+    )
+  );
 }
 
 
