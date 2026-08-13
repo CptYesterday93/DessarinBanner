@@ -1,35 +1,37 @@
 {
-  "version": 2,
-  "decay": {
-    "1": 30,
-    "2": 60,
-    "3": 90,
-    "-1": 40,
-    "-2": 80,
-    "-3": 120
+  "version": 3,
+  "settings": {
+    "effectDays": {
+      "1": 30,
+      "2": 60,
+      "3": 90,
+      "-1": 40,
+      "-2": 80,
+      "-3": 120
+    },
+    "statusRules": [
+      {
+        "min": 8,
+        "label": "Verbündet"
+      },
+      {
+        "min": 3,
+        "label": "Wohlwollend"
+      },
+      {
+        "min": -2,
+        "label": "Neutral"
+      },
+      {
+        "min": -4,
+        "label": "Skeptisch"
+      },
+      {
+        "min": -999,
+        "label": "Feindlich"
+      }
+    ]
   },
-  "status": [
-    {
-      "min": 8,
-      "label": "Verbündet"
-    },
-    {
-      "min": 3,
-      "label": "Wohlwollend"
-    },
-    {
-      "min": -2,
-      "label": "Neutral"
-    },
-    {
-      "min": -4,
-      "label": "Skeptisch"
-    },
-    {
-      "min": -999,
-      "label": "Feindlich"
-    }
-  ],
   "places": [
     {
       "id": "yartar",
@@ -41,7 +43,6 @@
           "id": "yartar-obrigkeit",
           "name": "Obrigkeit / Stadtwache",
           "weight": 1,
-          "rep": 0,
           "description": "Stadtverwaltung, Stadtwache und andere offizielle Stellen Yartars.",
           "order": 1
         },
@@ -49,7 +50,6 @@
           "id": "yartar-haendler",
           "name": "Händler",
           "weight": 1,
-          "rep": 0,
           "description": "Händler, Handelsunternehmen und lokale Handelsinteressen.",
           "order": 2
         },
@@ -57,7 +57,6 @@
           "id": "yartar-gemeines-volk",
           "name": "Gemeines Volk",
           "weight": 1,
-          "rep": 0,
           "description": "Die allgemeine Bevölkerung Yartars ohne besondere Zugehörigkeit.",
           "order": 3
         },
@@ -65,7 +64,6 @@
           "id": "yartar-unterwelt",
           "name": "Unterwelt",
           "weight": 0.5,
-          "rep": 0,
           "description": "Kriminelle Netzwerke, Diebesgruppen und andere Teile der lokalen Unterwelt.",
           "order": 4
         }
@@ -74,41 +72,38 @@
     {
       "id": "calling-horns",
       "name": "Calling Horns",
-      "rep": 0
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
     },
     {
       "id": "everlund",
       "name": "Everlund",
-      "rep": 0
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
     },
     {
       "id": "longsaddle",
       "name": "Longsaddle",
-      "rep": 0
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
     },
     {
       "id": "triboar",
       "name": "Triboar",
-      "rep": 0
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
     }
   ],
   "organizations": [
     {
       "id": "harpers",
       "name": "Harpers",
-      "rep": 0,
       "description": "Ein weit verzweigtes Netzwerk, das sich für Freiheit, Wissen und den Schutz vor gefährlichen Mächten einsetzt."
     },
     {
       "id": "kraken-society",
       "name": "Kraken Society",
-      "rep": 0,
       "description": "Eine weitreichende kriminelle Organisation mit eigenen Interessen und verdecktem Einfluss."
     },
     {
       "id": "zhentarim",
       "name": "Zhentarim",
-      "rep": 0,
       "description": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten mit starkem Eigeninteresse."
     }
   ],
