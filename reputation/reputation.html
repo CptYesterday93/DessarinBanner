@@ -13,7 +13,7 @@ h1{text-align:center;font-size:28px;letter-spacing:.02em;margin:0}
 .subtitle{text-align:center;color:#555;margin:2px 0 26px}
 .notice{padding:10px 12px;background:#f3f5fb;border-left:3px solid var(--accent);margin:0 0 24px;color:#333}
 .section-title{font-size:18px;font-weight:700;margin:24px 0 9px;padding:7px 10px;background:#ededed;border-radius:7px}
-.table-wrap{overflow-x:auto}
+.table-wrap{overflow-x:auto}.manage-actions{min-width:145px}
 table{width:100%;border-collapse:collapse}
 th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
 th{font-size:12px;font-weight:700;color:#333}
@@ -23,7 +23,10 @@ th{font-size:12px;font-weight:700;color:#333}
 .child td:first-child{padding-left:42px}
 .child{font-size:13px}
 .info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:5px;border:1px solid #aaa;border-radius:50%;font-size:11px;color:#555;cursor:pointer;vertical-align:middle;background:#fff}
-.info:hover{background:#f3f3f3}.info.info-btn{padding:0;box-shadow:none;line-height:16px;cursor:pointer;background:#fff}
+.info:hover{background:#f3f3f3}
+.manage-actions{display:flex;gap:5px;justify-content:flex-end;white-space:nowrap}
+.manage-btn{font-size:12px;padding:4px 7px}
+.info.info-btn{padding:0;box-shadow:none;line-height:16px;cursor:pointer;background:#fff}
 details.hint{margin-top:3px}
 details.hint summary{cursor:pointer;color:var(--muted);font-size:12px}
 button{font:inherit;border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
@@ -84,7 +87,7 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="section-title">Orte</div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Ort</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th></tr></thead>
+<thead><tr><th>Ort</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
 <tbody id="placesBody"></tbody>
 </table>
 <div class="toolbar"><button onclick="addPlace()">＋ Ort hinzufügen</button></div>
@@ -93,7 +96,7 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="section-title">Organisationen</div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Organisation</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th></tr></thead>
+<thead><tr><th>Organisation</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
 <tbody id="orgsBody"></tbody>
 </table>
 <div class="toolbar"><button onclick="addOrganization()">＋ Organisation hinzufügen</button><span class="statusbar" id="loadStatus">Daten werden geladen…</span></div>
@@ -122,6 +125,24 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <button onclick="addPlaceFromChoice()">Ort</button>
 <button onclick="addOrganizationFromChoice()">Organisation</button>
 <button onclick="closeAddChoice()">Abbrechen</button>
+</div>
+</div>
+</div>
+
+<div id="manageBackdrop" class="modal-backdrop" onclick="manageBackdropClose(event)">
+<div class="modal" role="dialog" aria-modal="true">
+<h2 id="manageTitle">Eintrag bearbeiten</h2>
+<div>
+<label for="manageName">Name</label>
+<input id="manageName" type="text" style="width:100%">
+</div>
+<div style="margin-top:10px">
+<label for="manageDescription">Info / Beschreibung</label>
+<textarea id="manageDescription" style="width:100%;min-height:110px" placeholder="Kurze Erklärung, was diese Gruppe / dieser Ort ist."></textarea>
+</div>
+<div class="modal-actions" style="gap:8px">
+<button onclick="closeManage()">Abbrechen</button>
+<button class="primary" onclick="saveManagedEntry()">Speichern</button>
 </div>
 </div>
 </div>
@@ -260,11 +281,11 @@ function render(){
  for(const p of places){
    const e=effective(p.id),st=statusFor(e),lc=lastPlaceChange(p);
    const sub=p.aggregate==='yartar'?'Gesamtwert aus 4 lokalen Gruppen':'';
-   rows+=`<tr><td><div class="place-main">${p.id==='yartar'?'▼ ':''}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td></tr>`;
+   rows+=`<tr><td><div class="place-main">${p.id==='yartar'?'▼ ':''}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('place','${esc(p.id)}')">Bearbeiten</button>${p.id!=='yartar'?`<button class="manage-btn danger" onclick="deleteManaged('place','${esc(p.id)}')">Löschen</button>`:''}</td></tr>`;
    if(p.id==='yartar'){
      for(const c of [...(p.children||[])].sort((a,b)=>a.order-b.order)){
        const ce=effectiveDirect(c.id);
-       rows+=`<tr class="child"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td></tr>`;
+       rows+=`<tr class="child"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('local','${esc(c.id)}')">Bearbeiten</button></td></tr>`;
      }
    }
  }
@@ -273,7 +294,7 @@ function render(){
  const ob=document.getElementById('orgsBody');
  ob.innerHTML=[...(state.organizations||[])].sort((a,b)=>a.name.localeCompare(b.name,'de')).map(o=>{
    const e=effectiveDirect(o.id),st=statusFor(e);
-   return `<tr><td><div class="place-main">${esc(o.name)}${infoButton(o.name,o.description||'')}</div></td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lastChange(o.id))}</td></tr>`;
+   return `<tr><td><div class="place-main">${esc(o.name)}${infoButton(o.name,o.description||'')}</div></td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lastChange(o.id))}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('organization','${esc(o.id)}')">Bearbeiten</button><button class="manage-btn danger" onclick="deleteManaged('organization','${esc(o.id)}')">Löschen</button></td></tr>`;
  }).join('');
  renderLog();
 }
@@ -327,21 +348,68 @@ function showInfoText(title,text){
 }
 function closeModal(){document.getElementById('modalBackdrop').classList.remove('open')}
 function backdropClose(e){if(e.target.id==='modalBackdrop')closeModal()}
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAddChoice()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAddChoice();closeManage()}});
 function showAddChoice(){document.getElementById('addChoiceBackdrop').classList.add('open')}
 function closeAddChoice(){document.getElementById('addChoiceBackdrop').classList.remove('open')}
 function addChoiceBackdropClose(e){if(e.target.id==='addChoiceBackdrop')closeAddChoice()}
 function addPlaceFromChoice(){closeAddChoice();addPlace()}
 function addOrganizationFromChoice(){closeAddChoice();addOrganization()}
 
-function addPlace(){const name=prompt('Name des neuen Ortes:');if(!name?.trim())return;state.places.push({id:'place-'+Date.now(),name:name.trim(),rep:0,children:[]});persist().then(render);}
-function addOrganization(){const name=prompt('Name der neuen Organisation:');if(!name?.trim())return;state.organizations.push({id:'org-'+Date.now(),name:name.trim(),rep:0,description:''});persist().then(render);}
-async function persist(){
- document.getElementById('loadStatus').textContent='Speichern…';
- if(!WRITE_URL){localStorage.setItem('dessarin-reputation-local-v2',JSON.stringify(state));document.getElementById('loadStatus').textContent='Vorschau – lokal gespeichert.';return}
- const r=await fetch(WRITE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});if(!r.ok)throw new Error('Speichern fehlgeschlagen');
- document.getElementById('loadStatus').textContent='Gespeichert.';
+let manageMode=null;
+let manageId=null;
+
+function openManage(mode,id){
+ manageMode=mode; manageId=id;
+ const title=document.getElementById('manageTitle');
+ const name=document.getElementById('manageName');
+ const desc=document.getElementById('manageDescription');
+ if(mode==='new-place'){title.textContent='Ort hinzufügen';name.value='';desc.value='';}
+ else if(mode==='new-organization'){title.textContent='Organisation hinzufügen';name.value='';desc.value='';}
+ else{
+  const u=unitById(id);
+  if(!u)return;
+  title.textContent='Eintrag bearbeiten';
+  if(u.kind==='local'){name.value=u.unit.name||'';desc.value=u.unit.description||'';}
+  else if(u.kind==='place'){name.value=u.place.name||'';desc.value=u.place.info||'';}
+  else if(u.kind==='organization'){name.value=u.org.name||'';desc.value=u.org.description||'';}
+ }
+ document.getElementById('manageBackdrop').classList.add('open');
+ setTimeout(()=>name.focus(),0);
 }
+function closeManage(){document.getElementById('manageBackdrop').classList.remove('open');manageMode=null;manageId=null;}
+function manageBackdropClose(e){if(e.target.id==='manageBackdrop')closeManage();}
+function saveManagedEntry(){
+ const name=document.getElementById('manageName').value.trim();
+ const description=document.getElementById('manageDescription').value.trim();
+ if(!name){alert('Bitte einen Namen eintragen.');return;}
+ if(manageMode==='new-place'){
+  state.places.push({id:'place-'+Date.now(),name,rep:0,info:description,children:[]});
+ }else if(manageMode==='new-organization'){
+  state.organizations.push({id:'org-'+Date.now(),name,rep:0,description});
+ }else{
+  const u=unitById(manageId);
+  if(!u)return;
+  if(u.kind==='local'){u.unit.name=name;u.unit.description=description;}
+  else if(u.kind==='place'){u.place.name=name;u.place.info=description;}
+  else if(u.kind==='organization'){u.org.name=name;u.org.description=description;}
+ }
+ persist().then(()=>{closeManage();render();});
+}
+function deleteManaged(kind,id){
+ const u=unitById(id);
+ if(!u)return;
+ if(kind==='place' && id==='yartar')return;
+ if(!confirm(`"${u.name}" wirklich löschen?`))return;
+ const hasEvents=(state.events||[]).some(e=>e.targetId===id);
+ if(hasEvents){
+  if(!confirm('Für diesen Eintrag existieren bereits Rufänderungen. Wirklich löschen? Die gespeicherten Ereignisse bleiben erhalten, wirken aber nicht mehr auf einen vorhandenen Eintrag.'))return;
+ }
+ if(kind==='place')state.places=state.places.filter(x=>x.id!==id);
+ if(kind==='organization')state.organizations=state.organizations.filter(x=>x.id!==id);
+ persist().then(render);
+}
+
+function addPlace(){openManage('new-place',null)}
 async function load(){
  document.getElementById('changeDate').value=todayISO();
  try{
