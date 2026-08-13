@@ -1,133 +1,87 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="de">
-
 <head>
-
-<meta charset="utf-8">
-
-<meta
-  name="viewport"
-  content="width=device-width,initial-scale=1">
-
-<title>
-  Reputationsübersicht – Dessarin Banner
-</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reputation – Dessarin Banner</title>
 
 <style>
-
 :root{
-  --ink:#171717;
+  --accent:#3159b7;
+  --accent-dark:#24458e;
+  --line:#d7d7d7;
+  --bg:#f4f4f4;
+  --card:#fff;
   --muted:#666;
-  --accent:#3157a6;
-  --paper:#fff;
-  --page:#f2f2f2;
-  --line:#d9d9d9;
-  --warning:#fff7df;
-  --danger:#8b2626;
-  --success:#27662d;
+  --positive:#27662d;
+  --negative:#8b2626;
+  --warning:#8a5a00;
+  --inactive:#888;
 }
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
-  background:var(--page);
-  color:var(--ink);
-  font:14px/1.45 Arial,Helvetica,sans-serif;
+  background:var(--bg);
+  color:#111;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 .sheet{
-  width:min(1150px,calc(100% - 20px));
-  margin:20px auto 40px;
-  background:var(--paper);
-  padding:32px 38px 50px;
-  box-shadow:0 2px 18px #0001;
+  width:min(1100px,calc(100% - 24px));
+  margin:0 auto;
+  padding:28px 0 50px;
 }
 
 h1{
-  margin:0;
   text-align:center;
-  font-size:29px;
-  letter-spacing:.03em;
+  margin:0;
+  font-size:30px;
+  letter-spacing:.5px;
 }
 
 .subtitle{
   text-align:center;
-  color:var(--muted);
-  margin:4px 0 28px;
+  color:#555;
+  margin:6px 0 28px;
+}
+
+.notice{
+  padding:12px 14px;
+  background:#f1f3fa;
+  border-left:4px solid var(--accent);
+  margin:0 0 22px;
+  color:#444;
+  line-height:1.5;
 }
 
 .section-title{
   font-size:20px;
-  margin:28px 0 11px;
-  padding:9px 12px;
-  background:#ededed;
-  border-radius:8px;
-}
-
-.notice{
-  padding:11px 13px;
-  background:#f3f5fb;
-  border-left:4px solid var(--accent);
-  margin:12px 0;
-}
-
-.notice.warning{
-  background:var(--warning);
-  border-left-color:#b88900;
-}
-
-.hidden{
-  display:none!important;
+  padding:10px 12px;
+  background:#e9e9e9;
+  border-radius:7px;
+  margin:22px 0 10px;
 }
 
 .toolbar{
   display:flex;
-  gap:9px;
-  align-items:end;
+  gap:10px;
+  align-items:center;
   flex-wrap:wrap;
 }
 
-.field{
-  min-width:180px;
-}
-
-.field.grow{
-  flex:1;
-  min-width:250px;
-}
-
-label{
-  display:block;
-  font-size:13px;
-  font-weight:bold;
-  margin-bottom:5px;
-}
-
-input,
+button,
 select,
+input,
 textarea{
-  width:100%;
   font:inherit;
-  padding:8px 10px;
-  border:1px solid #9da4b2;
-  border-radius:4px;
-  background:white;
-  color:#111;
-}
-
-textarea{
-  min-height:80px;
-  resize:vertical;
 }
 
 button{
-  font:inherit;
-  padding:8px 12px;
   border:1px solid #999;
-  background:white;
+  background:#fff;
+  padding:8px 12px;
   border-radius:4px;
   cursor:pointer;
 }
@@ -136,21 +90,20 @@ button:hover{
   filter:brightness(.97);
 }
 
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
 button.primary{
   background:var(--accent);
-  color:white;
+  color:#fff;
   border-color:var(--accent);
-  font-weight:bold;
+  font-weight:700;
+}
+
+button.primary:hover{
+  background:var(--accent-dark);
 }
 
 button.danger{
-  color:var(--danger);
-  border-color:#c99;
+  color:#9b1c1c;
+  border-color:#c77;
 }
 
 button.small{
@@ -158,15 +111,70 @@ button.small{
   font-size:12px;
 }
 
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+input,
+select,
+textarea{
+  width:100%;
+  border:1px solid #aaa;
+  border-radius:4px;
+  padding:8px 9px;
+  background:#fff;
+}
+
+textarea{
+  min-height:78px;
+  resize:vertical;
+}
+
+label{
+  display:block;
+  font-weight:700;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+.field{
+  margin-bottom:13px;
+}
+
+.mission-row{
+  display:grid;
+  grid-template-columns:1fr 160px;
+  gap:12px;
+}
+
+.change-row{
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) 190px auto;
+  gap:10px;
+  align-items:end;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.change-row:last-child{
+  border-bottom:0;
+}
+
+.add-row{
+  margin-top:10px;
+}
+
 .table-wrap{
   overflow-x:auto;
   border:1px solid var(--line);
+  background:#fff;
 }
 
 table{
   width:100%;
-  min-width:850px;
   border-collapse:collapse;
+  min-width:760px;
 }
 
 th,
@@ -174,6 +182,7 @@ td{
   padding:9px 10px;
   border-bottom:1px solid var(--line);
   text-align:left;
+  vertical-align:middle;
 }
 
 th{
@@ -186,16 +195,21 @@ th{
   white-space:nowrap;
 }
 
+.status{
+  font-weight:700;
+}
+
 .positive{
-  color:var(--success);
+  color:var(--positive);
 }
 
 .negative{
-  color:var(--danger);
+  color:var(--negative);
 }
 
-.status{
-  font-weight:bold;
+.muted{
+  color:var(--muted);
+  font-size:12px;
 }
 
 .statusbar{
@@ -204,458 +218,405 @@ th{
   font-size:12px;
 }
 
-.change-row{
-  display:grid;
-  grid-template-columns:minmax(200px,1fr) 190px auto;
-  gap:10px;
-  align-items:end;
-  padding:10px 0;
-  border-bottom:1px solid var(--line);
+.place-row{
+  background:#fff;
 }
 
-.restore-box{
-  border:1px solid var(--line);
-  border-radius:7px;
-  padding:14px;
+.place-row.featured{
+  background:#f8f9ff;
+}
+
+.place-name{
+  font-weight:700;
+}
+
+.place-info{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:3px;
+}
+
+.info-button{
+  display:inline-flex;
+  width:18px;
+  height:18px;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  border:1px solid #999;
+  padding:0;
+  font-size:11px;
+  margin-left:5px;
+  vertical-align:middle;
+}
+
+.expand-button{
+  border:0;
+  background:transparent;
+  padding:0 5px 0 0;
+  font-size:15px;
+}
+
+.component-row{
   background:#fafafa;
 }
 
-.restore-box select{
-  max-width:800px;
+.component-row td:first-child{
+  padding-left:38px;
+}
+
+.component-name{
+  font-size:13px;
+}
+
+.weight{
+  color:var(--muted);
+  font-size:11px;
+  margin-left:5px;
+}
+
+.derived-label{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.inactive{
+  opacity:.55;
+}
+
+.badge{
+  display:inline-block;
+  padding:2px 7px;
+  border-radius:10px;
+  background:#eee;
+  color:#555;
+  font-size:11px;
+}
+
+.badge.invalid{
+  background:#f8dddd;
+  color:#8b2626;
+}
+
+.badge.active{
+  background:#e0f0e2;
+  color:#27662d;
 }
 
 .log-entry{
   border:1px solid var(--line);
   border-radius:7px;
   padding:13px 14px;
-  margin:8px 0;
+  margin:9px 0;
+  background:#fff;
 }
 
-.log-entry.retconned{
-  background:#fafafa;
-  opacity:.72;
-}
-
-.log-entry.excluded{
-  background:#f7f7f7;
-  opacity:.62;
-}
-
-.log-entry.restore{
-  background:#f3f5fb;
-  border-left:4px solid var(--accent);
-}
-
-.log-entry.audit{
+.log-entry.invalid{
+  opacity:.7;
   background:#fafafa;
 }
 
 .log-head{
   display:flex;
   justify-content:space-between;
-  gap:15px;
+  gap:12px;
+  align-items:baseline;
 }
 
-.log-title{
-  font-weight:bold;
+.log-head strong{
   font-size:15px;
 }
 
-.log-description{
+.log-detail{
+  margin-top:8px;
   color:#444;
-  margin-top:7px;
 }
 
-.log-change{
-  margin-top:8px;
-  padding-left:5px;
+.log-detail div{
+  margin:4px 0;
 }
 
 .log-actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
   margin-top:10px;
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
 }
 
-.badge{
-  display:inline-block;
-  margin-left:6px;
-  padding:2px 7px;
-  border-radius:10px;
-  background:#eee;
-  color:#555;
-  font-size:11px;
-  font-weight:normal;
+.restore-box{
+  padding:14px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:6px;
 }
 
-.badge.valid{
-  background:#e1eee1;
-  color:#27662d;
+.restore-row{
+  display:grid;
+  grid-template-columns:220px 1fr;
+  gap:12px;
+  align-items:end;
 }
 
-.badge.retcon{
-  background:#eadada;
-  color:#8b2626;
-}
-
-.badge.excluded{
-  background:#e6e6e6;
-}
-
-.badge.restore{
-  background:#dce5f8;
-  color:#3157a6;
-}
-
-.muted{
-  color:var(--muted);
-  font-size:12px;
+.hidden{
+  display:none !important;
 }
 
 .empty{
+  padding:18px;
   text-align:center;
   color:var(--muted);
-  padding:18px;
 }
 
-hr{
-  border:0;
-  border-top:1px solid var(--line);
-  margin:18px 0;
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:1000;
+}
+
+.modal{
+  background:#fff;
+  width:min(560px,100%);
+  border-radius:8px;
+  padding:20px;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
+
+.modal h2{
+  margin-top:0;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:16px;
 }
 
 @media(max-width:700px){
-
   .sheet{
-    width:calc(100% - 12px);
-    padding:25px 15px 40px;
+    width:calc(100% - 16px);
+    padding:20px 0 40px;
   }
 
   h1{
     font-size:24px;
   }
 
-  .toolbar{
-    display:grid;
+  .mission-row,
+  .restore-row{
     grid-template-columns:1fr;
-  }
-
-  .field,
-  .field.grow{
-    width:100%;
-    min-width:0;
   }
 
   .change-row{
     grid-template-columns:1fr 1fr;
   }
 
-  .change-row button{
+  .change-row .remove{
     grid-column:2;
+    justify-self:end;
   }
 
   .log-head{
     display:block;
   }
 
+  .log-head .muted{
+    display:block;
+    margin-top:4px;
+  }
 }
-
 </style>
-
 </head>
-
 
 <body>
 
 <main class="sheet">
 
-<h1>
-  REPUTATIONSÜBERSICHT
-</h1>
+  <h1>REPUTATIONSÜBERSICHT</h1>
+  <div class="subtitle">Dessarin Banner · Reputationspunkte (REP)</div>
+
+  <div class="notice" id="rulesNotice">
+    <strong>REP</strong> sind die Reputationspunkte einer Gruppe.
+    Der effektive REP wird automatisch aus der gültigen Ereignishistorie
+    und dem Rufverfall berechnet.
+    Der Status richtet sich ausschließlich nach dem effektiven REP.
+  </div>
+
+  <!-- ORTE -->
+
+  <div class="section-title">Orte</div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ort</th>
+          <th class="num">REP</th>
+          <th>Status</th>
+          <th class="num">Effektiver REP</th>
+          <th>Letzte Änderung</th>
+        </tr>
+      </thead>
+      <tbody id="placeBody"></tbody>
+    </table>
+  </div>
+
+  <div class="toolbar" style="margin-top:10px">
+    <button onclick="addPlace()">＋ Ort hinzufügen</button>
+  </div>
+
+  <!-- ORGANISATIONEN -->
+
+  <div class="section-title">Organisationen</div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Organisation</th>
+          <th class="num">REP</th>
+          <th>Status</th>
+          <th class="num">Effektiver REP</th>
+          <th>Letzte Änderung</th>
+        </tr>
+      </thead>
+      <tbody id="organizationBody"></tbody>
+    </table>
+  </div>
+
+  <div class="toolbar" style="margin-top:10px">
+    <button onclick="addOrganization()">＋ Organisation hinzufügen</button>
+    <span class="statusbar" id="loadStatus">Daten werden geladen…</span>
+  </div>
+
+  <!-- MISSION -->
+
+  <div class="section-title">Rufänderung eintragen</div>
+
+  <div class="field">
+    <label for="mission">Mission / Ereignis</label>
+    <input
+      id="mission"
+      placeholder="z. B. Die verlorene Karawane"
+    >
+  </div>
+
+  <div class="mission-row">
+    <div class="field">
+      <label for="reason">Beschreibung / Begründung</label>
+      <textarea
+        id="reason"
+        placeholder="z. B. Die Charaktere haben den Diebesanführer gefasst und an die Stadtwache übergeben."
+      ></textarea>
+    </div>
+
+    <div class="field">
+      <label for="changeDate">Datum</label>
+      <input id="changeDate" type="date">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Betroffene Reputation</label>
+    <div id="changeRows"></div>
+
+    <div class="add-row">
+      <button onclick="addChangeRow()">＋ REP hinzufügen</button>
+    </div>
+  </div>
+
+  <div style="margin-top:14px">
+    <button class="primary" onclick="applyChanges()">
+      Änderungen übernehmen
+    </button>
+  </div>
+
+  <!-- RESTORE -->
+
+  <div class="section-title">Historischen Stand wiederherstellen</div>
 
-<div class="subtitle">
-  Dessarin Banner · Reputationspunkte (REP)
-</div>
+  <div class="restore-box">
 
+    <div class="restore-row">
 
-<div
-  id="errorBox"
-  class="notice warning hidden">
-</div>
+      <div class="field" style="margin:0">
+        <label for="restoreDate">Kampagnenstand</label>
+        <input id="restoreDate" type="date">
+      </div>
 
+      <div>
+        <button
+          class="danger"
+          onclick="restoreToDate()"
+        >
+          Auf diesen Stand zurücksetzen
+        </button>
 
-<div class="notice">
+        <div class="muted" style="margin-top:6px">
+          Dadurch wird die aktive Historie auf den gewählten Zeitpunkt
+          begrenzt. Spätere Ereignisse bleiben im Log nachvollziehbar.
+        </div>
+      </div>
 
-  <strong>REP</strong> sind die Reputationspunkte
-  einer Fraktion.
+    </div>
 
-  Der effektive REP wird automatisch aus der
-  gültigen Ereignishistorie und dem Rufverfall
-  berechnet.
+    <div style="margin-top:12px">
+      <button onclick="clearRestore()">
+        Aktuellen Verlauf wiederherstellen
+      </button>
+    </div>
 
-  Alle 30 vergangenen Tage verfällt ein REP
-  Richtung 0.
+  </div>
 
-  Der Verfall ist kein eigenes Ereignis und wird
-  deshalb bei Retcons automatisch neu berechnet.
+  <!-- LOG -->
 
-</div>
+  <div class="section-title">Änderungsverlauf</div>
 
-
-<!-- =====================================================
-     AKTUELLER RUF
-     ===================================================== -->
-
-<div class="section-title">
-  Aktueller Fraktionsruf
-</div>
-
-
-<div class="table-wrap">
-
-<table>
-
-<thead>
-
-<tr>
-  <th>Fraktion</th>
-  <th class="num">REP</th>
-  <th>Status</th>
-  <th class="num">Effektive REP</th>
-  <th>Letzte Änderung</th>
-  <th>Aktion</th>
-</tr>
-
-</thead>
-
-<tbody id="factionBody"></tbody>
-
-</table>
-
-</div>
-
-
-<div
-  class="toolbar"
-  style="margin-top:10px">
-
-<button
-  onclick="addFaction()">
-
-  ＋ Fraktion hinzufügen
-
-</button>
-
-<span
-  id="loadStatus"
-  class="statusbar">
-
-  Daten werden geladen…
-
-</span>
-
-</div>
-
-
-<!-- =====================================================
-     HISTORISCHER STAND
-     ===================================================== -->
-
-<div class="section-title">
-  Historischen Stand wiederherstellen
-</div>
-
-
-<div class="restore-box">
-
-<div class="field">
-
-<label for="restoreTarget">
-  Kampagnenstand
-</label>
-
-<select id="restoreTarget">
-
-  <option value="">
-    Aktuellen Verlauf verwenden
-  </option>
-
-</select>
-
-</div>
-
-
-<div
-  id="restoreInfo"
-  class="muted"
-  style="margin-top:8px">
-
-  Keine historische Rücksetzung aktiv.
-
-</div>
-
-
-<div
-  class="field"
-  style="margin-top:12px">
-
-<label for="restoreReason">
-  Begründung
-</label>
-
-<textarea
-  id="restoreReason"
-  placeholder="Warum wird die Kampagnenhistorie auf diesen Stand zurückgesetzt?"></textarea>
-
-</div>
-
-
-<div
-  style="margin-top:10px">
-
-<button
-  class="danger"
-  onclick="restoreStand()">
-
-  ↶ Auf diesen Stand zurücksetzen
-
-</button>
-
-
-<button
-  style="margin-left:7px"
-  onclick="restoreCurrent()">
-
-  Aktuellen Verlauf wiederherstellen
-
-</button>
-
-</div>
-
-</div>
-
-
-<!-- =====================================================
-     NEUE MISSION
-     ===================================================== -->
-
-<div class="section-title">
-  Rufänderung eintragen
-</div>
-
-
-<div class="toolbar">
-
-<div class="field grow">
-
-<label for="mission">
-  Mission / Ereignis
-</label>
-
-<input
-  id="mission"
-  placeholder="z. B. Die verlorene Karawane">
-
-</div>
-
-
-<div
-  class="field"
-  style="width:155px">
-
-<label for="changeDate">
-  Datum
-</label>
-
-<input
-  id="changeDate"
-  type="date">
-
-</div>
-
-</div>
-
-
-<div
-  class="field"
-  style="margin-top:12px">
-
-<label for="reason">
-  Beschreibung / Begründung
-</label>
-
-<textarea
-  id="reason"
-  placeholder="z. B. Die Diebesgilde hat den Anführer gefasst und an die Stadtwache ausgeliefert."></textarea>
-
-</div>
-
-
-<div
-  id="changeRows"
-  style="margin-top:8px">
-</div>
-
-
-<div style="margin-top:10px">
-
-<button
-  onclick="addChangeRow()">
-
-  ＋ Fraktion hinzufügen
-
-</button>
-
-</div>
-
-
-<div style="margin-top:14px">
-
-<button
-  id="applyButton"
-  class="primary"
-  onclick="applyChanges()">
-
-  Änderungen übernehmen
-
-</button>
-
-</div>
-
-
-<!-- =====================================================
-     LOG
-     ===================================================== -->
-
-<div class="section-title">
-  Änderungsverlauf
-</div>
-
-
-<div id="log"></div>
+  <div id="log"></div>
 
 </main>
 
+<!-- MODAL -->
+
+<div id="modal" class="modal-backdrop hidden">
+  <div class="modal">
+    <h2 id="modalTitle"></h2>
+    <div id="modalText"></div>
+
+    <div class="modal-actions">
+      <button onclick="closeModal()">Abbrechen</button>
+      <button class="primary" id="modalConfirm">Bestätigen</button>
+    </div>
+  </div>
+</div>
 
 <script>
 
-const API_URL =
-  "https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev";
+/* =========================================================
+   KONFIGURATION
+   ========================================================= */
 
+const API_BASE =
+  'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
 
-let state = null;
-
+const DATA_URL = API_BASE + '/data';
 
 const effects = [
-  ["Sehr positiv", 3],
-  ["Positiv", 2],
-  ["Leicht positiv", 1],
-  ["Neutral", 0],
-  ["Leicht negativ", -1],
-  ["Negativ", -2],
-  ["Sehr negativ", -3]
+  ['Sehr positiv', 3],
+  ['Positiv', 2],
+  ['Leicht positiv', 1],
+  ['Neutral', 0],
+  ['Leicht negativ', -1],
+  ['Negativ', -2],
+  ['Sehr negativ', -3]
 ];
+
+let state = null;
 
 
 /* =========================================================
@@ -663,142 +624,247 @@ const effects = [
    ========================================================= */
 
 function esc(value){
-
-  return String(value ?? "")
-    .replace(
-      /[&<>"']/g,
-      char => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#39;"
-      }[char])
-    );
+  return String(value ?? '').replace(
+    /[&<>"']/g,
+    m => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m])
+  );
 }
-
 
 function todayISO(){
+  return new Date().toISOString().slice(0,10);
+}
 
-  return new Date()
-    .toISOString()
-    .slice(0,10);
+function parseDate(value){
+  if(!value) return null;
+
+  const d = new Date(value + 'T00:00:00');
+
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function daysBetween(a,b){
+  return Math.floor((b-a)/86400000);
+}
+
+function fmtDate(value){
+  if(!value) return '–';
+
+  const d = parseDate(value);
+
+  return d
+    ? d.toLocaleDateString('de-DE')
+    : '–';
 }
 
 
-function formatDate(value){
+/* =========================================================
+   STATUS
+   ========================================================= */
 
-  if(!value){
-    return "–";
+function statusFor(rep){
+
+  const rules =
+    state?.settings?.statusRules ||
+    state?.status ||
+    [
+      {min:8,label:'Verbündet'},
+      {min:3,label:'Wohlwollend'},
+      {min:-1,label:'Neutral'},
+      {min:-4,label:'Skeptisch'},
+      {min:-999999,label:'Feindlich'}
+    ];
+
+  for(const rule of rules){
+
+    if(rep >= Number(rule.min)){
+      return rule.label;
+    }
   }
 
-  const date =
-    new Date(
-      value +
-      "T00:00:00"
+  return 'Feindlich';
+}
+
+
+/* =========================================================
+   VERFALL
+   ========================================================= */
+
+/*
+  Momentan verwenden wir weiterhin die lineare 30-Tage-Regel.
+
+  Die Funktion ist bewusst zentral gehalten, damit wir später
+  problemlos auf einen anderen Verfallsmechanismus wechseln können.
+*/
+
+function effectiveDirect(item, date = new Date()){
+
+  const base = Number(item.rep ?? item.grp ?? 0);
+
+  if(!item.lastChange){
+    return base;
+  }
+
+  const last = parseDate(item.lastChange);
+
+  if(!last){
+    return base;
+  }
+
+  const decay =
+    state?.settings?.decay ||
+    {
+      enabled:true,
+      days:30,
+      points:1,
+      mode:'linear'
+    };
+
+  if(decay.enabled === false){
+    return base;
+  }
+
+  const days =
+    Math.max(0, daysBetween(last,date));
+
+  const periods =
+    Math.floor(days / Number(decay.days || 30));
+
+  const points =
+    periods * Number(decay.points || 1);
+
+  if(base > 0){
+    return Math.max(0, base - points);
+  }
+
+  if(base < 0){
+    return Math.min(0, base + points);
+  }
+
+  return 0;
+}
+
+
+/* =========================================================
+   YARTAR / ABGELEITETE ORTE
+   ========================================================= */
+
+function effectiveComponent(component, date = new Date()){
+
+  return effectiveDirect(component,date);
+}
+
+function derivedPlaceRep(place, date = new Date()){
+
+  if(!place.components || !place.components.length){
+    return effectiveDirect(place,date);
+  }
+
+  let total = 0;
+  let weights = 0;
+
+  for(const component of place.components){
+
+    const weight =
+      Number(component.weight ?? 1);
+
+    const rep =
+      effectiveComponent(component,date);
+
+    total += rep * weight;
+    weights += weight;
+  }
+
+  if(weights === 0){
+    return 0;
+  }
+
+  return total / weights;
+}
+
+
+/*
+  Für die Anzeige verwenden wir den gerundeten Gesamtwert.
+
+  Der interne Dezimalwert bleibt für die Berechnung erhalten.
+*/
+
+function displayRep(value){
+
+  const n = Math.round(Number(value) || 0);
+
+  return n > 0
+    ? '+' + n
+    : String(n);
+}
+
+
+/* =========================================================
+   LETZTE ÄNDERUNG
+   ========================================================= */
+
+function latestChangeForPlace(place){
+
+  if(place.components?.length){
+
+    const dates =
+      place.components
+        .map(c => c.lastChange)
+        .filter(Boolean)
+        .sort();
+
+    return dates.length
+      ? dates[dates.length-1]
+      : null;
+  }
+
+  return place.lastChange || null;
+}
+
+
+/* =========================================================
+   SORTIERUNG
+   ========================================================= */
+
+function sortedPlaces(){
+
+  const places =
+    [...(state.places || [])];
+
+  return places.sort((a,b) => {
+
+    /*
+      Yartar bleibt immer oben.
+    */
+
+    if(a.id === 'yartar') return -1;
+    if(b.id === 'yartar') return 1;
+
+    return String(a.name)
+      .localeCompare(
+        String(b.name),
+        'de',
+        {sensitivity:'base'}
+      );
+  });
+}
+
+function sortedOrganizations(){
+
+  return [...(state.organizations || [])]
+    .sort((a,b) =>
+      String(a.name)
+        .localeCompare(
+          String(b.name),
+          'de',
+          {sensitivity:'base'}
+        )
     );
-
-  if(
-    Number.isNaN(
-      date.getTime()
-    )
-  ){
-    return "–";
-  }
-
-  return date.toLocaleDateString(
-    "de-DE"
-  );
-}
-
-
-function formatDateTime(value){
-
-  if(!value){
-    return "–";
-  }
-
-  const date =
-    new Date(value);
-
-  if(
-    Number.isNaN(
-      date.getTime()
-    )
-  ){
-    return "–";
-  }
-
-  return date.toLocaleString(
-    "de-DE"
-  );
-}
-
-
-function formatREP(value){
-
-  const number =
-    Number(value) || 0;
-
-  return number > 0
-    ? "+" + number
-    : String(number);
-}
-
-
-function repClass(value){
-
-  const number =
-    Number(value) || 0;
-
-  if(number > 0){
-    return "positive";
-  }
-
-  if(number < 0){
-    return "negative";
-  }
-
-  return "";
-}
-
-
-function showError(message){
-
-  const box =
-    document.getElementById(
-      "errorBox"
-    );
-
-  box.textContent =
-    message;
-
-  box.classList.remove(
-    "hidden"
-  );
-}
-
-
-function clearError(){
-
-  document
-    .getElementById(
-      "errorBox"
-    )
-    .classList.add(
-      "hidden"
-    );
-}
-
-
-function setStatus(text){
-
-  document
-    .getElementById(
-      "loadStatus"
-    )
-    .textContent =
-      text;
 }
 
 
@@ -808,223 +874,894 @@ function setStatus(text){
 
 function render(){
 
-  renderFactions();
-
-  renderRestoreSelector();
-
+  renderPlaces();
+  renderOrganizations();
   renderLog();
-
+  updateRulesNotice();
 }
 
-
-/* =========================================================
-   FRAKTIONEN
-   ========================================================= */
-
-function renderFactions(){
+function renderPlaces(){
 
   const body =
-    document.getElementById(
-      "factionBody"
-    );
+    document.getElementById('placeBody');
 
+  const places =
+    sortedPlaces();
 
-  if(
-    !state.factions.length
-  ){
+  if(!places.length){
 
-    body.innerHTML = `
-      <tr>
-        <td
-          colspan="6"
-          class="empty">
-
-          Noch keine Fraktionen angelegt.
-
-        </td>
-      </tr>
-    `;
+    body.innerHTML =
+      `<tr><td colspan="5" class="empty">
+        Noch keine Orte angelegt.
+      </td></tr>`;
 
     return;
   }
 
+  let html = '';
+
+  for(const place of places){
+
+    const derived =
+      place.reputationMode === 'derived' &&
+      place.components?.length;
+
+    const rep =
+      derived
+        ? derivedPlaceRep(place)
+        : effectiveDirect(place);
+
+    const status =
+      statusFor(rep);
+
+    const cls =
+      rep > 0
+        ? 'positive'
+        : rep < 0
+          ? 'negative'
+          : '';
+
+    const latest =
+      latestChangeForPlace(place);
+
+    const hasComponents =
+      derived && place.components.length;
+
+    const isOpen =
+      place._open !== false;
+
+    html += `
+      <tr class="place-row ${place.featured?'featured':''}">
+
+        <td>
+
+          ${
+            hasComponents
+            ? `
+              <button
+                class="expand-button"
+                onclick="togglePlace('${esc(place.id)}')"
+                title="Untergruppen ein-/ausblenden"
+              >
+                ${isOpen ? '▼' : '▶'}
+              </button>
+            `
+            : ''
+          }
+
+          <span class="place-name">
+            ${esc(place.name)}
+          </span>
+
+          ${
+            place.description
+            ? `
+              <button
+                class="info-button"
+                onclick="showInfo(
+                  '${esc(place.name)}',
+                  '${esc(place.description)}'
+                )"
+                title="Information"
+              >
+                i
+              </button>
+            `
+            : ''
+          }
+
+          ${
+            derived
+            ? `
+              <div class="place-info">
+                Gesamtruf aus ${place.components.length} lokalen Gruppen
+              </div>
+            `
+            : ''
+          }
+
+        </td>
+
+        <td class="num ${cls}">
+          ${displayRep(rep)}
+        </td>
+
+        <td class="status ${cls}">
+          ${esc(status)}
+        </td>
+
+        <td class="num ${cls}">
+          ${displayRep(rep)}
+        </td>
+
+        <td>
+          ${fmtDate(latest)}
+        </td>
+
+      </tr>
+    `;
+
+    if(hasComponents && isOpen){
+
+      for(const component of place.components){
+
+        const e =
+          effectiveComponent(component);
+
+        const st =
+          statusFor(e);
+
+        const c =
+          e > 0
+            ? 'positive'
+            : e < 0
+              ? 'negative'
+              : '';
+
+        html += `
+          <tr class="component-row">
+
+            <td>
+              <span class="component-name">
+                ${esc(component.name)}
+              </span>
+
+              <span class="weight">
+                Gewicht ×${esc(component.weight ?? 1)}
+              </span>
+
+              ${
+                component.info
+                ? `
+                  <button
+                    class="info-button"
+                    onclick="showInfo(
+                      '${esc(component.name)}',
+                      '${esc(component.info)}'
+                    )"
+                    title="Information"
+                  >
+                    i
+                  </button>
+                `
+                : ''
+              }
+            </td>
+
+            <td class="num ${c}">
+              ${displayRep(e)}
+            </td>
+
+            <td class="status ${c}">
+              ${esc(st)}
+            </td>
+
+            <td class="num ${c}">
+              ${displayRep(e)}
+            </td>
+
+            <td>
+              ${fmtDate(component.lastChange)}
+            </td>
+
+          </tr>
+        `;
+      }
+    }
+  }
+
+  body.innerHTML = html;
+}
+
+
+function renderOrganizations(){
+
+  const body =
+    document.getElementById('organizationBody');
+
+  const organizations =
+    sortedOrganizations();
+
+  if(!organizations.length){
+
+    body.innerHTML =
+      `<tr><td colspan="5" class="empty">
+        Noch keine Organisationen angelegt.
+      </td></tr>`;
+
+    return;
+  }
 
   body.innerHTML =
-    state.factions
-      .map(
-        faction => {
+    organizations.map(org => {
 
-          const active =
-            faction.active !==
-            false;
+      const e =
+        effectiveDirect(org);
 
+      const st =
+        statusFor(e);
 
-          const rep =
-            Number(
-              faction.rep
-            ) || 0;
+      const cls =
+        e > 0
+          ? 'positive'
+          : e < 0
+            ? 'negative'
+            : '';
 
+      return `
+        <tr class="${org.active === false ? 'inactive':''}">
 
-          const effectiveRep =
-            Number(
-              faction.effectiveRep
-            ) || 0;
+          <td>
+            <span class="place-name">
+              ${esc(org.name)}
+            </span>
 
-
-          return `
-            <tr>
-
-              <td>
-
-                <strong>
-                  ${esc(
-                    faction.name
-                  )}
-                </strong>
-
-                ${
-                  active
-                    ? ""
-                    : `
-                      <span class="badge">
-                        deaktiviert
-                      </span>
-                    `
-                }
-
-              </td>
-
-
-              <td
-                class="num ${repClass(rep)}">
-
-                ${formatREP(rep)}
-
-              </td>
-
-
-              <td
-                class="status ${repClass(effectiveRep)}">
-
-                ${esc(
-                  faction.status
-                )}
-
-              </td>
-
-
-              <td
-                class="num ${repClass(effectiveRep)}">
-
-                ${formatREP(
-                  effectiveRep
-                )}
-
-              </td>
-
-
-              <td>
-
-                ${formatDate(
-                  faction.lastChange
-                )}
-
-              </td>
-
-
-              <td>
-
+            ${
+              org.description
+              ? `
                 <button
-                  class="small"
-                  onclick="toggleFaction(
-                    '${faction.id}',
-                    ${active}
-                  )">
-
-                  ${
-                    active
-                      ? "Deaktivieren"
-                      : "Aktivieren"
-                  }
-
+                  class="info-button"
+                  onclick="showInfo(
+                    '${esc(org.name)}',
+                    '${esc(org.description)}'
+                  )"
+                >
+                  i
                 </button>
+              `
+              : ''
+            }
 
-              </td>
+            ${
+              org.active === false
+              ? `<span class="badge">deaktiviert</span>`
+              : ''
+            }
+          </td>
 
-            </tr>
-          `;
-        }
-      )
-      .join("");
+          <td class="num ${cls}">
+            ${displayRep(e)}
+          </td>
+
+          <td class="status ${cls}">
+            ${esc(st)}
+          </td>
+
+          <td class="num ${cls}">
+            ${displayRep(e)}
+          </td>
+
+          <td>
+            ${fmtDate(org.lastChange)}
+          </td>
+
+        </tr>
+      `;
+
+    }).join('');
 }
 
 
 /* =========================================================
-   RESTORE-DROPDOWN
+   INFO
    ========================================================= */
 
-function renderRestoreSelector(){
+function showInfo(title,text){
 
-  const select =
-    document.getElementById(
-      "restoreTarget"
-    );
+  document.getElementById('modalTitle').textContent =
+    title;
+
+  document.getElementById('modalText').textContent =
+    text;
+
+  document.getElementById('modalConfirm')
+    .style.display = 'none';
+
+  document.getElementById('modal')
+    .classList.remove('hidden');
+}
+
+function closeModal(){
+
+  document.getElementById('modal')
+    .classList.add('hidden');
+
+  document.getElementById('modalConfirm')
+    .style.display = '';
+}
 
 
-  const missions =
-    state.events
-      .filter(
-        event =>
-          event.type ===
-          "mission"
-      )
-      .sort(
-        compareEvents
-      );
+/* =========================================================
+   YARTAR AUFKLAPPEN
+   ========================================================= */
+
+function togglePlace(id){
+
+  const place =
+    state.places.find(p => p.id === id);
+
+  if(!place) return;
+
+  place._open =
+    place._open === false;
+
+  renderPlaces();
+}
 
 
-  select.innerHTML = `
-    <option value="">
-      Aktuellen Verlauf verwenden
-    </option>
+/* =========================================================
+   ÄNDERUNGSEINGABE
+   ========================================================= */
 
-    ${
-      missions
-        .map(
-          event => `
-            <option
-              value="${esc(
-                event.date
-              )}">
+function allRepTargets(){
 
-              ${formatDate(
-                event.date
-              )}
-              ·
-              ${esc(
-                event.mission
-              )}
+  const targets = [];
 
-            </option>
-          `
-        )
-        .join("")
+  for(const place of state.places || []){
+
+    if(place.components?.length){
+
+      for(const component of place.components){
+
+        targets.push({
+          id:component.id,
+          name:`${place.name} – ${component.name}`,
+          type:'component'
+        });
+      }
+
+    } else {
+
+      targets.push({
+        id:place.id,
+        name:place.name,
+        type:'place'
+      });
     }
+  }
+
+  for(const org of state.organizations || []){
+
+    if(org.active === false) continue;
+
+    targets.push({
+      id:org.id,
+      name:org.name,
+      type:'organization'
+    });
+  }
+
+  return targets.sort((a,b) =>
+    a.name.localeCompare(
+      b.name,
+      'de',
+      {sensitivity:'base'}
+    )
+  );
+}
+
+
+function addChangeRow(){
+
+  const wrap =
+    document.getElementById('changeRows');
+
+  const row =
+    document.createElement('div');
+
+  row.className =
+    'change-row';
+
+  const targets =
+    allRepTargets();
+
+  if(!targets.length){
+
+    alert('Es sind keine Reputationseinheiten vorhanden.');
+
+    return;
+  }
+
+  row.innerHTML = `
+
+    <div>
+
+      <label>Reputation</label>
+
+      <select class="rep-select">
+
+        ${targets.map(target => `
+          <option value="${esc(target.id)}">
+            ${esc(target.name)}
+          </option>
+        `).join('')}
+
+      </select>
+
+    </div>
+
+    <div>
+
+      <label>Änderung</label>
+
+      <select class="effect-select">
+
+        ${effects.map(effect => `
+          <option value="${effect[1]}">
+            ${esc(effect[0])}
+            (${effect[1] > 0 ? '+' : ''}${effect[1]})
+          </option>
+        `).join('')}
+
+      </select>
+
+    </div>
+
+    <button
+      class="remove"
+      onclick="this.parentElement.remove()"
+    >
+      Entfernen
+    </button>
+
   `;
 
+  wrap.appendChild(row);
+}
 
-  const restore =
-    state.restore;
+
+function clearChanges(){
+
+  document.getElementById('changeRows')
+    .innerHTML = '';
+
+}
 
 
-  document.getElementById(
-    "restoreInfo"
-  ).textContent =
-    restore
-      ? `Aktueller Kampagnenstand: ${formatDate(
-          restore.targetDate
-        )}.`
-      : "Keine historische Rücksetzung aktiv.";
+/* =========================================================
+   MISSION ÜBERNEHMEN
+   ========================================================= */
+
+async function applyChanges(){
+
+  const mission =
+    document.getElementById('mission')
+      .value.trim();
+
+  const date =
+    document.getElementById('changeDate')
+      .value || todayISO();
+
+  const reason =
+    document.getElementById('reason')
+      .value.trim();
+
+  const rows =
+    [...document.querySelectorAll('.change-row')];
+
+  if(!mission){
+
+    alert('Bitte Mission / Ereignis eintragen.');
+
+    return;
+  }
+
+  if(!rows.length){
+
+    alert('Bitte mindestens eine REP-Einheit hinzufügen.');
+
+    return;
+  }
+
+  const changes = [];
+
+  for(const row of rows){
+
+    const id =
+      row.querySelector('.rep-select').value;
+
+    const delta =
+      Number(
+        row.querySelector('.effect-select').value
+      );
+
+    if(changes.some(c => c.factionId === id)){
+
+      alert(
+        'Eine REP-Einheit wurde doppelt ausgewählt.'
+      );
+
+      return;
+    }
+
+    changes.push({
+      factionId:id,
+      delta
+    });
+  }
+
+  const confirmed =
+    confirm(
+      `Mission übernehmen?\n\n${mission}\n\n` +
+      `${changes.length} REP-Änderung(en)`
+    );
+
+  if(!confirmed) return;
+
+  try{
+
+    setStatus('Speichern…');
+
+    const response =
+      await fetch(API_BASE + '/change',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          mission,
+          date,
+          reason,
+          changes
+        })
+      });
+
+    const result =
+      await response.json();
+
+    if(!response.ok || result.ok === false){
+
+      throw new Error(
+        result.error ||
+        'Die Änderung konnte nicht gespeichert werden.'
+      );
+    }
+
+    await reload();
+
+    document.getElementById('mission').value = '';
+    document.getElementById('reason').value = '';
+
+    clearChanges();
+    addChangeRow();
+
+    setStatus('Gespeichert.');
+
+  }catch(error){
+
+    console.error(error);
+
+    setStatus('Fehler beim Speichern.');
+
+    alert(
+      'Die Änderung konnte nicht gespeichert werden:\n\n' +
+      error.message
+    );
+  }
+}
+
+
+/* =========================================================
+   ORT HINZUFÜGEN
+   ========================================================= */
+
+async function addPlace(){
+
+  const name =
+    prompt('Name des neuen Ortes:');
+
+  if(!name || !name.trim()) return;
+
+  const start =
+    prompt('Start-REP:','0');
+
+  const rep =
+    Number(start);
+
+  if(!Number.isFinite(rep)){
+
+    alert('Ungültiger REP-Wert.');
+
+    return;
+  }
+
+  try{
+
+    setStatus('Ort wird angelegt…');
+
+    const response =
+      await fetch(API_BASE + '/faction',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          type:'place',
+          name:name.trim(),
+          rep
+        })
+      });
+
+    const result =
+      await response.json();
+
+    if(!response.ok || result.ok === false){
+
+      throw new Error(
+        result.error ||
+        'Ort konnte nicht angelegt werden.'
+      );
+    }
+
+    await reload();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      'Ort konnte nicht angelegt werden:\n\n' +
+      error.message
+    );
+  }
+}
+
+
+/* =========================================================
+   ORGANISATION HINZUFÜGEN
+   ========================================================= */
+
+async function addOrganization(){
+
+  const name =
+    prompt('Name der neuen Organisation:');
+
+  if(!name || !name.trim()) return;
+
+  const start =
+    prompt('Start-REP:','0');
+
+  const rep =
+    Number(start);
+
+  if(!Number.isFinite(rep)){
+
+    alert('Ungültiger REP-Wert.');
+
+    return;
+  }
+
+  try{
+
+    setStatus('Organisation wird angelegt…');
+
+    const response =
+      await fetch(API_BASE + '/faction',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          type:'organization',
+          name:name.trim(),
+          rep
+        })
+      });
+
+    const result =
+      await response.json();
+
+    if(!response.ok || result.ok === false){
+
+      throw new Error(
+        result.error ||
+        'Organisation konnte nicht angelegt werden.'
+      );
+    }
+
+    await reload();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      'Organisation konnte nicht angelegt werden:\n\n' +
+      error.message
+    );
+  }
+}
+
+
+/* =========================================================
+   RETCON / EREIGNIS UNGÜLTIG MACHEN
+   ========================================================= */
+
+async function toggleEventStatus(eventId,currentStatus){
+
+  const makeValid =
+    currentStatus === false;
+
+  const question =
+    makeValid
+      ? 'Dieses Ereignis wieder gültig machen?'
+      : 'Dieses Ereignis wirklich aus der Wertung nehmen?';
+
+  if(!confirm(question)) return;
+
+  try{
+
+    setStatus('Ereignis wird aktualisiert…');
+
+    const response =
+      await fetch(API_BASE + '/event/status',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          eventId,
+          valid:makeValid
+        })
+      });
+
+    const result =
+      await response.json();
+
+    if(!response.ok || result.ok === false){
+
+      throw new Error(
+        result.error ||
+        'Ereignisstatus konnte nicht geändert werden.'
+      );
+    }
+
+    await reload();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      'Ereignisstatus konnte nicht geändert werden:\n\n' +
+      error.message
+    );
+  }
+}
+
+
+/* =========================================================
+   HISTORISCHE RÜCKSETZUNG
+   ========================================================= */
+
+async function restoreToDate(){
+
+  const date =
+    document.getElementById('restoreDate')
+      .value;
+
+  if(!date){
+
+    alert('Bitte ein Datum auswählen.');
+
+    return;
+  }
+
+  const reason =
+    prompt(
+      'Warum wird der Kampagnenstand auf diesen Zeitpunkt zurückgesetzt?'
+    );
+
+  if(reason === null) return;
+
+  if(!confirm(
+    `Kampagnenstand wirklich auf ${fmtDate(date)} zurücksetzen?`
+  )) return;
+
+  try{
+
+    setStatus('Historischen Stand wird hergestellt…');
+
+    const response =
+      await fetch(API_BASE + '/restore',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          date,
+          reason
+        })
+      });
+
+    const result =
+      await response.json();
+
+    if(!response.ok || result.ok === false){
+
+      throw new Error(
+        result.error ||
+        'Rücksetzung konnte nicht durchgeführt werden.'
+      );
+    }
+
+    await reload();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      'Rücksetzung konnte nicht durchgeführt werden:\n\n' +
+      error.message
+    );
+  }
+}
+
+
+async function clearRestore(){
+
+  if(!confirm(
+    'Soll wieder der aktuelle vollständige Verlauf verwendet werden?'
+  )) return;
+
+  try{
+
+    setStatus('Aktuellen Verlauf wird wiederhergestellt…');
+
+    const response =
+      await fetch(API_BASE + '/restore',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+          clear:true
+        })
+      });
+
+    const result =
+      await response.json();
+
+    if(!response.ok || result.ok === false){
+
+      throw new Error(
+        result.error ||
+        'Rücksetzung konnte nicht aufgehoben werden.'
+      );
+    }
+
+    await reload();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      'Aktueller Verlauf konnte nicht wiederhergestellt werden:\n\n' +
+      error.message
+    );
+  }
 }
 
 
@@ -1032,1241 +1769,172 @@ function renderRestoreSelector(){
    LOG
    ========================================================= */
 
-function renderLog(){
+function findTargetName(id){
 
-  const container =
-    document.getElementById(
-      "log"
-    );
+  for(const place of state.places || []){
 
+    if(place.id === id){
+      return place.name;
+    }
 
-  if(
-    !state.log.length
-  ){
+    for(const component of place.components || []){
 
-    container.innerHTML = `
-      <div class="empty">
-        Noch keine Ereignisse vorhanden.
-      </div>
-    `;
+      if(component.id === id){
 
-    return;
-  }
-
-
-  container.innerHTML =
-    state.log
-      .map(
-        entry => {
-
-          if(
-            entry.type ===
-            "restore"
-          ){
-
-            return renderRestoreLog(
-              entry
-            );
-          }
-
-
-          if(
-            entry.type ===
-            "event-status"
-          ){
-
-            return renderAuditLog(
-              entry
-            );
-          }
-
-
-          if(
-            entry.type ===
-            "faction-status"
-          ){
-
-            return renderAuditLog(
-              entry
-            );
-          }
-
-
-          if(
-            entry.type !==
-            "mission"
-          ){
-
-            return "";
-          }
-
-
-          return renderMissionLog(
-            entry
-          );
-        }
-      )
-      .join("");
-}
-
-
-/* =========================================================
-   MISSIONS-LOG
-   ========================================================= */
-
-function renderMissionLog(
-  entry
-){
-
-  const status =
-    entry.displayStatus;
-
-
-  let badge = "";
-
-
-  if(
-    status ===
-    "retconned"
-  ){
-
-    badge = `
-      <span class="badge retcon">
-        RETCONNED
-      </span>
-    `;
-
-  }else if(
-    status ===
-    "excluded"
-  ){
-
-    badge = `
-      <span class="badge excluded">
-        außerhalb des aktuellen Stands
-      </span>
-    `;
-
-  }else{
-
-    badge = `
-      <span class="badge valid">
-        gültig
-      </span>
-    `;
-  }
-
-
-  const changes =
-    (entry.changes || [])
-      .map(
-        change => {
-
-          const delta =
-            Number(
-              change.delta
-            ) || 0;
-
-
-          const before =
-            change.beforeRep;
-
-
-          const after =
-            change.afterRep;
-
-
-          return `
-            <div class="log-change">
-
-              <strong>
-                ${esc(
-                  change.factionName
-                )}
-              </strong>
-
-              <span
-                class="${repClass(delta)}">
-
-                ${formatREP(
-                  delta
-                )}
-
-              </span>
-
-              REP
-
-
-              ${
-                before !== null &&
-                after !== null
-                  ? `
-                    ·
-                    ${formatREP(before)}
-                    →
-                    ${formatREP(after)}
-                  `
-                  : ""
-              }
-
-            </div>
-          `;
-        }
-      )
-      .join("");
-
-
-  const canChangeStatus =
-    status ===
-    "valid" ||
-    status ===
-    "retconned";
-
-
-  let action = "";
-
-
-  if(
-    canChangeStatus
-  ){
-
-    if(
-      status ===
-      "valid"
-    ){
-
-      action = `
-        <button
-          class="small danger"
-          onclick="setEventStatus(
-            '${entry.id}',
-            'retconned'
-          )">
-
-          Mission ungültig machen
-
-        </button>
-      `;
-
-    }else{
-
-      action = `
-        <button
-          class="small"
-          onclick="setEventStatus(
-            '${entry.id}',
-            'valid'
-          )">
-
-          Mission wieder werten
-
-        </button>
-      `;
+        return `${place.name} – ${component.name}`;
+      }
     }
   }
 
+  for(const org of state.organizations || []){
 
-  let statusHistory = "";
-
-
-  if(
-    Array.isArray(
-      entry.statusHistory
-    ) &&
-    entry.statusHistory.length
-  ){
-
-    statusHistory = `
-      <div
-        class="muted"
-        style="margin-top:9px">
-
-        Statusverlauf:
-
-        ${
-          entry.statusHistory
-            .map(
-              item => `
-                <div>
-                  ${formatDateTime(
-                    item.date
-                  )}
-                  ·
-                  ${item.status === "retconned"
-                    ? "retconned"
-                    : "gültig"}
-                  ·
-                  ${esc(
-                    item.reason
-                  )}
-                </div>
-              `
-            )
-            .join("")
-        }
-
-      </div>
-    `;
+    if(org.id === id){
+      return org.name;
+    }
   }
 
-
-  return `
-    <div
-      class="
-        log-entry
-        ${status === "retconned"
-          ? "retconned"
-          : ""}
-        ${status === "excluded"
-          ? "excluded"
-          : ""}
-      ">
-
-      <div class="log-head">
-
-        <div class="log-title">
-
-          ${esc(
-            entry.mission
-          )}
-
-          ${badge}
-
-        </div>
-
-        <div class="muted">
-
-          ${formatDate(
-            entry.date
-          )}
-
-        </div>
-
-      </div>
-
-
-      ${
-        entry.reason
-          ? `
-            <div class="log-description">
-              ${esc(
-                entry.reason
-              )}
-            </div>
-          `
-          : ""
-      }
-
-
-      <div>
-        ${changes}
-      </div>
-
-
-      ${statusHistory}
-
-
-      ${
-        action
-          ? `
-            <div class="log-actions">
-              ${action}
-            </div>
-          `
-          : ""
-      }
-
-    </div>
-  `;
+  return id;
 }
 
 
-/* =========================================================
-   RESTORE-LOG
-   ========================================================= */
+function renderLog(){
 
-function renderRestoreLog(
-  entry
-){
+  const el =
+    document.getElementById('log');
 
-  return `
-    <div
-      class="log-entry restore">
+  const events =
+    [...(state.events || [])];
 
-      <div class="log-head">
+  if(!events.length){
 
-        <div class="log-title">
-
-          ↶
-          ${esc(
-            entry.mission
-          )}
-
-          <span class="badge restore">
-            RÜCKSETZUNG
-          </span>
-
-        </div>
-
-
-        <div class="muted">
-
-          ${formatDate(
-            entry.date
-          )}
-
-        </div>
-
-      </div>
-
-
-      <div class="log-description">
-
-        Stand bis:
-
-        <strong>
-          ${formatDate(
-            entry.targetDate
-          )}
-        </strong>
-
-      </div>
-
-
-      ${
-        entry.reason
-          ? `
-            <div class="log-description">
-              ${esc(
-                entry.reason
-              )}
-            </div>
-          `
-          : ""
-      }
-
-
-      <div
-        class="muted"
-        style="margin-top:8px">
-
-        ${
-          (entry.excludedEventIds || [])
-            .length
-        }
-        ältere Ereignisse wurden durch diese
-        Rücksetzung aus der aktuellen Wertung genommen.
-
-      </div>
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   AUDIT-LOG
-   ========================================================= */
-
-function renderAuditLog(
-  entry
-){
-
-  return `
-    <div
-      class="log-entry audit">
-
-      <div class="log-head">
-
-        <div class="log-title">
-          ${esc(
-            entry.mission
-          )}
-        </div>
-
-        <div class="muted">
-          ${formatDate(
-            entry.date
-          )}
-        </div>
-
-      </div>
-
-
-      ${
-        entry.reason
-          ? `
-            <div class="log-description">
-              ${esc(
-                entry.reason
-              )}
-            </div>
-          `
-          : ""
-      }
-
-    </div>
-  `;
-}
-
-
-/* =========================================================
-   FRAKTION ANLEGEN
-   ========================================================= */
-
-async function addFaction(){
-
-  const name =
-    prompt(
-      "Name der neuen Fraktion:"
-    );
-
-
-  if(
-    !name ||
-    !name.trim()
-  ){
-    return;
-  }
-
-
-  const base =
-    prompt(
-      "Start-REP:",
-      "0"
-    );
-
-
-  if(
-    base === null
-  ){
-    return;
-  }
-
-
-  const baseRep =
-    Number(
-      base
-    );
-
-
-  if(
-    !Number.isInteger(
-      baseRep
-    )
-  ){
-
-    alert(
-      "Start-REP muss eine ganze Zahl sein."
-    );
+    el.innerHTML =
+      '<p class="muted">Noch keine Rufänderungen gespeichert.</p>';
 
     return;
   }
 
-
-  const createdDate =
-    prompt(
-      "Datum des Start-REP:",
-      todayISO()
-    );
-
-
-  if(
-    createdDate ===
-    null
-  ){
-    return;
-  }
-
-
-  try{
-
-    const result =
-      await api(
-        "/faction",
-        {
-          name:
-            name.trim(),
-
-          baseRep,
-
-          createdDate
-        }
-      );
-
-
-    await load(
-      "Fraktion angelegt."
-    );
-
-  }catch(error){
-
-    showError(
-      error.message
-    );
-  }
-}
-
-
-/* =========================================================
-   FRAKTION AKTIV / INAKTIV
-   ========================================================= */
-
-async function toggleFaction(
-  factionId,
-  active
-){
-
-  const faction =
-    state.factions.find(
-      faction =>
-        faction.id ===
-        factionId
-    );
-
-
-  if(!faction){
-    return;
-  }
-
-
-  const action =
-    active
-      ? "deaktivieren"
-      : "aktivieren";
-
-
-  if(
-    !confirm(
-      `Fraktion "${faction.name}" wirklich ${action}?`
-    )
-  ){
-    return;
-  }
-
-
-  try{
-
-    await api(
-      "/faction/status",
-      {
-        factionId,
-
-        active:
-          !active
-      }
-    );
-
-
-    await load(
-      "Fraktionsstatus geändert."
-    );
-
-  }catch(error){
-
-    showError(
-      error.message
-    );
-  }
-}
-
-
-/* =========================================================
-   ÄNDERUNGSZEILE
-   ========================================================= */
-
-function addChangeRow(){
-
-  const factions =
-    state.factions.filter(
-      faction =>
-        faction.active !==
-        false
-    );
-
-
-  if(
-    !factions.length
-  ){
-
-    alert(
-      "Es gibt keine aktive Fraktion."
-    );
-
-    return;
-  }
-
-
-  const container =
-    document.getElementById(
-      "changeRows"
-    );
-
-
-  const row =
-    document.createElement(
-      "div"
-    );
-
-
-  row.className =
-    "change-row";
-
-
-  row.innerHTML = `
-
-    <div>
-
-      <label>
-        Fraktion
-      </label>
-
-      <select
-        class="faction-select">
-
-        ${
-          factions
-            .map(
-              faction => `
-                <option
-                  value="${esc(
-                    faction.id
-                  )}">
-
-                  ${esc(
-                    faction.name
-                  )}
-
-                </option>
-              `
-            )
-            .join("")
-        }
-
-      </select>
-
-    </div>
-
-
-    <div>
-
-      <label>
-        Änderung
-      </label>
-
-      <select
-        class="effect-select">
-
-        ${
-          effects
-            .map(
-              effect => `
-                <option
-                  value="${effect[1]}">
-
-                  ${effect[0]}
-                  (${effect[1] > 0 ? "+" : ""}${effect[1]})
-
-                </option>
-              `
-            )
-            .join("")
-        }
-
-      </select>
-
-    </div>
-
-
-    <button
-      onclick="
-        this.parentElement.remove()
-      ">
-
-      Entfernen
-
-    </button>
-
-  `;
-
-
-  container.appendChild(
-    row
+  events.sort((a,b) =>
+    String(b.date || '')
+      .localeCompare(String(a.date || ''))
   );
-}
 
+  el.innerHTML =
+    events.map(event => {
 
-/* =========================================================
-   MISSION SPEICHERN
-   ========================================================= */
+      const valid =
+        event.valid !== false;
 
-async function applyChanges(){
+      const changes =
+        event.changes || [];
 
-  const mission =
-    document
-      .getElementById(
-        "mission"
-      )
-      .value
-      .trim();
+      const rows =
+        changes.map(change => {
 
+          const delta =
+            Number(change.delta || 0);
 
-  const date =
-    document
-      .getElementById(
-        "changeDate"
-      )
-      .value ||
-    todayISO();
+          const cls =
+            delta > 0
+              ? 'positive'
+              : delta < 0
+                ? 'negative'
+                : '';
 
+          const before =
+            change.before ?? change.previousRep ?? 0;
 
-  const reason =
-    document
-      .getElementById(
-        "reason"
-      )
-      .value
-      .trim();
+          const after =
+            change.after ?? change.newRep ?? 0;
 
+          return `
+            <div>
 
-  const rows =
-    [
-      ...document.querySelectorAll(
-        ".change-row"
-      )
-    ];
+              <strong>
+                ${esc(
+                  change.factionName ||
+                  findTargetName(change.factionId)
+                )}
+              </strong>
 
+              <span class="${cls}">
+                ${delta > 0 ? '+' : ''}${delta}
+              </span>
 
-  if(!mission){
+              · REP
+              ${displayRep(before)}
+              →
+              ${displayRep(after)}
 
-    alert(
-      "Bitte Mission / Ereignis eintragen."
-    );
+            </div>
+          `;
 
-    return;
-  }
+        }).join('');
 
+      return `
+        <div class="log-entry ${valid ? '' : 'invalid'}">
 
-  if(!rows.length){
+          <div class="log-head">
 
-    alert(
-      "Bitte mindestens eine Fraktion hinzufügen."
-    );
+            <strong>
+              ${esc(
+                event.mission ||
+                event.name ||
+                'Ohne Missionsangabe'
+              )}
+            </strong>
 
-    return;
-  }
+            <span class="muted">
+              ${fmtDate(event.date)}
+            </span>
 
+          </div>
 
-  const changes =
-    rows.map(
-      row => ({
+          <div style="margin-top:6px">
 
-        factionId:
-          row
-            .querySelector(
-              ".faction-select"
-            )
-            .value,
+            ${
+              valid
+              ? `<span class="badge active">gültig</span>`
+              : `<span class="badge invalid">RETCON – ungültig</span>`
+            }
 
-        delta:
-          Number(
-            row
-              .querySelector(
-                ".effect-select"
-              )
-              .value
-          )
-      })
-    );
+          </div>
 
+          <div class="log-detail">
 
-  const ids =
-    changes.map(
-      change =>
-        change.factionId
-    );
+            ${esc(
+              event.reason ||
+              event.description ||
+              'Keine Begründung angegeben.'
+            )}
 
+            <div style="margin-top:9px">
+              ${rows}
+            </div>
 
-  if(
-    new Set(ids).size !==
-    ids.length
-  ){
+          </div>
 
-    alert(
-      "Eine Fraktion wurde doppelt ausgewählt."
-    );
+          <div class="log-actions">
 
-    return;
-  }
-
-
-  const button =
-    document.getElementById(
-      "applyButton"
-    );
-
-
-  button.disabled =
-    true;
-
-
-  try{
-
-    await api(
-      "/change",
-      {
-        mission,
-
-        date,
-
-        reason,
-
-        changes,
-
-        by:
-          "DM"
-      }
-    );
-
-
-    document.getElementById(
-      "mission"
-    ).value = "";
-
-
-    document.getElementById(
-      "reason"
-    ).value = "";
-
-
-    document.getElementById(
-      "changeRows"
-    ).innerHTML = "";
-
-
-    await load(
-      "Mission gespeichert."
-    );
-
-
-  }catch(error){
-
-    showError(
-      error.message
-    );
-
-  }finally{
-
-    button.disabled =
-      false;
-  }
-}
-
-
-/* =========================================================
-   RETCON / WIEDER GÜLTIG
-   ========================================================= */
-
-async function setEventStatus(
-  eventId,
-  status
-){
-
-  const event =
-    state.events.find(
-      event =>
-        event.id ===
-        eventId
-    );
-
-
-  if(!event){
-    return;
-  }
-
-
-  const retcon =
-    status ===
-    "retconned";
-
-
-  const question =
-    retcon
-      ? `Warum soll "${event.mission}" retconned werden?`
-      : `Warum soll "${event.mission}" wieder gewertet werden?`;
-
-
-  const reason =
-    prompt(
-      question
-    );
-
-
-  if(
-    reason ===
-    null ||
-    !reason.trim()
-  ){
-    return;
-  }
-
-
-  const confirmation =
-    retcon
-
-      ? `Die Mission "${event.mission}" wird aus der aktuellen REP-Berechnung genommen. Die Mission bleibt im Log erhalten. Fortfahren?`
-
-      : `Die Mission "${event.mission}" wird wieder in die REP-Berechnung aufgenommen. Dadurch wird auch eventuell durch den Retcon entstandener REP-Verfall neu berechnet. Fortfahren?`;
-
-
-  if(
-    !confirm(
-      confirmation
-    )
-  ){
-    return;
-  }
-
-
-  try{
-
-    await api(
-      "/event/status",
-      {
-        eventId,
-
-        status,
-
-        reason:
-          reason.trim(),
-
-        by:
-          "DM"
-      }
-    );
-
-
-    await load(
-      retcon
-        ? "Mission retconned."
-        : "Mission wieder gültig."
-    );
-
-  }catch(error){
-
-    showError(
-      error.message
-    );
-  }
-}
-
-
-/* =========================================================
-   RESTORE
-   ========================================================= */
-
-async function restoreStand(){
-
-  const targetDate =
-    document
-      .getElementById(
-        "restoreTarget"
-      )
-      .value;
-
-
-  if(!targetDate){
-
-    alert(
-      "Bitte einen historischen Stand auswählen."
-    );
-
-    return;
-  }
-
-
-  const reason =
-    document
-      .getElementById(
-        "restoreReason"
-      )
-      .value
-      .trim();
-
-
-  if(!reason){
-
-    alert(
-      "Bitte eine Begründung angeben."
-    );
-
-    return;
-  }
-
-
-  if(
-    !confirm(
-      `REP wirklich auf den Stand vom ${formatDate(
-        targetDate
-      )} zurücksetzen?\n\n` +
-
-      `Spätere bereits vorhandene Missionen bleiben im Log, zählen aber ab dieser Rücksetzung nicht mehr zum aktuellen Kampagnenstand.\n\n` +
-
-      `Neue Missionen, die danach eingetragen werden, können wieder ganz normal gewertet werden.`
-    )
-  ){
-    return;
-  }
-
-
-  try{
-
-    await api(
-      "/restore",
-      {
-        targetDate,
-
-        reason,
-
-        by:
-          "DM"
-      }
-    );
-
-
-    document.getElementById(
-      "restoreReason"
-    ).value = "";
-
-
-    await load(
-      `Auf Stand vom ${formatDate(
-        targetDate
-      )} zurückgesetzt.`
-    );
-
-  }catch(error){
-
-    showError(
-      error.message
-    );
-  }
-}
-
-
-/* =========================================================
-   RESTORE AUF AKTUELLEN VERLAUF
-   ========================================================= */
-
-async function restoreCurrent(){
-
-  const reason =
-    prompt(
-      "Warum soll die historische Rücksetzung aufgehoben und der aktuelle Verlauf wieder vollständig gewertet werden?"
-    );
-
-
-  if(
-    reason ===
-    null ||
-    !reason.trim()
-  ){
-    return;
-  }
-
-
-  if(
-    !confirm(
-      "Den aktuellen Verlauf wieder vollständig verwenden?"
-    )
-  ){
-    return;
-  }
-
-
-  try{
-
-    await api(
-      "/restore",
-      {
-        targetDate:
-          todayISO(),
-
-        reason:
-          reason.trim(),
-
-        by:
-          "DM"
-      }
-    );
-
-
-    await load(
-      "Aktueller Verlauf wiederhergestellt."
-    );
-
-  }catch(error){
-
-    showError(
-      error.message
-    );
-  }
-}
-
-
-/* =========================================================
-   API
-   ========================================================= */
-
-async function api(
-  path,
-  body
-){
-
-  const response =
-    await fetch(
-      API_URL +
-      path,
-      {
-        method:
-          "POST",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify(
-            body
-          )
-      }
-    );
-
-
-  const result =
-    await response
-      .json()
-      .catch(
-        () => ({
-          error:
-            "Ungültige Serverantwort."
-        })
-      );
-
-
-  if(
-    !response.ok
-  ){
-
-    throw new Error(
-      result.error ||
-      `HTTP-Fehler ${response.status}`
-    );
-  }
-
-
-  return result;
+            <button
+              class="${valid ? 'danger' : ''}"
+              onclick="toggleEventStatus(
+                '${esc(event.id)}',
+                ${valid}
+              )"
+            >
+              ${
+                valid
+                  ? 'Als Retcon ungültig machen'
+                  : 'Wieder gültig machen'
+              }
+            </button>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join('');
 }
 
 
@@ -2274,146 +1942,130 @@ async function api(
    DATEN LADEN
    ========================================================= */
 
-async function load(
-  message = null
-){
+async function load(){
 
-  clearError();
-
-
-  setStatus(
-    message ||
-    "Zentralen Stand laden…"
-  );
-
+  document.getElementById('changeDate').value =
+    todayISO();
 
   try{
 
+    setStatus('Daten werden geladen…');
+
     const response =
       await fetch(
-        API_URL +
-        "/data",
+        DATA_URL + '?t=' + Date.now(),
         {
-          cache:
-            "no-store"
+          cache:'no-store'
         }
       );
 
-
-    const result =
-      await response
-        .json();
-
-
-    if(
-      !response.ok
-    ){
+    if(!response.ok){
 
       throw new Error(
-        result.error ||
-        "Daten konnten nicht geladen werden."
+        'HTTP ' + response.status
       );
     }
 
-
     state =
-      result;
+      await response.json();
 
+    /*
+      Alte/fehlende Arrays defensiv ergänzen.
+    */
+
+    if(!Array.isArray(state.places)){
+      state.places = [];
+    }
+
+    if(!Array.isArray(state.organizations)){
+      state.organizations = [];
+    }
+
+    if(!Array.isArray(state.events)){
+
+      /*
+        Falls ein älterer Worker noch "log" liefert.
+      */
+
+      state.events =
+        Array.isArray(state.log)
+          ? state.log
+          : [];
+    }
 
     render();
 
+    setStatus('Zentraler Stand geladen.');
 
-    /*
-     * Standarddatum der Mission.
-     */
-
-    const dateField =
-      document.getElementById(
-        "changeDate"
-      );
-
-
-    if(
-      !dateField.value
-    ){
-
-      dateField.value =
-        todayISO();
-    }
-
-
-    /*
-     * Eine erste Änderungszeile
-     * bereitstellen.
-     */
-
-    if(
-      !document.querySelector(
-        ".change-row"
-      ) &&
-      state.factions.some(
-        faction =>
-          faction.active !== false
-      )
-    ){
-
-      addChangeRow();
-    }
-
-
-    setStatus(
-      message ||
-      "Zentraler Stand geladen."
-    );
+    clearChanges();
+    addChangeRow();
 
   }catch(error){
 
-    setStatus(
-      "Fehler beim Laden."
-    );
+    console.error(error);
 
-    showError(
+    setStatus('Fehler beim Laden.');
+
+    alert(
+      'Reputationsdaten konnten nicht geladen werden.\n\n' +
       error.message
     );
   }
 }
 
 
+async function reload(){
+
+  await load();
+}
+
+
 /* =========================================================
-   SORTIERUNG
+   STATUSANZEIGE
    ========================================================= */
 
-function compareEvents(
-  a,
-  b
-){
+function setStatus(text){
 
-  const date =
-    String(
-      a.date || ""
-    ).localeCompare(
-      String(
-        b.date || ""
-      )
-    );
+  document.getElementById('loadStatus')
+    .textContent = text;
+}
 
 
-  if(
-    date !== 0
-  ){
-    return date;
+/* =========================================================
+   REGELTEXT
+   ========================================================= */
+
+function updateRulesNotice(){
+
+  const decay =
+    state?.settings?.decay;
+
+  if(!decay){
+
+    document.getElementById('rulesNotice').innerHTML =
+      '<strong>REP</strong> sind die Reputationspunkte einer Gruppe.';
+
+    return;
   }
 
+  if(decay.mode === 'linear'){
 
-  return String(
-    a.createdAt ||
-    ""
-  ).localeCompare(
-    String(
-      b.createdAt ||
-      ""
-    )
-  );
+    document.getElementById('rulesNotice').innerHTML =
+      `<strong>REP</strong> sind die Reputationspunkte einer Gruppe.
+       Der effektive REP wird automatisch aus der gültigen
+       Ereignishistorie berechnet.
+       Alle ${esc(decay.days || 30)} vergangenen Tage verfällt
+       ein REP Richtung 0.
+       Der Status richtet sich ausschließlich nach dem effektiven REP.`;
+
+  }else{
+
+    document.getElementById('rulesNotice').innerHTML =
+      `<strong>REP</strong> sind die Reputationspunkte einer Gruppe.
+       Der effektive REP wird automatisch aus der gültigen
+       Ereignishistorie und dem zeitlichen Verfall berechnet.
+       Der Status richtet sich ausschließlich nach dem effektiven REP.`;
+  }
 }
 
 
