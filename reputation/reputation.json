@@ -1,190 +1,116 @@
 {
-  "ok": true,
-  "version": 1,
-  "settings": {
-    "decay": {
-      "enabled": true,
-      "days": 30,
-      "points": 1,
-      "mode": "linear"
-    },
-    "statusRules": [
-      {
-        "min": 8,
-        "label": "Verbündet"
-      },
-      {
-        "min": 3,
-        "label": "Wohlwollend"
-      },
-      {
-        "min": -1,
-        "label": "Neutral"
-      },
-      {
-        "min": -4,
-        "label": "Skeptisch"
-      },
-      {
-        "min": -999999,
-        "label": "Feindlich"
-      }
-    ]
+  "version": 2,
+  "decay": {
+    "1": 30,
+    "2": 60,
+    "3": 90,
+    "-1": 30,
+    "-2": 60,
+    "-3": 90
   },
+  "status": [
+    {
+      "min": 8,
+      "label": "Verbündet"
+    },
+    {
+      "min": 3,
+      "label": "Wohlwollend"
+    },
+    {
+      "min": -2,
+      "label": "Neutral"
+    },
+    {
+      "min": -4,
+      "label": "Skeptisch"
+    },
+    {
+      "min": -999,
+      "label": "Feindlich"
+    }
+  ],
   "places": [
     {
       "id": "yartar",
       "name": "Yartar",
-      "description": "Der allgemeine Ruf in Yartar wird aus Obrigkeit / Stadtwache, Händlern, gemeinem Volk und Unterwelt berechnet. Die Unterwelt fließt dabei geringer in den Gesamtwert ein.",
-      "featured": true,
-      "reputationMode": "derived",
-      "components": [
+      "aggregate": "yartar",
+      "info": "Gesamtruf von Yartar, berechnet aus vier lokalen Gruppen.",
+      "children": [
         {
-          "id": "yartar-authority",
+          "id": "yartar-obrigkeit",
           "name": "Obrigkeit / Stadtwache",
-          "info": "Stadtverwaltung, Stadtwache und andere offizielle Stellen Yartars.",
           "weight": 1,
-          "baseRep": 0,
-          "baseDate": null
+          "rep": 0,
+          "description": "Stadtverwaltung, Stadtwache und andere offizielle Stellen Yartars.",
+          "order": 1
         },
         {
-          "id": "yartar-merchants",
+          "id": "yartar-haendler",
           "name": "Händler",
-          "info": "Händler, Kaufleute und die wirtschaftlichen Kreise Yartars.",
           "weight": 1,
-          "baseRep": 0,
-          "baseDate": null
+          "rep": 0,
+          "description": "Händler, Handelsunternehmen und lokale Handelsinteressen.",
+          "order": 2
         },
         {
-          "id": "yartar-common-folk",
+          "id": "yartar-gemeines-volk",
           "name": "Gemeines Volk",
-          "info": "Die allgemeine Bevölkerung Yartars.",
           "weight": 1,
-          "baseRep": 0,
-          "baseDate": null
+          "rep": 0,
+          "description": "Die allgemeine Bevölkerung Yartars ohne besondere Zugehörigkeit.",
+          "order": 3
         },
         {
-          "id": "yartar-underworld",
+          "id": "yartar-unterwelt",
           "name": "Unterwelt",
-          "info": "Kriminelle Gruppen und Personen im Umfeld der Yartarschen Unterwelt.",
           "weight": 0.5,
-          "baseRep": 0,
-          "baseDate": null
+          "rep": 0,
+          "description": "Kriminelle Netzwerke, Diebesgruppen und andere Teile der lokalen Unterwelt.",
+          "order": 4
         }
       ]
     },
     {
       "id": "calling-horns",
       "name": "Calling Horns",
-      "featured": false,
-      "reputationMode": "direct",
-      "baseRep": 0,
-      "baseDate": null
+      "rep": 0
     },
     {
       "id": "everlund",
       "name": "Everlund",
-      "featured": false,
-      "reputationMode": "direct",
-      "baseRep": 0,
-      "baseDate": null
+      "rep": 0
     },
     {
       "id": "longsaddle",
       "name": "Longsaddle",
-      "featured": false,
-      "reputationMode": "direct",
-      "baseRep": 0,
-      "baseDate": null
+      "rep": 0
     },
     {
       "id": "triboar",
       "name": "Triboar",
-      "featured": false,
-      "reputationMode": "direct",
-      "baseRep": 0,
-      "baseDate": null
+      "rep": 0
     }
   ],
   "organizations": [
     {
       "id": "harpers",
       "name": "Harpers",
-      "info": "Ein weitverzweigtes Netzwerk, das sich für Freiheit, Unabhängigkeit und den Kampf gegen tyrannische Mächte einsetzt.",
-      "active": true,
-      "baseRep": 0,
-      "baseDate": null
+      "rep": 0,
+      "description": "Ein weit verzweigtes Netzwerk, das sich für Freiheit, Wissen und den Schutz vor gefährlichen Mächten einsetzt."
     },
     {
       "id": "kraken-society",
       "name": "Kraken Society",
-      "info": "Ein verborgenes Netzwerk aus Agenten, Einflussnehmern und Verschwörern mit weitreichenden Verbindungen im Norden.",
-      "active": true,
-      "baseRep": 0,
-      "baseDate": null
+      "rep": 0,
+      "description": "Eine weitreichende kriminelle Organisation mit eigenen Interessen und verdecktem Einfluss."
     },
     {
       "id": "zhentarim",
       "name": "Zhentarim",
-      "info": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten, das seinen Einfluss und Reichtum ausweiten will.",
-      "active": true,
-      "baseRep": 0,
-      "baseDate": null
+      "rep": 0,
+      "description": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten mit starkem Eigeninteresse."
     }
   ],
-  "events": [
-    {
-      "id": "event_0068c65c-f4be-4dcb-9aa2-e48bf4806674",
-      "date": "2026-08-13",
-      "mission": "Testmission",
-      "reason": "Reputationstes",
-      "valid": true,
-      "createdAt": "2026-08-13T10:26:53.025Z",
-      "changes": [
-        {
-          "factionId": "yartar-merchants",
-          "delta": 2
-        },
-        {
-          "factionId": "yartar-authority",
-          "delta": -2
-        },
-        {
-          "factionId": "longsaddle",
-          "delta": 3
-        }
-      ],
-      "statusChangedAt": "2026-08-13T10:28:35.949Z"
-    },
-    {
-      "id": "event_cf2ae6a6-01af-4335-8e40-25355b8f9ad9",
-      "date": "2026-07-21",
-      "mission": "verfalltest",
-      "reason": "verfall",
-      "valid": true,
-      "createdAt": "2026-08-13T10:30:07.201Z",
-      "changes": [
-        {
-          "factionId": "longsaddle",
-          "delta": 2
-        }
-      ]
-    },
-    {
-      "id": "event_54335f1a-1258-4b60-82fc-11b0668229ca",
-      "date": "2026-07-14",
-      "mission": "verfall2",
-      "reason": "verfall",
-      "valid": true,
-      "createdAt": "2026-08-13T10:31:01.762Z",
-      "changes": [
-        {
-          "factionId": "calling-horns",
-          "delta": 3
-        }
-      ]
-    }
-  ],
-  "restore": null,
-  "updatedAt": "2026-08-13T10:31:01.762Z"
+  "events": []
 }
