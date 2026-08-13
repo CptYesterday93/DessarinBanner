@@ -23,7 +23,7 @@ th{font-size:12px;font-weight:700;color:#333}
 .child td:first-child{padding-left:42px}
 .child{font-size:13px}
 .info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:5px;border:1px solid #aaa;border-radius:50%;font-size:11px;color:#555;cursor:pointer;vertical-align:middle;background:#fff}
-.info:hover{background:#f3f3f3}.info.info-btn{padding:0;box-shadow:none;line-height:16px}
+.info:hover{background:#f3f3f3}.info.info-btn{padding:0;box-shadow:none;line-height:16px;cursor:pointer;background:#fff}
 details.hint{margin-top:3px}
 details.hint summary{cursor:pointer;color:var(--muted);font-size:12px}
 button{font:inherit;border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
@@ -36,6 +36,8 @@ input,select,textarea{font:inherit;border:1px solid #9da4b2;background:#fff;colo
 input:focus,select:focus,textarea:focus{outline:2px solid #dbe3f7;outline-offset:1px}
 .mission-field{flex:1;min-width:260px}.date-field{width:150px}
 textarea{width:100%;min-height:70px;resize:vertical}
+ .change-head{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,260px) 86px;gap:10px;align-items:end;margin:12px 0 0;font-weight:700;font-size:13px}
+.change-head>div{padding-bottom:4px}
 .change-row{display:grid;grid-template-columns:minmax(180px,1fr) 190px auto;gap:10px;align-items:end;padding:9px 0;border-bottom:1px solid var(--line)}
 .change-row:last-child{border-bottom:0}
 .add-row{margin-top:9px}
@@ -102,6 +104,7 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="date-field"><label for="changeDate">Datum</label><input id="changeDate" type="date"></div>
 </div>
 <div><label for="reason">Beschreibung / Begründung</label><textarea id="reason" placeholder="Was ist passiert und warum beeinflusst es den Ruf?"></textarea></div>
+<div class="change-head"><div>Reputation</div><div>Auswirkung <button type="button" class="info info-btn" onclick="showInfo('effect')">i</button></div><div></div></div>
 <div id="changeRows"></div>
 <div class="add-row"><button onclick="addChangeRow()">＋ REP hinzufügen</button></div>
 <div style="margin-top:13px"><button class="primary" onclick="previewApply()">Änderungen übernehmen</button></div>
@@ -236,8 +239,15 @@ function infoForUnit(u){
  return '';
 }
 function infoButton(title,text){
- return `<button type="button" class="info info-btn" onclick="event.stopPropagation();showInfoText(${JSON.stringify(title)},${JSON.stringify(text)})">i</button>`;
+ return `<button type="button" class="info info-btn" data-info-title="${esc(title)}" data-info-text="${esc(text)}" onclick="event.stopPropagation();showInfoFromButton(this)">i</button>`;
 }
+function showInfoFromButton(btn){
+ showInfoText(btn.dataset.infoTitle||'',btn.dataset.infoText||'');
+}
+function showInfo(type){
+ if(type==='effect') showInfoText('Auswirkung',effectHelp);
+}
+
 
 function render(){
  const pb=document.getElementById('placesBody');
@@ -285,8 +295,8 @@ function addChangeRow(){
  const wrap=document.getElementById('changeRows');
  const row=document.createElement('div');row.className='change-row';
  const opts=allUnits().filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
- row.innerHTML=`<div><label>Reputation</label><select class="target-select">${opts}</select></div>
- <div><label>Auswirkung <button type="button" class="info info-btn" onclick="event.stopPropagation();showInfo('effect')">i</button></label><select class="effect-select">${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
+ row.innerHTML=`<div><select class="target-select">${opts}</select></div>
+ <div><select class="effect-select">${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
  <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
  wrap.appendChild(row);
 }
