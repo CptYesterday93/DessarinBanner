@@ -155,8 +155,22 @@
         }
       ],
       "statusChangedAt": "2026-08-13T10:28:35.949Z"
+    },
+    {
+      "id": "event_cf2ae6a6-01af-4335-8e40-25355b8f9ad9",
+      "date": "2026-07-21",
+      "mission": "verfalltest",
+      "reason": "verfall",
+      "valid": true,
+      "createdAt": "2026-08-13T10:30:07.201Z",
+      "changes": [
+        {
+          "factionId": "longsaddle",
+          "delta": 2
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T10:28:35.949Z"
+  "updatedAt": "2026-08-13T10:30:07.201Z"
 }
