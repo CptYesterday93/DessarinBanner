@@ -145,7 +145,7 @@
       "date": "2026-08-13",
       "mission": "2",
       "reason": "2",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-13T14:16:27.503Z",
       "changes": [
         {
@@ -153,9 +153,9 @@
           "delta": 3
         }
       ],
-      "statusChangedAt": "2026-08-13T14:24:13.662Z"
+      "statusChangedAt": "2026-08-13T14:24:15.558Z"
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T14:24:13.662Z"
+  "updatedAt": "2026-08-13T14:24:15.558Z"
 }
