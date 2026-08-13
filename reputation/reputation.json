@@ -94,6 +94,18 @@
       "id": "triboar",
       "name": "Triboar",
       "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
+    },
+    {
+      "id": "test",
+      "name": "test",
+      "description": "da stinkts",
+      "rep": 0,
+      "baseRep": 0,
+      "baseDate": "2026-08-13",
+      "lastChange": null,
+      "active": true,
+      "featured": false,
+      "reputationMode": "direct"
     }
   ],
   "organizations": [
@@ -144,5 +156,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T14:16:27.503Z"
+  "updatedAt": "2026-08-13T14:18:16.501Z"
 }
