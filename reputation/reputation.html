@@ -138,12 +138,12 @@ const WRITE_URL=''; // später: Worker-Endpoint
 let state=null;
 
 const effects=[
- {label:'Sehr positiv',delta:3,days:90},
- {label:'Positiv',delta:2,days:60},
- {label:'Leicht positiv',delta:1,days:30},
- {label:'Leicht negativ',delta:-1,days:30},
- {label:'Negativ',delta:-2,days:60},
- {label:'Sehr negativ',delta:-3,days:90}
+ {delta:1,label:'Leicht positiv',days:30},
+ {delta:2,label:'Positiv',days:60},
+ {delta:3,label:'Sehr positiv',days:90},
+ {delta:-1,label:'Leicht negativ',days:40},
+ {delta:-2,label:'Negativ',days:80},
+ {delta:-3,label:'Sehr negativ',days:120}
 ];
 
 const effectHelp=`Positive Auswirkungen
@@ -165,17 +165,17 @@ const effectHelp=`Positive Auswirkungen
 
 Negative Auswirkungen
 
-−1 – Leicht negativ · 30 Tage
+−1 – Leicht negativ · 40 Tage
 • kleinere Abmachung nicht eingehalten
 • geringfügigen Ärger oder Aufwand verursacht
 • Interessen der betroffenen Gruppe in einer Kleinigkeit missachtet
 
-−2 – Negativ · 60 Tage
+−2 – Negativ · 80 Tage
 • wichtigen Auftrag gefährdet oder beschädigt
 • erheblichen Schaden verursacht
 • deutliches Vertrauen verspielt
 
-−3 – Sehr negativ · 90 Tage
+−3 – Sehr negativ · 120 Tage
 • betroffene Gruppe schwer geschädigt
 • wichtigen Besitz oder wichtigen Verbündeten verloren
 • massiver Verrat oder eine vergleichbare schwere Tat
@@ -295,8 +295,8 @@ function addChangeRow(){
  const wrap=document.getElementById('changeRows');
  const row=document.createElement('div');row.className='change-row';
  const opts=allUnits().filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
- row.innerHTML=`<div><select class="target-select">${opts}</select></div>
- <div><select class="effect-select">${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
+ row.innerHTML=`<div><select class="target-select"><option value="" selected>Bitte auswählen</option>${opts}</select></div>
+ <div><select class="effect-select"><option value="" selected>Bitte auswählen</option>${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
  <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
  wrap.appendChild(row);
 }
