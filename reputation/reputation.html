@@ -150,7 +150,8 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div id="modalBackdrop" class="modal-backdrop" onclick="backdropClose(event)">
 <div class="modal" role="dialog" aria-modal="true">
 <h2 id="modalTitle"></h2><p id="modalText"></p>
-<div class="modal-actions"><button onclick="closeModal()">Schließen</button></div>
+<div class="modal-actions"><button type="button" onclick="closeModal()">Abbrechen</button>
+<button type="button" class="primary" onclick="confirmPendingChanges()">Übernehmen</button></div>
 </div>
 </div>
 
@@ -357,6 +358,20 @@ function restoreEvent(id){if(!confirm('Dieses Ereignis wieder gültig machen?'))
 function showInfoText(title,text){
  document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.getElementById('modalBackdrop').classList.add('open');
 }
+function confirmPendingChanges(){
+ try{
+  if(!pendingEvent){ closeModal(); return; }
+  state.events.push(pendingEvent);
+  pendingEvent=null;
+  localStorage.setItem('dessarin-reputation-local-v2', JSON.stringify(state));
+  closeModal();
+  render();
+ }catch(err){
+  console.error(err);
+  alert('Übernehmen fehlgeschlagen: '+err.message);
+ }
+}
+
 function closeModal(){document.getElementById('modalBackdrop').classList.remove('open')}
 function backdropClose(e){if(e.target.id==='modalBackdrop')closeModal()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAddChoice();closeManage()}});
