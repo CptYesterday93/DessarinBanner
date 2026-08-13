@@ -127,8 +127,22 @@
           "delta": -1
         }
       ]
+    },
+    {
+      "id": "event_f5a4e895-eba9-4a41-bf5d-9715b89ebafa",
+      "date": "2026-08-13",
+      "mission": "2",
+      "reason": "2",
+      "valid": true,
+      "createdAt": "2026-08-13T14:16:27.503Z",
+      "changes": [
+        {
+          "factionId": "triboar",
+          "delta": 3
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T14:10:29.111Z"
+  "updatedAt": "2026-08-13T14:16:27.503Z"
 }
