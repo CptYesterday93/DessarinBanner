@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "decay_days": 30,
+  "decay_points": 1,
+  "status": [
+    {
+      "min": 8,
+      "label": "Verbündet"
+    },
+    {
+      "min": 3,
+      "label": "Wohlwollend"
+    },
+    {
+      "min": -1,
+      "label": "Neutral"
+    },
+    {
+      "min": -4,
+      "label": "Skeptisch"
+    },
+    {
+      "min": -999,
+      "label": "Feindlich"
+    }
+  ],
+  "factions": [
+    {
+      "id": "stadtwache-yartar",
+      "name": "Yartar Stadtwache",
+      "grp": 0,
+      "lastChange": null,
+      "baseGrp": 0
+    },
+    {
+      "id": "haendler-yartar",
+      "name": "Yartar Händler",
+      "grp": 0,
+      "lastChange": null,
+      "baseGrp": 0
+    },
+    {
+      "id": "diebesgilde-yartar",
+      "name": "Yartar Diebesgilde",
+      "grp": 0,
+      "lastChange": null,
+      "baseGrp": 0
+    }
+  ],
+  "log": []
+}

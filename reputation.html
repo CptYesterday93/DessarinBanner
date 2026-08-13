@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reputationsübersicht – Dessarin Banner</title>
+<style>
+:root{--ink:#171717;--muted:#666;--accent:#3157a6;--paper:#fff;--page:#f2f2f2;--line:#d9d9d9;--good:#edf5ed;--bad:#f8eeee}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.4 Arial,Helvetica,sans-serif}
+.sheet{width:min(1100px,calc(100% - 28px));margin:24px auto 40px;background:var(--paper);padding:36px 42px 48px;box-shadow:0 2px 18px #0001}
+h1{text-align:center;font-size:29px;letter-spacing:.03em;margin:0}.subtitle{text-align:center;color:#555;margin:3px 0 28px}
+.section-title{font-size:20px;margin:28px 0 10px;padding:9px 12px;background:#ededed;border-radius:9px}
+.toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin-bottom:18px}
+label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}
+input,select,textarea{font:inherit;border:1px solid #9da4b2;background:#fff;color:#111;padding:8px 10px;border-radius:3px}
+button{font:inherit;border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+button:hover{filter:brightness(.97)}
+.mission-field{flex:1;min-width:260px}.date-field{width:150px}
+textarea{width:100%;min-height:72px;resize:vertical}
+.table-wrap{overflow-x:auto;border:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;min-width:820px}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{background:#f5f5f5;font-size:12px}
+.num{text-align:center;white-space:nowrap}.status{font-weight:700}.positive{color:#27662d}.negative{color:#8b2626}
+.change-row{display:grid;grid-template-columns:minmax(180px,1fr) 180px 1fr auto;gap:10px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+.change-row:last-child{border-bottom:0}.change-row .remove{align-self:end}
+.add-row{margin-top:10px}
+.log-entry{border:1px solid var(--line);border-radius:7px;padding:12px 14px;margin:8px 0;background:#fff}
+.log-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}.log-head strong{font-size:15px}
+.log-detail{margin-top:8px;color:#444}.log-detail div{margin:3px 0}
+.log-actions{margin-top:9px}
+.notice{padding:10px 12px;background:#f3f5fb;border-left:4px solid var(--accent);margin:12px 0;color:#444}
+.muted{color:var(--muted);font-size:12px}.statusbar{margin-left:auto;color:var(--muted);font-size:12px}
+@media(max-width:700px){
+ .sheet{width:calc(100% - 16px);padding:26px 16px 40px}
+ h1{font-size:24px}.toolbar{display:grid;grid-template-columns:1fr}.mission-field,.date-field{width:100%;min-width:0}
+ .change-row{grid-template-columns:1fr 1fr}.change-row .reason{grid-column:1/-1}.change-row .remove{grid-column:2;justify-self:end}
+ .log-head{display:block}.log-head .muted{display:block;margin-top:3px}
+}
+</style>
+</head>
+<body>
+<main class="sheet">
+<h1>REPUTATIONSÜBERSICHT</h1>
+<div class="subtitle">Für das Dessarin Banner</div>
+
+<div class="notice">Der Ruf wird über die historischen <strong>GRP</strong> gespeichert. Die <strong>effektiven GRP</strong> berücksichtigen automatisch den zeitlichen Verfall Richtung 0. Der Status richtet sich ausschließlich nach den effektiven GRP.</div>
+
+<div class="section-title">Aktueller Fraktionsruf</div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Fraktion</th><th class="num">GRP</th><th>Status</th><th class="num">Effektive GRP</th><th>Letzte Änderung</th></tr></thead>
+<tbody id="factionBody"></tbody>
+</table>
+</div>
+<div class="toolbar" style="margin-top:10px">
+<button onclick="addFaction()">＋ Fraktion hinzufügen</button>
+<span class="statusbar" id="loadStatus">Daten werden geladen…</span>
+</div>
+
+<div class="section-title">Rufänderung eintragen</div>
+<div class="toolbar">
+<div class="mission-field"><label for="mission">Mission / Ereignis</label><input id="mission" placeholder="z. B. Die verlorene Karawane"></div>
+<div class="date-field"><label for="changeDate">Datum</label><input id="changeDate" type="date"></div>
+</div>
+<div><label for="reason">Beschreibung / Begründung</label><textarea id="reason" placeholder="z. B. Die Gilde hat den Diebesanführer eingekerkert und an die Stadtwache übergeben."></textarea></div>
+
+<div id="changeRows"></div>
+<div class="add-row"><button onclick="addChangeRow()">＋ Fraktion hinzufügen</button></div>
+<div style="margin-top:14px"><button class="primary" onclick="applyChanges()">Änderungen übernehmen</button></div>
+
+<div class="section-title">Änderungsverlauf</div>
+<div id="log"></div>
+</main>
+
+<script>
+const DATA_URL='reputation.json';
+const WRITE_URL=''; // Für die gemeinsame Online-Version hier den Backend-Endpunkt eintragen.
+let state=null;
+
+const effects=[
+ ['Sehr positiv',3],['Positiv',2],['Leicht positiv',1],['Neutral',0],
+ ['Leicht negativ',-1],['Negativ',-2],['Sehr negativ',-3]
+];
+
+function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function parseDate(s){if(!s)return null; const d=new Date(s+'T00:00:00'); return isNaN(d)?null:d;}
+function daysBetween(a,b){return Math.floor((b-a)/86400000);}
+function effective(f, today=new Date()){
+ if(!f.lastChange)return Number(f.grp)||0;
+ const last=parseDate(f.lastChange); if(!last)return Number(f.grp)||0;
+ const n=Math.max(0,Math.floor(daysBetween(last,today)/30));
+ const g=Number(f.grp)||0;
+ if(g>0)return Math.max(0,g-n);
+ if(g<0)return Math.min(0,g+n);
+ return 0;
+}
+function statusFor(g){
+ if(g>=8)return 'Verbündet';
+ if(g>=3)return 'Wohlwollend';
+ if(g>=-1)return 'Neutral';
+ if(g>=-4)return 'Skeptisch';
+ return 'Feindlich';
+}
+function fmtDate(s){if(!s)return '–';const d=parseDate(s);return d?d.toLocaleDateString('de-DE'):'–';}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+
+function render(){
+ const body=document.getElementById('factionBody');
+ body.innerHTML=state.factions.map(f=>{
+   const e=effective(f), st=statusFor(e), cls=e>0?'positive':e<0?'negative':'';
+   return `<tr><td>${esc(f.name)}</td><td class="num">${f.grp>0?'+':''}${f.grp}</td><td class="status ${cls}">${st}</td><td class="num ${cls}">${e>0?'+':''}${e}</td><td>${fmtDate(f.lastChange)}</td></tr>`;
+ }).join('');
+ renderLog();
+}
+
+function renderLog(){
+ const el=document.getElementById('log');
+ if(!state.log.length){el.innerHTML='<p class="muted">Noch keine Rufänderungen gespeichert.</p>';return;}
+ el.innerHTML=[...state.log].reverse().map(entry=>{
+   const rows=entry.changes.map(c=>`<div><strong>${esc(c.factionName)}</strong>: <span class="${c.delta>0?'positive':c.delta<0?'negative':''}">${c.delta>0?'+':''}${c.delta}</span> · GRP ${c.before>0?'+':''}${c.before} → ${c.after>0?'+':''}${c.after}</div>`).join('');
+   return `<div class="log-entry"><div class="log-head"><strong>${esc(entry.mission||'Ohne Missionsangabe')}</strong><span class="muted">${fmtDate(entry.date)}</span></div><div class="log-detail">${esc(entry.reason||'Keine Begründung angegeben.')}<div style="margin-top:8px">${rows}</div></div><div class="log-actions"><button onclick="undoEntry('${esc(entry.id)}')">↩ Rückgängig</button></div></div>`;
+ }).join('');
+}
+
+function addFaction(){
+ const name=prompt('Name der neuen Fraktion:');
+ if(!name||!name.trim())return;
+ const start=prompt('Start-GRP (z. B. 0):','0');
+ const base=Number(start); if(!Number.isFinite(base))return;
+ state.factions.push({id:'f-'+Date.now(),name:name.trim(),baseGrp:base,grp:base,lastChange:null});
+ render();
+ persistState();
+}
+function addChangeRow(){
+ const wrap=document.getElementById('changeRows');
+ const row=document.createElement('div');row.className='change-row';
+ row.innerHTML=`<div><label>Fraktion</label><select class="faction-select">${state.factions.map(f=>`<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('')}</select></div>
+ <div><label>Änderung</label><select class="effect-select">${effects.map(e=>`<option value="${e[1]}">${e[0]} (${e[1]>0?'+':''}${e[1]})</option>`).join('')}</select></div>
+ <div class="reason muted">Die Begründung oben gilt für alle ausgewählten Fraktionen.</div>
+ <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
+ wrap.appendChild(row);
+}
+function clearChanges(){document.getElementById('changeRows').innerHTML='';}
+async function applyChanges(){
+ const mission=document.getElementById('mission').value.trim();
+ const date=document.getElementById('changeDate').value||todayISO();
+ const reason=document.getElementById('reason').value.trim();
+ const rows=[...document.querySelectorAll('.change-row')];
+ if(!rows.length){alert('Bitte mindestens eine Fraktion hinzufügen.');return;}
+ if(!mission){alert('Bitte Mission / Ereignis eintragen.');return;}
+ const changes=[];
+ for(const row of rows){
+   const id=row.querySelector('.faction-select').value;
+   const delta=Number(row.querySelector('.effect-select').value);
+   const f=state.factions.find(x=>x.id===id);
+   if(!f)continue;
+   if(changes.some(x=>x.factionId===id)){alert('Eine Fraktion wurde doppelt ausgewählt.');return;}
+   const before=Number(f.grp)||0;
+   const after=effective(f,parseDate(date))+delta;
+   changes.push({factionId:id,factionName:f.name,delta,before,after});
+ }
+ // Apply transaction
+ changes.forEach(c=>{
+   const f=state.factions.find(x=>x.id===c.factionId);
+   f.grp=c.after; f.lastChange=date;
+ });
+ state.log.push({id:'log-'+Date.now(),date,mission,reason,changes});
+ await persistState();
+ document.getElementById('mission').value='';document.getElementById('reason').value='';clearChanges();
+ render();
+}
+async function undoEntry(id){
+ const idx=state.log.findIndex(x=>x.id===id);if(idx<0)return;
+ const entry=state.log[idx];
+ if(!confirm('Diese Rufänderung wirklich rückgängig machen?'))return;
+ // Rebuild all faction states from history before this entry, preserving later entries.
+ const remaining=state.log.filter(x=>x.id!==id);
+ state.factions.forEach(f=>{f.grp=Number(f.baseGrp??f.grp??0);f.lastChange=null;});
+ for(const e of remaining){
+   for(const c of e.changes){
+     const f=state.factions.find(x=>x.id===c.factionId); if(!f)continue;
+     f.grp=effective(f,parseDate(e.date))+c.delta; f.lastChange=e.date;
+   }
+ }
+ state.log=remaining;
+ await persistState();render();
+}
+async function persistState(){
+ document.getElementById('loadStatus').textContent='Speichern…';
+ if(!WRITE_URL){
+   localStorage.setItem('dessarin-reputation-local',JSON.stringify(state));
+   document.getElementById('loadStatus').textContent='Lokal gespeichert – gemeinsames Backend noch nicht verbunden.';
+   return;
+ }
+ const r=await fetch(WRITE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});
+ if(!r.ok)throw new Error('Speichern fehlgeschlagen');
+ document.getElementById('loadStatus').textContent='Gespeichert.';
+}
+async function load(){
+ document.getElementById('changeDate').value=todayISO();
+ try{
+   const local=localStorage.getItem('dessarin-reputation-local');
+   if(local){state=JSON.parse(local);document.getElementById('loadStatus').textContent='Lokaler Stand geladen.';}
+   else {const r=await fetch(DATA_URL);state=await r.json();document.getElementById('loadStatus').textContent='Zentraler Stand geladen.';}
+   state.factions.forEach(f=>{if(f.baseGrp===undefined)f.baseGrp=Number(f.grp)||0;});
+   render();
+   addChangeRow();
+ }catch(e){
+   document.getElementById('loadStatus').textContent='Fehler beim Laden.';
+   alert('Reputationsdaten konnten nicht geladen werden.');
+ }
+}
+load();
+</script>
+</body>
+</html>
