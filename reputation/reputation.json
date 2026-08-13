@@ -30,7 +30,13 @@
         "min": -999,
         "label": "Feindlich"
       }
-    ]
+    ],
+    "decay": {
+      "enabled": true,
+      "days": 30,
+      "points": 1,
+      "mode": "linear"
+    }
   },
   "places": [
     {
@@ -107,5 +113,22 @@
       "description": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten mit starkem Eigeninteresse."
     }
   ],
-  "events": []
+  "events": [
+    {
+      "id": "event_910adff6-7d89-4c20-aa1b-9530dae81c17",
+      "date": "2026-08-13",
+      "mission": "test",
+      "reason": "tests",
+      "valid": true,
+      "createdAt": "2026-08-13T14:10:29.111Z",
+      "changes": [
+        {
+          "factionId": "harpers",
+          "delta": -1
+        }
+      ]
+    }
+  ],
+  "restore": null,
+  "updatedAt": "2026-08-13T14:10:29.111Z"
 }
