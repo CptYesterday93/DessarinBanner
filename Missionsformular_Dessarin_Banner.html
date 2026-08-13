@@ -35,8 +35,9 @@ h1{text-align:center;font-size:30px;letter-spacing:.03em;margin:0}
 .chain-button:hover{border-color:#3157a6;color:#3157a6}.chain-button.connected:hover{color:#fff;background:#3157a6!important}
 .ooc-date{max-width:180px}.duration-field .field{max-width:110px}.date-part:disabled{opacity:.72;background:#f2f2f2;cursor:not-allowed}.date-part[readonly]{background:#f4f4f4;color:#333;cursor:default}
 .date-parts{display:flex;align-items:center;gap:4px;min-height:38px}
-.date-part{width:54px;height:38px;border:1px solid #9da4b2;background:var(--field);color:#111;padding:7px 5px;font:inherit;text-align:center}
+.date-part{width:54px;height:38px;border:1px solid #9da4b2;background:var(--field);color:#111;padding:7px 5px;font:inherit;text-align:center;-webkit-appearance:auto;appearance:auto}
 .date-part.year{width:72px}
+.date-part::-webkit-inner-spin-button,.date-part::-webkit-outer-spin-button{opacity:1;margin:0;width:18px;height:30px}
 .date-part:focus{border-color:var(--accent);box-shadow:0 0 0 2px #3157a61a;outline:none}
 .dr-label{font-weight:700;color:#555;margin-left:2px}
 .approval-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
@@ -50,7 +51,7 @@ input.field,select.field{height:38px}textarea.field{min-height:125px;resize:vert
 button{border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer;font:inherit}
 button:hover{background:#f5f5f5}.danger{color:#777;font-size:12px}.status{font-size:12px;color:var(--muted);margin-left:auto;align-self:center}
 .footer{margin-top:36px;text-align:center;font-size:11px;color:#777}
-@media(max-width:700px){.sheet{padding:28px 22px 48px}.meta,.mission-grid,.reward-grid,.dates-grid,.approval-grid{grid-template-columns:1fr}.danger-row{max-width:none;display:grid;grid-template-columns:repeat(5,34px);justify-content:start;gap:8px}.danger-option span{width:34px;height:34px}.duration-field .field{max-width:none}.chain-button{justify-self:start;margin:0 0 -4px 0}}
+@media(max-width:700px){.sheet{padding:28px 22px 48px}.meta,.mission-grid,.reward-grid,.dates-grid,.approval-grid{grid-template-columns:1fr}.danger-row{max-width:none;display:grid;grid-template-columns:repeat(5,34px);justify-content:start;gap:8px}.danger-option span{width:34px;height:34px}.date-parts{gap:6px}.date-part{width:68px;height:42px;padding:7px 3px;font-size:16px}.date-part.year{width:92px}.date-part::-webkit-inner-spin-button,.date-part::-webkit-outer-spin-button{opacity:1;width:22px;height:34px}.duration-field .field{max-width:none}.chain-button{justify-self:start;margin:0 0 -4px 0}}
 @media(max-width:500px){h1{font-size:24px;letter-spacing:.01em;white-space:nowrap}.subtitle{font-size:14px}.sheet{width:calc(100% - 18px);padding:24px 16px 40px}.status{width:100%;margin-left:0}}
 @media print{body{background:#fff}.sheet{width:auto;margin:0;padding:24px;box-shadow:none}.actions{display:none}}
 </style>
