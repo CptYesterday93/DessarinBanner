@@ -23,7 +23,7 @@ th{font-size:12px;font-weight:700;color:#333}
 .child td:first-child{padding-left:42px}
 .child{font-size:13px}
 .info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:5px;border:1px solid #aaa;border-radius:50%;font-size:11px;color:#555;cursor:pointer;vertical-align:middle;background:#fff}
-.info:hover{background:#f3f3f3}
+.info:hover{background:#f3f3f3}.info.info-btn{padding:0;box-shadow:none;line-height:16px}
 details.hint{margin-top:3px}
 details.hint summary{cursor:pointer;color:var(--muted);font-size:12px}
 button{font:inherit;border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
@@ -82,25 +82,19 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="section-title">Orte</div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Ort</th><th class="num">REP</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th></tr></thead>
+<thead><tr><th>Ort</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th></tr></thead>
 <tbody id="placesBody"></tbody>
 </table>
-</div>
-<div class="toolbar">
-<button onclick="addPlace()">＋ Ort hinzufügen</button>
 </div>
 
 <div class="section-title">Organisationen</div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Organisation</th><th class="num">REP</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th></tr></thead>
+<thead><tr><th>Organisation</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th></tr></thead>
 <tbody id="orgsBody"></tbody>
 </table>
 </div>
-<div class="toolbar">
-<button onclick="addOrganization()">＋ Organisation hinzufügen</button>
-<span class="statusbar" id="loadStatus">Daten werden geladen…</span>
-</div>
+<div class="toolbar"><button onclick="showAddChoice()">＋ Hinzufügen</button><span class="statusbar" id="loadStatus">Daten werden geladen…</span></div>
 
 <div class="section-title">Rufänderung eintragen</div>
 <div class="toolbar">
@@ -115,6 +109,18 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="section-title">Änderungsverlauf</div>
 <div id="log"></div>
 </main>
+
+<div id="addChoiceBackdrop" class="modal-backdrop" onclick="addChoiceBackdropClose(event)">
+<div class="modal" role="dialog" aria-modal="true">
+<h2>Hinzufügen</h2>
+<p>Was möchtest du hinzufügen?</p>
+<div class="modal-actions" style="gap:8px">
+<button onclick="addPlaceFromChoice()">Ort</button>
+<button onclick="addOrganizationFromChoice()">Organisation</button>
+<button onclick="closeAddChoice()">Abbrechen</button>
+</div>
+</div>
+</div>
 
 <div id="modalBackdrop" class="modal-backdrop" onclick="backdropClose(event)">
 <div class="modal" role="dialog" aria-modal="true">
@@ -191,17 +197,6 @@ function allUnits(){
 }
 function unitById(id){return allUnits().find(x=>x.id===id)||null;}
 function directEvents(id){return (state.events||[]).filter(e=>e.targetId===id && e.valid!==false);}
-function historical(id){
- const u=unitById(id);
- if(!u)return 0;
- if(u.unit)return Number(u.unit.rep)||0;
- if(u.org)return Number(u.org.rep)||0;
- if(u.place && !u.place.aggregate)return Number(u.place.rep)||0;
- if(u.place && u.place.aggregate==='yartar'){
-   return (u.place.children||[]).reduce((sum,c)=>sum+(Number(c.rep)||0),0);
- }
- return directEvents(id).reduce((sum,e)=>sum+Number(e.delta||0),0);
-}
 function effectiveDirect(id, at=new Date()){
  return directEvents(id).reduce((sum,e)=>{
    const d=parseDate(e.date); if(!d)return sum;
@@ -241,7 +236,7 @@ function infoForUnit(u){
  return '';
 }
 function infoButton(title,text){
- return `<span class="info" onclick="showInfoText(${JSON.stringify(title)},${JSON.stringify(text)})">i</span>`;
+ return `<button type="button" class="info info-btn" onclick="event.stopPropagation();showInfoText(${JSON.stringify(title)},${JSON.stringify(text)})">i</button>`;
 }
 
 function render(){
@@ -252,13 +247,13 @@ function render(){
    return a.name.localeCompare(b.name,'de');
  });
  for(const p of places){
-   const e=effective(p.id),h=historical(p.id),st=statusFor(e),lc=lastPlaceChange(p);
+   const e=effective(p.id),st=statusFor(e),lc=lastPlaceChange(p);
    const sub=p.aggregate==='yartar'?'Gesamtwert aus 4 lokalen Gruppen':'';
-   rows+=`<tr><td><div class="place-main">${p.id==='yartar'?'▼ ':''}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="num ${cls(h)}">${h>0?'+':''}${h}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td></tr>`;
+   rows+=`<tr><td><div class="place-main">${p.id==='yartar'?'▼ ':''}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td></tr>`;
    if(p.id==='yartar'){
      for(const c of [...(p.children||[])].sort((a,b)=>a.order-b.order)){
-       const ce=effectiveDirect(c.id),ch=Number(c.rep)||0;
-       rows+=`<tr class="child"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="num ${cls(ch)}">${ch>0?'+':''}${ch}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td></tr>`;
+       const ce=effectiveDirect(c.id);
+       rows+=`<tr class="child"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td></tr>`;
      }
    }
  }
@@ -266,8 +261,8 @@ function render(){
 
  const ob=document.getElementById('orgsBody');
  ob.innerHTML=[...(state.organizations||[])].sort((a,b)=>a.name.localeCompare(b.name,'de')).map(o=>{
-   const h=Number(o.rep)||0,e=effectiveDirect(o.id),st=statusFor(e);
-   return `<tr><td><div class="place-main">${esc(o.name)}${infoButton(o.name,o.description||'')}</div></td><td class="num ${cls(h)}">${h>0?'+':''}${h}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lastChange(o.id))}</td></tr>`;
+   const e=effectiveDirect(o.id),st=statusFor(e);
+   return `<tr><td><div class="place-main">${esc(o.name)}${infoButton(o.name,o.description||'')}</div></td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lastChange(o.id))}</td></tr>`;
  }).join('');
  renderLog();
 }
@@ -291,7 +286,7 @@ function addChangeRow(){
  const row=document.createElement('div');row.className='change-row';
  const opts=allUnits().filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
  row.innerHTML=`<div><label>Reputation</label><select class="target-select">${opts}</select></div>
- <div><label>Auswirkung <span class="info" onclick="showInfo('effect')">i</span></label><select class="effect-select">${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
+ <div><label>Auswirkung <button type="button" class="info info-btn" onclick="event.stopPropagation();showInfo('effect')">i</button></label><select class="effect-select">${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
  <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
  wrap.appendChild(row);
 }
@@ -321,7 +316,13 @@ function showInfoText(title,text){
 }
 function closeModal(){document.getElementById('modalBackdrop').classList.remove('open')}
 function backdropClose(e){if(e.target.id==='modalBackdrop')closeModal()}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAddChoice()}});
+function showAddChoice(){document.getElementById('addChoiceBackdrop').classList.add('open')}
+function closeAddChoice(){document.getElementById('addChoiceBackdrop').classList.remove('open')}
+function addChoiceBackdropClose(e){if(e.target.id==='addChoiceBackdrop')closeAddChoice()}
+function addPlaceFromChoice(){closeAddChoice();addPlace()}
+function addOrganizationFromChoice(){closeAddChoice();addOrganization()}
+
 function addPlace(){const name=prompt('Name des neuen Ortes:');if(!name?.trim())return;state.places.push({id:'place-'+Date.now(),name:name.trim(),rep:0,children:[]});persist().then(render);}
 function addOrganization(){const name=prompt('Name der neuen Organisation:');if(!name?.trim())return;state.organizations.push({id:'org-'+Date.now(),name:name.trim(),rep:0,description:''});persist().then(render);}
 async function persist(){
