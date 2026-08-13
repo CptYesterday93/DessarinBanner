@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reputationsübersicht – Dessarin Banner</title>
 <style>
-:root{--ink:#171717;--muted:#6a6a6a;--accent:#3157a6;--paper:#fff;--page:#f2f2f2;--line:#d9d9d9;--soft:#f7f8fb;--good:#1769aa;--bad:#c65d00}
+:root{--ink:#171717;--muted:#6a6a6a;--accent:#3157a6;--paper:#fff;--page:#f2f2f2;--line:#d9d9d9;--soft:#f7f8fb;--good:#27662d;--bad:#8b2626}
 *{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 Arial,Helvetica,sans-serif}
 .sheet{width:min(1100px,calc(100% - 28px));margin:18px auto 32px;background:var(--paper);padding:28px 38px 40px;box-shadow:0 2px 14px #0001}
@@ -21,12 +21,12 @@ th{font-size:12px;font-weight:700;color:#333}
 .status{font-weight:600}.positive{color:var(--good)}.negative{color:var(--bad)}
 .place-main{font-weight:700}.place-sub{font-size:12px;color:var(--muted);margin-top:1px}
 .child td:first-child{padding-left:42px}
-.child{font-size:13px}.child.collapsed{display:none}.collapse-toggle{border:0;background:none;padding:0;margin:0 4px 0 0;font-weight:700;cursor:pointer;font-size:14px;line-height:1}.collapse-toggle:hover{filter:none}
+.child{font-size:13px}
 .info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:5px;border:1px solid #aaa;border-radius:50%;font-size:11px;color:#555;cursor:pointer;vertical-align:middle;background:#fff}
 .info:hover{background:#f3f3f3}
-.manage-actions{display:table-cell;white-space:nowrap;text-align:right}
-.manage-btn{font-size:12px;padding:4px 7px;margin-left:5px}
-.info.info-btn{padding:0;box-shadow:none;line-height:16px;cursor:pointer;background:#fff}.section-info{margin-left:7px}
+.manage-actions{display:flex;gap:5px;justify-content:flex-end;white-space:nowrap}
+.manage-btn{font-size:12px;padding:4px 7px}
+.info.info-btn{padding:0;box-shadow:none;line-height:16px;cursor:pointer;background:#fff}
 details.hint{margin-top:3px}
 details.hint summary{cursor:pointer;color:var(--muted);font-size:12px}
 button{font:inherit;border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
@@ -45,6 +45,15 @@ textarea{width:100%;min-height:70px;resize:vertical}
 .change-row:last-child{border-bottom:0}
 .add-row{margin-top:9px}
 .muted{color:var(--muted);font-size:12px}.statusbar{margin-left:auto;color:var(--muted);font-size:12px}
+
+.log-group{border:1px solid var(--line);border-radius:7px;margin:8px 0;background:#fff;overflow:hidden}
+.log-group>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 13px;font-weight:700}
+.log-group>summary::-webkit-details-marker{display:none}
+.log-group>summary::before{content:'▶';font-size:10px;margin-right:7px;color:var(--muted)}
+.log-group[open]>summary::before{content:'▼'}
+.log-group>summary:hover{background:var(--soft)}
+.log-group-body{padding:0 10px 8px}
+.log-group-body .log-entry{border:0;border-top:1px solid var(--line);border-radius:0;margin:0;padding:10px 3px}
 .log-entry{border:1px solid var(--line);border-radius:7px;padding:11px 13px;margin:8px 0;background:#fff}
 .log-head{display:flex;justify-content:space-between;gap:12px;align-items:baseline}
 .log-head strong{font-size:14px}.log-detail{margin-top:7px;color:#444}
@@ -71,14 +80,6 @@ textarea{width:100%;min-height:70px;resize:vertical}
   .mission-field,.date-field{width:100%;min-width:0}
  .log-head{display:block}.log-head .muted{display:block;margin-top:3px}
 }
-
-/* Table layout fix: keep row borders continuous and columns aligned. */
-.rep-table{width:100%;border-collapse:collapse;table-layout:fixed}
-.rep-table th,.rep-table td{border-bottom:1px solid #ddd;vertical-align:middle}
-.rep-table th:last-child,.rep-table td:last-child{width:170px}
-.rep-table .manage-actions{width:170px;white-space:nowrap;text-align:right}
-.rep-table .manage-actions button{margin-left:6px}
-
 </style>
 </head>
 <body>
@@ -92,16 +93,16 @@ Der <strong>effektive REP</strong> zeigt, wie viel davon aktuell wirkt: Jede ein
 verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sich ausschließlich nach dem effektiven REP.
 </div>
 
-<div class="section-title">Regionen <button type="button" class="info info-btn section-info" onclick="showInfoText('Regionen', 'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.')">i</button></div>
+<div class="section-title">Orte</div>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Region</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
+<thead><tr><th>Ort</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
 <tbody id="placesBody"></tbody>
 </table>
-<div class="toolbar"><button onclick="addPlace()">＋ Region hinzufügen</button></div>
+<div class="toolbar"><button onclick="addPlace()">＋ Ort hinzufügen</button></div>
 </div>
 
-<div class="section-title">Organisationen <button type="button" class="info info-btn section-info" onclick="showInfoText('Organisationen', 'Eine überregional bzw. in größerem Ausmaß an der Schwertküste agierende Organisation. Lokale Gruppen, Kirchen oder Einrichtungen werden hier normalerweise nicht separat erfasst.')">i</button></div>
+<div class="section-title">Organisationen</div>
 <div class="table-wrap">
 <table>
 <thead><tr><th>Organisation</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
@@ -116,9 +117,9 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="date-field"><label for="changeDate">Datum</label><input id="changeDate" type="date"></div>
 </div>
 <div><label for="reason">Beschreibung / Begründung</label><textarea id="reason" placeholder="Was ist passiert und warum beeinflusst es den Ruf?"></textarea></div>
-<div class="change-head"><div>Auswirkung auf</div><div>Auswirkung <button type="button" class="info info-btn" onclick="showInfo('effect')">i</button></div><div></div></div>
+<div class="change-head"><div>Reputation</div><div>Auswirkung <button type="button" class="info info-btn" onclick="showInfo('effect')">i</button></div><div></div></div>
 <div id="changeRows"></div>
-<div class="add-row"><button onclick="addChangeRow()">＋ Auswirkung hinzufügen</button></div>
+<div class="add-row"><button onclick="addChangeRow()">＋ REP hinzufügen</button></div>
 <div style="margin-top:13px"><button class="primary" onclick="previewApply()">Änderungen übernehmen</button></div>
 
 <div class="section-title">Änderungsverlauf</div>
@@ -166,7 +167,6 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 const DATA_URL='reputation.json';
 const WRITE_URL=''; // später: Worker-Endpoint
 let state=null;
-let yartarExpanded=true;
 
 const effects=[
  {delta:1,label:'Leicht positiv',days:30},
@@ -291,23 +291,6 @@ function showInfo(type){
 }
 
 
-function toggleYartar(e){
- e.stopPropagation();
- yartarExpanded=!yartarExpanded;
- render();
-}
-
-function refreshTargetOptions(){
- const selects=[...document.querySelectorAll('#changeRows .rep-target-select')];
- const selected=new Set(selects.map(sel=>sel.value).filter(Boolean));
- selects.forEach(sel=>{
-   [...sel.options].forEach(opt=>{
-     if(!opt.value) return;
-     opt.hidden=selected.has(opt.value) && opt.value!==sel.value;
-   });
- });
-}
-
 function render(){
  const pb=document.getElementById('placesBody');
  let rows='';
@@ -318,15 +301,11 @@ function render(){
  for(const p of places){
    const e=effective(p.id),st=statusFor(e),lc=lastPlaceChange(p);
    const sub=p.aggregate==='yartar'?'Gesamtwert aus 4 lokalen Gruppen':'';
-   const isYartar=p.id==='yartar';
-   const toggle=isYartar
-     ? `<button type="button" class="collapse-toggle" aria-expanded="${yartarExpanded}" aria-label="${yartarExpanded?'Region zuklappen':'Region aufklappen'}" onclick="toggleYartar(event)">${yartarExpanded?'▼':'▶'}</button>`
-     : '';
-   rows+=`<tr><td><div class="place-main">${toggle}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('place','${esc(p.id)}')">Bearbeiten</button>${p.id!=='yartar'?`<button class="manage-btn danger" onclick="deleteManaged('place','${esc(p.id)}')">Löschen</button>`:''}</td></tr>`;
-   if(isYartar){
+   rows+=`<tr><td><div class="place-main">${p.id==='yartar'?'▼ ':''}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('place','${esc(p.id)}')">Bearbeiten</button>${p.id!=='yartar'?`<button class="manage-btn danger" onclick="deleteManaged('place','${esc(p.id)}')">Löschen</button>`:''}</td></tr>`;
+   if(p.id==='yartar'){
      for(const c of [...(p.children||[])].sort((a,b)=>a.order-b.order)){
        const ce=effectiveDirect(c.id);
-       rows+=`<tr class="child${yartarExpanded?'':' collapsed'}"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('local','${esc(c.id)}')">Bearbeiten</button></td></tr>`;
+       rows+=`<tr class="child"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('local','${esc(c.id)}')">Bearbeiten</button></td></tr>`;
      }
    }
  }
@@ -347,24 +326,61 @@ function lastPlaceChange(p){
 }
 function renderLog(){
  const el=document.getElementById('log');
- if(!(state.events||[]).length){el.innerHTML='<p class="muted">Noch keine Rufänderungen gespeichert.</p>';return;}
- el.innerHTML=[...(state.events||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(e=>{
-   const u=unitById(e.targetId),fx=effectForDelta(e.delta);
-   const valid=e.valid!==false;
-   return `<div class="log-entry"><div class="log-head"><strong>${esc(e.mission||'Ohne Missionsangabe')}</strong><span class="muted">${fmtDate(e.date)}</span></div><div class="log-detail"><span class="badge ${valid?'':'invalid'}">${valid?'gültig':'RETCON – ungültig'}</span><div>${esc(e.reason||'Keine Begründung angegeben.')}</div><div><strong>${esc(u?.name||e.targetId)}</strong> <span class="${cls(e.delta)}">${e.delta>0?'+':''}${e.delta}</span> · ${fx?.days||30} Tage Wirkungsdauer</div></div><div class="log-actions">${valid?`<button class="danger" onclick="retconEvent('${esc(e.id)}')">Als Retcon ungültig machen</button>`:`<button onclick="restoreEvent('${esc(e.id)}')">Wieder gültig machen</button>`}</div></div>`;
+ const events=[...(state.events||[])].sort((a,b)=>{
+   const da=parseDate(a.date)?.getTime()||0, db=parseDate(b.date)?.getTime()||0;
+   return db-da;
+ });
+ if(!events.length){
+   el.innerHTML='<p class="muted">Noch keine Rufänderungen gespeichert.</p>';
+   return;
+ }
+
+ const groups={};
+ for(const e of events){
+   const d=parseDate(e.date);
+   const key=d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`:'unknown';
+   (groups[key]??=[]).push(e);
+ }
+
+ const keys=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
+ el.innerHTML=keys.map((key,index)=>{
+   const monthEvents=groups[key];
+   const [ys,ms]=key.split('-');
+   const label=key==='unknown'?'Ohne Datum':
+     new Date(Number(ys),Number(ms)-1,1).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
+   const entries=monthEvents.map(e=>{
+     const u=unitById(e.targetId),fx=effectForDelta(e.delta);
+     const valid=e.valid!==false;
+     return `<div class="log-entry">
+       <div class="log-head">
+         <strong>${esc(e.mission||'Ohne Missionsangabe')}</strong>
+         <span class="muted">${fmtDate(e.date)}</span>
+       </div>
+       <div class="log-detail">
+         <span class="badge ${valid?'':'invalid'}">${valid?'gültig':'RETCON – ungültig'}</span>
+         <div>${esc(e.reason||'Keine Begründung angegeben.')}</div>
+         <div><strong>${esc(u?.name||e.targetId)}</strong> <span class="${cls(e.delta)}">${e.delta>0?'+':''}${e.delta}</span> · ${fx?.days||30} Tage Wirkungsdauer</div>
+       </div>
+       <div class="log-actions">
+         ${valid?`<button class="manage-btn danger" onclick="invalidateEvent('${esc(e.id||'')}')">Als ungültig markieren</button>`:''}
+       </div>
+     </div>`;
+   }).join('');
+   return `<details class="log-group" ${index===0?'open':''}>
+     <summary><span>${esc(label)}</span><span class="muted">${monthEvents.length} ${monthEvents.length===1?'Änderung':'Änderungen'}</span></summary>
+     <div class="log-group-body">${entries}</div>
+   </details>`;
  }).join('');
 }
+
 function addChangeRow(){
  const wrap=document.getElementById('changeRows');
  const row=document.createElement('div');row.className='change-row';
- const opts=allUnits()
-   .filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar')
-   .map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
- row.innerHTML=`<div><select class="target-select rep-target-select"><option value="" selected>Bitte auswählen</option>${opts}</select></div>
+ const opts=allUnits().filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
+ row.innerHTML=`<div><select class="target-select"><option value="" selected>Bitte auswählen</option>${opts}</select></div>
  <div><select class="effect-select"><option value="" selected>Bitte auswählen</option>${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
- <button class="remove" type="button" onclick="this.parentElement.remove();refreshTargetOptions()">Entfernen</button>`;
+ <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
  wrap.appendChild(row);
- refreshTargetOptions();
 }
 function clearChanges(){document.getElementById('changeRows').innerHTML='';}
 function targetIdsFromRows(){
@@ -416,7 +432,7 @@ function openManage(mode,id){
  const title=document.getElementById('manageTitle');
  const name=document.getElementById('manageName');
  const desc=document.getElementById('manageDescription');
- if(mode==='new-place'){title.textContent='Region hinzufügen';name.value='';desc.value='';}
+ if(mode==='new-place'){title.textContent='Ort hinzufügen';name.value='';desc.value='';}
  else if(mode==='new-organization'){title.textContent='Organisation hinzufügen';name.value='';desc.value='';}
  else{
   const u=unitById(id);
@@ -487,11 +503,6 @@ async function load(){
  }catch(e){document.getElementById('loadStatus').textContent='Fehler beim Laden.';alert('Reputationsdaten konnten nicht geladen werden.')}
 }
 load();
-
-document.addEventListener('change', e=>{
-  if(e.target.matches('.rep-target-select')) refreshTargetOptions();
-});
-
 </script>
 </body>
 </html>
