@@ -8,11 +8,11 @@
 :root{--ink:#171717;--muted:#6a6a6a;--accent:#3157a6;--paper:#fff;--page:#f2f2f2;--line:#d9d9d9;--soft:#f7f8fb;--good:#27662d;--bad:#8b2626}
 *{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 Arial,Helvetica,sans-serif}
-.sheet{width:min(1100px,calc(100% - 28px));margin:24px auto 40px;background:var(--paper);padding:34px 42px 48px;box-shadow:0 2px 18px #0001}
+.sheet{width:min(1100px,calc(100% - 28px));margin:18px auto 32px;background:var(--paper);padding:28px 38px 40px;box-shadow:0 2px 14px #0001}
 h1{text-align:center;font-size:28px;letter-spacing:.02em;margin:0}
 .subtitle{text-align:center;color:#555;margin:2px 0 26px}
 .notice{padding:10px 12px;background:#f3f5fb;border-left:3px solid var(--accent);margin:0 0 24px;color:#333}
-.section-title{font-size:19px;font-weight:700;margin:26px 0 9px;padding:8px 11px;background:#ededed;border-radius:8px}
+.section-title{font-size:18px;font-weight:700;margin:24px 0 9px;padding:7px 10px;background:#ededed;border-radius:7px}
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
@@ -46,10 +46,6 @@ textarea{width:100%;min-height:70px;resize:vertical}
 .log-detail div{margin:3px 0}.log-actions{margin-top:9px}
 .badge{display:inline-block;font-size:11px;padding:2px 6px;border-radius:10px;background:#e9f4e9;color:var(--good)}
 .badge.invalid{background:#faeaea;color:var(--bad)}
-.reset-box{border:1px solid var(--line);padding:12px;border-radius:6px}
-.reset-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
-.reset-date{width:220px}
-.small-note{margin-top:5px;color:var(--muted);font-size:12px}
 .modal-backdrop{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}
 .modal-backdrop.open{display:flex}
 .modal{width:min(560px,100%);background:#fff;border-radius:8px;box-shadow:0 12px 40px #0005;padding:20px}
@@ -67,7 +63,7 @@ textarea{width:100%;min-height:70px;resize:vertical}
  h1{font-size:24px}
  .change-row{grid-template-columns:1fr 1fr}
  .change-row .remove{grid-column:2;justify-self:end}
- .mission-field,.date-field,.reset-date{width:100%;min-width:0}
+  .mission-field,.date-field{width:100%;min-width:0}
  .log-head{display:block}.log-head .muted{display:block;margin-top:3px}
 }
 </style>
@@ -78,9 +74,9 @@ textarea{width:100%;min-height:70px;resize:vertical}
 <div class="subtitle">Dessarin Banner · Reputationspunkte (REP)</div>
 
 <div class="notice">
-<strong>REP</strong> ist der dauerhaft aufgebaute Ruf. Der <strong>effektive REP</strong> zeigt,
-wie viel davon aktuell wirkt: Jede einzelne Rufänderung verliert nach ihrer eigenen Wirkungsdauer
-ihren Einfluss. Der Status richtet sich ausschließlich nach dem effektiven REP.
+<strong>REP</strong> ist der dauerhaft aufgebaute Ruf und bleibt in der Historie erhalten.
+Der <strong>effektive REP</strong> zeigt, wie viel davon aktuell wirkt: Jede einzelne Rufänderung
+verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sich ausschließlich nach dem effektiven REP.
 </div>
 
 <div class="section-title">Orte</div>
@@ -113,35 +109,11 @@ ihren Einfluss. Der Status richtet sich ausschließlich nach dem effektiven REP.
 </div>
 <div><label for="reason">Beschreibung / Begründung</label><textarea id="reason" placeholder="Was ist passiert und warum beeinflusst es den Ruf?"></textarea></div>
 <div id="changeRows"></div>
-<div class="add-row"><button onclick="addChangeRow()">＋ REP hinzufügen</button><span class="info" onclick="showInfo('effect')">i</span></div>
+<div class="add-row"><button onclick="addChangeRow()">＋ REP hinzufügen</button></div>
 <div style="margin-top:13px"><button class="primary" onclick="previewApply()">Änderungen übernehmen</button></div>
-
-<div class="section-title">Historischen Stand wiederherstellen</div>
-<div class="reset-box">
-<div class="reset-row">
-<div class="reset-date"><label for="resetDate">Kampagnenstand</label><input id="resetDate" type="date"></div>
-<button class="danger" onclick="resetToDate()">Auf diesen Stand zurücksetzen</button>
-</div>
-<div class="small-note">Spätere Ereignisse bleiben in der Historie erhalten. Der aktuelle Stand kann jederzeit wiederhergestellt werden.</div>
-<div style="margin-top:10px"><button onclick="restoreCurrent()">Aktuellen Verlauf wiederherstellen</button></div>
-</div>
 
 <div class="section-title">Änderungsverlauf</div>
 <div id="log"></div>
-
-<div class="section-title">Statusstufen</div>
-<div class="status-guide">
-<table>
-<thead><tr><th>Effektiver REP</th><th>Status</th></tr></thead>
-<tbody>
-<tr><td>+8 oder mehr</td><td>Verbündet</td></tr>
-<tr><td>+3 bis +7</td><td>Wohlwollend</td></tr>
-<tr><td>−2 bis +2</td><td>Neutral</td></tr>
-<tr><td>−4 bis −3</td><td>Skeptisch</td></tr>
-<tr><td>−5 oder weniger</td><td>Feindlich</td></tr>
-</tbody>
-</table>
-</div>
 </main>
 
 <div id="modalBackdrop" class="modal-backdrop" onclick="backdropClose(event)">
@@ -155,7 +127,6 @@ ihren Einfluss. Der Status richtet sich ausschließlich nach dem effektiven REP.
 const DATA_URL='reputation.json';
 const WRITE_URL=''; // später: Worker-Endpoint
 let state=null;
-let resetMode=null;
 
 const effects=[
  {label:'Sehr positiv',delta:3,days:90},
@@ -169,9 +140,9 @@ const effects=[
 const effectHelp=`Positive Auswirkungen
 
 +1 – Leicht positiv · 30 Tage
-• kleine Gefälligkeit
-• kleinere Hilfeleistung
-• unbedeutende, aber positive Unterstützung
+• kleinere Hilfe bei einem konkreten Anliegen
+• kleine Gefälligkeit für die betroffene Gruppe
+• eine überschaubare Zusage zuverlässig eingehalten
 
 +2 – Positiv · 60 Tage
 • wichtigen Auftrag erfolgreich erfüllt
@@ -187,7 +158,7 @@ Negative Auswirkungen
 
 −1 – Leicht negativ · 30 Tage
 • kleinere Abmachung nicht eingehalten
-• geringfügigen Ärger verursacht
+• geringfügigen Ärger oder Aufwand verursacht
 • Interessen der betroffenen Gruppe in einer Kleinigkeit missachtet
 
 −2 – Negativ · 60 Tage
@@ -320,7 +291,7 @@ function addChangeRow(){
  const row=document.createElement('div');row.className='change-row';
  const opts=allUnits().filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
  row.innerHTML=`<div><label>Reputation</label><select class="target-select">${opts}</select></div>
- <div><label>Auswirkung</label><select class="effect-select">${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
+ <div><label>Auswirkung <span class="info" onclick="showInfo('effect')">i</span></label><select class="effect-select">${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
  <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
  wrap.appendChild(row);
 }
@@ -345,15 +316,6 @@ function applyConfirmed(){
 }
 function retconEvent(id){if(!confirm('Dieses Ereignis als Retcon ungültig machen?'))return;const e=state.events.find(x=>x.id===id);if(e)e.valid=false;persist().then(render);}
 function restoreEvent(id){if(!confirm('Dieses Ereignis wieder gültig machen?'))return;const e=state.events.find(x=>x.id===id);if(e)e.valid=true;persist().then(render);}
-function resetToDate(){
- const d=document.getElementById('resetDate').value;if(!d){alert('Bitte ein Datum wählen.');return}
- resetMode=d;showInfoText('Auf diesen Stand zurücksetzen',`Der effektive Ruf wird so angezeigt, als wäre die Kampagnenhistorie am ${fmtDate(d)} eingefroren.\n\nSpätere Ereignisse bleiben erhalten und werden nicht gelöscht.`);
-}
-function restoreCurrent(){resetMode=null;render();document.getElementById('resetDate').value='';}
-function effectiveAt(id,at){return effective(id,at)}
-function showInfo(kind){
- if(kind==='effect')showInfoText('Auswirkung auf die Reputation',effectHelp);
-}
 function showInfoText(title,text){
  document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.getElementById('modalBackdrop').classList.add('open');
 }
