@@ -141,8 +141,8 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <textarea id="manageDescription" style="width:100%;min-height:110px" placeholder="Kurze Erklärung, was diese Gruppe / dieser Ort ist."></textarea>
 </div>
 <div class="modal-actions" style="gap:8px">
-<button onclick="closeManage()">Abbrechen</button>
-<button class="primary" onclick="saveManagedEntry()">Speichern</button>
+<button type="button" onclick="closeManage()">Abbrechen</button>
+<button type="button" class="primary" onclick="return saveManagedEntry(event)">Speichern</button>
 </div>
 </div>
 </div>
@@ -211,6 +211,17 @@ function daysBetween(a,b){return Math.floor((b-a)/86400000);}
 function fmtDate(s){if(!s)return '–';const d=parseDate(s);return d?d.toLocaleDateString('de-DE'):'–';}
 function effectForDelta(delta){return effects.find(e=>e.delta===Number(delta));}
 
+function persist(){
+ try{
+   localStorage.setItem('dessarin-reputation-local-v2', JSON.stringify(state));
+   const el=document.getElementById('loadStatus');
+   if(el)el.textContent='Lokal gespeichert.';
+   return Promise.resolve();
+ }catch(e){
+   alert('Änderung konnte nicht gespeichert werden.');
+   return Promise.reject(e);
+ }
+}
 function allUnits(){
  const a=[];
  (state.places||[]).forEach(p=>{
@@ -355,6 +366,9 @@ function addChoiceBackdropClose(e){if(e.target.id==='addChoiceBackdrop')closeAdd
 function addPlaceFromChoice(){closeAddChoice();addPlace()}
 function addOrganizationFromChoice(){closeAddChoice();addOrganization()}
 
+function addPlace(){openManage('new-place',null)}
+function addOrganization(){openManage('new-organization',null)}
+
 let manageMode=null;
 let manageId=null;
 
@@ -378,23 +392,36 @@ function openManage(mode,id){
 }
 function closeManage(){document.getElementById('manageBackdrop').classList.remove('open');manageMode=null;manageId=null;}
 function manageBackdropClose(e){if(e.target.id==='manageBackdrop')closeManage();}
-function saveManagedEntry(){
- const name=document.getElementById('manageName').value.trim();
- const description=document.getElementById('manageDescription').value.trim();
- if(!name){alert('Bitte einen Namen eintragen.');return;}
- if(manageMode==='new-place'){
-  state.places.push({id:'place-'+Date.now(),name,rep:0,info:description,children:[]});
- }else if(manageMode==='new-organization'){
-  state.organizations.push({id:'org-'+Date.now(),name,rep:0,description});
- }else{
-  const u=unitById(manageId);
-  if(!u)return;
-  if(u.kind==='local'){u.unit.name=name;u.unit.description=description;}
-  else if(u.kind==='place'){u.place.name=name;u.place.info=description;}
-  else if(u.kind==='organization'){u.org.name=name;u.org.description=description;}
- }
- persist().then(()=>{closeManage();render();});
+function saveManagedEntry(e){
+ if(e)e.preventDefault();
+ try{
+  const name=document.getElementById('manageName').value.trim();
+  const description=document.getElementById('manageDescription').value.trim();
+  if(!name){alert('Bitte einen Namen eintragen.');return false;}
+
+  if(manageMode==='new-place'){
+   state.places.push({id:'place-'+Date.now(),name,rep:0,info:description,children:[]});
+  }else if(manageMode==='new-organization'){
+   state.organizations.push({id:'org-'+Date.now(),name,rep:0,description});
+  }else{
+   const u=unitById(manageId);
+   if(!u){alert('Eintrag nicht gefunden.');return false;}
+   if(u.kind==='local'){u.unit.name=name;u.unit.description=description;}
+   else if(u.kind==='place'){u.place.name=name;u.place.info=description;}
+   else if(u.kind==='organization'){u.org.name=name;u.org.description=description;}
+  }
+
+  localStorage.setItem('dessarin-reputation-local-v2',JSON.stringify(state));
+  closeManage();
+  render();
+  return false;
+ }catch(err){
+  console.error(err);
+  alert('Speichern fehlgeschlagen: '+err.message);
+  return false;
+ } 
 }
+
 function deleteManaged(kind,id){
  const u=unitById(id);
  if(!u)return;
