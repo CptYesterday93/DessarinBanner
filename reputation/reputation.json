@@ -1,4 +1,5 @@
 {
+  "ok": true,
   "version": 1,
 
   "settings": {
@@ -37,102 +38,83 @@
     {
       "id": "yartar",
       "name": "Yartar",
+      "description": "Der allgemeine Ruf des Dessarin Banner in Yartar. Er wird aus den vier lokalen Bevölkerungs- und Interessengruppen berechnet.",
       "featured": true,
-
-      "description": "Die allgemeine Reputation der Gruppe in Yartar wird aus den vier lokalen Bevölkerungs- und Interessengruppen berechnet.",
-
       "reputationMode": "derived",
-
       "components": [
         {
-          "id": "yartar_authority",
-          "name": "Obrigkeit / Wache",
+          "id": "yartar-authority",
+          "name": "Obrigkeit / Stadtwache",
+          "info": "Stadtverwaltung, Stadtwache und andere offizielle Stellen Yartars.",
           "weight": 1,
-          "rep": 0,
-          "lastChange": null,
-
-          "info": "Waterbaron, Stadtverwaltung und örtliche Ordnungskräfte. Repräsentiert die offizielle Macht und öffentliche Ordnung Yartars."
+          "baseRep": 0,
+          "baseDate": null
         },
         {
-          "id": "yartar_merchants",
+          "id": "yartar-merchants",
           "name": "Händler",
+          "info": "Händler, Kaufleute und die allgemeine wirtschaftliche Gemeinschaft Yartars.",
           "weight": 1,
-          "rep": 0,
-          "lastChange": null,
-
-          "info": "Die Handels- und Kaufmannsinteressen Yartars. Einzelne Handelsunternehmen werden nicht separat verfolgt."
+          "baseRep": 0,
+          "baseDate": null
         },
         {
-          "id": "yartar_common",
+          "id": "yartar-common-folk",
           "name": "Gemeines Volk",
+          "info": "Der allgemeine Ruf bei der Bevölkerung Yartars.",
           "weight": 1,
-          "rep": 0,
-          "lastChange": null,
-
-          "info": "Die allgemeine Bevölkerung Yartars. Dieser Wert beschreibt, wie die normalen Bürger die Gruppe wahrnehmen."
+          "baseRep": 0,
+          "baseDate": null
         },
         {
-          "id": "yartar_underworld",
+          "id": "yartar-underworld",
           "name": "Unterwelt",
+          "info": "Die kriminelle Unterwelt Yartars. Ihr Einfluss auf den allgemeinen Ruf der Stadt wird geringer gewichtet.",
           "weight": 0.5,
-          "rep": 0,
-          "lastChange": null,
-
-          "info": "Die organisierte Unterwelt und kriminelle Szene Yartars. Die Hand von Yartar ist eine wichtige Gruppierung innerhalb dieses Bereichs, wird aber nicht separat verfolgt."
+          "baseRep": 0,
+          "baseDate": null
         }
       ]
     },
 
     {
-      "id": "calling_horns",
+      "id": "calling-horns",
       "name": "Calling Horns",
+      "description": "Allgemeiner Ruf des Dessarin Banner in Calling Horns.",
       "featured": false,
-
-      "description": "Allgemeiner Ruf der Gruppe in Calling Horns.",
-
       "reputationMode": "direct",
-
-      "rep": 0,
-      "lastChange": null
+      "baseRep": 0,
+      "baseDate": null
     },
 
     {
       "id": "everlund",
       "name": "Everlund",
+      "description": "Allgemeiner Ruf des Dessarin Banner in Everlund.",
       "featured": false,
-
-      "description": "Allgemeiner Ruf der Gruppe in Everlund.",
-
       "reputationMode": "direct",
-
-      "rep": 0,
-      "lastChange": null
+      "baseRep": 0,
+      "baseDate": null
     },
 
     {
       "id": "longsaddle",
       "name": "Longsaddle",
+      "description": "Allgemeiner Ruf des Dessarin Banner in Longsaddle.",
       "featured": false,
-
-      "description": "Allgemeiner Ruf der Gruppe in Longsaddle.",
-
       "reputationMode": "direct",
-
-      "rep": 0,
-      "lastChange": null
+      "baseRep": 0,
+      "baseDate": null
     },
 
     {
       "id": "triboar",
       "name": "Triboar",
+      "description": "Allgemeiner Ruf des Dessarin Banner in Triboar.",
       "featured": false,
-
-      "description": "Allgemeiner Ruf der Gruppe in Triboar.",
-
       "reputationMode": "direct",
-
-      "rep": 0,
-      "lastChange": null
+      "baseRep": 0,
+      "baseDate": null
     }
   ],
 
@@ -140,35 +122,34 @@
     {
       "id": "harpers",
       "name": "Harpers",
+      "description": "Der Ruf des Dessarin Banner bei den Harpers.",
+      "active": true,
+      "baseRep": 0,
+      "baseDate": null
+    },
 
-      "description": "Überregionale Organisation. Die Reputation wird unabhängig vom Ruf an einzelnen Orten geführt.",
-
-      "rep": 0,
-      "lastChange": null
+    {
+      "id": "kraken-society",
+      "name": "Kraken Society",
+      "description": "Der Ruf des Dessarin Banner bei der Kraken Society.",
+      "active": true,
+      "baseRep": 0,
+      "baseDate": null
     },
 
     {
       "id": "zhentarim",
       "name": "Zhentarim",
-
-      "description": "Überregionale Organisation. Die Reputation wird unabhängig vom Ruf an einzelnen Orten geführt.",
-
-      "rep": 0,
-      "lastChange": null
-    },
-
-    {
-      "id": "kraken_society",
-      "name": "Kraken Society",
-
-      "description": "Überregionales geheimes Netzwerk. Die Reputation wird unabhängig vom Ruf an einzelnen Orten geführt.",
-
-      "rep": 0,
-      "lastChange": null
+      "description": "Der Ruf des Dessarin Banner bei den Zhentarim.",
+      "active": true,
+      "baseRep": 0,
+      "baseDate": null
     }
   ],
 
   "events": [],
+
+  "restore": null,
 
   "updatedAt": null
 }
