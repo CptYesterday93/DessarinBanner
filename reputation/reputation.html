@@ -71,6 +71,14 @@ textarea{width:100%;min-height:70px;resize:vertical}
   .mission-field,.date-field{width:100%;min-width:0}
  .log-head{display:block}.log-head .muted{display:block;margin-top:3px}
 }
+
+/* Table layout fix: keep row borders continuous and columns aligned. */
+.rep-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.rep-table th,.rep-table td{border-bottom:1px solid #ddd;vertical-align:middle}
+.rep-table th:last-child,.rep-table td:last-child{width:170px}
+.rep-table .manage-actions{width:170px;white-space:nowrap;text-align:right}
+.rep-table .manage-actions button{margin-left:6px}
+
 </style>
 </head>
 <body>
@@ -288,6 +296,18 @@ function toggleYartar(e){
  yartarExpanded=!yartarExpanded;
  render();
 }
+
+function refreshTargetOptions(){
+  const selects=[...document.querySelectorAll('.rep-target-select')];
+  const selected=new Set(selects.map(x=>x.value).filter(Boolean));
+  selects.forEach(sel=>{
+    [...sel.options].forEach(opt=>{
+      if(!opt.value) return;
+      opt.hidden = selected.has(opt.value) && opt.value !== sel.value;
+    });
+  });
+}
+
 function render(){
  const pb=document.getElementById('placesBody');
  let rows='';
@@ -464,6 +484,11 @@ async function load(){
  }catch(e){document.getElementById('loadStatus').textContent='Fehler beim Laden.';alert('Reputationsdaten konnten nicht geladen werden.')}
 }
 load();
+
+document.addEventListener('change', e=>{
+  if(e.target.matches('.rep-target-select')) refreshTargetOptions();
+});
+
 </script>
 </body>
 </html>
