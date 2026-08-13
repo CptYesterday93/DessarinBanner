@@ -11,13 +11,17 @@
 :root{
   --accent:#3159b7;
   --accent-dark:#24458e;
+
   --line:#dddddd;
   --line-light:#e8e8e8;
+
   --page:#ffffff;
   --background:#f3f3f3;
   --section:#e9e9e9;
+
   --text:#151515;
   --muted:#777;
+
   --positive:#27662d;
   --negative:#8b2626;
 }
@@ -28,72 +32,117 @@
 
 body{
   margin:0;
+
   background:var(--background);
+
   color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
   font-size:14px;
 }
 
 .sheet{
-  width:min(1100px,calc(100% - 24px));
+  width:min(
+    1100px,
+    calc(100% - 24px)
+  );
+
   margin:0 auto;
+
   min-height:100vh;
+
   background:var(--page);
-  padding:28px 48px 55px;
+
+  padding:
+    28px
+    48px
+    55px;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    KOPF
---------------------------------------------------------- */
+========================================================= */
 
 h1{
   margin:0;
+
   text-align:center;
+
   font-size:28px;
+
   font-weight:600;
+
   letter-spacing:.3px;
 }
 
 .subtitle{
   text-align:center;
+
   color:#555;
-  margin:5px 0 28px;
+
+  margin:
+    5px
+    0
+    28px;
 }
 
-/* ---------------------------------------------------------
-   HINWEIS
---------------------------------------------------------- */
+
+/* =========================================================
+   ALLGEMEINER HINWEIS
+========================================================= */
 
 .notice{
-  padding:11px 13px;
+  padding:
+    11px
+    13px;
+
   margin-bottom:22px;
 
   background:#f1f3fa;
-  border-left:4px solid var(--accent);
+
+  border-left:
+    4px
+    solid
+    var(--accent);
 
   line-height:1.5;
+
   color:#333;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    ABSCHNITTE
---------------------------------------------------------- */
+========================================================= */
 
 .section-title{
-  margin:24px 0 10px;
+  margin:
+    24px
+    0
+    10px;
 
-  padding:9px 12px;
+  padding:
+    9px
+    12px;
 
   background:var(--section);
+
   border-radius:8px;
 
   font-size:20px;
+
   font-weight:600;
 }
 
-/* ---------------------------------------------------------
-   TABELLE
---------------------------------------------------------- */
+
+/* =========================================================
+   TABELLEN
+========================================================= */
 
 .table-wrap{
   overflow-x:auto;
@@ -101,24 +150,36 @@ h1{
 
 table{
   width:100%;
+
   border-collapse:collapse;
 }
 
 th{
-  padding:8px 10px;
+  padding:
+    8px
+    10px;
 
   text-align:left;
 
   font-size:12px;
+
   font-weight:600;
 
-  border-bottom:1px solid #cfcfcf;
+  border-bottom:
+    1px
+    solid
+    #cfcfcf;
 }
 
 td{
-  padding:8px 10px;
+  padding:
+    8px
+    10px;
 
-  border-bottom:1px solid var(--line-light);
+  border-bottom:
+    1px
+    solid
+    var(--line-light);
 
   vertical-align:middle;
 }
@@ -126,6 +187,7 @@ td{
 th.num,
 td.num{
   text-align:center;
+
   white-space:nowrap;
 }
 
@@ -145,6 +207,7 @@ td.num{
   margin-top:2px;
 
   color:var(--muted);
+
   font-size:12px;
 }
 
@@ -162,11 +225,17 @@ td.num{
 
 .expand-button{
   border:0;
+
   background:transparent;
 
-  padding:0 5px 0 0;
+  padding:
+    0
+    5px
+    0
+    0;
 
   font-size:14px;
+
   cursor:pointer;
 }
 
@@ -184,18 +253,22 @@ td.num{
 
 .muted{
   color:var(--muted);
+
   font-size:12px;
 }
 
 .empty{
   padding:18px;
+
   text-align:center;
+
   color:var(--muted);
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    INFO-BUTTON
---------------------------------------------------------- */
+========================================================= */
 
 .info-button{
   display:inline-flex;
@@ -209,38 +282,54 @@ td.num{
   margin-left:4px;
   padding:0;
 
-  border:1px solid #999;
+  border:
+    1px
+    solid
+    #999;
+
   border-radius:50%;
 
   background:#fff;
+
   color:#666;
 
   font-size:10px;
+
   line-height:1;
 
   cursor:pointer;
+
   vertical-align:middle;
 }
 
 .info-button:hover{
   background:#f0f0f0;
+
   color:#222;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    BUTTONS
---------------------------------------------------------- */
+========================================================= */
 
 button{
   font:inherit;
 
-  border:1px solid #999;
+  border:
+    1px
+    solid
+    #999;
+
   border-radius:4px;
 
   background:#fff;
+
   color:#111;
 
-  padding:8px 12px;
+  padding:
+    8px
+    12px;
 
   cursor:pointer;
 }
@@ -251,7 +340,9 @@ button:hover{
 
 button.primary{
   background:var(--accent);
+
   border-color:var(--accent);
+
   color:#fff;
 }
 
@@ -261,27 +352,36 @@ button.primary:hover{
 
 button.danger{
   color:#8b2222;
+
   border-color:#c88;
 }
 
 button.small{
-  padding:5px 8px;
+  padding:
+    5px
+    8px;
+
   font-size:12px;
 }
 
 button:disabled{
   opacity:.5;
+
   cursor:not-allowed;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    TOOLBAR
---------------------------------------------------------- */
+========================================================= */
 
 .toolbar{
   display:flex;
+
   align-items:center;
+
   flex-wrap:wrap;
+
   gap:10px;
 
   margin-top:10px;
@@ -289,13 +389,16 @@ button:disabled{
 
 .statusbar{
   margin-left:auto;
+
   color:var(--muted);
+
   font-size:12px;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    FORMULARE
---------------------------------------------------------- */
+========================================================= */
 
 label{
   display:block;
@@ -303,6 +406,7 @@ label{
   margin-bottom:5px;
 
   font-size:13px;
+
   font-weight:600;
 }
 
@@ -311,9 +415,15 @@ select,
 textarea{
   width:100%;
 
-  padding:8px 9px;
+  padding:
+    8px
+    9px;
 
-  border:1px solid #aaa;
+  border:
+    1px
+    solid
+    #aaa;
+
   border-radius:3px;
 
   background:#fff;
@@ -323,6 +433,7 @@ textarea{
 
 textarea{
   min-height:78px;
+
   resize:vertical;
 }
 
@@ -332,13 +443,18 @@ textarea{
 
 .mission-row{
   display:grid;
-  grid-template-columns:1fr 160px;
+
+  grid-template-columns:
+    1fr
+    160px;
+
   gap:12px;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    REP-ÄNDERUNGEN
---------------------------------------------------------- */
+========================================================= */
 
 .change-row{
   display:grid;
@@ -352,9 +468,14 @@ textarea{
 
   align-items:end;
 
-  padding:9px 0;
+  padding:
+    9px
+    0;
 
-  border-bottom:1px solid var(--line-light);
+  border-bottom:
+    1px
+    solid
+    var(--line-light);
 }
 
 .change-row:last-child{
@@ -365,14 +486,19 @@ textarea{
   margin-top:8px;
 }
 
-/* ---------------------------------------------------------
-   RESTORE
---------------------------------------------------------- */
+
+/* =========================================================
+   HISTORISCHE RÜCKSETZUNG
+========================================================= */
 
 .restore-box{
   padding:13px;
 
-  border:1px solid var(--line);
+  border:
+    1px
+    solid
+    var(--line);
+
   border-radius:5px;
 
   background:#fff;
@@ -381,22 +507,34 @@ textarea{
 .restore-row{
   display:grid;
 
-  grid-template-columns:220px 1fr;
+  grid-template-columns:
+    220px
+    1fr;
 
   gap:12px;
 
   align-items:end;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    LOG
---------------------------------------------------------- */
+========================================================= */
 
 .log-entry{
-  margin:9px 0;
-  padding:12px 13px;
+  margin:
+    9px
+    0;
 
-  border:1px solid var(--line);
+  padding:
+    12px
+    13px;
+
+  border:
+    1px
+    solid
+    var(--line);
+
   border-radius:5px;
 
   background:#fff;
@@ -404,6 +542,7 @@ textarea{
 
 .log-entry.invalid{
   opacity:.68;
+
   background:#fafafa;
 }
 
@@ -411,6 +550,7 @@ textarea{
   display:flex;
 
   justify-content:space-between;
+
   align-items:baseline;
 
   gap:12px;
@@ -422,6 +562,7 @@ textarea{
 
 .log-detail{
   margin-top:7px;
+
   color:#444;
 }
 
@@ -431,7 +572,9 @@ textarea{
 
 .log-actions{
   display:flex;
+
   flex-wrap:wrap;
+
   gap:7px;
 
   margin-top:9px;
@@ -440,11 +583,14 @@ textarea{
 .badge{
   display:inline-block;
 
-  padding:2px 7px;
+  padding:
+    2px
+    7px;
 
   border-radius:10px;
 
   background:#eeeeee;
+
   color:#666;
 
   font-size:11px;
@@ -452,17 +598,20 @@ textarea{
 
 .badge.active{
   background:#e4f0e5;
+
   color:#27662d;
 }
 
 .badge.invalid{
   background:#f5dddd;
+
   color:#8b2626;
 }
 
-/* ---------------------------------------------------------
-   MODAL
---------------------------------------------------------- */
+
+/* =========================================================
+   INFO-MODAL
+========================================================= */
 
 .modal-backdrop{
   position:fixed;
@@ -472,85 +621,81 @@ textarea{
   display:flex;
 
   align-items:center;
+
   justify-content:center;
 
   padding:20px;
 
-  background:rgba(0,0,0,.45);
+  background:rgba(
+    0,
+    0,
+    0,
+    .45
+  );
 
   z-index:1000;
 }
 
 .modal{
-  position:relative;
+  width:min(
+    560px,
+    100%
+  );
 
-  width:min(560px,100%);
-
-  padding:20px;
+  padding:
+    20px;
 
   background:#fff;
 
   border-radius:8px;
 
-  box-shadow:0 10px 35px rgba(0,0,0,.25);
+  box-shadow:
+    0
+    10px
+    35px
+    rgba(
+      0,
+      0,
+      0,
+      .25
+    );
 }
 
 .modal h2{
-  margin:0 36px 12px 0;
+  margin:
+    0
+    0
+    12px;
 
   font-size:23px;
+
   font-weight:600;
 }
 
-.modal-close{
-  position:absolute;
+.modal-text{
+  line-height:1.5;
 
-  top:9px;
-  right:10px;
-
-  width:30px;
-  height:30px;
-
-  padding:0;
-
-  border:0;
-
-  background:transparent;
-
-  color:#777;
-
-  font-size:25px;
-  line-height:1;
-}
-
-.modal-close:hover{
-  background:#eee;
-  color:#111;
-}
-
-.modal-actions{
-  display:flex;
-
-  justify-content:flex-end;
-
-  gap:8px;
-
-  margin-top:17px;
+  color:#333;
 }
 
 .hidden{
   display:none !important;
 }
 
-/* ---------------------------------------------------------
+
+/* =========================================================
    MOBILE
---------------------------------------------------------- */
+========================================================= */
 
 @media(max-width:760px){
 
   .sheet{
     width:100%;
-    padding:20px 16px 40px;
+
+    padding:
+      20px
+      16px
+      40px;
   }
 
   h1{
@@ -563,11 +708,14 @@ textarea{
   }
 
   .change-row{
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:
+      1fr
+      1fr;
   }
 
   .change-row .remove{
     grid-column:2;
+
     justify-self:end;
   }
 
@@ -577,8 +725,10 @@ textarea{
 
   .log-head .muted{
     display:block;
+
     margin-top:4px;
   }
+
 }
 
 </style>
@@ -589,18 +739,30 @@ textarea{
 
 <main class="sheet">
 
-  <h1>REPUTATIONSÜBERSICHT</h1>
+
+  <!-- =====================================================
+       KOPF
+  ====================================================== -->
+
+  <h1>
+    REPUTATIONSÜBERSICHT
+  </h1>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
   </div>
 
 
-  <div class="notice" id="rulesNotice">
-    <strong>REP</strong> sind die Reputationspunkte einer Gruppe.
-    Der effektive REP wird automatisch aus der gültigen Ereignishistorie
-    berechnet. Alle 30 vergangenen Tage verfällt ein REP Richtung 0.
-    Der Status richtet sich ausschließlich nach dem effektiven REP.
+  <div
+    class="notice"
+    id="rulesNotice"
+  >
+    <strong>REP</strong> sind die Reputationspunkte
+    einer Gruppe. Der effektive REP wird automatisch
+    aus der gültigen Ereignishistorie berechnet.
+    Alle 30 vergangenen Tage verfällt ein REP
+    Richtung 0. Der Status richtet sich ausschließlich
+    nach dem effektiven REP.
   </div>
 
 
@@ -612,19 +774,39 @@ textarea{
     Orte
   </div>
 
+
   <div class="table-wrap">
 
     <table>
 
       <thead>
+
         <tr>
-          <th>Ort</th>
-          <th class="num">REP</th>
-          <th>Status</th>
-          <th class="num">Effektiver REP</th>
-          <th>Letzte Änderung</th>
+
+          <th>
+            Ort
+          </th>
+
+          <th class="num">
+            REP
+          </th>
+
+          <th>
+            Status
+          </th>
+
+          <th class="num">
+            Effektiver REP
+          </th>
+
+          <th>
+            Letzte Änderung
+          </th>
+
         </tr>
+
       </thead>
+
 
       <tbody id="placeBody"></tbody>
 
@@ -635,7 +817,10 @@ textarea{
 
   <div class="toolbar">
 
-    <button onclick="addPlace()">
+    <button
+      type="button"
+      onclick="addPlace()"
+    >
       ＋ Ort hinzufügen
     </button>
 
@@ -650,19 +835,39 @@ textarea{
     Organisationen
   </div>
 
+
   <div class="table-wrap">
 
     <table>
 
       <thead>
+
         <tr>
-          <th>Organisation</th>
-          <th class="num">REP</th>
-          <th>Status</th>
-          <th class="num">Effektiver REP</th>
-          <th>Letzte Änderung</th>
+
+          <th>
+            Organisation
+          </th>
+
+          <th class="num">
+            REP
+          </th>
+
+          <th>
+            Status
+          </th>
+
+          <th class="num">
+            Effektiver REP
+          </th>
+
+          <th>
+            Letzte Änderung
+          </th>
+
         </tr>
+
       </thead>
+
 
       <tbody id="organizationBody"></tbody>
 
@@ -673,9 +878,13 @@ textarea{
 
   <div class="toolbar">
 
-    <button onclick="addOrganization()">
+    <button
+      type="button"
+      onclick="addOrganization()"
+    >
       ＋ Organisation hinzufügen
     </button>
+
 
     <span
       class="statusbar"
@@ -704,6 +913,7 @@ textarea{
 
     <input
       id="mission"
+      type="text"
       placeholder="z. B. Die verlorene Karawane"
     >
 
@@ -711,6 +921,7 @@ textarea{
 
 
   <div class="mission-row">
+
 
     <div class="field">
 
@@ -739,6 +950,7 @@ textarea{
 
     </div>
 
+
   </div>
 
 
@@ -748,11 +960,16 @@ textarea{
       Betroffene Reputation
     </label>
 
+
     <div id="changeRows"></div>
+
 
     <div class="add-row">
 
-      <button onclick="addChangeRow()">
+      <button
+        type="button"
+        onclick="addChangeRow()"
+      >
         ＋ REP hinzufügen
       </button>
 
@@ -762,6 +979,7 @@ textarea{
 
 
   <button
+    type="button"
     class="primary"
     onclick="applyChanges()"
   >
@@ -770,7 +988,7 @@ textarea{
 
 
   <!-- =====================================================
-       HISTORISCHER STAND
+       HISTORISCHEN STAND
   ====================================================== -->
 
   <div class="section-title">
@@ -780,9 +998,14 @@ textarea{
 
   <div class="restore-box">
 
+
     <div class="restore-row">
 
-      <div class="field" style="margin:0">
+
+      <div
+        class="field"
+        style="margin:0"
+      >
 
         <label for="restoreDate">
           Kampagnenstand
@@ -799,11 +1022,13 @@ textarea{
       <div>
 
         <button
+          type="button"
           class="danger"
           onclick="restoreToDate()"
         >
           Auf diesen Stand zurücksetzen
         </button>
+
 
         <div
           class="muted"
@@ -814,35 +1039,50 @@ textarea{
 
       </div>
 
+
     </div>
 
 
     <div style="margin-top:12px">
 
-      <button onclick="clearRestore()">
+      <button
+        type="button"
+        onclick="clearRestore()"
+      >
         Aktuellen Verlauf wiederherstellen
       </button>
 
     </div>
 
+
   </div>
 
 
   <!-- =====================================================
-       LOG
+       ÄNDERUNGSVERLAUF
   ====================================================== -->
 
   <div class="section-title">
     Änderungsverlauf
   </div>
 
+
   <div id="log"></div>
+
 
 </main>
 
 
 <!-- =======================================================
-     MODAL
+     INFO-MODAL
+     
+     Kein X.
+     Kein Abbrechen.
+     Kein Bestätigen.
+
+     Schließen:
+     - Klick außerhalb
+     - Escape
 ======================================================== -->
 
 <div
@@ -852,33 +1092,12 @@ textarea{
 
   <div class="modal">
 
-    <button
-      class="modal-close"
-      id="modalClose"
-      aria-label="Fenster schließen"
-      title="Schließen"
-    >
-      ×
-    </button>
-
     <h2 id="modalTitle"></h2>
 
-    <div id="modalText"></div>
-
-    <div class="modal-actions">
-
-      <button id="modalCancel">
-        Abbrechen
-      </button>
-
-      <button
-        class="primary"
-        id="modalConfirm"
-      >
-        Bestätigen
-      </button>
-
-    </div>
+    <div
+      id="modalText"
+      class="modal-text"
+    ></div>
 
   </div>
 
@@ -887,6 +1106,7 @@ textarea{
 
 <script>
 
+
 /* =========================================================
    KONFIGURATION
 ========================================================= */
@@ -894,22 +1114,56 @@ textarea{
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
 
+
 const DATA_URL =
   API_BASE + '/data';
 
 
-const effects = [
-  ['Sehr positiv', 3],
-  ['Positiv', 2],
-  ['Leicht positiv', 1],
-  ['Neutral', 0],
-  ['Leicht negativ', -1],
-  ['Negativ', -2],
-  ['Sehr negativ', -3]
-];
-
-
 let state = null;
+
+
+/* =========================================================
+   REP-ÄNDERUNGEN
+========================================================= */
+
+const effects = [
+
+  [
+    'Sehr positiv',
+    3
+  ],
+
+  [
+    'Positiv',
+    2
+  ],
+
+  [
+    'Leicht positiv',
+    1
+  ],
+
+  [
+    'Neutral',
+    0
+  ],
+
+  [
+    'Leicht negativ',
+    -1
+  ],
+
+  [
+    'Negativ',
+    -2
+  ],
+
+  [
+    'Sehr negativ',
+    -3
+  ]
+
+];
 
 
 /* =========================================================
@@ -918,16 +1172,25 @@ let state = null;
 
 function esc(value){
 
-  return String(value ?? '').replace(
+  return String(
+    value ?? ''
+  ).replace(
     /[&<>"']/g,
-    m => ({
-      '&':'&amp;',
-      '<':'&lt;',
-      '>':'&gt;',
-      '"':'&quot;',
-      "'":'&#39;'
-    }[m])
+    function(m){
+
+      return {
+
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+
+      }[m];
+
+    }
   );
+
 }
 
 
@@ -935,7 +1198,11 @@ function todayISO(){
 
   return new Date()
     .toISOString()
-    .slice(0,10);
+    .slice(
+      0,
+      10
+    );
+
 }
 
 
@@ -945,22 +1212,32 @@ function parseDate(value){
     return null;
   }
 
+
   const d =
     new Date(
-      value + 'T00:00:00'
+      value +
+      'T00:00:00'
     );
 
-  return isNaN(d.getTime())
+
+  return isNaN(
+    d.getTime()
+  )
     ? null
     : d;
+
 }
 
 
 function daysBetween(a,b){
 
   return Math.floor(
-    (b-a) / 86400000
+    (
+      b - a
+    ) /
+    86400000
   );
+
 }
 
 
@@ -970,12 +1247,17 @@ function fmtDate(value){
     return '–';
   }
 
+
   const d =
     parseDate(value);
 
+
   return d
-    ? d.toLocaleDateString('de-DE')
+    ? d.toLocaleDateString(
+        'de-DE'
+      )
     : '–';
+
 }
 
 
@@ -988,22 +1270,56 @@ function statusFor(rep){
   const rules =
     state?.settings?.statusRules ||
     [
-      {min:8,label:'Verbündet'},
-      {min:3,label:'Wohlwollend'},
-      {min:-1,label:'Neutral'},
-      {min:-4,label:'Skeptisch'},
-      {min:-999999,label:'Feindlich'}
+
+      {
+        min:8,
+        label:'Verbündet'
+      },
+
+      {
+        min:3,
+        label:'Wohlwollend'
+      },
+
+      {
+        min:-1,
+        label:'Neutral'
+      },
+
+      {
+        min:-4,
+        label:'Skeptisch'
+      },
+
+      {
+        min:-999999,
+        label:'Feindlich'
+      }
+
     ];
 
-  for(const rule of rules){
 
-    if(rep >= Number(rule.min)){
+  for(
+    const rule
+    of rules
+  ){
+
+    if(
+      rep >=
+      Number(
+        rule.min
+      )
+    ){
+
       return rule.label;
+
     }
 
   }
 
+
   return 'Feindlich';
+
 }
 
 
@@ -1023,65 +1339,96 @@ function effectiveDirect(
       0
     );
 
+
   if(!item.lastChange){
     return base;
   }
 
+
   const last =
-    parseDate(item.lastChange);
+    parseDate(
+      item.lastChange
+    );
+
 
   if(!last){
     return base;
   }
 
+
   const decay =
     state?.settings?.decay ||
     {
+
       enabled:true,
       days:30,
       points:1
+
     };
 
-  if(decay.enabled === false){
+
+  if(
+    decay.enabled === false
+  ){
+
     return base;
+
   }
+
 
   const days =
     Math.max(
       0,
-      daysBetween(last,date)
+      daysBetween(
+        last,
+        date
+      )
     );
+
 
   const periods =
     Math.floor(
       days /
-      Number(decay.days || 30)
+      Number(
+        decay.days || 30
+      )
     );
+
 
   const points =
     periods *
-    Number(decay.points || 1);
+    Number(
+      decay.points || 1
+    );
+
 
   if(base > 0){
+
     return Math.max(
       0,
       base - points
     );
+
   }
 
+
   if(base < 0){
+
     return Math.min(
       0,
       base + points
     );
+
   }
 
+
   return 0;
+
 }
 
 
 /* =========================================================
-   ORTE
+   ORTE / YARTAR
 ========================================================= */
 
 function effectiveComponent(
@@ -1093,6 +1440,7 @@ function effectiveComponent(
     component,
     date
   );
+
 }
 
 
@@ -1110,10 +1458,12 @@ function derivedPlaceRep(
       place,
       date
     );
+
   }
 
 
   let total = 0;
+
   let weights = 0;
 
 
@@ -1124,8 +1474,10 @@ function derivedPlaceRep(
 
     const weight =
       Number(
-        component.weight ?? 1
+        component.weight ??
+        1
       );
+
 
     const rep =
       effectiveComponent(
@@ -1133,20 +1485,29 @@ function derivedPlaceRep(
         date
       );
 
+
     total +=
-      rep * weight;
+      rep *
+      weight;
+
 
     weights +=
       weight;
+
   }
 
 
-  if(weights === 0){
+  if(
+    weights === 0
+  ){
+
     return 0;
+
   }
 
 
   return total / weights;
+
 }
 
 
@@ -1154,18 +1515,25 @@ function displayRep(value){
 
   const n =
     Math.round(
-      Number(value) || 0
+      Number(value) ||
+      0
     );
+
 
   return n > 0
     ? '+' + n
     : String(n);
+
 }
 
 
-function latestChangeForPlace(place){
+function latestChangeForPlace(
+  place
+){
 
-  if(place.components?.length){
+  if(
+    place.components?.length
+  ){
 
     const dates =
       place.components
@@ -1176,12 +1544,21 @@ function latestChangeForPlace(place){
         .filter(Boolean)
         .sort();
 
+
     return dates.length
-      ? dates[dates.length - 1]
+      ? dates[
+          dates.length - 1
+        ]
       : null;
+
   }
 
-  return place.lastChange || null;
+
+  return (
+    place.lastChange ||
+    null
+  );
+
 }
 
 
@@ -1192,27 +1569,47 @@ function latestChangeForPlace(place){
 function sortedPlaces(){
 
   const places =
-    [...(state.places || [])];
+    [
+      ...(state.places || [])
+    ];
 
-  return places.sort((a,b) => {
 
-    if(a.id === 'yartar'){
-      return -1;
-    }
+  return places.sort(
+    function(a,b){
 
-    if(b.id === 'yartar'){
-      return 1;
-    }
+      if(
+        a.id === 'yartar'
+      ){
 
-    return String(a.name)
-      .localeCompare(
-        String(b.name),
+        return -1;
+
+      }
+
+
+      if(
+        b.id === 'yartar'
+      ){
+
+        return 1;
+
+      }
+
+
+      return String(
+        a.name
+      ).localeCompare(
+        String(
+          b.name
+        ),
         'de',
         {
           sensitivity:'base'
         }
       );
-  });
+
+    }
+  );
+
 }
 
 
@@ -1220,21 +1617,29 @@ function sortedOrganizations(){
 
   return [
     ...(state.organizations || [])
-  ].sort((a,b) =>
-    String(a.name)
-      .localeCompare(
-        String(b.name),
+  ].sort(
+    function(a,b){
+
+      return String(
+        a.name
+      ).localeCompare(
+        String(
+          b.name
+        ),
         'de',
         {
           sensitivity:'base'
         }
-      )
+      );
+
+    }
   );
+
 }
 
 
 /* =========================================================
-   RENDER ORTE
+   ORTE RENDERN
 ========================================================= */
 
 function renderPlaces(){
@@ -1249,20 +1654,27 @@ function renderPlaces(){
     sortedPlaces();
 
 
-  if(!places.length){
+  if(
+    !places.length
+  ){
 
     body.innerHTML = `
+
       <tr>
+
         <td
           colspan="5"
           class="empty"
         >
           Noch keine Orte angelegt.
         </td>
+
       </tr>
+
     `;
 
     return;
+
   }
 
 
@@ -1275,18 +1687,25 @@ function renderPlaces(){
   ){
 
     const derived =
-      place.reputationMode === 'derived' &&
+      place.reputationMode ===
+        'derived' &&
       place.components?.length;
 
 
     const rep =
       derived
-        ? derivedPlaceRep(place)
-        : effectiveDirect(place);
+        ? derivedPlaceRep(
+            place
+          )
+        : effectiveDirect(
+            place
+          );
 
 
     const status =
-      statusFor(rep);
+      statusFor(
+        rep
+      );
 
 
     const cls =
@@ -1298,7 +1717,9 @@ function renderPlaces(){
 
 
     const latest =
-      latestChangeForPlace(place);
+      latestChangeForPlace(
+        place
+      );
 
 
     const hasComponents =
@@ -1313,8 +1734,8 @@ function renderPlaces(){
 
 
     /*
-     * Nur Yartar bekommt den Info-Button.
-     * Andere Orte brauchen keine Erklärung.
+     * Nur Yartar besitzt hier einen
+     * Beschreibungstext.
      */
 
     const yartarInfo =
@@ -1323,10 +1744,12 @@ function renderPlaces(){
 
 
     html += `
+
       <tr
-        class="place-row ${
-          place.featured ? 'featured' : ''
-        }"
+        class="
+          place-row
+          ${place.featured ? 'featured' : ''}
+        "
       >
 
         <td>
@@ -1334,26 +1757,37 @@ function renderPlaces(){
           ${
             hasComponents
               ? `
+
                 <button
+                  type="button"
                   class="expand-button"
                   data-action="toggle-place"
                   data-id="${esc(place.id)}"
-                  title="Untergruppen ein-/ausblenden"
+                  title="Untergruppen ein- oder ausblenden"
                 >
-                  ${isOpen ? '▼' : '▶'}
+                  ${
+                    isOpen
+                      ? '▼'
+                      : '▶'
+                  }
                 </button>
+
               `
               : ''
           }
+
 
           <span class="place-name">
             ${esc(place.name)}
           </span>
 
+
           ${
             yartarInfo
               ? `
+
                 <button
+                  type="button"
                   class="info-button"
                   data-info-title="${esc(place.name)}"
                   data-info-text="${esc(place.description)}"
@@ -1362,39 +1796,56 @@ function renderPlaces(){
                 >
                   i
                 </button>
+
               `
               : ''
           }
+
 
           ${
             derived
               ? `
+
                 <div class="place-info">
-                  Gesamtwert aus ${place.components.length} lokalen Gruppen
+                  Gesamtwert aus
+                  ${place.components.length}
+                  lokalen Gruppen
                 </div>
+
               `
               : ''
           }
 
         </td>
 
-        <td class="num ${cls}">
+
+        <td
+          class="num ${cls}"
+        >
           ${displayRep(rep)}
         </td>
 
-        <td class="status ${cls}">
+
+        <td
+          class="status ${cls}"
+        >
           ${esc(status)}
         </td>
 
-        <td class="num ${cls}">
+
+        <td
+          class="num ${cls}"
+        >
           ${displayRep(rep)}
         </td>
+
 
         <td>
           ${fmtDate(latest)}
         </td>
 
       </tr>
+
     `;
 
 
@@ -1419,7 +1870,9 @@ function renderPlaces(){
 
 
         const st =
-          statusFor(e);
+          statusFor(
+            e
+          );
 
 
         const c =
@@ -1431,18 +1884,28 @@ function renderPlaces(){
 
 
         html += `
-          <tr class="component-row">
+
+          <tr
+            class="component-row"
+          >
 
             <td>
 
-              <span class="component-name">
-                ${esc(component.name)}
+              <span
+                class="component-name"
+              >
+                ${esc(
+                  component.name
+                )}
               </span>
+
 
               ${
                 component.info
                   ? `
+
                     <button
+                      type="button"
                       class="info-button"
                       data-info-title="${esc(component.name)}"
                       data-info-text="${esc(component.info)}"
@@ -1451,30 +1914,45 @@ function renderPlaces(){
                     >
                       i
                     </button>
+
                   `
                   : ''
               }
 
             </td>
 
-            <td class="num ${c}">
+
+            <td
+              class="num ${c}"
+            >
               ${displayRep(e)}
             </td>
 
-            <td class="status ${c}">
+
+            <td
+              class="status ${c}"
+            >
               ${esc(st)}
             </td>
 
-            <td class="num ${c}">
+
+            <td
+              class="num ${c}"
+            >
               ${displayRep(e)}
             </td>
 
+
             <td>
-              ${fmtDate(component.lastChange)}
+              ${fmtDate(
+                component.lastChange
+              )}
             </td>
 
           </tr>
+
         `;
+
       }
 
     }
@@ -1484,11 +1962,12 @@ function renderPlaces(){
 
   body.innerHTML =
     html;
+
 }
 
 
 /* =========================================================
-   RENDER ORGANISATIONEN
+   ORGANISATIONEN RENDERN
 ========================================================= */
 
 function renderOrganizations(){
@@ -1503,109 +1982,147 @@ function renderOrganizations(){
     sortedOrganizations();
 
 
-  if(!organizations.length){
+  if(
+    !organizations.length
+  ){
 
     body.innerHTML = `
+
       <tr>
+
         <td
           colspan="5"
           class="empty"
         >
           Noch keine Organisationen angelegt.
         </td>
+
       </tr>
+
     `;
 
     return;
+
   }
 
 
   body.innerHTML =
     organizations
-      .map(org => {
+      .map(
+        function(org){
 
-        const e =
-          effectiveDirect(org);
-
-
-        const st =
-          statusFor(e);
-
-
-        const cls =
-          e > 0
-            ? 'positive'
-            : e < 0
-              ? 'negative'
-              : '';
+          const e =
+            effectiveDirect(
+              org
+            );
 
 
-        return `
-          <tr>
+          const st =
+            statusFor(
+              e
+            );
 
-            <td>
 
-              <span class="place-name">
-                ${esc(org.name)}
-              </span>
+          const cls =
+            e > 0
+              ? 'positive'
+              : e < 0
+                ? 'negative'
+                : '';
 
-              ${
-                org.info
-                  ? `
-                    <button
-                      class="info-button"
-                      data-info-title="${esc(org.name)}"
-                      data-info-text="${esc(org.info)}"
-                      aria-label="Information"
-                      title="Information"
-                    >
-                      i
-                    </button>
-                  `
-                  : ''
-              }
 
-              ${
-                org.active === false
-                  ? `
-                    <span class="badge">
-                      deaktiviert
-                    </span>
-                  `
-                  : ''
-              }
+          return `
 
-            </td>
+            <tr>
 
-            <td class="num ${cls}">
-              ${displayRep(e)}
-            </td>
+              <td>
 
-            <td class="status ${cls}">
-              ${esc(st)}
-            </td>
+                <span class="place-name">
+                  ${esc(org.name)}
+                </span>
 
-            <td class="num ${cls}">
-              ${displayRep(e)}
-            </td>
 
-            <td>
-              ${fmtDate(org.lastChange)}
-            </td>
+                ${
+                  org.info
+                    ? `
 
-          </tr>
-        `;
+                      <button
+                        type="button"
+                        class="info-button"
+                        data-info-title="${esc(org.name)}"
+                        data-info-text="${esc(org.info)}"
+                        aria-label="Information"
+                        title="Information"
+                      >
+                        i
+                      </button>
 
-      })
+                    `
+                    : ''
+                }
+
+
+                ${
+                  org.active === false
+                    ? `
+
+                      <span class="badge">
+                        deaktiviert
+                      </span>
+
+                    `
+                    : ''
+                }
+
+              </td>
+
+
+              <td
+                class="num ${cls}"
+              >
+                ${displayRep(e)}
+              </td>
+
+
+              <td
+                class="status ${cls}"
+              >
+                ${esc(st)}
+              </td>
+
+
+              <td
+                class="num ${cls}"
+              >
+                ${displayRep(e)}
+              </td>
+
+
+              <td>
+                ${fmtDate(
+                  org.lastChange
+                )}
+              </td>
+
+            </tr>
+
+          `;
+
+        }
+      )
       .join('');
+
 }
 
 
 /* =========================================================
-   MODAL
+   INFO-MODAL
 ========================================================= */
 
-function openInfo(title,text){
+function openInfo(
+  title,
+  text
+){
 
   const modal =
     document.getElementById(
@@ -1625,68 +2142,34 @@ function openInfo(title,text){
     text;
 
 
-  document.getElementById(
-    'modalConfirm'
-  ).style.display =
-    'none';
-
-
   modal.classList.remove(
     'hidden'
   );
+
 }
 
 
 function closeModal(){
 
-  const modal =
-    document.getElementById(
+  document
+    .getElementById(
       'modal'
+    )
+    .classList.add(
+      'hidden'
     );
 
-
-  modal.classList.add(
-    'hidden'
-  );
-
-
-  document.getElementById(
-    'modalConfirm'
-  ).style.display =
-    '';
 }
 
 
 /*
- * Klick auf ×
+ * Klick außerhalb des weißen Fensters
  */
 
 document
-  .getElementById('modalClose')
-  .addEventListener(
-    'click',
-    closeModal
-  );
-
-
-/*
- * Klick auf Abbrechen
- */
-
-document
-  .getElementById('modalCancel')
-  .addEventListener(
-    'click',
-    closeModal
-  );
-
-
-/*
- * Klick auf den dunklen Hintergrund
- */
-
-document
-  .getElementById('modal')
+  .getElementById(
+    'modal'
+  )
   .addEventListener(
     'click',
     function(event){
@@ -1712,23 +2195,27 @@ document.addEventListener(
   function(event){
 
     if(
-      event.key === 'Escape'
+      event.key !== 'Escape'
     ){
 
-      const modal =
-        document.getElementById(
-          'modal'
-        );
+      return;
 
-      if(
-        !modal.classList.contains(
-          'hidden'
-        )
-      ){
+    }
 
-        closeModal();
 
-      }
+    const modal =
+      document.getElementById(
+        'modal'
+      );
+
+
+    if(
+      !modal.classList.contains(
+        'hidden'
+      )
+    ){
+
+      closeModal();
 
     }
 
@@ -1737,9 +2224,7 @@ document.addEventListener(
 
 
 /*
- * Info-Buttons zentral behandeln.
- * Dadurch müssen keine Texte in onclick-JavaScript
- * hineingeschrieben werden.
+ * Info-Buttons zentral behandeln
  */
 
 document.addEventListener(
@@ -1791,7 +2276,11 @@ document.addEventListener(
 
     const place =
       state.places.find(
-        p => p.id === id
+        function(p){
+
+          return p.id === id;
+
+        }
       );
 
 
@@ -1811,13 +2300,17 @@ document.addEventListener(
 
 
 /* =========================================================
-   REP-ZIELE
+   ALLE REP-ZIELE
 ========================================================= */
 
 function allRepTargets(){
 
   const targets = [];
 
+
+  /*
+   * Orte
+   */
 
   for(
     const place
@@ -1834,18 +2327,25 @@ function allRepTargets(){
       ){
 
         targets.push({
+
           id:component.id,
+
           name:
             `${place.name} – ${component.name}`
+
         });
 
       }
 
-    }else{
+    }
+    else{
 
       targets.push({
+
         id:place.id,
+
         name:place.name
+
       });
 
     }
@@ -1853,39 +2353,54 @@ function allRepTargets(){
   }
 
 
+  /*
+   * Organisationen
+   */
+
   for(
     const org
     of state.organizations || []
   ){
 
-    if(org.active === false){
+    if(
+      org.active === false
+    ){
+
       continue;
+
     }
 
 
     targets.push({
+
       id:org.id,
+
       name:org.name
+
     });
 
   }
 
 
   return targets.sort(
-    (a,b) =>
-      a.name.localeCompare(
+    function(a,b){
+
+      return a.name.localeCompare(
         b.name,
         'de',
         {
           sensitivity:'base'
         }
-      )
+      );
+
+    }
   );
+
 }
 
 
 /* =========================================================
-   ÄNDERUNGSZEILE
+   REP-ÄNDERUNGSZEILE
 ========================================================= */
 
 function addChangeRow(){
@@ -1900,13 +2415,16 @@ function addChangeRow(){
     allRepTargets();
 
 
-  if(!targets.length){
+  if(
+    !targets.length
+  ){
 
     alert(
       'Es sind keine Reputationseinheiten vorhanden.'
     );
 
     return;
+
   }
 
 
@@ -1928,17 +2446,32 @@ function addChangeRow(){
         Reputation
       </label>
 
-      <select class="rep-select">
 
-        ${targets
-          .map(target => `
-            <option
-              value="${esc(target.id)}"
-            >
-              ${esc(target.name)}
-            </option>
-          `)
-          .join('')}
+      <select
+        class="rep-select"
+      >
+
+        ${
+          targets
+            .map(
+              function(target){
+
+                return `
+
+                  <option
+                    value="${esc(target.id)}"
+                  >
+                    ${esc(
+                      target.name
+                    )}
+                  </option>
+
+                `;
+
+              }
+            )
+            .join('')
+        }
 
       </select>
 
@@ -1951,16 +2484,39 @@ function addChangeRow(){
         Änderung
       </label>
 
-      <select class="effect-select">
 
-        ${effects
-          .map(effect => `
-            <option value="${effect[1]}">
-              ${esc(effect[0])}
-              (${effect[1] > 0 ? '+' : ''}${effect[1]})
-            </option>
-          `)
-          .join('')}
+      <select
+        class="effect-select"
+      >
+
+        ${
+          effects
+            .map(
+              function(effect){
+
+                const sign =
+                  effect[1] > 0
+                    ? '+'
+                    : '';
+
+
+                return `
+
+                  <option
+                    value="${effect[1]}"
+                  >
+                    ${esc(
+                      effect[0]
+                    )}
+                    (${sign}${effect[1]})
+                  </option>
+
+                `;
+
+              }
+            )
+            .join('')
+        }
 
       </select>
 
@@ -1968,8 +2524,8 @@ function addChangeRow(){
 
 
     <button
-      class="remove"
       type="button"
+      class="remove"
     >
       Entfernen
     </button>
@@ -1978,16 +2534,23 @@ function addChangeRow(){
 
 
   row
-    .querySelector('.remove')
+    .querySelector(
+      '.remove'
+    )
     .addEventListener(
       'click',
-      () => row.remove()
+      function(){
+
+        row.remove();
+
+      }
     );
 
 
   wrap.appendChild(
     row
   );
+
 }
 
 
@@ -2041,6 +2604,7 @@ async function applyChanges(){
     );
 
     return;
+
   }
 
 
@@ -2051,6 +2615,7 @@ async function applyChanges(){
     );
 
     return;
+
   }
 
 
@@ -2078,8 +2643,12 @@ async function applyChanges(){
 
     if(
       changes.some(
-        c =>
-          c.factionId === factionId
+        function(c){
+
+          return c.factionId ===
+            factionId;
+
+        }
       )
     ){
 
@@ -2088,12 +2657,16 @@ async function applyChanges(){
       );
 
       return;
+
     }
 
 
     changes.push({
+
       factionId,
+
       delta
+
     });
 
   }
@@ -2101,12 +2674,14 @@ async function applyChanges(){
 
   if(
     !confirm(
-      `Mission übernehmen?\n\n${mission}\n\n` +
+      `Mission übernehmen?\n\n` +
+      `${mission}\n\n` +
       `${changes.length} REP-Änderung(en)`
     )
   ){
 
     return;
+
   }
 
 
@@ -2119,8 +2694,10 @@ async function applyChanges(){
 
     const response =
       await fetch(
-        API_BASE + '/change',
+        API_BASE +
+        '/change',
         {
+
           method:'POST',
 
           headers:{
@@ -2129,11 +2706,17 @@ async function applyChanges(){
           },
 
           body:JSON.stringify({
+
             mission,
+
             date,
+
             reason,
+
             changes
+
           })
+
         }
       );
 
@@ -2172,17 +2755,27 @@ async function applyChanges(){
 
     clearChanges();
 
-    addChangeRow();
+
+    if(
+      allRepTargets().length
+    ){
+
+      addChangeRow();
+
+    }
 
 
     setStatus(
       'Gespeichert.'
     );
 
+  }
+  catch(error){
 
-  }catch(error){
+    console.error(
+      error
+    );
 
-    console.error(error);
 
     setStatus(
       'Fehler beim Speichern.'
@@ -2217,6 +2810,7 @@ async function addPlace(){
   ){
 
     return;
+
   }
 
 
@@ -2231,13 +2825,16 @@ async function addPlace(){
     Number(start);
 
 
-  if(!Number.isFinite(rep)){
+  if(
+    !Number.isFinite(rep)
+  ){
 
     alert(
       'Ungültiger REP-Wert.'
     );
 
     return;
+
   }
 
 
@@ -2250,8 +2847,10 @@ async function addPlace(){
 
     const response =
       await fetch(
-        API_BASE + '/faction',
+        API_BASE +
+        '/faction',
         {
+
           method:'POST',
 
           headers:{
@@ -2260,10 +2859,15 @@ async function addPlace(){
           },
 
           body:JSON.stringify({
+
             type:'place',
+
             name:name.trim(),
+
             rep
+
           })
+
         }
       );
 
@@ -2287,10 +2891,12 @@ async function addPlace(){
 
     await reload();
 
+  }
+  catch(error){
 
-  }catch(error){
-
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     alert(
@@ -2321,6 +2927,7 @@ async function addOrganization(){
   ){
 
     return;
+
   }
 
 
@@ -2335,13 +2942,16 @@ async function addOrganization(){
     Number(start);
 
 
-  if(!Number.isFinite(rep)){
+  if(
+    !Number.isFinite(rep)
+  ){
 
     alert(
       'Ungültiger REP-Wert.'
     );
 
     return;
+
   }
 
 
@@ -2354,8 +2964,10 @@ async function addOrganization(){
 
     const response =
       await fetch(
-        API_BASE + '/faction',
+        API_BASE +
+        '/faction',
         {
+
           method:'POST',
 
           headers:{
@@ -2364,10 +2976,15 @@ async function addOrganization(){
           },
 
           body:JSON.stringify({
+
             type:'organization',
+
             name:name.trim(),
+
             rep
+
           })
+
         }
       );
 
@@ -2391,10 +3008,12 @@ async function addOrganization(){
 
     await reload();
 
+  }
+  catch(error){
 
-  }catch(error){
-
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     alert(
@@ -2426,8 +3045,14 @@ async function toggleEventStatus(
       : 'Dieses Ereignis wirklich aus der Wertung nehmen?';
 
 
-  if(!confirm(question)){
+  if(
+    !confirm(
+      question
+    )
+  ){
+
     return;
+
   }
 
 
@@ -2440,8 +3065,10 @@ async function toggleEventStatus(
 
     const response =
       await fetch(
-        API_BASE + '/event/status',
+        API_BASE +
+        '/event/status',
         {
+
           method:'POST',
 
           headers:{
@@ -2450,9 +3077,13 @@ async function toggleEventStatus(
           },
 
           body:JSON.stringify({
+
             eventId,
+
             valid:makeValid
+
           })
+
         }
       );
 
@@ -2476,10 +3107,12 @@ async function toggleEventStatus(
 
     await reload();
 
+  }
+  catch(error){
 
-  }catch(error){
-
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     alert(
@@ -2511,6 +3144,7 @@ async function restoreToDate(){
     );
 
     return;
+
   }
 
 
@@ -2520,8 +3154,12 @@ async function restoreToDate(){
     );
 
 
-  if(reason === null){
+  if(
+    reason === null
+  ){
+
     return;
+
   }
 
 
@@ -2532,6 +3170,7 @@ async function restoreToDate(){
   ){
 
     return;
+
   }
 
 
@@ -2544,8 +3183,10 @@ async function restoreToDate(){
 
     const response =
       await fetch(
-        API_BASE + '/restore',
+        API_BASE +
+        '/restore',
         {
+
           method:'POST',
 
           headers:{
@@ -2554,9 +3195,13 @@ async function restoreToDate(){
           },
 
           body:JSON.stringify({
+
             date,
+
             reason
+
           })
+
         }
       );
 
@@ -2580,10 +3225,12 @@ async function restoreToDate(){
 
     await reload();
 
+  }
+  catch(error){
 
-  }catch(error){
-
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     alert(
@@ -2605,6 +3252,7 @@ async function clearRestore(){
   ){
 
     return;
+
   }
 
 
@@ -2617,8 +3265,10 @@ async function clearRestore(){
 
     const response =
       await fetch(
-        API_BASE + '/restore',
+        API_BASE +
+        '/restore',
         {
+
           method:'POST',
 
           headers:{
@@ -2627,8 +3277,11 @@ async function clearRestore(){
           },
 
           body:JSON.stringify({
+
             clear:true
+
           })
+
         }
       );
 
@@ -2652,10 +3305,12 @@ async function clearRestore(){
 
     await reload();
 
+  }
+  catch(error){
 
-  }catch(error){
-
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     alert(
@@ -2679,8 +3334,12 @@ function findTargetName(id){
     of state.places || []
   ){
 
-    if(place.id === id){
+    if(
+      place.id === id
+    ){
+
       return place.name;
+
     }
 
 
@@ -2689,7 +3348,9 @@ function findTargetName(id){
       of place.components || []
     ){
 
-      if(component.id === id){
+      if(
+        component.id === id
+      ){
 
         return (
           `${place.name} – ` +
@@ -2708,14 +3369,19 @@ function findTargetName(id){
     of state.organizations || []
   ){
 
-    if(org.id === id){
+    if(
+      org.id === id
+    ){
+
       return org.name;
+
     }
 
   }
 
 
   return id;
+
 }
 
 
@@ -2728,168 +3394,229 @@ function renderLog(){
 
 
   const events =
-    [...(state.events || [])];
+    [
+      ...(state.events || [])
+    ];
 
 
-  if(!events.length){
+  if(
+    !events.length
+  ){
 
     el.innerHTML = `
+
       <p class="muted">
         Noch keine Rufänderungen gespeichert.
       </p>
+
     `;
 
     return;
+
   }
 
 
   events.sort(
-    (a,b) =>
-      String(b.date || '')
-        .localeCompare(
-          String(a.date || '')
+    function(a,b){
+
+      return String(
+        b.date || ''
+      ).localeCompare(
+        String(
+          a.date || ''
         )
+      );
+
+    }
   );
 
 
   el.innerHTML =
     events
-      .map(event => {
+      .map(
+        function(event){
 
-        const valid =
-          event.valid !== false;
-
-
-        const changes =
-          event.calculated ||
-          [];
+          const valid =
+            event.valid !== false;
 
 
-        const rows =
-          changes
-            .map(change => {
-
-              const delta =
-                Number(
-                  change.delta || 0
-                );
+          const changes =
+            event.calculated ||
+            [];
 
 
-              const cls =
-                delta > 0
-                  ? 'positive'
-                  : delta < 0
-                    ? 'negative'
-                    : '';
+          const rows =
+            changes
+              .map(
+                function(change){
+
+                  const delta =
+                    Number(
+                      change.delta ||
+                      0
+                    );
 
 
-              return `
-                <div>
-
-                  <strong>
-                    ${esc(
-                      change.factionName ||
-                      findTargetName(
-                        change.factionId
-                      )
-                    )}
-                  </strong>
-
-                  <span class="${cls}">
-                    ${delta > 0 ? '+' : ''}${delta}
-                  </span>
-
-                  · REP
-                  ${displayRep(change.before)}
-                  →
-                  ${displayRep(change.after)}
-
-                </div>
-              `;
-
-            })
-            .join('');
+                  const cls =
+                    delta > 0
+                      ? 'positive'
+                      : delta < 0
+                        ? 'negative'
+                        : '';
 
 
-        return `
-          <div
-            class="log-entry ${
-              valid ? '' : 'invalid'
-            }"
-          >
+                  return `
 
-            <div class="log-head">
+                    <div>
 
-              <strong>
-                ${esc(
-                  event.mission ||
-                  'Ohne Missionsangabe'
-                )}
-              </strong>
-
-              <span class="muted">
-                ${fmtDate(event.date)}
-              </span>
-
-            </div>
+                      <strong>
+                        ${esc(
+                          change.factionName ||
+                          findTargetName(
+                            change.factionId
+                          )
+                        )}
+                      </strong>
 
 
-            <div style="margin-top:6px">
-
-              ${
-                valid
-                  ? `
-                    <span class="badge active">
-                      gültig
-                    </span>
-                  `
-                  : `
-                    <span class="badge invalid">
-                      RETCON – ungültig
-                    </span>
-                  `
-              }
-
-            </div>
+                      <span
+                        class="${cls}"
+                      >
+                        ${
+                          delta > 0
+                            ? '+'
+                            : ''
+                        }${delta}
+                      </span>
 
 
-            <div class="log-detail">
+                      · REP
+                      ${displayRep(
+                        change.before
+                      )}
+                      →
+                      ${displayRep(
+                        change.after
+                      )}
 
-              ${esc(
-                event.reason ||
-                'Keine Begründung angegeben.'
-              )}
+                    </div>
 
-              <div style="margin-top:9px">
-                ${rows}
+                  `;
+
+                }
+              )
+              .join('');
+
+
+          return `
+
+            <div
+              class="
+                log-entry
+                ${valid ? '' : 'invalid'}
+              "
+            >
+
+
+              <div class="log-head">
+
+                <strong>
+                  ${esc(
+                    event.mission ||
+                    'Ohne Missionsangabe'
+                  )}
+                </strong>
+
+
+                <span class="muted">
+                  ${fmtDate(
+                    event.date
+                  )}
+                </span>
+
               </div>
 
-            </div>
 
-
-            <div class="log-actions">
-
-              <button
-                class="${valid ? 'danger' : ''}"
-                onclick="toggleEventStatus(
-                  '${esc(event.id)}',
-                  ${valid}
-                )"
+              <div
+                style="margin-top:6px"
               >
+
                 ${
                   valid
-                    ? 'Als Retcon ungültig machen'
-                    : 'Wieder gültig machen'
+                    ? `
+
+                      <span
+                        class="badge active"
+                      >
+                        gültig
+                      </span>
+
+                    `
+                    : `
+
+                      <span
+                        class="badge invalid"
+                      >
+                        RETCON – ungültig
+                      </span>
+
+                    `
                 }
-              </button>
+
+              </div>
+
+
+              <div class="log-detail">
+
+                ${esc(
+                  event.reason ||
+                  'Keine Begründung angegeben.'
+                )}
+
+
+                <div
+                  style="margin-top:9px"
+                >
+                  ${rows}
+                </div>
+
+              </div>
+
+
+              <div class="log-actions">
+
+                <button
+                  type="button"
+                  class="${
+                    valid
+                      ? 'danger'
+                      : ''
+                  }"
+                  onclick="toggleEventStatus(
+                    '${esc(event.id)}',
+                    ${valid}
+                  )"
+                >
+
+                  ${
+                    valid
+                      ? 'Als Retcon ungültig machen'
+                      : 'Wieder gültig machen'
+                  }
+
+                </button>
+
+              </div>
+
 
             </div>
 
-          </div>
-        `;
+          `;
 
-      })
+        }
+      )
       .join('');
+
 }
 
 
@@ -2912,18 +3639,23 @@ function updateRulesNotice(){
     'rulesNotice'
   ).innerHTML = `
 
-    <strong>REP</strong> sind die Reputationspunkte einer Gruppe.
-    Der effektive REP wird automatisch aus der gültigen Ereignishistorie
-    berechnet. Alle ${esc(decay.days || 30)}
+    <strong>REP</strong> sind die Reputationspunkte
+    einer Gruppe. Der effektive REP wird automatisch
+    aus der gültigen Ereignishistorie berechnet.
+    Alle ${esc(
+      decay.days || 30
+    )}
     vergangenen Tage verfällt ein REP Richtung 0.
-    Der Status richtet sich ausschließlich nach dem effektiven REP.
+    Der Status richtet sich ausschließlich nach dem
+    effektiven REP.
 
   `;
+
 }
 
 
 /* =========================================================
-   STATUS
+   STATUSANZEIGE
 ========================================================= */
 
 function setStatus(text){
@@ -2932,6 +3664,7 @@ function setStatus(text){
     'loadStatus'
   ).textContent =
     text;
+
 }
 
 
@@ -2965,7 +3698,9 @@ async function load(){
       );
 
 
-    if(!response.ok){
+    if(
+      !response.ok
+    ){
 
       throw new Error(
         'HTTP ' +
@@ -3013,8 +3748,11 @@ async function load(){
 
 
     renderPlaces();
+
     renderOrganizations();
+
     renderLog();
+
     updateRulesNotice();
 
 
@@ -3026,11 +3764,6 @@ async function load(){
     clearChanges();
 
 
-    /*
-     * Nur eine leere Zeile erzeugen,
-     * wenn tatsächlich Ziele vorhanden sind.
-     */
-
     if(
       allRepTargets().length
     ){
@@ -3039,10 +3772,12 @@ async function load(){
 
     }
 
+  }
+  catch(error){
 
-  }catch(error){
-
-    console.error(error);
+    console.error(
+      error
+    );
 
 
     setStatus(
