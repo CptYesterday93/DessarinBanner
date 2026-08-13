@@ -169,8 +169,22 @@
           "delta": 2
         }
       ]
+    },
+    {
+      "id": "event_54335f1a-1258-4b60-82fc-11b0668229ca",
+      "date": "2026-07-14",
+      "mission": "verfall2",
+      "reason": "verfall",
+      "valid": true,
+      "createdAt": "2026-08-13T10:31:01.762Z",
+      "changes": [
+        {
+          "factionId": "calling-horns",
+          "delta": 3
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T10:30:07.201Z"
+  "updatedAt": "2026-08-13T10:31:01.762Z"
 }
