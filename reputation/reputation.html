@@ -367,18 +367,8 @@ th{
   color:var(--muted);
 }
 
-.modal-backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.45);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  z-index:1000;
-}
-
 .modal{
+  position:relative;
   background:#fff;
   width:min(560px,100%);
   border-radius:8px;
@@ -386,17 +376,29 @@ th{
   box-shadow:0 10px 40px rgba(0,0,0,.25);
 }
 
-.modal h2{
-  margin-top:0;
+.modal-close{
+  position:absolute;
+  top:8px;
+  right:10px;
+
+  width:32px;
+  height:32px;
+
+  border:0;
+  background:transparent;
+
+  font-size:26px;
+  line-height:1;
+
+  color:#666;
+  padding:0;
 }
 
-.modal-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  margin-top:16px;
+.modal-close:hover{
+  color:#111;
+  background:#eee;
 }
-
+  
 @media(max-width:700px){
   .sheet{
     width:calc(100% - 16px);
@@ -583,16 +585,26 @@ th{
 
 <!-- MODAL -->
 
-<div id="modal" class="modal-backdrop hidden">
-  <div class="modal">
-    <h2 id="modalTitle"></h2>
-    <div id="modalText"></div>
+<div class="modal">
 
-    <div class="modal-actions">
-      <button onclick="closeModal()">Abbrechen</button>
-      <button class="primary" id="modalConfirm">Bestätigen</button>
-    </div>
+  <button
+    class="modal-close"
+    onclick="closeModal()"
+    aria-label="Fenster schließen"
+    title="Schließen"
+  >
+    ×
+  </button>
+
+  <h2 id="modalTitle"></h2>
+
+  <div id="modalText"></div>
+
+  <div class="modal-actions">
+    <button onclick="closeModal()">Abbrechen</button>
+    <button class="primary" id="modalConfirm">Bestätigen</button>
   </div>
+
 </div>
 
 <script>
@@ -1189,7 +1201,34 @@ function closeModal(){
   document.getElementById('modalConfirm')
     .style.display = '';
 }
+/* Modal schließen mit Esc */
+document.addEventListener('keydown', function(event){
 
+  if(event.key === 'Escape'){
+
+    const modal =
+      document.getElementById('modal');
+
+    if(
+      modal &&
+      !modal.classList.contains('hidden')
+    ){
+      closeModal();
+    }
+  }
+
+});
+
+
+/* Modal schließen bei Klick auf den dunklen Hintergrund */
+document.getElementById('modal')
+  .addEventListener('click', function(event){
+
+    if(event.target === this){
+      closeModal();
+    }
+
+  });
 
 /* =========================================================
    YARTAR AUFKLAPPEN
