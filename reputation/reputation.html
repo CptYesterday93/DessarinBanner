@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reputationsübersicht – Dessarin Banner</title>
 <style>
-:root{--ink:#171717;--muted:#6a6a6a;--accent:#3157a6;--paper:#fff;--page:#f2f2f2;--line:#d9d9d9;--soft:#f7f8fb;--good:#27662d;--bad:#8b2626}
+:root{--ink:#171717;--muted:#6a6a6a;--accent:#3157a6;--paper:#fff;--page:#f2f2f2;--line:#d9d9d9;--soft:#f7f8fb;--good:#1769aa;--bad:#c65d00}
 *{box-sizing:border-box}
 body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 Arial,Helvetica,sans-serif}
 .sheet{width:min(1100px,calc(100% - 28px));margin:18px auto 32px;background:var(--paper);padding:28px 38px 40px;box-shadow:0 2px 14px #0001}
@@ -21,7 +21,7 @@ th{font-size:12px;font-weight:700;color:#333}
 .status{font-weight:600}.positive{color:var(--good)}.negative{color:var(--bad)}
 .place-main{font-weight:700}.place-sub{font-size:12px;color:var(--muted);margin-top:1px}
 .child td:first-child{padding-left:42px}
-.child{font-size:13px}
+.child{font-size:13px}.child.collapsed{display:none}.collapse-toggle{border:0;background:none;padding:0;margin:0 4px 0 0;font-weight:700;cursor:pointer;font-size:14px;line-height:1}.collapse-toggle:hover{filter:none}
 .info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:5px;border:1px solid #aaa;border-radius:50%;font-size:11px;color:#555;cursor:pointer;vertical-align:middle;background:#fff}
 .info:hover{background:#f3f3f3}
 .manage-actions{display:flex;gap:5px;justify-content:flex-end;white-space:nowrap}
@@ -84,7 +84,7 @@ Der <strong>effektive REP</strong> zeigt, wie viel davon aktuell wirkt: Jede ein
 verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sich ausschließlich nach dem effektiven REP.
 </div>
 
-<div class="section-title">Orte</div>
+<div class="section-title">Regionen</div>
 <div class="table-wrap">
 <table>
 <thead><tr><th>Region</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
@@ -158,6 +158,7 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 const DATA_URL='reputation.json';
 const WRITE_URL=''; // später: Worker-Endpoint
 let state=null;
+let yartarExpanded=true;
 
 const effects=[
  {delta:1,label:'Leicht positiv',days:30},
@@ -282,6 +283,11 @@ function showInfo(type){
 }
 
 
+function toggleYartar(e){
+ e.stopPropagation();
+ yartarExpanded=!yartarExpanded;
+ render();
+}
 function render(){
  const pb=document.getElementById('placesBody');
  let rows='';
@@ -292,11 +298,15 @@ function render(){
  for(const p of places){
    const e=effective(p.id),st=statusFor(e),lc=lastPlaceChange(p);
    const sub=p.aggregate==='yartar'?'Gesamtwert aus 4 lokalen Gruppen':'';
-   rows+=`<tr><td><div class="place-main">${p.id==='yartar'?'▼ ':''}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('place','${esc(p.id)}')">Bearbeiten</button>${p.id!=='yartar'?`<button class="manage-btn danger" onclick="deleteManaged('place','${esc(p.id)}')">Löschen</button>`:''}</td></tr>`;
-   if(p.id==='yartar'){
+   const isYartar=p.id==='yartar';
+   const toggle=isYartar
+     ? `<button type="button" class="collapse-toggle" aria-expanded="${yartarExpanded}" aria-label="${yartarExpanded?'Region zuklappen':'Region aufklappen'}" onclick="toggleYartar(event)">${yartarExpanded?'▼':'▶'}</button>`
+     : '';
+   rows+=`<tr><td><div class="place-main">${toggle}${esc(p.name)}${p.info?infoButton(p.name,p.info):''}</div>${sub?`<div class="place-sub">${sub}</div>`:''}</td><td class="status ${cls(e)}">${st}</td><td class="num ${cls(e)}">${e>0?'+':''}${e}</td><td>${fmtDate(lc)}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('place','${esc(p.id)}')">Bearbeiten</button>${p.id!=='yartar'?`<button class="manage-btn danger" onclick="deleteManaged('place','${esc(p.id)}')">Löschen</button>`:''}</td></tr>`;
+   if(isYartar){
      for(const c of [...(p.children||[])].sort((a,b)=>a.order-b.order)){
        const ce=effectiveDirect(c.id);
-       rows+=`<tr class="child"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('local','${esc(c.id)}')">Bearbeiten</button></td></tr>`;
+       rows+=`<tr class="child${yartarExpanded?'':' collapsed'}"><td>${esc(c.name)}${infoButton(c.name,c.description||'')}</td><td class="status ${cls(ce)}">${statusFor(ce)}</td><td class="num ${cls(ce)}">${ce>0?'+':''}${ce}</td><td>${fmtDate(lastChange(c.id))}</td><td class="manage-actions"><button class="manage-btn" onclick="openManage('local','${esc(c.id)}')">Bearbeiten</button></td></tr>`;
      }
    }
  }
