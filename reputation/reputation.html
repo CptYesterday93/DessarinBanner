@@ -68,6 +68,22 @@ h1{
   border-radius:8px;
 }
 
+.section-title-spacer{
+  flex:1;
+}
+
+.section-search{
+  margin-left:auto;
+  width:min(390px,45%);
+}
+
+.section-search input{
+  width:100%;
+  padding:7px 10px;
+  font-weight:400;
+  font-size:14px;
+}
+
 .info-btn{
   width:22px;
   height:22px;
@@ -81,14 +97,8 @@ h1{
   cursor:pointer;
 }
 
-.search-box{
-  margin:10px 0 10px;
-}
-
-.search-box input{
-  width:100%;
-  max-width:420px;
-  padding:9px 11px;
+.info-btn:hover{
+  background:#f3f3f3;
 }
 
 .table-wrap{
@@ -163,6 +173,12 @@ th{
   gap:5px;
 }
 
+.child-parent{
+  color:var(--muted);
+  font-size:12px;
+  margin-right:4px;
+}
+
 .actions{
   display:flex;
   gap:6px;
@@ -223,6 +239,12 @@ textarea{
   border-radius:3px;
 }
 
+input:focus,
+select:focus,
+textarea:focus{
+  outline:2px solid #dbe3f7;
+}
+
 textarea{
   width:100%;
   min-height:70px;
@@ -238,7 +260,7 @@ textarea{
   width:155px;
 }
 
-/* REP-Eingabe */
+/* REP-Zeilen */
 
 .change-header{
   display:grid;
@@ -258,17 +280,13 @@ textarea{
   display:grid;
   grid-template-columns:minmax(190px,1fr) 190px auto;
   gap:10px;
-  align-items:center;
+  align-items:end;
   padding:9px 0;
   border-bottom:1px solid var(--line);
 }
 
 .change-row select{
   width:100%;
-}
-
-.change-row .remove{
-  white-space:nowrap;
 }
 
 /* Verlauf */
@@ -344,12 +362,6 @@ textarea{
   background:#fff0e7;
 }
 
-.statusbar{
-  margin-left:auto;
-  color:var(--muted);
-  font-size:12px;
-}
-
 /* Modal */
 
 .modal-backdrop{
@@ -391,6 +403,12 @@ textarea{
   margin-top:16px;
 }
 
+.statusbar{
+  margin-left:auto;
+  color:var(--muted);
+  font-size:12px;
+}
+
 .empty{
   color:var(--muted);
 }
@@ -401,14 +419,24 @@ textarea{
     padding:22px 14px;
   }
 
+  .section-title{
+    flex-wrap:wrap;
+  }
+
+  .section-search{
+    width:100%;
+    margin-left:0;
+    order:10;
+  }
+
   .change-header,
   .change-row{
     grid-template-columns:1fr 1fr;
   }
 
   .change-row .remove{
-    grid-column:1 / -1;
-    justify-self:start;
+    grid-column:2;
+    justify-self:end;
   }
 
   .mission,
@@ -449,7 +477,9 @@ textarea{
 
   <div class="section-title">
 
-    Regionen
+    <span>
+      Regionen
+    </span>
 
     <button
       class="info-btn"
@@ -462,19 +492,20 @@ textarea{
       i
     </button>
 
+    <div class="section-search">
+
+      <input
+        id="regionSearch"
+        type="search"
+        placeholder="🔎 Region suchen …"
+        autocomplete="off"
+        oninput="renderRegions()"
+      >
+
+    </div>
+
   </div>
 
-  <div class="search-box">
-
-    <input
-      id="regionSearch"
-      type="search"
-      placeholder="🔎 Region suchen …"
-      autocomplete="off"
-      oninput="renderRegions()"
-    >
-
-  </div>
 
   <div class="table-wrap">
 
@@ -496,6 +527,7 @@ textarea{
 
   </div>
 
+
   <div class="toolbar">
 
     <button onclick="addFaction('place')">
@@ -511,13 +543,15 @@ textarea{
 
   <div class="section-title">
 
-    Organisationen
+    <span>
+      Organisationen
+    </span>
 
     <button
       class="info-btn"
       onclick="showInfo(
         'Organisationen',
-        'Überregionale oder eigenständige Organisationen werden separat von Regionen geführt.'
+        'Organisationen werden unabhängig von Regionen geführt. Ihr Ruf ist nicht automatisch an eine Region gebunden.'
       )"
       aria-label="Informationen zu Organisationen"
     >
@@ -525,6 +559,7 @@ textarea{
     </button>
 
   </div>
+
 
   <div class="table-wrap">
 
@@ -545,6 +580,7 @@ textarea{
     </table>
 
   </div>
+
 
   <div class="toolbar">
 
@@ -570,6 +606,7 @@ textarea{
     Rufänderung eintragen
   </div>
 
+
   <div class="toolbar">
 
     <div class="mission">
@@ -584,6 +621,7 @@ textarea{
       >
 
     </div>
+
 
     <div class="date">
 
@@ -625,7 +663,9 @@ textarea{
 
   </div>
 
+
   <div id="changeRows"></div>
+
 
   <div class="toolbar">
 
@@ -634,6 +674,7 @@ textarea{
     </button>
 
   </div>
+
 
   <button
     class="primary"
@@ -707,9 +748,10 @@ textarea{
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
 
-
 let state = null;
 let pendingAction = null;
+
+const collapsedRegions = {};
 
 
 /* =========================================================
@@ -801,8 +843,13 @@ function valueClass(value){
   const n =
     Number(value) || 0;
 
-  if(n > 0) return 'positive';
-  if(n < 0) return 'negative';
+  if(n > 0){
+    return 'positive';
+  }
+
+  if(n < 0){
+    return 'negative';
+  }
 
   return '';
 
@@ -814,10 +861,21 @@ function statusFor(rep){
   rep =
     Number(rep) || 0;
 
-  if(rep >= 8) return 'Verbündet';
-  if(rep >= 3) return 'Wohlwollend';
-  if(rep >= -2) return 'Neutral';
-  if(rep >= -4) return 'Skeptisch';
+  if(rep >= 8){
+    return 'Verbündet';
+  }
+
+  if(rep >= 3){
+    return 'Wohlwollend';
+  }
+
+  if(rep >= -2){
+    return 'Neutral';
+  }
+
+  if(rep >= -4){
+    return 'Skeptisch';
+  }
 
   return 'Feindlich';
 
@@ -825,19 +883,24 @@ function statusFor(rep){
 
 
 /*
- * Wichtig:
- * Bestehende Regionen können "info" haben.
- * Der Worker verwendet bei /faction aber "description".
- * Deshalb unterstützen wir hier beides.
+ * Bei Regionen:
+ *
+ * - neue/aktualisierte Daten können "description" haben
+ * - deine bestehende JSON kann "info" haben
+ *
+ * description wird deshalb bewusst bevorzugt.
  */
 
-function itemDescription(item, type){
+function itemDescription(
+  item,
+  type
+){
 
   if(type === 'place'){
 
     return (
-      item.info ??
       item.description ??
+      item.info ??
       'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.'
     );
 
@@ -855,7 +918,10 @@ function itemDescription(item, type){
    API
    ========================================================= */
 
-async function api(path, options = {}){
+async function api(
+  path,
+  options = {}
+){
 
   const response =
     await fetch(
@@ -863,7 +929,8 @@ async function api(path, options = {}){
       {
         ...options,
         headers:{
-          'Content-Type':'application/json',
+          'Content-Type':
+            'application/json',
           ...(options.headers || {})
         }
       }
@@ -875,7 +942,8 @@ async function api(path, options = {}){
       .json()
       .catch(
         () => ({
-          error:'Ungültige Serverantwort'
+          error:
+            'Ungültige Serverantwort'
         })
       );
 
@@ -899,7 +967,7 @@ async function api(path, options = {}){
 
 
 /* =========================================================
-   DATEN
+   LADEN
    ========================================================= */
 
 async function load(){
@@ -909,10 +977,16 @@ async function load(){
     state =
       await api('/data');
 
+
     document
-      .getElementById('loadStatus')
+      .getElementById(
+        'loadStatus'
+      )
       .textContent =
-        'Zentral gespeichert';
+        `Zentral gespeichert · Worker v${
+          state.api?.version || '?'
+        }`;
+
 
     render();
 
@@ -931,9 +1005,12 @@ async function load(){
   }catch(error){
 
     document
-      .getElementById('loadStatus')
+      .getElementById(
+        'loadStatus'
+      )
       .textContent =
         'Fehler beim Laden';
+
 
     alert(
       'Reputationsdaten konnten nicht geladen werden:\n' +
@@ -946,7 +1023,7 @@ async function load(){
 
 
 /* =========================================================
-   ZIELE FÜR REP
+   REP-ZIELE
    ========================================================= */
 
 function allUnits(){
@@ -960,8 +1037,11 @@ function allUnits(){
   ){
 
     /*
-     * Bei Yartar bleiben die echten IDs erhalten.
-     * Angezeigt werden aber nur die Namen der Untergruppen.
+     * Eine Region mit Kindern ist ein
+     * berechneter Aggregate-Wert.
+     *
+     * Deshalb darf z.B. Yartar NICHT
+     * direkt als REP-Ziel erscheinen.
      */
 
     if(
@@ -969,23 +1049,25 @@ function allUnits(){
       place.children.length
     ){
 
-      result.push({
-        id:place.id,
-        name:place.name,
-        type:'place'
-      });
-
-
       for(
         const child
         of place.children
       ){
 
         result.push({
-          id:child.id,
-          name:child.name,
-          type:'child',
-          parentId:place.id
+
+          id:
+            child.id,
+
+          name:
+            `${place.name} – ${child.name}`,
+
+          type:
+            'child',
+
+          parentId:
+            place.id
+
         });
 
       }
@@ -993,9 +1075,16 @@ function allUnits(){
     }else{
 
       result.push({
-        id:place.id,
-        name:place.name,
-        type:'place'
+
+        id:
+          place.id,
+
+        name:
+          place.name,
+
+        type:
+          'place'
+
       });
 
     }
@@ -1009,9 +1098,16 @@ function allUnits(){
   ){
 
     result.push({
-      id:organization.id,
-      name:organization.name,
-      type:'organization'
+
+      id:
+        organization.id,
+
+      name:
+        organization.name,
+
+      type:
+        'organization'
+
     });
 
   }
@@ -1024,16 +1120,15 @@ function allUnits(){
 
 function unitName(id){
 
-  const found =
+  return (
     allUnits()
       .find(
-        unit => unit.id === id
-      );
-
-
-  return found
-    ? found.name
-    : id;
+        unit =>
+          unit.id === id
+      )
+      ?.name ||
+    id
+  );
 
 }
 
@@ -1045,7 +1140,9 @@ function unitName(id){
 function render(){
 
   renderRegions();
+
   renderOrganizations();
+
   renderLog();
 
 }
@@ -1070,260 +1167,285 @@ function renderRegions(){
       )
       .value
       .trim()
-      .toLocaleLowerCase('de-DE');
+      .toLocaleLowerCase(
+        'de-DE'
+      );
 
 
   const places =
     (state.places || [])
-      .filter(place => {
+      .filter(
+        place => {
 
-        if(!search){
-          return true;
+          if(!search){
+            return true;
+          }
+
+
+          const text = [
+
+            place.name,
+
+            itemDescription(
+              place,
+              'place'
+            )
+
+          ]
+            .join(' ')
+            .toLocaleLowerCase(
+              'de-DE'
+            );
+
+
+          return text.includes(
+            search
+          );
+
         }
-
-        /*
-         * Die Suche gilt nur für Regionen,
-         * nicht für die Yartar-Untergruppen.
-         */
-
-        const haystack = [
-          place.name,
-          itemDescription(place,'place')
-        ]
-          .join(' ')
-          .toLocaleLowerCase('de-DE');
-
-
-        return haystack.includes(search);
-
-      });
+      );
 
 
   body.innerHTML =
     places
-      .map(place => {
+      .map(
+        place => {
 
-        const rep =
-          place.effectiveRep ??
-          place.rep ??
-          0;
-
-
-        const hasChildren =
-          Array.isArray(place.children) &&
-          place.children.length > 0;
+          const rep =
+            place.effectiveRep ??
+            place.rep ??
+            0;
 
 
-        const isCollapsed =
-          place.id !== 'yartar'
-            ? Boolean(
-                collapsedRegions[place.id]
-              )
-            : Boolean(
-                collapsedRegions[place.id]
-              );
+          const hasChildren =
+            Array.isArray(
+              place.children
+            ) &&
+            place.children.length > 0;
 
 
-        const childrenVisible =
-          hasChildren &&
-          !isCollapsed;
+          const collapsed =
+            Boolean(
+              collapsedRegions[
+                place.id
+              ]
+            );
 
 
-        const infoText =
-          itemDescription(
-            place,
-            'place'
-          );
+          const description =
+            itemDescription(
+              place,
+              'place'
+            );
 
 
-        let html = `
+          let html = `
 
-          <tr>
+            <tr>
 
-            <td>
+              <td>
 
-              <div class="region-name">
+                <div class="region-name">
 
-                ${
-                  hasChildren
-                    ? `
-                      <button
-                        class="region-toggle"
-                        onclick="toggleRegion(
-                          '${esc(place.id)}'
-                        )"
-                        aria-label="${
-                          isCollapsed
-                            ? 'Region aufklappen'
-                            : 'Region einklappen'
-                        }"
-                      >
-                        ${
-                          isCollapsed
-                            ? '▶'
-                            : '▼'
-                        }
-                      </button>
-                    `
-                    : `
-                      <span
-                        style="width:18px"
-                      ></span>
-                    `
-                }
+                  ${
+                    hasChildren
+                      ? `
 
+                        <button
+                          class="region-toggle"
+                          onclick="toggleRegion(
+                            '${esc(place.id)}'
+                          )"
+                          aria-label="${
+                            collapsed
+                              ? 'Region aufklappen'
+                              : 'Region einklappen'
+                          }"
+                        >
+                          ${
+                            collapsed
+                              ? '▶'
+                              : '▼'
+                          }
+                        </button>
 
-                <strong>
-                  ${esc(place.name)}
-                </strong>
+                      `
+                      : `
 
+                        <span
+                          style="width:18px"
+                        ></span>
 
-                <button
-                  class="info-btn"
-                  onclick="showInfo(
-                    '${esc(place.name)}',
-                    '${esc(infoText)}'
-                  )"
-                  aria-label="Informationen"
-                >
-                  i
-                </button>
-
-              </div>
-
-            </td>
+                      `
+                  }
 
 
-            <td
-              class="num ${valueClass(rep)}"
-            >
-              ${fmtRep(rep)}
-            </td>
+                  <strong>
+                    ${esc(place.name)}
+                  </strong>
 
 
-            <td
-              class="status ${valueClass(rep)}"
-            >
-              ${esc(
-                place.status ||
-                statusFor(rep)
-              )}
-            </td>
+                  <button
+                    class="info-btn"
+                    onclick="showInfo(
+                      '${esc(place.name)}',
+                      '${esc(description)}'
+                    )"
+                    aria-label="Informationen"
+                  >
+                    i
+                  </button>
+
+                </div>
+
+              </td>
 
 
-            <td>
-              ${fmtDate(
-                place.lastChange
-              )}
-            </td>
+              <td
+                class="num ${valueClass(rep)}"
+              >
+                ${fmtRep(rep)}
+              </td>
 
 
-            <td>
-
-              <div class="actions">
-
-                <button
-                  onclick="editFaction(
-                    '${esc(place.id)}',
-                    'place'
-                  )"
-                >
-                  Bearbeiten
-                </button>
-
-                ${
-                  place.id === 'yartar'
-                    ? ''
-                    : `
-                      <button
-                        class="danger"
-                        onclick="deleteFaction(
-                          '${esc(place.id)}',
-                          'place'
-                        )"
-                      >
-                        Löschen
-                      </button>
-                    `
-                }
-
-              </div>
-
-            </td>
-
-          </tr>
-
-        `;
+              <td
+                class="status ${valueClass(rep)}"
+              >
+                ${esc(
+                  place.status ||
+                  statusFor(rep)
+                )}
+              </td>
 
 
-        if(
-          childrenVisible
-        ){
+              <td>
+                ${fmtDate(
+                  place.lastChange
+                )}
+              </td>
 
-          for(
-            const child
-            of place.children
+
+              <td>
+
+                <div class="actions">
+
+                  <button
+                    onclick="editFaction(
+                      '${esc(place.id)}',
+                      'place'
+                    )"
+                  >
+                    Bearbeiten
+                  </button>
+
+                  ${
+                    place.id === 'yartar'
+                      ? ''
+                      : `
+
+                        <button
+                          class="danger"
+                          onclick="deleteFaction(
+                            '${esc(place.id)}',
+                            'place'
+                          )"
+                        >
+                          Löschen
+                        </button>
+
+                      `
+                  }
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          `;
+
+
+          /*
+           * Untergruppen nur anzeigen,
+           * wenn Region aufgeklappt ist.
+           */
+
+          if(
+            hasChildren &&
+            !collapsed
           ){
 
-            const childRep =
-              child.effectiveRep ??
-              child.rep ??
-              0;
+            for(
+              const child
+              of place.children
+            ){
+
+              const childRep =
+                child.effectiveRep ??
+                child.rep ??
+                0;
 
 
-            html += `
+              html += `
 
-              <tr class="child">
+                <tr class="child">
 
-                <td>
+                  <td>
 
-                  <div class="child-name">
+                    <div class="child-name">
 
-                    ${esc(child.name)}
+                      <span class="child-parent">
+                        ${esc(place.name)} –
+                      </span>
 
-                  </div>
+                      <strong>
+                        ${esc(child.name)}
+                      </strong>
 
-                </td>
+                    </div>
 
-
-                <td
-                  class="num ${valueClass(childRep)}"
-                >
-                  ${fmtRep(childRep)}
-                </td>
-
-
-                <td
-                  class="status ${valueClass(childRep)}"
-                >
-                  ${esc(
-                    child.status ||
-                    statusFor(childRep)
-                  )}
-                </td>
+                  </td>
 
 
-                <td>
-                  ${fmtDate(
-                    child.lastChange
-                  )}
-                </td>
+                  <td
+                    class="num ${valueClass(childRep)}"
+                  >
+                    ${fmtRep(childRep)}
+                  </td>
 
 
-                <td></td>
+                  <td
+                    class="status ${valueClass(childRep)}"
+                  >
+                    ${esc(
+                      child.status ||
+                      statusFor(childRep)
+                    )}
+                  </td>
 
-              </tr>
 
-            `;
+                  <td>
+                    ${fmtDate(
+                      child.lastChange
+                    )}
+                  </td>
+
+
+                  <td></td>
+
+                </tr>
+
+              `;
+
+            }
 
           }
 
+
+          return html;
+
         }
-
-
-        return html;
-
-      })
+      )
       .join('');
 
 
@@ -1350,9 +1472,6 @@ function renderRegions(){
 }
 
 
-const collapsedRegions = {};
-
-
 function toggleRegion(id){
 
   collapsedRegions[id] =
@@ -1377,100 +1496,104 @@ function renderOrganizations(){
 
   body.innerHTML =
     (state.organizations || [])
-      .map(org => {
+      .map(
+        org => {
 
-        const rep =
-          org.effectiveRep ??
-          org.rep ??
-          0;
-
-
-        const infoText =
-          itemDescription(
-            org,
-            'organization'
-          );
+          const rep =
+            org.effectiveRep ??
+            org.rep ??
+            0;
 
 
-        return `
+          const description =
+            itemDescription(
+              org,
+              'organization'
+            );
 
-          <tr>
 
-            <td>
+          return `
 
-              ${esc(org.name)}
+            <tr>
 
-              <button
-                class="info-btn"
-                onclick="showInfo(
-                  '${esc(org.name)}',
-                  '${esc(infoText)}'
-                )"
-                aria-label="Informationen"
+              <td>
+
+                <strong>
+                  ${esc(org.name)}
+                </strong>
+
+                <button
+                  class="info-btn"
+                  onclick="showInfo(
+                    '${esc(org.name)}',
+                    '${esc(description)}'
+                  )"
+                  aria-label="Informationen"
+                >
+                  i
+                </button>
+
+              </td>
+
+
+              <td
+                class="num ${valueClass(rep)}"
               >
-                i
-              </button>
-
-            </td>
+                ${fmtRep(rep)}
+              </td>
 
 
-            <td
-              class="num ${valueClass(rep)}"
-            >
-              ${fmtRep(rep)}
-            </td>
+              <td
+                class="status ${valueClass(rep)}"
+              >
+                ${esc(
+                  org.status ||
+                  statusFor(rep)
+                )}
+              </td>
 
 
-            <td
-              class="status ${valueClass(rep)}"
-            >
-              ${esc(
-                org.status ||
-                statusFor(rep)
-              )}
-            </td>
+              <td>
+                ${fmtDate(
+                  org.lastChange
+                )}
+              </td>
 
 
-            <td>
-              ${fmtDate(
-                org.lastChange
-              )}
-            </td>
+              <td>
+
+                <div class="actions">
+
+                  <button
+                    onclick="editFaction(
+                      '${esc(org.id)}',
+                      'organization'
+                    )"
+                  >
+                    Bearbeiten
+                  </button>
 
 
-            <td>
+                  <button
+                    class="danger"
+                    onclick="deleteFaction(
+                      '${esc(org.id)}',
+                      'organization'
+                    )"
+                  >
+                    Löschen
+                  </button>
 
-              <div class="actions">
+                </div>
 
-                <button
-                  onclick="editFaction(
-                    '${esc(org.id)}',
-                    'organization'
-                  )"
-                >
-                  Bearbeiten
-                </button>
+              </td>
 
+            </tr>
 
-                <button
-                  class="danger"
-                  onclick="deleteFaction(
-                    '${esc(org.id)}',
-                    'organization'
-                  )"
-                >
-                  Löschen
-                </button>
+          `;
 
-              </div>
-
-            </td>
-
-          </tr>
-
-        `;
-
-      })
+        }
+      )
       .join('');
 
 
@@ -1490,7 +1613,10 @@ function addChangeRow(){
 
 
   const row =
-    document.createElement('div');
+    document.createElement(
+      'div'
+    );
+
 
   row.className =
     'change-row';
@@ -1568,7 +1694,10 @@ function addChangeRow(){
   `;
 
 
-  container.appendChild(row);
+  container.appendChild(
+    row
+  );
+
 
   refreshTargetOptions();
 
@@ -1576,10 +1705,8 @@ function addChangeRow(){
 
 
 /*
- * Bereits verwendete Einträge werden komplett
- * aus den anderen Auswahlfeldern entfernt.
- *
- * Sie werden NICHT ausgegraut.
+ * Bereits verwendete REP-Ziele werden aus
+ * den anderen Dropdowns komplett entfernt.
  */
 
 function refreshTargetOptions(){
@@ -1596,7 +1723,8 @@ function refreshTargetOptions(){
     new Set(
       selects
         .map(
-          select => select.value
+          select =>
+            select.value
         )
         .filter(Boolean)
     );
@@ -1648,6 +1776,7 @@ function refreshTargetOptions(){
       option.value =
         unit.id;
 
+
       option.textContent =
         unit.name;
 
@@ -1668,7 +1797,7 @@ function refreshTargetOptions(){
 
 
 /* =========================================================
-   CHANGES
+   REP-ÄNDERUNGEN
    ========================================================= */
 
 function getChanges(){
@@ -1678,27 +1807,31 @@ function getChanges(){
       '.change-row'
     )
   ]
-  .map(row => ({
+    .map(
+      row => ({
 
-    factionId:
-      row.querySelector(
-        '.target'
-      ).value,
+        factionId:
+          row.querySelector(
+            '.target'
+          ).value,
 
-    delta:
-      Number(
-        row.querySelector(
-          '.effect'
-        ).value
-      )
+        delta:
+          Number(
+            row.querySelector(
+              '.effect'
+            ).value
+          )
 
-  }))
-  .filter(
-    change =>
-      change.factionId &&
-      Number.isFinite(change.delta) &&
-      change.delta !== 0
-  );
+      })
+    )
+    .filter(
+      change =>
+        change.factionId &&
+        Number.isFinite(
+          change.delta
+        ) &&
+        change.delta !== 0
+    );
 
 }
 
@@ -1713,25 +1846,33 @@ function showInfo(
 ){
 
   document
-    .getElementById('modalTitle')
+    .getElementById(
+      'modalTitle'
+    )
     .textContent =
       title;
 
 
   document
-    .getElementById('modalText')
+    .getElementById(
+      'modalText'
+    )
     .textContent =
       text;
 
 
   document
-    .getElementById('modalConfirm')
+    .getElementById(
+      'modalConfirm'
+    )
     .style.display =
       'none';
 
 
   document
-    .getElementById('modalBackdrop')
+    .getElementById(
+      'modalBackdrop'
+    )
     .classList
     .add('open');
 
@@ -1749,25 +1890,33 @@ function openModal(
 
 
   document
-    .getElementById('modalTitle')
+    .getElementById(
+      'modalTitle'
+    )
     .textContent =
       title;
 
 
   document
-    .getElementById('modalText')
+    .getElementById(
+      'modalText'
+    )
     .textContent =
       text;
 
 
   document
-    .getElementById('modalConfirm')
+    .getElementById(
+      'modalConfirm'
+    )
     .style.display =
       '';
 
 
   document
-    .getElementById('modalBackdrop')
+    .getElementById(
+      'modalBackdrop'
+    )
     .classList
     .add('open');
 
@@ -1777,7 +1926,9 @@ function openModal(
 function closeModal(){
 
   document
-    .getElementById('modalBackdrop')
+    .getElementById(
+      'modalBackdrop'
+    )
     .classList
     .remove('open');
 
@@ -1788,7 +1939,9 @@ function closeModal(){
 }
 
 
-function handleBackdropClick(event){
+function handleBackdropClick(
+  event
+){
 
   if(
     event.target.id ===
@@ -1860,38 +2013,40 @@ async function confirmModal(){
 
 
 /* =========================================================
-   RUFÄNDERUNG VORSCHAU
+   ÄNDERUNGEN ÜBERNEHMEN
    ========================================================= */
 
 function previewApply(){
 
   const mission =
     document
-      .getElementById('mission')
+      .getElementById(
+        'mission'
+      )
       .value
       .trim();
 
 
   const reason =
     document
-      .getElementById('reason')
+      .getElementById(
+        'reason'
+      )
       .value
       .trim();
 
 
   const date =
     document
-      .getElementById('changeDate')
+      .getElementById(
+        'changeDate'
+      )
       .value ||
     todayISO();
 
 
-  const rows =
-    [
-      ...document.querySelectorAll(
-        '.change-row'
-      )
-    ];
+  const changes =
+    getChanges();
 
 
   if(!mission){
@@ -1905,47 +2060,6 @@ function previewApply(){
   }
 
 
-  /*
-   * Unvollständige Zeilen verhindern.
-   */
-
-  for(
-    const row
-    of rows
-  ){
-
-    const target =
-      row.querySelector(
-        '.target'
-      ).value;
-
-
-    const effect =
-      row.querySelector(
-        '.effect'
-      ).value;
-
-
-    if(
-      (target && !effect) ||
-      (!target && effect)
-    ){
-
-      alert(
-        'Bitte bei jeder angelegten Zeile sowohl „Auswirkung auf“ als auch „Auswirkung“ auswählen.'
-      );
-
-      return;
-
-    }
-
-  }
-
-
-  const changes =
-    getChanges();
-
-
   if(!changes.length){
 
     alert(
@@ -1956,10 +2070,6 @@ function previewApply(){
 
   }
 
-
-  /*
-   * Sicherheitshalber zusätzlich doppelte IDs prüfen.
-   */
 
   const ids =
     changes.map(
@@ -1974,7 +2084,7 @@ function previewApply(){
   ){
 
     alert(
-      'Eine REP-Einheit wurde mehrfach ausgewählt.'
+      'Eine REP-Einheit wurde doppelt ausgewählt.'
     );
 
     return;
@@ -1984,27 +2094,33 @@ function previewApply(){
 
   const lines =
     changes
-      .map(change => {
+      .map(
+        change => {
 
-        const sign =
-          change.delta > 0
-            ? '+'
-            : '';
-
-
-        const days =
-          EFFECTS[
-            change.delta
-          ] || 30;
+          const days =
+            EFFECTS[
+              change.delta
+            ] || 30;
 
 
-        return (
-          `${unitName(change.factionId)}: ` +
-          `${sign}${change.delta} ` +
-          `(${days} Tage)`
-        );
+          return (
 
-      })
+            `${unitName(
+              change.factionId
+            )}: ` +
+
+            `${
+              change.delta > 0
+                ? '+'
+                : ''
+            }${change.delta}` +
+
+            ` (${days} Tage)`
+
+          );
+
+        }
+      )
       .join('\n');
 
 
@@ -2026,10 +2142,15 @@ function previewApply(){
 
           body:
             JSON.stringify({
+
               mission,
+
               reason,
+
               date,
+
               changes
+
             })
 
         }
@@ -2037,17 +2158,23 @@ function previewApply(){
 
 
       document
-        .getElementById('mission')
+        .getElementById(
+          'mission'
+        )
         .value = '';
 
 
       document
-        .getElementById('reason')
+        .getElementById(
+          'reason'
+        )
         .value = '';
 
 
       document
-        .getElementById('changeRows')
+        .getElementById(
+          'changeRows'
+        )
         .innerHTML = '';
 
 
@@ -2064,7 +2191,9 @@ function previewApply(){
    REGION / ORGANISATION ANLEGEN
    ========================================================= */
 
-function addFaction(type){
+function addFaction(
+  type
+){
 
   const isPlace =
     type === 'place';
@@ -2116,8 +2245,7 @@ function addFaction(type){
       : 'Organisation hinzufügen',
 
     `${name.trim()}\n\n` +
-    `${description || 'Keine Beschreibung.'}\n\n` +
-    `Diese Stammdaten werden zentral gespeichert.`,
+    `${description || 'Keine Beschreibung.'}`,
 
     async () => {
 
@@ -2129,24 +2257,23 @@ function addFaction(type){
           body:
             JSON.stringify({
 
-              action:'create',
+              action:
+                'create',
 
               type,
 
               id,
 
-              name:name.trim(),
-
-              /*
-               * Der Worker erwartet hier description.
-               */
+              name:
+                name.trim(),
 
               description:
                 description.trim(),
 
               rep:0,
 
-              date:todayISO()
+              date:
+                todayISO()
 
             })
 
@@ -2169,15 +2296,12 @@ function editFaction(
   type
 ){
 
-  /*
-   * Yartar selbst darf bearbeitet,
-   * aber nicht gelöscht werden.
-   */
-
   let item = null;
 
 
-  if(type === 'place'){
+  if(
+    type === 'place'
+  ){
 
     item =
       (state.places || [])
@@ -2216,20 +2340,13 @@ function editFaction(
     );
 
 
-  if(name === null){
+  if(
+    name === null
+  ){
+
     return;
+
   }
-
-
-  /*
-   * Bestehendes info ODER description lesen.
-   */
-
-  const oldDescription =
-    itemDescription(
-      item,
-      type
-    );
 
 
   const description =
@@ -2237,12 +2354,19 @@ function editFaction(
       type === 'place'
         ? 'Info zur Region:'
         : 'Beschreibung:',
-      oldDescription
+      itemDescription(
+        item,
+        type
+      )
     );
 
 
-  if(description === null){
+  if(
+    description === null
+  ){
+
     return;
+
   }
 
 
@@ -2257,11 +2381,11 @@ function editFaction(
     async () => {
 
       /*
-       * Ganz bewusst KEIN startRep,
-       * KEIN rep und KEIN baseRep.
+       * Der Worker unterstützt beim Update:
+       * action, type, id, name, description.
        *
-       * Der Worker-Update-Endpunkt ändert nur
-       * die Stammdaten und lässt REP unverändert.
+       * Kein startRep!
+       * Kein REP-Reset!
        */
 
       await api(
@@ -2272,7 +2396,8 @@ function editFaction(
           body:
             JSON.stringify({
 
-              action:'update',
+              action:
+                'update',
 
               type,
 
@@ -2304,6 +2429,11 @@ function deleteFaction(
   id,
   type
 ){
+
+  /*
+   * Yartar ist die feste Aggregate-Region
+   * und darf nicht gelöscht werden.
+   */
 
   if(
     type === 'place' &&
@@ -2355,7 +2485,8 @@ function deleteFaction(
           body:
             JSON.stringify({
 
-              action:'delete',
+              action:
+                'delete',
 
               type,
 
@@ -2508,7 +2639,9 @@ function renderLog(){
 
 
   document
-    .getElementById('log')
+    .getElementById(
+      'log'
+    )
     .innerHTML =
 
     keys.length
@@ -2584,160 +2717,164 @@ function renderLog(){
                   <div class="log-body">
 
                     ${groups[key]
-                      .map(event => {
+                      .map(
+                        event => {
 
-                        const valid =
-                          event.valid !== false;
-
-
-                        const changes =
-                          (
-                            event.changes ||
-                            []
-                          )
-                          .map(change => {
-
-                            const days =
-                              change.days ||
-                              EFFECTS[
-                                Number(
-                                  change.delta
-                                )
-                              ] ||
-                              30;
+                          const valid =
+                            event.valid !== false;
 
 
-                            return `
+                          const changes =
+                            (
+                              event.changes ||
+                              []
+                            )
+                            .map(
+                              change => {
 
-                              <div>
+                                const days =
+                                  change.days ||
+                                  EFFECTS[
+                                    Number(
+                                      change.delta
+                                    )
+                                  ] ||
+                                  30;
+
+
+                                return `
+
+                                  <div>
+
+                                    <strong>
+                                      ${esc(
+                                        change.factionName ||
+                                        unitName(
+                                          change.factionId
+                                        )
+                                      )}
+                                    </strong>
+
+                                    <span
+                                      class="${valueClass(
+                                        change.delta
+                                      )}"
+                                    >
+
+                                      ${
+                                        Number(
+                                          change.delta
+                                        ) > 0
+                                          ? '+'
+                                          : ''
+                                      }${esc(
+                                        change.delta
+                                      )}
+
+                                    </span>
+
+                                    · ${days} Tage
+
+                                    ${
+                                      change.active === false
+                                        ? ' · abgelaufen'
+                                        : ''
+                                    }
+
+                                  </div>
+
+                                `;
+
+                              }
+                            )
+                            .join('');
+
+
+                          return `
+
+                            <div class="log-entry">
+
+                              <div class="log-head">
 
                                 <strong>
                                   ${esc(
-                                    change.factionName ||
-                                    unitName(
-                                      change.factionId
-                                    )
+                                    event.mission ||
+                                    'Ohne Missionsangabe'
                                   )}
                                 </strong>
 
-                                <span
-                                  class="${valueClass(
-                                    change.delta
-                                  )}"
-                                >
-
-                                  ${
-                                    Number(
-                                      change.delta
-                                    ) > 0
-                                      ? '+'
-                                      : ''
-                                  }${esc(
-                                    change.delta
+                                <span class="muted">
+                                  ${fmtDate(
+                                    event.date
                                   )}
-
                                 </span>
-
-                                · ${days} Tage
-
-                                ${
-                                  change.active === false
-                                    ? ' · abgelaufen'
-                                    : ''
-                                }
 
                               </div>
 
-                            `;
 
-                          })
-                          .join('');
-
-
-                        return `
-
-                          <div class="log-entry">
-
-                            <div class="log-head">
-
-                              <strong>
-                                ${esc(
-                                  event.mission ||
-                                  'Ohne Missionsangabe'
-                                )}
-                              </strong>
-
-                              <span class="muted">
-                                ${fmtDate(
-                                  event.date
-                                )}
-                              </span>
-
-                            </div>
-
-
-                            <div
-                              class="${
-                                valid
-                                  ? 'muted'
-                                  : 'badge invalid'
-                              }"
-                            >
-
-                              ${
-                                valid
-                                  ? 'gültig'
-                                  : 'RETCON – ungültig'
-                              }
-
-                            </div>
-
-
-                            <div>
-
-                              ${esc(
-                                event.reason ||
-                                'Keine Begründung angegeben.'
-                              )}
-
-                            </div>
-
-
-                            ${changes}
-
-
-                            <div
-                              class="actions"
-                              style="margin-top:8px"
-                            >
-
-                              <button
+                              <div
                                 class="${
                                   valid
-                                    ? 'danger'
-                                    : ''
+                                    ? 'muted'
+                                    : 'badge invalid'
                                 }"
-                                onclick="setEventStatus(
-                                  '${esc(event.id)}',
-                                  ${!valid}
-                                )"
                               >
 
                                 ${
                                   valid
-                                    ? 'Als Retcon ungültig machen'
-                                    : 'Wieder gültig machen'
+                                    ? 'gültig'
+                                    : 'RETCON – ungültig'
                                 }
 
-                              </button>
+                              </div>
+
+
+                              <div>
+
+                                ${esc(
+                                  event.reason ||
+                                  'Keine Begründung angegeben.'
+                                )}
+
+                              </div>
+
+
+                              ${changes}
+
+
+                              <div
+                                class="actions"
+                                style="margin-top:8px"
+                              >
+
+                                <button
+                                  class="${
+                                    valid
+                                      ? 'danger'
+                                      : ''
+                                  }"
+                                  onclick="setEventStatus(
+                                    '${esc(event.id)}',
+                                    ${!valid}
+                                  )"
+                                >
+
+                                  ${
+                                    valid
+                                      ? 'Als Retcon ungültig machen'
+                                      : 'Wieder gültig machen'
+                                  }
+
+                                </button>
+
+                              </div>
 
                             </div>
 
-                          </div>
+                          `;
 
-                        `;
-
-                      })
+                        }
+                      )
                       .join('')}
 
                   </div>
@@ -2766,7 +2903,9 @@ function renderLog(){
    ========================================================= */
 
 document
-  .getElementById('changeDate')
+  .getElementById(
+    'changeDate'
+  )
   .value =
     todayISO();
 
