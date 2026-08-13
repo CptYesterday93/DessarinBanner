@@ -13,32 +13,61 @@ h1{text-align:center;margin:0;font-size:28px}.subtitle{text-align:center;color:v
 .notice{padding:11px 13px;background:#f3f5fb;border-left:3px solid var(--accent);margin-bottom:20px}
 .section-title{display:flex;align-items:center;gap:7px;font-size:19px;font-weight:700;margin:25px 0 9px;padding:8px 11px;background:#ededed;border-radius:8px}
 .info-btn{width:22px;height:22px;padding:0;border:1px solid #777;border-radius:50%;background:#fff;font-weight:700;font-size:13px;line-height:20px;cursor:pointer}
-.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:9px 9px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left}
-th{font-size:12px;color:#444}.num{text-align:center;white-space:nowrap}.status{font-weight:700}
-.positive{color:var(--blue)}.negative{color:var(--orange)}
-.place-main{font-weight:700}.place-sub{font-size:12px;color:var(--muted)}.child td:first-child{padding-left:38px;font-size:13px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th,td{padding:9px 9px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left}
+th{font-size:12px;color:#444}
+.num{text-align:center;white-space:nowrap}
+.status{font-weight:700}
+.positive{color:var(--blue)}
+.negative{color:var(--orange)}
+.place-main{font-weight:700}
+.place-sub{font-size:12px;color:var(--muted)}
+.child td:first-child{padding-left:38px;font-size:13px}
 button{font:inherit;border:1px solid #999;background:#fff;padding:7px 10px;border-radius:4px;cursor:pointer}
-button:hover{background:#f3f3f3}.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}.primary:hover{background:#294a8c}
-.danger{color:var(--orange);border-color:#d99a6c}.actions{display:flex;gap:6px;flex-wrap:wrap}
+button:hover{background:#f3f3f3}
+.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.primary:hover{background:#294a8c}
+.danger{color:var(--orange);border-color:#d99a6c}
+.actions{display:flex;gap:6px;flex-wrap:wrap}
 .toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:10px 0 16px}
 label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}
 input,select,textarea{font:inherit;border:1px solid #9da4b2;background:#fff;padding:8px 10px;border-radius:3px}
-textarea{width:100%;min-height:70px;resize:vertical}.mission{flex:1;min-width:260px}.date{width:155px}
+textarea{width:100%;min-height:70px;resize:vertical}
+.mission{flex:1;min-width:260px}
+.date{width:155px}
 .change-row{display:grid;grid-template-columns:minmax(190px,1fr) 190px auto;gap:10px;align-items:end;padding:9px 0;border-bottom:1px solid var(--line)}
 .log-group{border:1px solid var(--line);border-radius:7px;margin:8px 0;background:#fff;overflow:hidden}
 .log-group>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:10px 13px;font-weight:700}
-.log-group>summary::-webkit-details-marker{display:none}.log-group>summary:before{content:"▶";font-size:10px;margin-right:8px;color:var(--muted)}
-.log-group[open]>summary:before{content:"▼"}.log-group>summary:hover{background:var(--soft)}
-.log-body{padding:0 10px 8px}.log-entry{border-top:1px solid var(--line);padding:10px 3px}.log-head{display:flex;justify-content:space-between;gap:12px}.muted,.small{font-size:12px;color:var(--muted)}
-.badge{display:inline-block;font-size:11px;padding:2px 6px;border-radius:10px;background:#eee}.badge.invalid{color:var(--orange);background:#fff0e7}
-.modal-backdrop{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal-backdrop.open{display:flex}
-.modal{width:min(600px,100%);background:#fff;border-radius:8px;padding:20px}.modal h2{margin:0 0 10px}.modal p{white-space:pre-line}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.log-group>summary::-webkit-details-marker{display:none}
+.log-group>summary:before{content:"▶";font-size:10px;margin-right:8px;color:var(--muted)}
+.log-group[open]>summary:before{content:"▼"}
+.log-group>summary:hover{background:var(--soft)}
+.log-body{padding:0 10px 8px}
+.log-entry{border-top:1px solid var(--line);padding:10px 3px}
+.log-head{display:flex;justify-content:space-between;gap:12px}
+.muted,.small{font-size:12px;color:var(--muted)}
+.badge{display:inline-block;font-size:11px;padding:2px 6px;border-radius:10px;background:#eee}
+.badge.invalid{color:var(--orange);background:#fff0e7}
+.modal-backdrop{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}
+.modal-backdrop.open{display:flex}
+.modal{width:min(600px,100%);background:#fff;border-radius:8px;padding:20px}
+.modal h2{margin:0 0 10px}
+.modal p{white-space:pre-line}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
 .statusbar{margin-left:auto;color:var(--muted);font-size:12px}
-@media(max-width:700px){.sheet{padding:22px 14px}.change-row{grid-template-columns:1fr 1fr}.mission,.date{width:100%;min-width:0}.log-head{display:block}}
+@media(max-width:700px){
+  .sheet{padding:22px 14px}
+  .change-row{grid-template-columns:1fr 1fr}
+  .mission,.date{width:100%;min-width:0}
+  .log-head{display:block}
+}
 </style>
 </head>
+
 <body>
 <main class="sheet">
+
 <h1>REPUTATIONSÜBERSICHT</h1>
 <div class="subtitle">Dessarin Banner · Reputationspunkte (REP)</div>
 
@@ -47,391 +76,1023 @@ textarea{width:100%;min-height:70px;resize:vertical}.mission{flex:1;min-width:26
 Positive Änderungen wirken <strong>30 / 60 / 90 Tage</strong>, negative <strong>40 / 80 / 120 Tage</strong>.
 </div>
 
-<div class="section-title">Regionen <button class="info-btn" onclick="showInfo('Regionen','Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.')">i</button></div>
-<div class="table-wrap"><table>
-<thead><tr><th>Region</th><th class="num">REP</th><th>Status</th><th>Letzte Änderung</th><th>Verwaltung</th></tr></thead>
+<div class="section-title">
+  Regionen
+  <button class="info-btn" onclick="showInfo('Regionen','Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.')">i</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Region</th>
+<th class="num">REP</th>
+<th>Status</th>
+<th>Letzte Änderung</th>
+<th>Verwaltung</th>
+</tr>
+</thead>
 <tbody id="regionsBody"></tbody>
-</table></div>
-<div class="toolbar"><button onclick="addFaction('place')">＋ Region hinzufügen</button></div>
+</table>
+</div>
 
-<div class="section-title">Organisationen <button class="info-btn" onclick="showInfo('Organisationen','Überregionale oder eigenständige Organisationen werden separat von Regionen geführt.')">i</button></div>
-<div class="table-wrap"><table>
-<thead><tr><th>Organisation</th><th class="num">REP</th><th>Status</th><th>Letzte Änderung</th><th>Verwaltung</th></tr></thead>
+<div class="toolbar">
+<button onclick="addFaction('place')">＋ Region hinzufügen</button>
+</div>
+
+<div class="section-title">
+  Organisationen
+  <button class="info-btn" onclick="showInfo('Organisationen','Überregionale oder eigenständige Organisationen werden separat von Regionen geführt.')">i</button>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Organisation</th>
+<th class="num">REP</th>
+<th>Status</th>
+<th>Letzte Änderung</th>
+<th>Verwaltung</th>
+</tr>
+</thead>
 <tbody id="orgsBody"></tbody>
-</table></div>
+</table>
+</div>
+
 <div class="toolbar">
 <button onclick="addFaction('organization')">＋ Organisation hinzufügen</button>
 <span class="statusbar" id="loadStatus">Daten werden geladen…</span>
 </div>
 
 <div class="section-title">Rufänderung eintragen</div>
+
 <div class="toolbar">
-<div class="mission"><label>Mission / Ereignis</label><input id="mission" placeholder="z. B. Die verlorene Karawane"></div>
-<div class="date"><label>Datum</label><input id="changeDate" type="date"></div>
+<div class="mission">
+<label>Mission / Ereignis</label>
+<input id="mission" placeholder="z. B. Die verlorene Karawane">
 </div>
+
+<div class="date">
+<label>Datum</label>
+<input id="changeDate" type="date">
+</div>
+</div>
+
 <label>Beschreibung / Begründung</label>
 <textarea id="reason" placeholder="Was ist passiert und warum beeinflusst es den Ruf?"></textarea>
+
 <div id="changeRows"></div>
-<div class="toolbar"><button onclick="addChangeRow()">＋ REP hinzufügen</button></div>
+
+<div class="toolbar">
+<button onclick="addChangeRow()">＋ REP hinzufügen</button>
+</div>
+
 <button class="primary" onclick="previewApply()">Änderungen übernehmen</button>
 
 <div class="section-title">Änderungsverlauf</div>
 <div id="log"></div>
+
 </main>
 
 <div id="modalBackdrop" class="modal-backdrop">
 <div class="modal">
-<h2 id="modalTitle"></h2><p id="modalText"></p>
-<div class="modal-actions"><button onclick="closeModal()">Abbrechen</button><button id="modalConfirm" class="primary" onclick="confirmModal()">Übernehmen</button></div>
-</div></div>
+<h2 id="modalTitle"></h2>
+<p id="modalText"></p>
+
+<div class="modal-actions">
+<button onclick="closeModal()">Abbrechen</button>
+<button id="modalConfirm" class="primary" onclick="confirmModal()">Übernehmen</button>
+</div>
+
+</div>
+</div>
 
 <script>
-const API_BASE = 'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
-let state=null,pendingAction=null;
-const EFFECTS={1:30,2:60,3:90,-1:40,-2:80,-3:120};
 
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function todayISO(){return new Date().toISOString().slice(0,10);}
-function fmtDate(s){if(!s)return '–';const d=new Date(s+'T00:00:00');return isNaN(d)?'–':d.toLocaleDateString('de-DE');}
-function cls(n){return n>0?'positive':n<0?'negative':'';}
-function statusFor(rep){if(rep>=8)return'Verbündet';if(rep>=3)return'Wohlwollend';if(rep>=-2)return'Neutral';if(rep>=-4)return'Skeptisch';return'Feindlich';}
-
-async function api(path,options={}){
- const r=await fetch(API_BASE+path,{...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});
- const d=await r.json().catch(()=>({error:'Ungültige Serverantwort'}));
- if(!r.ok||d.ok===false)throw new Error(d.error||`HTTP ${r.status}`);
- return d;
-}
-async function load(){
- try{state=await api('/data');document.getElementById('loadStatus').textContent='Zentral gespeichert';render();if(!document.querySelector('.change-row'))addChangeRow();}
- catch(e){document.getElementById('loadStatus').textContent='Fehler beim Laden';alert('Reputationsdaten konnten nicht geladen werden:\n'+e.message);}
-}
-function render(){
- const rb=document.getElementById('regionsBody');
- rb.innerHTML=(state.places||[]).map(p=>{
-   let row=`<tr><td><div class="place-main">${esc(p.name)} <button class="info-btn" onclick="showInfo('${esc(p.name)}','${esc(p.info||'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.')}')">i</button></div></td>
-   <td class="num ${cls(p.effectiveRep??p.rep??0)}">${fmtRep(p.effectiveRep??p.rep??0)}</td>
-   <td class="status ${cls(p.effectiveRep??p.rep??0)}">${esc(p.status||statusFor(p.effectiveRep??p.rep??0))}</td>
-   <td>${fmtDate(p.lastChange)}</td>
-   <td><div class="actions"><button onclick="editFaction('${esc(p.id)}','place')">Bearbeiten</button><button class="danger" onclick="deleteFaction('${esc(p.id)}','place')">Löschen</button></div></td></tr>`;
-   for(const c of p.children||[]){
-     row+=`<tr class="child"><td>${esc(c.name)}</td><td class="num ${cls(c.effectiveRep??c.rep??0)}">${fmtRep(c.effectiveRep??c.rep??0)}</td>
-     <td class="status ${cls(c.effectiveRep??c.rep??0)}">${esc(c.status||statusFor(c.effectiveRep??c.rep??0))}</td><td>${fmtDate(c.lastChange)}</td><td></td></tr>`;
-   }
-   return row;
- }).join('')||'<tr><td colspan="5" class="muted">Keine Regionen vorhanden.</td></tr>';
-
- document.getElementById('orgsBody').innerHTML=(state.organizations||[]).map(o=>`<tr>
- <td>${esc(o.name)} <button class="info-btn" onclick="showInfo('${esc(o.name)}','${esc(o.description||'Keine Beschreibung vorhanden.')}')">i</button></td>
- <td class="num ${cls(o.effectiveRep??o.rep??0)}">${fmtRep(o.effectiveRep??o.rep??0)}</td>
- <td class="status ${cls(o.effectiveRep??o.rep??0)}">${esc(o.status||statusFor(o.effectiveRep??o.rep??0))}</td>
- <td>${fmtDate(o.lastChange)}</td>
- <td><div class="actions"><button onclick="editFaction('${esc(o.id)}','organization')">Bearbeiten</button><button class="danger" onclick="deleteFaction('${esc(o.id)}','organization')">Löschen</button></div></td></tr>`).join('')||'<tr><td colspan="5" class="muted">Keine Organisationen vorhanden.</td></tr>';
- renderLog();
-}
-function fmtRep(n){n=Number(n)||0;return n>0?'+'+n:String(n);}
-function allUnits(){
- const a=[];
- for(const p of state.places||[]){for(const c of p.children||[])a.push({id:c.id,name:`${p.name} – ${c.name}`});if(!p.children?.length)a.push({id:p.id,name:p.name});}
- for(const o of state.organizations||[])a.push({id:o.id,name:o.name});
- return a;
-}
-function unitName(id){return allUnits().find(x=>x.id===id)?.name||id;}
-function addChangeRow(){
- const wrap=document.getElementById('changeRows'),r=document.createElement('div');r.className='change-row';
- const opts=allUnits().map(u=>`<option value="${esc(u.id)}">Bitte auswählen – ${esc(u.name)}</option>`).join('');
- r.innerHTML=`<div><label>Reputation</label><select class="target"><option value="">Bitte auswählen</option>${opts}</select></div>
- <div><label>Auswirkung</label><select class="effect"><option value="">Bitte auswählen</option><option value="3">Sehr positiv (+3)</option><option value="2">Positiv (+2)</option><option value="1">Leicht positiv (+1)</option><option value="-1">Leicht negativ (-1)</option><option value="-2">Negativ (-2)</option><option value="-3">Sehr negativ (-3)</option></select></div>
- <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
- wrap.appendChild(r);
-}
-function getChanges(){
- return [...document.querySelectorAll('.change-row')].map(r=>({factionId:r.querySelector('.target').value,delta:Number(r.querySelector('.effect').value)})).filter(x=>x.factionId&&x.delta);
-}
-function showInfo(title,text){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.getElementById('modalConfirm').style.display='none';document.getElementById('modalBackdrop').classList.add('open');}
-function openModal(title,text,action){pendingAction=action;document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.getElementById('modalConfirm').style.display='';document.getElementById('modalBackdrop').classList.add('open');}
-function closeModal(){document.getElementById('modalBackdrop').classList.remove('open');pendingAction=null;}
-async function confirmModal(){if(!pendingAction)return;const a=pendingAction;closeModal();try{await a();await load();}catch(e){alert(e.message);}}
-function previewApply(){
- const mission=document.getElementById('mission').value.trim(),reason=document.getElementById('reason').value.trim(),date=document.getElementById('changeDate').value||todayISO(),changes=getChanges();
- if(!mission)return alert('Bitte Mission / Ereignis eintragen.');
- if(!changes.length)return alert('Bitte mindestens eine REP-Änderung auswählen.');
- if(new Set(changes.map(x=>x.factionId)).size!==changes.length)return alert('Eine REP-Einheit wurde doppelt ausgewählt.');
- const lines=changes.map(c=>`${unitName(c.factionId)}: ${c.delta>0?'+':''}${c.delta} · ${EFFECTS[c.delta]} Tage`).join('\n');
- openModal('Änderungen übernehmen',`${mission}\n\n${lines}\n\n${reason||'Keine Beschreibung.'}`,async()=>{await api('/change',{method:'POST',body:JSON.stringify({mission,reason,date,changes})});document.getElementById('mission').value='';document.getElementById('reason').value='';document.getElementById('changeRows').innerHTML='';});
-}
-function addFaction(type){
- const name=prompt(type==='place'?'Name der neuen Region:':'Name der neuen Organisation:');if(!name?.trim())return;
- const description=prompt(type==='place'?'Info zur Region (optional):':'Beschreibung der Organisation (optional):')||'';
- openModal(type==='place'?'Region hinzufügen':'Organisation hinzufügen',`${name}\n\nZentral speichern?`,async()=>{await api('/faction',{method:'POST',body:JSON.stringify({action:'create',type,name,description,rep:0,date:todayISO()})});});
-}
-function editFaction(id,type){
- const item=type==='place'?state.places.find(x=>x.id===id):state.organizations.find(x=>x.id===id);if(!item)return;
- const name=prompt('Name:',item.name);if(name===null)return;
- const description=prompt(type==='place'?'Info zur Region:':'Beschreibung:',type==='place'?(item.info||''):(item.description||''));if(description===null)return;
- openModal('Änderung speichern',`${name}\n\nDie Stammdaten werden zentral geändert.`,async()=>{const body={action:'update',type,id,name,description};if(type==='place')body.info=description;await api('/faction',{method:'POST',body:JSON.stringify(body)});});
-}
-function deleteFaction(id,type){
- const item=type==='place'?state.places.find(x=>x.id===id):state.organizations.find(x=>x.id===id);if(!item)return;
- openModal('Endgültig löschen',`"${item.name}" wird aus den Stammdaten entfernt.\n\nDie Historie bleibt bestehen.`,async()=>{await api('/faction',{method:'POST',body:JSON.stringify({action:'delete',type,id})});});
-}
-function renderLog(){
- const events=[...(state.events||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
- const groups={};
- for(const e of events){const d=e.date||'unknown',m=d.slice(0,7);(groups[m]??=[]).push(e);}
- const keys=Object.keys(groups).sort((a,b)=>b.localeCompare(a));
- document.getElementById('log').innerHTML=keys.length?keys.map((key,i)=>{
-   const [y,m]=key.split('-');const label=key==='unknown'?'Ohne Datum':new Date(Number(y),Number(m)-1,1).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
-   return `<details class="log-group" ${i===0?'open':''}><summary><span>${esc(label)}</span><span class="muted">${groups[key].length} ${groups[key].length===1?'Änderung':'Änderungen'}</span></summary><div class="log-body">${groups[key].map(e=>{
-     const valid=e.valid!==false;
-     return `<div class="log-entry"><div class="log-head"><strong>${esc(e.mission||'Ohne Missionsangabe')}</strong><span class="muted">${fmtDate(e.date)}</span></div><span class="badge ${valid?'':'invalid'}">${valid?'gültig':'RETCON – ungültig'}</span><div>${esc(e.reason||'Keine Beschreibung.')}</div>${(e.changes||[]).map(c=>`<div><strong>${esc(c.factionName||unitName(c.factionId))}</strong> <span class="${cls(c.delta)}">${c.delta>0?'+':''}${c.delta}</span> · ${c.days||EFFECTS[c.delta]||30} Tage</div>`).join('')}</div>`;
-   }).join('')}</div></details>`;
- }).join(''):'<p class="muted">Noch keine Rufänderungen gespeichert.</p>';
-}
-document.getElementById('changeDate').value=todayISO();
-load();
-</script>
-</body>
-</html><!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputationsübersicht – Dessarin Banner</title>
-<style>
-:root{--ink:#171717;--muted:#6a6a6a;--accent:#3157a6;--paper:#fff;--page:#f2f2f2;--line:#d9d9d9;--good:#27662d;--bad:#8b2626}
-*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--ink);font:14px/1.45 Arial,Helvetica,sans-serif}
-.sheet{width:min(1150px,calc(100% - 20px));margin:20px auto 40px;background:#fff;padding:30px 34px 45px;box-shadow:0 2px 18px #0001}
-h1{text-align:center;margin:0;font-size:28px}.subtitle{text-align:center;color:#555;margin:3px 0 20px}
-.notice{padding:10px 12px;background:#f3f5fb;border-left:3px solid var(--accent);margin-bottom:20px}
-.section-title{font-size:19px;font-weight:700;margin:25px 0 9px;padding:8px 11px;background:#ededed;border-radius:8px}
-.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:8px 9px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left}
-th{font-size:12px;color:#333}.num{text-align:center;white-space:nowrap}.status{font-weight:600}.positive{color:var(--good)}.negative{color:var(--bad)}
-.child td:first-child{padding-left:40px}.child{font-size:13px}.place-main{font-weight:700}.place-sub,.muted{font-size:12px;color:var(--muted)}
-button{font:inherit;border:1px solid #999;background:#fff;padding:7px 10px;border-radius:4px;cursor:pointer}button.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}button.danger{color:var(--bad);border-color:#d88}
-.actions{display:flex;gap:6px;flex-wrap:wrap}.toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:10px 0 16px}
-label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}input,select,textarea{font:inherit;border:1px solid #9da4b2;background:#fff;padding:8px 10px;border-radius:3px}
-input:focus,select:focus,textarea:focus{outline:2px solid #dbe3f7}.mission-field{flex:1;min-width:260px}.date-field{width:150px}textarea{width:100%;min-height:70px;resize:vertical}
-.change-row{display:grid;grid-template-columns:minmax(180px,1fr) 190px auto;gap:10px;align-items:end;padding:9px 0;border-bottom:1px solid var(--line)}
-.log-entry{border:1px solid var(--line);border-radius:7px;padding:11px 13px;margin:8px 0}.log-head{display:flex;justify-content:space-between;gap:12px}
-.badge{display:inline-block;font-size:11px;padding:2px 6px;border-radius:10px;background:#e9f4e9;color:var(--good)}.badge.invalid{background:#faeaea;color:var(--bad)}
-.reset-box{border:1px solid var(--line);padding:12px;border-radius:6px}.reset-row{display:flex;gap:10px;align-items:end;flex-wrap:wrap}
-.modal-backdrop{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}.modal-backdrop.open{display:flex}
-.modal{width:min(600px,100%);background:#fff;border-radius:8px;padding:20px}.modal h2{margin:0 0 10px}.modal p{white-space:pre-line}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
-.statusbar{margin-left:auto;color:var(--muted);font-size:12px}.small{font-size:12px;color:var(--muted)}
-@media(max-width:700px){.sheet{padding:24px 14px}.change-row{grid-template-columns:1fr 1fr}.change-row .remove{grid-column:2;justify-self:end}.mission-field,.date-field{width:100%;min-width:0}.log-head{display:block}}
-</style>
-</head>
-<body>
-<main class="sheet">
-<h1>REPUTATIONSÜBERSICHT</h1>
-<div class="subtitle">Dessarin Banner · Reputationspunkte (REP)</div>
-
-<div class="notice">
-<strong>REP</strong> ist der dauerhaft aufgebaute Ruf. Der <strong>effektive REP</strong> zeigt nur noch aktive Rufänderungen.
-Positive Änderungen wirken <strong>30 / 60 / 90 Tage</strong>, negative <strong>40 / 80 / 120 Tage</strong>.
-Der aktuelle Stand wird zentral über den Cloudflare Worker und GitHub gespeichert.
-</div>
-
-<div class="section-title">Orte</div>
-<div class="table-wrap"><table>
-<thead><tr><th>Ort</th><th class="num">REP</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th>Verwaltung</th></tr></thead>
-<tbody id="placesBody"></tbody>
-</table></div>
-<div class="toolbar"><button onclick="addFaction('place')">＋ Ort hinzufügen</button></div>
-
-<div class="section-title">Organisationen</div>
-<div class="table-wrap"><table>
-<thead><tr><th>Organisation</th><th class="num">REP</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th>Verwaltung</th></tr></thead>
-<tbody id="orgsBody"></tbody>
-</table></div>
-<div class="toolbar">
-<button onclick="addFaction('organization')">＋ Organisation hinzufügen</button>
-<span class="statusbar" id="loadStatus">Daten werden geladen…</span>
-</div>
-
-<div class="section-title">Rufänderung eintragen</div>
-<div class="toolbar">
-<div class="mission-field"><label>Mission / Ereignis</label><input id="mission" placeholder="z. B. Die verlorene Karawane"></div>
-<div class="date-field"><label>Datum</label><input id="changeDate" type="date"></div>
-</div>
-<label>Beschreibung / Begründung</label>
-<textarea id="reason" placeholder="Was ist passiert und warum beeinflusst es den Ruf?"></textarea>
-<div id="changeRows"></div>
-<div class="toolbar"><button onclick="addChangeRow()">＋ REP hinzufügen</button></div>
-<button class="primary" onclick="previewApply()">Änderungen übernehmen</button>
-
-<div class="section-title">Historischen Stand wiederherstellen</div>
-<div class="reset-box">
-<div class="reset-row"><div><label>Kampagnenstand</label><input id="resetDate" type="date"></div>
-<button class="danger" onclick="resetToDate()">Auf diesen Stand zurücksetzen</button>
-<button onclick="restoreCurrent()">Aktuellen Verlauf wiederherstellen</button></div>
-<div class="small">Spätere Ereignisse bleiben in der Historie erhalten.</div>
-</div>
-
-<div class="section-title">Änderungsverlauf</div>
-<div id="log"></div>
-
-<div class="section-title">Statusstufen</div>
-<table><thead><tr><th>Effektiver REP</th><th>Status</th></tr></thead>
-<tbody>
-<tr><td>+8 oder mehr</td><td>Verbündet</td></tr>
-<tr><td>+3 bis +7</td><td>Wohlwollend</td></tr>
-<tr><td>−2 bis +2</td><td>Neutral</td></tr>
-<tr><td>−4 bis −3</td><td>Skeptisch</td></tr>
-<tr><td>−5 oder weniger</td><td>Feindlich</td></tr>
-</tbody></table>
-</main>
-
-<div id="modalBackdrop" class="modal-backdrop">
-<div class="modal">
-<h2 id="modalTitle"></h2><p id="modalText"></p>
-<div class="modal-actions"><button onclick="closeModal()">Abbrechen</button><button id="modalConfirm" class="primary" onclick="confirmModal()">Bestätigen</button></div>
-</div></div>
-
-<script>
-/*
- * HIER die URL deines Cloudflare Workers eintragen.
- * Beispiel: https://dessarin-reputation.<account>.workers.dev
- */
-const API_BASE = window.REPUTATION_API_URL || 'https://DEIN-WORKER.workers.dev';
+const API_BASE =
+  'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
 
 let state = null;
 let pendingAction = null;
 
-const EFFECTS = [
-  {label:'Sehr positiv',delta:3,days:90},
-  {label:'Positiv',delta:2,days:60},
-  {label:'Leicht positiv',delta:1,days:30},
-  {label:'Leicht negativ',delta:-1,days:40},
-  {label:'Negativ',delta:-2,days:80},
-  {label:'Sehr negativ',delta:-3,days:120}
-];
+const EFFECTS = {
+  1: 30,
+  2: 60,
+  3: 90,
+  '-1': 40,
+  '-2': 80,
+  '-3': 120
+};
 
-function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function fmtDate(s){if(!s)return '–';const d=new Date(s+'T00:00:00');return isNaN(d)?'–':d.toLocaleDateString('de-DE');}
-function todayISO(){return new Date().toISOString().slice(0,10);}
-function cls(n){return n>0?'positive':n<0?'negative':'';}
-function unitName(id){for(const p of state.places||[]){if(p.id===id)return p.name;for(const c of p.children||[])if(c.id===id)return `${p.name} – ${c.name}`;}for(const o of state.organizations||[])if(o.id===id)return o.name;return id;}
-function allUnits(){
- const a=[];
- for(const p of state.places||[]){ if(!p.children?.length)a.push({id:p.id,name:p.name,type:'place'});
-   for(const c of p.children||[])a.push({id:c.id,name:`${p.name} – ${c.name}`,type:'child'}); }
- for(const o of state.organizations||[])a.push({id:o.id,name:o.name,type:'organization'});
- return a;
+function esc(s){
+  return String(s ?? '').replace(/[&<>"']/g,m=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[m]));
 }
-async function api(path, options={}){
- const r=await fetch(API_BASE+path,{headers:{'Content-Type':'application/json',...(options.headers||{})},...options});
- const data=await r.json().catch(()=>({error:'Ungültige Serverantwort'}));
- if(!r.ok || data.ok===false) throw new Error(data.error||`HTTP ${r.status}`);
- return data;
+
+function todayISO(){
+  return new Date().toISOString().slice(0,10);
 }
+
+function fmtDate(s){
+  if(!s) return '–';
+
+  const d = new Date(s + 'T00:00:00');
+
+  return isNaN(d)
+    ? '–'
+    : d.toLocaleDateString('de-DE');
+}
+
+function cls(n){
+  return n > 0 ? 'positive' : n < 0 ? 'negative' : '';
+}
+
+function statusFor(rep){
+  if(rep >= 8) return 'Verbündet';
+  if(rep >= 3) return 'Wohlwollend';
+  if(rep >= -2) return 'Neutral';
+  if(rep >= -4) return 'Skeptisch';
+  return 'Feindlich';
+}
+
+async function api(path, options = {}){
+
+  const r = await fetch(
+    API_BASE + path,
+    {
+      ...options,
+      headers:{
+        'Content-Type':'application/json',
+        ...(options.headers || {})
+      }
+    }
+  );
+
+  const d = await r.json().catch(
+    () => ({error:'Ungültige Serverantwort'})
+  );
+
+  if(!r.ok || d.ok === false){
+    throw new Error(d.error || `HTTP ${r.status}`);
+  }
+
+  return d;
+}
+
 async function load(){
- document.getElementById('loadStatus').textContent='Zentraler Stand wird geladen…';
- try{
-   state=await api('/data');
-   document.getElementById('loadStatus').textContent=`Zentral gespeichert · Worker v${state.api?.version||'?'}`;
-   render(); addChangeRow();
- }catch(e){
-   document.getElementById('loadStatus').textContent='Fehler beim Laden';
-   alert('Reputationsdaten konnten nicht geladen werden:\n'+e.message);
- }
-}
-function render(){
- const pb=document.getElementById('placesBody'); let rows='';
- for(const p of state.places||[]){
-   rows+=`<tr><td><div class="place-main">${p.id==='yartar'?'▼ ':''}${esc(p.name)}</div>${p.id==='yartar'?'<div class="place-sub">Gesamtwert aus den vier lokalen Gruppen; Unterwelt zählt mit 0,5.</div>':''}</td>
-   <td class="num ${cls(p.rep)}">${p.rep>0?'+':''}${p.rep}</td><td class="status ${cls(p.effectiveRep)}">${esc(p.status)}</td>
-   <td class="num ${cls(p.effectiveRep)}">${p.effectiveRep>0?'+':''}${p.effectiveRep}</td><td>${fmtDate(p.lastChange)}</td>
-   <td><div class="actions"><button onclick="editFaction('${esc(p.id)}','place')">Bearbeiten</button><button class="danger" onclick="deleteFaction('${esc(p.id)}','place')">Löschen</button></div></td></tr>`;
-   for(const c of p.children||[]){
-     rows+=`<tr class="child"><td>${esc(c.name)}${c.weight!==1?' <span class="muted">(Gewicht '+c.weight+')</span>':''}</td>
-     <td class="num ${cls(c.rep)}">${c.rep>0?'+':''}${c.rep}</td><td class="status ${cls(c.effectiveRep)}">${esc(c.status)}</td>
-     <td class="num ${cls(c.effectiveRep)}">${c.effectiveRep>0?'+':''}${c.effectiveRep}</td><td>${fmtDate(c.lastChange)}</td><td></td></tr>`;
-   }
- }
- pb.innerHTML=rows||'<tr><td colspan="6" class="muted">Keine Orte.</td></tr>';
 
- document.getElementById('orgsBody').innerHTML=(state.organizations||[]).map(o=>
- `<tr><td>${esc(o.name)}</td><td class="num ${cls(o.rep)}">${o.rep>0?'+':''}${o.rep}</td><td class="status ${cls(o.effectiveRep)}">${esc(o.status)}</td>
- <td class="num ${cls(o.effectiveRep)}">${o.effectiveRep>0?'+':''}${o.effectiveRep}</td><td>${fmtDate(o.lastChange)}</td>
- <td><div class="actions"><button onclick="editFaction('${esc(o.id)}','organization')">Bearbeiten</button><button class="danger" onclick="deleteFaction('${esc(o.id)}','organization')">Löschen</button></div></td></tr>`
- ).join('')||'<tr><td colspan="6" class="muted">Keine Organisationen.</td></tr>';
- renderLog();
+  try{
+
+    state = await api('/data');
+
+    document.getElementById('loadStatus').textContent =
+      'Zentral gespeichert';
+
+    render();
+
+    if(!document.querySelector('.change-row')){
+      addChangeRow();
+    }
+
+  }catch(e){
+
+    document.getElementById('loadStatus').textContent =
+      'Fehler beim Laden';
+
+    alert(
+      'Reputationsdaten konnten nicht geladen werden:\n' +
+      e.message
+    );
+  }
 }
-function renderLog(){
- const events=[...(state.events||[])].sort((a,b)=>String(b.date).localeCompare(String(a.date)));
- document.getElementById('log').innerHTML=events.length?events.map(e=>{
-   const valid=e.valid!==false;
-   const changes=(e.changes||[]).map(c=>{
-     const days=c.days||EFFECTS.find(x=>x.delta===Number(c.delta))?.days||30;
-     return `<div><strong>${esc(c.factionName||unitName(c.factionId))}</strong> <span class="${cls(c.delta)}">${c.delta>0?'+':''}${c.delta}</span> · ${days} Tage${c.active?' · aktuell aktiv':' · abgelaufen'}</div>`;
-   }).join('');
-   return `<div class="log-entry"><div class="log-head"><strong>${esc(e.mission||'Ohne Missionsangabe')}</strong><span class="muted">${fmtDate(e.date)}</span></div>
-   <div class="muted">${valid?'gültig':'RETCON – ungültig'}</div><div>${esc(e.reason||'Keine Begründung angegeben.')}</div>${changes}
-   <div class="actions" style="margin-top:8px"><button ${valid?'class="danger"':''} onclick="setEventStatus('${esc(e.id)}',${!valid})">${valid?'Als Retcon ungültig machen':'Wieder gültig machen'}</button></div></div>`;
- }).join(''):'<p class="muted">Noch keine Rufänderungen gespeichert.</p>';
+
+function render(){
+
+  const rb = document.getElementById('regionsBody');
+
+  rb.innerHTML = (state.places || []).map(p => {
+
+    let row = `
+      <tr>
+
+        <td>
+          <div class="place-main">
+            ${esc(p.name)}
+
+            <button
+              class="info-btn"
+              onclick="showInfo(
+                '${esc(p.name)}',
+                '${esc(
+                  p.info ||
+                  'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.'
+                )}'
+              )"
+            >i</button>
+
+          </div>
+        </td>
+
+        <td class="num ${cls(p.effectiveRep ?? p.rep ?? 0)}">
+          ${fmtRep(p.effectiveRep ?? p.rep ?? 0)}
+        </td>
+
+        <td class="status ${cls(p.effectiveRep ?? p.rep ?? 0)}">
+          ${esc(
+            p.status ||
+            statusFor(p.effectiveRep ?? p.rep ?? 0)
+          )}
+        </td>
+
+        <td>
+          ${fmtDate(p.lastChange)}
+        </td>
+
+        <td>
+          <div class="actions">
+
+            <button
+              onclick="editFaction('${esc(p.id)}','place')"
+            >
+              Bearbeiten
+            </button>
+
+            <button
+              class="danger"
+              onclick="deleteFaction('${esc(p.id)}','place')"
+            >
+              Löschen
+            </button>
+
+          </div>
+        </td>
+
+      </tr>
+    `;
+
+    for(const c of p.children || []){
+
+      row += `
+        <tr class="child">
+
+          <td>
+            ${esc(c.name)}
+          </td>
+
+          <td class="num ${cls(c.effectiveRep ?? c.rep ?? 0)}">
+            ${fmtRep(c.effectiveRep ?? c.rep ?? 0)}
+          </td>
+
+          <td class="status ${cls(c.effectiveRep ?? c.rep ?? 0)}">
+            ${esc(
+              c.status ||
+              statusFor(c.effectiveRep ?? c.rep ?? 0)
+            )}
+          </td>
+
+          <td>
+            ${fmtDate(c.lastChange)}
+          </td>
+
+          <td></td>
+
+        </tr>
+      `;
+    }
+
+    return row;
+
+  }).join('') ||
+  `
+    <tr>
+      <td colspan="5" class="muted">
+        Keine Regionen vorhanden.
+      </td>
+    </tr>
+  `;
+
+  document.getElementById('orgsBody').innerHTML =
+    (state.organizations || []).map(o => `
+
+      <tr>
+
+        <td>
+
+          ${esc(o.name)}
+
+          <button
+            class="info-btn"
+            onclick="showInfo(
+              '${esc(o.name)}',
+              '${esc(o.description || 'Keine Beschreibung vorhanden.')}'
+            )"
+          >i</button>
+
+        </td>
+
+        <td class="num ${cls(o.effectiveRep ?? o.rep ?? 0)}">
+          ${fmtRep(o.effectiveRep ?? o.rep ?? 0)}
+        </td>
+
+        <td class="status ${cls(o.effectiveRep ?? o.rep ?? 0)}">
+          ${esc(
+            o.status ||
+            statusFor(o.effectiveRep ?? o.rep ?? 0)
+          )}
+        </td>
+
+        <td>
+          ${fmtDate(o.lastChange)}
+        </td>
+
+        <td>
+
+          <div class="actions">
+
+            <button
+              onclick="editFaction('${esc(o.id)}','organization')"
+            >
+              Bearbeiten
+            </button>
+
+            <button
+              class="danger"
+              onclick="deleteFaction('${esc(o.id)}','organization')"
+            >
+              Löschen
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `).join('') ||
+    `
+      <tr>
+        <td colspan="5" class="muted">
+          Keine Organisationen vorhanden.
+        </td>
+      </tr>
+    `;
+
+  renderLog();
 }
+
+function fmtRep(n){
+
+  n = Number(n) || 0;
+
+  return n > 0
+    ? '+' + n
+    : String(n);
+}
+
+function allUnits(){
+
+  const a = [];
+
+  for(const p of state.places || []){
+
+    for(const c of p.children || []){
+
+      a.push({
+        id:c.id,
+        name:`${p.name} – ${c.name}`
+      });
+
+    }
+
+    if(!p.children?.length){
+
+      a.push({
+        id:p.id,
+        name:p.name
+      });
+
+    }
+
+  }
+
+  for(const o of state.organizations || []){
+
+    a.push({
+      id:o.id,
+      name:o.name
+    });
+
+  }
+
+  return a;
+}
+
+function unitName(id){
+
+  return allUnits().find(
+    x => x.id === id
+  )?.name || id;
+
+}
+
 function addChangeRow(){
- const wrap=document.getElementById('changeRows'),row=document.createElement('div');row.className='change-row';
- const opts=allUnits().map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
- row.innerHTML=`<div><label>Reputation</label><select class="target">${opts}</select></div><div><label>Auswirkung</label><select class="effect">${EFFECTS.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div><button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
- wrap.appendChild(row);
+
+  const wrap =
+    document.getElementById('changeRows');
+
+  const r =
+    document.createElement('div');
+
+  r.className = 'change-row';
+
+  const opts =
+    allUnits()
+      .map(
+        u =>
+          `<option value="${esc(u.id)}">${esc(u.name)}</option>`
+      )
+      .join('');
+
+  r.innerHTML = `
+
+    <div>
+
+      <label>Reputation</label>
+
+      <select class="target">
+
+        <option value="">
+          Bitte auswählen
+        </option>
+
+        ${opts}
+
+      </select>
+
+    </div>
+
+    <div>
+
+      <label>Auswirkung</label>
+
+      <select class="effect">
+
+        <option value="">
+          Bitte auswählen
+        </option>
+
+        <option value="3">
+          Sehr positiv (+3)
+        </option>
+
+        <option value="2">
+          Positiv (+2)
+        </option>
+
+        <option value="1">
+          Leicht positiv (+1)
+        </option>
+
+        <option value="-1">
+          Leicht negativ (-1)
+        </option>
+
+        <option value="-2">
+          Negativ (-2)
+        </option>
+
+        <option value="-3">
+          Sehr negativ (-3)
+        </option>
+
+      </select>
+
+    </div>
+
+    <button
+      class="remove"
+      onclick="this.parentElement.remove()"
+    >
+      Entfernen
+    </button>
+
+  `;
+
+  wrap.appendChild(r);
 }
-function getChanges(){return [...document.querySelectorAll('.change-row')].map(r=>({factionId:r.querySelector('.target').value,delta:Number(r.querySelector('.effect').value)}));}
-function openModal(title,text,action){document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;pendingAction=action;document.getElementById('modalConfirm').style.display='';document.getElementById('modalBackdrop').classList.add('open');}
-function closeModal(){document.getElementById('modalBackdrop').classList.remove('open');pendingAction=null;}
-async function confirmModal(){if(!pendingAction)return;const a=pendingAction;closeModal();try{await a();await load();}catch(e){alert(e.message);}}
+
+function getChanges(){
+
+  return [
+    ...document.querySelectorAll('.change-row')
+  ]
+  .map(r => ({
+    factionId:
+      r.querySelector('.target').value,
+
+    delta:
+      Number(
+        r.querySelector('.effect').value
+      )
+  }))
+  .filter(
+    x => x.factionId && x.delta
+  );
+}
+
+function showInfo(title,text){
+
+  document.getElementById('modalTitle')
+    .textContent = title;
+
+  document.getElementById('modalText')
+    .textContent = text;
+
+  document.getElementById('modalConfirm')
+    .style.display = 'none';
+
+  document
+    .getElementById('modalBackdrop')
+    .classList.add('open');
+}
+
+function openModal(title,text,action){
+
+  pendingAction = action;
+
+  document.getElementById('modalTitle')
+    .textContent = title;
+
+  document.getElementById('modalText')
+    .textContent = text;
+
+  document.getElementById('modalConfirm')
+    .style.display = '';
+
+  document
+    .getElementById('modalBackdrop')
+    .classList.add('open');
+}
+
+function closeModal(){
+
+  document
+    .getElementById('modalBackdrop')
+    .classList.remove('open');
+
+  pendingAction = null;
+}
+
+async function confirmModal(){
+
+  if(!pendingAction) return;
+
+  const a = pendingAction;
+
+  closeModal();
+
+  try{
+
+    await a();
+    await load();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+}
+
 function previewApply(){
- const mission=document.getElementById('mission').value.trim(),reason=document.getElementById('reason').value.trim(),date=document.getElementById('changeDate').value||todayISO(),changes=getChanges();
- if(!mission)return alert('Bitte Mission / Ereignis eintragen.');
- if(!changes.length)return alert('Bitte mindestens eine REP-Änderung hinzufügen.');
- if(new Set(changes.map(x=>x.factionId)).size!==changes.length)return alert('Eine REP-Einheit wurde doppelt ausgewählt.');
- const lines=changes.map(c=>`${unitName(c.factionId)}: ${c.delta>0?'+':''}${c.delta} (${EFFECTS.find(e=>e.delta===c.delta)?.days||30} Tage)`).join('\n');
- openModal('Änderungen übernehmen',`${mission}\n\n${lines}\n\n${reason||'Keine Beschreibung.'}\n\nDie Änderungen werden zentral gespeichert.`,async()=>{
-   await api('/change',{method:'POST',body:JSON.stringify({mission,reason,date,changes})});
-   document.getElementById('mission').value='';document.getElementById('reason').value='';document.getElementById('changeRows').innerHTML='';
- });
+
+  const mission =
+    document.getElementById('mission')
+      .value.trim();
+
+  const reason =
+    document.getElementById('reason')
+      .value.trim();
+
+  const date =
+    document.getElementById('changeDate')
+      .value || todayISO();
+
+  const changes = getChanges();
+
+  if(!mission){
+
+    return alert(
+      'Bitte Mission / Ereignis eintragen.'
+    );
+
+  }
+
+  if(!changes.length){
+
+    return alert(
+      'Bitte mindestens eine REP-Änderung auswählen.'
+    );
+
+  }
+
+  if(
+    new Set(
+      changes.map(x => x.factionId)
+    ).size !== changes.length
+  ){
+
+    return alert(
+      'Eine REP-Einheit wurde doppelt ausgewählt.'
+    );
+
+  }
+
+  const lines =
+    changes
+      .map(
+        c =>
+          `${unitName(c.factionId)}: ${
+            c.delta > 0 ? '+' : ''
+          }${c.delta} · ${
+            EFFECTS[c.delta]
+          } Tage`
+      )
+      .join('\n');
+
+  openModal(
+    'Änderungen übernehmen',
+    `${mission}\n\n${lines}\n\n${
+      reason || 'Keine Beschreibung.'
+    }`,
+    async () => {
+
+      await api(
+        '/change',
+        {
+          method:'POST',
+          body:JSON.stringify({
+            mission,
+            reason,
+            date,
+            changes
+          })
+        }
+      );
+
+      document.getElementById('mission')
+        .value = '';
+
+      document.getElementById('reason')
+        .value = '';
+
+      document.getElementById('changeRows')
+        .innerHTML = '';
+
+    }
+  );
 }
-async function setEventStatus(id,valid){
- openModal(valid?'Ereignis wieder gültig machen':'Ereignis als Retcon markieren',valid?'Dieses Ereignis wird wieder berücksichtigt.':'Dieses Ereignis bleibt in der Historie, wird aber aus der Berechnung genommen.',async()=>{
-   await api('/event/status',{method:'POST',body:JSON.stringify({eventId:id,valid})});
- });
-}
+
 function addFaction(type){
- const name=prompt(type==='place'?'Name des neuen Ortes:':'Name der neuen Organisation:');if(!name?.trim())return;
- const description=prompt('Beschreibung (optional):')||'';
- openModal(type==='place'?'Ort hinzufügen':'Organisation hinzufügen',`${name}\n\nZentral speichern?`,async()=>{
-   await api('/faction',{method:'POST',body:JSON.stringify({action:'create',type,name,description,rep:0,date:todayISO()})});
- });
+
+  const name = prompt(
+    type === 'place'
+      ? 'Name der neuen Region:'
+      : 'Name der neuen Organisation:'
+  );
+
+  if(!name?.trim()) return;
+
+  const description =
+    prompt(
+      type === 'place'
+        ? 'Info zur Region (optional):'
+        : 'Beschreibung der Organisation (optional):'
+    ) || '';
+
+  openModal(
+    type === 'place'
+      ? 'Region hinzufügen'
+      : 'Organisation hinzufügen',
+
+    `${name}\n\nZentral speichern?`,
+
+    async () => {
+
+      await api(
+        '/faction',
+        {
+          method:'POST',
+          body:JSON.stringify({
+            action:'create',
+            type,
+            name,
+            description,
+            rep:0,
+            date:todayISO()
+          })
+        }
+      );
+
+    }
+  );
 }
+
 function editFaction(id,type){
- const item=(type==='place'?(state.places||[]).find(x=>x.id===id):(state.organizations||[]).find(x=>x.id===id));if(!item)return;
- const name=prompt('Name:',item.name);if(name===null)return;
- const description=prompt('Beschreibung:',item.description||'');if(description===null)return;
- openModal('Änderung speichern',`${name}\n\nDie Stammdaten werden zentral geändert.`,async()=>{
-   await api('/faction',{method:'POST',body:JSON.stringify({action:'update',type,id,name,description})});
- });
+
+  const item =
+    type === 'place'
+      ? state.places.find(
+          x => x.id === id
+        )
+      : state.organizations.find(
+          x => x.id === id
+        );
+
+  if(!item) return;
+
+  const name =
+    prompt(
+      'Name:',
+      item.name
+    );
+
+  if(name === null) return;
+
+  const description =
+    prompt(
+      type === 'place'
+        ? 'Info zur Region:'
+        : 'Beschreibung:',
+      type === 'place'
+        ? (item.info || '')
+        : (item.description || '')
+    );
+
+  if(description === null) return;
+
+  openModal(
+    'Änderung speichern',
+    `${name}\n\nDie Stammdaten werden zentral geändert.`,
+
+    async () => {
+
+      const body = {
+        action:'update',
+        type,
+        id,
+        name,
+        description
+      };
+
+      if(type === 'place'){
+        body.info = description;
+      }
+
+      await api(
+        '/faction',
+        {
+          method:'POST',
+          body:JSON.stringify(body)
+        }
+      );
+
+    }
+  );
 }
+
 function deleteFaction(id,type){
- const item=(type==='place'?(state.places||[]).find(x=>x.id===id):(state.organizations||[]).find(x=>x.id===id));if(!item)return;
- openModal('Endgültig löschen',`"${item.name}" wird aus den Stammdaten entfernt.\n\nDie Ereignishistorie bleibt bestehen, kann aber danach nicht mehr über dieses Ziel angezeigt werden.`,async()=>{
-   await api('/faction',{method:'POST',body:JSON.stringify({action:'delete',type,id})});
- });
+
+  const item =
+    type === 'place'
+      ? state.places.find(
+          x => x.id === id
+        )
+      : state.organizations.find(
+          x => x.id === id
+        );
+
+  if(!item) return;
+
+  openModal(
+    'Endgültig löschen',
+    `"${item.name}" wird aus den Stammdaten entfernt.\n\nDie Historie bleibt bestehen.`,
+
+    async () => {
+
+      await api(
+        '/faction',
+        {
+          method:'POST',
+          body:JSON.stringify({
+            action:'delete',
+            type,
+            id
+          })
+        }
+      );
+
+    }
+  );
 }
-function resetToDate(){
- const date=document.getElementById('resetDate').value;if(!date)return alert('Bitte ein Datum wählen.');
- openModal('Historischen Stand aktivieren',`Bis einschließlich ${fmtDate(date)} werden Ereignisse berücksichtigt. Spätere Ereignisse bleiben erhalten.`,async()=>{
-   await api('/restore',{method:'POST',body:JSON.stringify({date,reason:'Historischer Kampagnenstand'})});
- });
+
+function renderLog(){
+
+  const events =
+    [...(state.events || [])]
+      .sort(
+        (a,b) =>
+          String(b.date)
+            .localeCompare(
+              String(a.date)
+            )
+      );
+
+  const groups = {};
+
+  for(const e of events){
+
+    const d =
+      e.date || 'unknown';
+
+    const m =
+      d.slice(0,7);
+
+    (groups[m] ??= [])
+      .push(e);
+
+  }
+
+  const keys =
+    Object.keys(groups)
+      .sort(
+        (a,b) =>
+          b.localeCompare(a)
+      );
+
+  document.getElementById('log')
+    .innerHTML = keys.length
+
+      ? keys.map(
+          (key,i) => {
+
+            const [y,m] =
+              key.split('-');
+
+            const label =
+              key === 'unknown'
+                ? 'Ohne Datum'
+                : new Date(
+                    Number(y),
+                    Number(m)-1,
+                    1
+                  ).toLocaleDateString(
+                    'de-DE',
+                    {
+                      month:'long',
+                      year:'numeric'
+                    }
+                  );
+
+            return `
+              <details
+                class="log-group"
+                ${i === 0 ? 'open' : ''}
+              >
+
+                <summary>
+
+                  <span>
+                    ${esc(label)}
+                  </span>
+
+                  <span class="muted">
+                    ${groups[key].length}
+                    ${
+                      groups[key].length === 1
+                        ? 'Änderung'
+                        : 'Änderungen'
+                    }
+                  </span>
+
+                </summary>
+
+                <div class="log-body">
+
+                  ${groups[key]
+                    .map(e => {
+
+                      const valid =
+                        e.valid !== false;
+
+                      return `
+
+                        <div class="log-entry">
+
+                          <div class="log-head">
+
+                            <strong>
+                              ${esc(
+                                e.mission ||
+                                'Ohne Missionsangabe'
+                              )}
+                            </strong>
+
+                            <span class="muted">
+                              ${fmtDate(e.date)}
+                            </span>
+
+                          </div>
+
+                          <span
+                            class="badge ${
+                              valid
+                                ? ''
+                                : 'invalid'
+                            }"
+                          >
+                            ${
+                              valid
+                                ? 'gültig'
+                                : 'RETCON – ungültig'
+                            }
+                          </span>
+
+                          <div>
+                            ${esc(
+                              e.reason ||
+                              'Keine Beschreibung.'
+                            )}
+                          </div>
+
+                          ${
+                            (e.changes || [])
+                              .map(
+                                c => `
+                                  <div>
+
+                                    <strong>
+                                      ${esc(
+                                        c.factionName ||
+                                        unitName(c.factionId)
+                                      )}
+                                    </strong>
+
+                                    <span
+                                      class="${cls(c.delta)}"
+                                    >
+                                      ${
+                                        c.delta > 0
+                                          ? '+'
+                                          : ''
+                                      }${c.delta}
+                                    </span>
+
+                                    · ${
+                                      c.days ||
+                                      EFFECTS[c.delta] ||
+                                      30
+                                    } Tage
+
+                                  </div>
+                                `
+                              )
+                              .join('')
+                          }
+
+                        </div>
+
+                      `;
+
+                    })
+                    .join('')}
+
+                </div>
+
+              </details>
+            `;
+
+          }
+        ).join('')
+
+      : `
+        <p class="muted">
+          Noch keine Rufänderungen gespeichert.
+        </p>
+      `;
 }
-function restoreCurrent(){
- openModal('Aktuellen Verlauf wiederherstellen','Der vollständige aktuelle Verlauf wird wieder aktiviert.',async()=>{
-   await api('/restore',{method:'POST',body:JSON.stringify({clear:true})});
- });
-}
-document.getElementById('changeDate').value=todayISO();
+
+document.getElementById('changeDate')
+  .value = todayISO();
+
 load();
+
 </script>
+
 </body>
 </html>
