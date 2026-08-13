@@ -145,16 +145,17 @@
       "date": "2026-08-13",
       "mission": "2",
       "reason": "2",
-      "valid": true,
+      "valid": false,
       "createdAt": "2026-08-13T14:16:27.503Z",
       "changes": [
         {
           "factionId": "triboar",
           "delta": 3
         }
-      ]
+      ],
+      "statusChangedAt": "2026-08-13T14:24:07.336Z"
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T14:18:16.501Z"
+  "updatedAt": "2026-08-13T14:24:07.336Z"
 }
