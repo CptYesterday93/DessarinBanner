@@ -138,7 +138,7 @@
       "date": "2026-08-13",
       "mission": "Testmission",
       "reason": "Reputationstes",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-13T10:26:53.025Z",
       "changes": [
         {
@@ -154,9 +154,9 @@
           "delta": 3
         }
       ],
-      "statusChangedAt": "2026-08-13T10:28:03.273Z"
+      "statusChangedAt": "2026-08-13T10:28:35.949Z"
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T10:28:03.273Z"
+  "updatedAt": "2026-08-13T10:28:35.949Z"
 }
