@@ -38,9 +38,10 @@
     {
       "id": "yartar",
       "name": "Yartar",
-      "description": "Der allgemeine Ruf des Dessarin Banner in Yartar. Er wird aus den vier lokalen Bevölkerungs- und Interessengruppen berechnet.",
+      "description": "Der allgemeine Ruf in Yartar wird aus Obrigkeit / Stadtwache, Händlern, gemeinem Volk und Unterwelt berechnet. Die Unterwelt fließt dabei geringer in den Gesamtwert ein.",
       "featured": true,
       "reputationMode": "derived",
+
       "components": [
         {
           "id": "yartar-authority",
@@ -50,26 +51,29 @@
           "baseRep": 0,
           "baseDate": null
         },
+
         {
           "id": "yartar-merchants",
           "name": "Händler",
-          "info": "Händler, Kaufleute und die allgemeine wirtschaftliche Gemeinschaft Yartars.",
+          "info": "Händler, Kaufleute und die wirtschaftlichen Kreise Yartars.",
           "weight": 1,
           "baseRep": 0,
           "baseDate": null
         },
+
         {
           "id": "yartar-common-folk",
           "name": "Gemeines Volk",
-          "info": "Der allgemeine Ruf bei der Bevölkerung Yartars.",
+          "info": "Die allgemeine Bevölkerung Yartars.",
           "weight": 1,
           "baseRep": 0,
           "baseDate": null
         },
+
         {
           "id": "yartar-underworld",
           "name": "Unterwelt",
-          "info": "Die kriminelle Unterwelt Yartars. Ihr Einfluss auf den allgemeinen Ruf der Stadt wird geringer gewichtet.",
+          "info": "Kriminelle Gruppen und Personen im Umfeld der Yartarschen Unterwelt.",
           "weight": 0.5,
           "baseRep": 0,
           "baseDate": null
@@ -80,7 +84,6 @@
     {
       "id": "calling-horns",
       "name": "Calling Horns",
-      "description": "Allgemeiner Ruf des Dessarin Banner in Calling Horns.",
       "featured": false,
       "reputationMode": "direct",
       "baseRep": 0,
@@ -90,7 +93,6 @@
     {
       "id": "everlund",
       "name": "Everlund",
-      "description": "Allgemeiner Ruf des Dessarin Banner in Everlund.",
       "featured": false,
       "reputationMode": "direct",
       "baseRep": 0,
@@ -100,7 +102,6 @@
     {
       "id": "longsaddle",
       "name": "Longsaddle",
-      "description": "Allgemeiner Ruf des Dessarin Banner in Longsaddle.",
       "featured": false,
       "reputationMode": "direct",
       "baseRep": 0,
@@ -110,7 +111,6 @@
     {
       "id": "triboar",
       "name": "Triboar",
-      "description": "Allgemeiner Ruf des Dessarin Banner in Triboar.",
       "featured": false,
       "reputationMode": "direct",
       "baseRep": 0,
@@ -122,7 +122,7 @@
     {
       "id": "harpers",
       "name": "Harpers",
-      "description": "Der Ruf des Dessarin Banner bei den Harpers.",
+      "info": "Ein weitverzweigtes Netzwerk, das sich für Freiheit, Unabhängigkeit und den Kampf gegen tyrannische Mächte einsetzt.",
       "active": true,
       "baseRep": 0,
       "baseDate": null
@@ -131,7 +131,7 @@
     {
       "id": "kraken-society",
       "name": "Kraken Society",
-      "description": "Der Ruf des Dessarin Banner bei der Kraken Society.",
+      "info": "Ein verborgenes Netzwerk aus Agenten, Einflussnehmern und Verschwörern mit weitreichenden Verbindungen im Norden.",
       "active": true,
       "baseRep": 0,
       "baseDate": null
@@ -140,7 +140,7 @@
     {
       "id": "zhentarim",
       "name": "Zhentarim",
-      "description": "Der Ruf des Dessarin Banner bei den Zhentarim.",
+      "info": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten, das seinen Einfluss und Reichtum ausweiten will.",
       "active": true,
       "baseRep": 0,
       "baseDate": null
