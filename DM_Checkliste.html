@@ -11,6 +11,9 @@ body{margin:0;background:var(--page);color:var(--ink);font:14px/1.4 Arial,Helvet
 .sheet{width:min(860px,calc(100% - 28px));margin:24px auto 40px;background:var(--paper);padding:40px 48px 54px;box-shadow:0 2px 18px #0001}
 h1{text-align:center;font-size:30px;letter-spacing:.03em;margin:0}
 .subtitle{text-align:center;color:#444;margin:3px 0 26px;font-size:16px}
+.mission-meta{display:flex;align-items:center;gap:12px;margin:0 0 18px}
+.mission-meta label{font-weight:700;white-space:nowrap}
+.mission-meta input{flex:1;min-width:0;height:36px;padding:7px 10px;border:1px solid #aeb4bf;background:#eef1fb;font:inherit}
 .intro{margin:0 0 28px;padding:11px 14px;border-left:4px solid var(--accent);background:#f3f5fb;color:#444}
 .section-title{font-size:21px;margin:30px 0 9px;padding:9px 12px;background:#ededed;border-radius:10px;font-weight:700}
 .checklist{display:flex;flex-direction:column}
@@ -34,6 +37,7 @@ button:hover{background:#f5f5f5}
  h1{font-size:25px}
  .subtitle{font-size:14px}
  .section-title{font-size:19px}
+ .mission-meta{align-items:stretch;flex-direction:column;gap:5px}
  .check{padding:11px 4px}
  .status{width:100%;margin-left:0}
 }
@@ -48,6 +52,11 @@ button:hover{background:#f5f5f5}
 <main class="sheet">
 <h1>DM CHECKLISTE</h1>
 <div class="subtitle">Für das Dessarin Banner</div>
+
+<div class="mission-meta">
+<label for="missionName">Mission</label>
+<input id="missionName" type="text" placeholder="z. B. Die verlorene Karawane">
+</div>
 
 <p class="intro">
 Eine persönliche Checkliste für den DM. Einfach abhaken, was erledigt ist –
@@ -100,6 +109,7 @@ sie dient dazu, die wichtigsten Schritte im Blick zu behalten.
 </div>
 
 <div class="actions">
+<button type="button" onclick="saveChecklist()">Checkliste als HTML speichern</button>
 <button type="button" onclick="resetChecklist()">Checkliste zurücksetzen</button>
 <span class="status" id="status">Fortschritt wird automatisch gespeichert.</span>
 </div>
@@ -108,12 +118,12 @@ sie dient dazu, die wichtigsten Schritte im Blick zu behalten.
 </main>
 
 <script>
-const KEY='dessarin-dm-checklist-v1';
+const KEY='dessarin-dm-checklist-v2';
 
 function checks(){return [...document.querySelectorAll('input[type="checkbox"][data-key]')]}
 
 function save(){
- const data={};
+ const data={mission:document.getElementById('missionName').value};
  checks().forEach(c=>data[c.dataset.key]=c.checked);
  localStorage.setItem(KEY,JSON.stringify(data));
  document.getElementById('status').textContent='Fortschritt gespeichert.';
@@ -122,9 +132,34 @@ function save(){
 function restore(){
  try{
    const data=JSON.parse(localStorage.getItem(KEY)||'{}');
+   if(data.mission!==undefined)document.getElementById('missionName').value=data.mission;
    checks().forEach(c=>{if(data[c.dataset.key]!==undefined)c.checked=!!data[c.dataset.key]});
    if(Object.keys(data).length)document.getElementById('status').textContent='Gespeicherter Fortschritt geladen.';
  }catch(e){}
+}
+
+function saveChecklist(){
+ const mission=(document.getElementById('missionName').value||'Mission').trim()
+   .replace(/[^a-zA-Z0-9äöüÄÖÜß _-]/g,'')
+   .replace(/\s+/g,'_') || 'Mission';
+ const clone=document.documentElement.cloneNode(true);
+ const sourceChecks=checks();
+ const targetChecks=[...clone.querySelectorAll('input[type="checkbox"][data-key]')];
+ targetChecks.forEach((target,i)=>{
+   if(sourceChecks[i]?.checked) target.setAttribute('checked','checked');
+   else target.removeAttribute('checked');
+ });
+ const targetMission=clone.querySelector('#missionName');
+ if(targetMission) targetMission.setAttribute('value',document.getElementById('missionName').value);
+ const status=clone.querySelector('#status');
+ if(status) status.textContent='Gespeicherte Checkliste.';
+ const html='<!doctype html>\n'+clone.outerHTML;
+ const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='DM_Checkliste_'+mission+'.html';
+ a.click();
+ setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
 function resetChecklist(){
@@ -135,6 +170,7 @@ function resetChecklist(){
 }
 
 checks().forEach(c=>c.addEventListener('change',save));
+document.getElementById('missionName').addEventListener('input',save);
 restore();
 </script>
 </body>
