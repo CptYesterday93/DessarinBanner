@@ -150,8 +150,7 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div id="modalBackdrop" class="modal-backdrop" onclick="backdropClose(event)">
 <div class="modal" role="dialog" aria-modal="true">
 <h2 id="modalTitle"></h2><p id="modalText"></p>
-<div class="modal-actions"><button type="button" onclick="closeModal()">Abbrechen</button>
-<button type="button" class="primary" onclick="confirmPendingChanges()">Übernehmen</button></div>
+<div class="modal-actions"><button onclick="closeModal()">Schließen</button></div>
 </div>
 </div>
 
@@ -344,7 +343,7 @@ function previewApply(){
  if(!rows.length){alert('Bitte mindestens eine REP-Änderung hinzufügen.');return}
  const ids=new Set();for(const r of rows){if(ids.has(r.id)){alert('Eine Reputation wurde doppelt ausgewählt.');return}ids.add(r.id)}
  const lines=rows.map(r=>{const u=unitById(r.id),fx=effectForDelta(r.delta);return `${u?.name||r.id}: ${r.delta>0?'+':''}${r.delta} (${fx?.days||30} Tage)`}).join('\n');
- showInfoText('Änderungen übernehmen',`${mission}\n\n${lines}\n\n${reason||'Keine Beschreibung.'}\n\nDie Änderungen werden als ein Ereignis gespeichert.`);
+ showInfoText('Änderungen übernehmen',`${mission}\n\n${lines}\n\n${reason||'Keine Beschreibung.'}\n\nDie Änderungen werden als ein Ereignis gespeichert.`, true);
 }
 function applyConfirmed(){
  const mission=document.getElementById('mission').value.trim(),reason=document.getElementById('reason').value.trim(),date=document.getElementById('changeDate').value||todayISO(),rows=targetIdsFromRows();
@@ -355,23 +354,15 @@ function applyConfirmed(){
 }
 function retconEvent(id){if(!confirm('Dieses Ereignis als Retcon ungültig machen?'))return;const e=state.events.find(x=>x.id===id);if(e)e.valid=false;persist().then(render);}
 function restoreEvent(id){if(!confirm('Dieses Ereignis wieder gültig machen?'))return;const e=state.events.find(x=>x.id===id);if(e)e.valid=true;persist().then(render);}
-function showInfoText(title,text){
- document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').textContent=text;document.getElementById('modalBackdrop').classList.add('open');
+function showInfoText(title,text,confirmMode=false){
+ document.getElementById('modalTitle').textContent=title;
+ document.getElementById('modalText').textContent=text;
+ const actions=document.querySelector('#modalBackdrop .modal-actions');
+ actions.innerHTML=confirmMode
+   ? '<button type="button" onclick="closeModal()">Abbrechen</button><button type="button" class="primary" onclick="applyConfirmed()">Übernehmen</button>'
+   : '<button type="button" onclick="closeModal()">Schließen</button>';
+ document.getElementById('modalBackdrop').classList.add('open');
 }
-function confirmPendingChanges(){
- try{
-  if(!pendingEvent){ closeModal(); return; }
-  state.events.push(pendingEvent);
-  pendingEvent=null;
-  localStorage.setItem('dessarin-reputation-local-v2', JSON.stringify(state));
-  closeModal();
-  render();
- }catch(err){
-  console.error(err);
-  alert('Übernehmen fehlgeschlagen: '+err.message);
- }
-}
-
 function closeModal(){document.getElementById('modalBackdrop').classList.remove('open')}
 function backdropClose(e){if(e.target.id==='modalBackdrop')closeModal()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeAddChoice();closeManage()}});
