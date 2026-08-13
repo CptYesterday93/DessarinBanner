@@ -748,6 +748,8 @@ textarea{
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
 
+// Frontend-Version: 7 – Update ohne startRep; robuste Yartar-ID-Auflösung.
+
 let state = null;
 let pendingAction = null;
 
@@ -1118,13 +1120,65 @@ function allUnits(){
 }
 
 
+/*
+ * Liefert die kanonische ID aus den aktuell geladenen Daten.
+ *
+ * Wichtig für Yartar:
+ * In älteren Datenständen können Kinder einmal über eine
+ * aus dem Namen erzeugte ID angesprochen worden sein, während
+ * die eigentliche child.id inzwischen anders lautet. Wir ändern
+ * die gespeicherten IDs NICHT, sondern lösen solche alten Werte
+ * hier auf die aktuell vorhandene ID auf.
+ */
+function resolveUnitId(id){
+
+  const raw =
+    String(id ?? '').trim();
+
+  if(!raw || !state){
+    return raw;
+  }
+
+  const units =
+    allUnits();
+
+  const exact =
+    units.find(
+      unit =>
+        unit.id === raw
+    );
+
+  if(exact){
+    return exact.id;
+  }
+
+  const normalizedId =
+    slugify(raw);
+
+  const byDisplayName =
+    units.find(
+      unit =>
+        slugify(unit.name) === normalizedId
+    );
+
+  if(byDisplayName){
+    return byDisplayName.id;
+  }
+
+  return raw;
+}
+
+
 function unitName(id){
+
+  const canonicalId =
+    resolveUnitId(id);
 
   return (
     allUnits()
       .find(
         unit =>
-          unit.id === id
+          unit.id === canonicalId
       )
       ?.name ||
     id
@@ -1811,9 +1865,11 @@ function getChanges(){
       row => ({
 
         factionId:
-          row.querySelector(
-            '.target'
-          ).value,
+          resolveUnitId(
+            row.querySelector(
+              '.target'
+            ).value
+          ),
 
         delta:
           Number(
@@ -2071,8 +2127,19 @@ function previewApply(){
   }
 
 
-  const ids =
+  const canonicalChanges =
     changes.map(
+      change => ({
+        ...change,
+        factionId:
+          resolveUnitId(
+            change.factionId
+          )
+      })
+    );
+
+  const ids =
+    canonicalChanges.map(
       change =>
         change.factionId
     );
@@ -2093,7 +2160,7 @@ function previewApply(){
 
 
   const lines =
-    changes
+    canonicalChanges
       .map(
         change => {
 
@@ -2149,7 +2216,8 @@ function previewApply(){
 
               date,
 
-              changes
+              changes:
+                canonicalChanges
 
             })
 
@@ -2396,18 +2464,13 @@ function editFaction(
           body:
             JSON.stringify({
 
-              action:
-                'update',
-
-              type,
-
-              id,
-
-              name:
-                name.trim(),
-
-              description:
-                description.trim()
+              // Bewusst KEIN startRep/rep: Bearbeiten ändert nur
+              // Stammdaten und darf niemals die REP-Berechnung anfassen.
+              action: 'update',
+              type: type,
+              id: id,
+              name: name.trim(),
+              description: description.trim()
 
             })
 
