@@ -24,9 +24,9 @@ th{font-size:12px;font-weight:700;color:#333}
 .child{font-size:13px}.child.collapsed{display:none}.collapse-toggle{border:0;background:none;padding:0;margin:0 4px 0 0;font-weight:700;cursor:pointer;font-size:14px;line-height:1}.collapse-toggle:hover{filter:none}
 .info{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;margin-left:5px;border:1px solid #aaa;border-radius:50%;font-size:11px;color:#555;cursor:pointer;vertical-align:middle;background:#fff}
 .info:hover{background:#f3f3f3}
-.manage-actions{display:flex;gap:5px;justify-content:flex-end;white-space:nowrap}
-.manage-btn{font-size:12px;padding:4px 7px}
-.info.info-btn{padding:0;box-shadow:none;line-height:16px;cursor:pointer;background:#fff}
+.manage-actions{display:table-cell;white-space:nowrap;text-align:right}
+.manage-btn{font-size:12px;padding:4px 7px;margin-left:5px}
+.info.info-btn{padding:0;box-shadow:none;line-height:16px;cursor:pointer;background:#fff}.section-info{margin-left:7px}
 details.hint{margin-top:3px}
 details.hint summary{cursor:pointer;color:var(--muted);font-size:12px}
 button{font:inherit;border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
@@ -92,7 +92,7 @@ Der <strong>effektive REP</strong> zeigt, wie viel davon aktuell wirkt: Jede ein
 verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sich ausschließlich nach dem effektiven REP.
 </div>
 
-<div class="section-title">Regionen</div>
+<div class="section-title">Regionen <button type="button" class="info info-btn section-info" onclick="showInfoText('Regionen', 'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.')">i</button></div>
 <div class="table-wrap">
 <table>
 <thead><tr><th>Region</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
@@ -101,7 +101,7 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="toolbar"><button onclick="addPlace()">＋ Region hinzufügen</button></div>
 </div>
 
-<div class="section-title">Organisationen</div>
+<div class="section-title">Organisationen <button type="button" class="info info-btn section-info" onclick="showInfoText('Organisationen', 'Eine überregional bzw. in größerem Ausmaß an der Schwertküste agierende Organisation. Lokale Gruppen, Kirchen oder Einrichtungen werden hier normalerweise nicht separat erfasst.')">i</button></div>
 <div class="table-wrap">
 <table>
 <thead><tr><th>Organisation</th><th>Status</th><th class="num">Effektiver REP</th><th>Letzte Änderung</th><th></th></tr></thead>
@@ -116,9 +116,9 @@ verliert nach ihrer eigenen Wirkungsdauer ihren Einfluss. Der Status richtet sic
 <div class="date-field"><label for="changeDate">Datum</label><input id="changeDate" type="date"></div>
 </div>
 <div><label for="reason">Beschreibung / Begründung</label><textarea id="reason" placeholder="Was ist passiert und warum beeinflusst es den Ruf?"></textarea></div>
-<div class="change-head"><div>Reputation</div><div>Auswirkung <button type="button" class="info info-btn" onclick="showInfo('effect')">i</button></div><div></div></div>
+<div class="change-head"><div>Auswirkung auf</div><div>Auswirkung <button type="button" class="info info-btn" onclick="showInfo('effect')">i</button></div><div></div></div>
 <div id="changeRows"></div>
-<div class="add-row"><button onclick="addChangeRow()">＋ REP hinzufügen</button></div>
+<div class="add-row"><button onclick="addChangeRow()">＋ Auswirkung hinzufügen</button></div>
 <div style="margin-top:13px"><button class="primary" onclick="previewApply()">Änderungen übernehmen</button></div>
 
 <div class="section-title">Änderungsverlauf</div>
@@ -298,14 +298,14 @@ function toggleYartar(e){
 }
 
 function refreshTargetOptions(){
-  const selects=[...document.querySelectorAll('.rep-target-select')];
-  const selected=new Set(selects.map(x=>x.value).filter(Boolean));
-  selects.forEach(sel=>{
-    [...sel.options].forEach(opt=>{
-      if(!opt.value) return;
-      opt.hidden = selected.has(opt.value) && opt.value !== sel.value;
-    });
-  });
+ const selects=[...document.querySelectorAll('#changeRows .rep-target-select')];
+ const selected=new Set(selects.map(sel=>sel.value).filter(Boolean));
+ selects.forEach(sel=>{
+   [...sel.options].forEach(opt=>{
+     if(!opt.value) return;
+     opt.hidden=selected.has(opt.value) && opt.value!==sel.value;
+   });
+ });
 }
 
 function render(){
@@ -357,11 +357,14 @@ function renderLog(){
 function addChangeRow(){
  const wrap=document.getElementById('changeRows');
  const row=document.createElement('div');row.className='change-row';
- const opts=allUnits().filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar').map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
- row.innerHTML=`<div><select class="target-select"><option value="" selected>Bitte auswählen</option>${opts}</select></div>
+ const opts=allUnits()
+   .filter(u=>u.kind!=='place' || u.place.aggregate!=='yartar')
+   .map(u=>`<option value="${esc(u.id)}">${esc(u.name)}</option>`).join('');
+ row.innerHTML=`<div><select class="target-select rep-target-select"><option value="" selected>Bitte auswählen</option>${opts}</select></div>
  <div><select class="effect-select"><option value="" selected>Bitte auswählen</option>${effects.map(e=>`<option value="${e.delta}">${e.label} (${e.delta>0?'+':''}${e.delta})</option>`).join('')}</select></div>
- <button class="remove" onclick="this.parentElement.remove()">Entfernen</button>`;
+ <button class="remove" type="button" onclick="this.parentElement.remove();refreshTargetOptions()">Entfernen</button>`;
  wrap.appendChild(row);
+ refreshTargetOptions();
 }
 function clearChanges(){document.getElementById('changeRows').innerHTML='';}
 function targetIdsFromRows(){
