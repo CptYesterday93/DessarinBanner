@@ -1,7 +1,6 @@
 {
   "ok": true,
   "version": 1,
-
   "settings": {
     "decay": {
       "enabled": true,
@@ -9,7 +8,6 @@
       "points": 1,
       "mode": "linear"
     },
-
     "statusRules": [
       {
         "min": 8,
@@ -33,7 +31,6 @@
       }
     ]
   },
-
   "places": [
     {
       "id": "yartar",
@@ -41,7 +38,6 @@
       "description": "Der allgemeine Ruf in Yartar wird aus Obrigkeit / Stadtwache, Händlern, gemeinem Volk und Unterwelt berechnet. Die Unterwelt fließt dabei geringer in den Gesamtwert ein.",
       "featured": true,
       "reputationMode": "derived",
-
       "components": [
         {
           "id": "yartar-authority",
@@ -51,7 +47,6 @@
           "baseRep": 0,
           "baseDate": null
         },
-
         {
           "id": "yartar-merchants",
           "name": "Händler",
@@ -60,7 +55,6 @@
           "baseRep": 0,
           "baseDate": null
         },
-
         {
           "id": "yartar-common-folk",
           "name": "Gemeines Volk",
@@ -69,7 +63,6 @@
           "baseRep": 0,
           "baseDate": null
         },
-
         {
           "id": "yartar-underworld",
           "name": "Unterwelt",
@@ -80,7 +73,6 @@
         }
       ]
     },
-
     {
       "id": "calling-horns",
       "name": "Calling Horns",
@@ -89,7 +81,6 @@
       "baseRep": 0,
       "baseDate": null
     },
-
     {
       "id": "everlund",
       "name": "Everlund",
@@ -98,7 +89,6 @@
       "baseRep": 0,
       "baseDate": null
     },
-
     {
       "id": "longsaddle",
       "name": "Longsaddle",
@@ -107,7 +97,6 @@
       "baseRep": 0,
       "baseDate": null
     },
-
     {
       "id": "triboar",
       "name": "Triboar",
@@ -117,7 +106,6 @@
       "baseDate": null
     }
   ],
-
   "organizations": [
     {
       "id": "harpers",
@@ -127,7 +115,6 @@
       "baseRep": 0,
       "baseDate": null
     },
-
     {
       "id": "kraken-society",
       "name": "Kraken Society",
@@ -136,7 +123,6 @@
       "baseRep": 0,
       "baseDate": null
     },
-
     {
       "id": "zhentarim",
       "name": "Zhentarim",
@@ -146,10 +132,30 @@
       "baseDate": null
     }
   ],
-
-  "events": [],
-
+  "events": [
+    {
+      "id": "event_0068c65c-f4be-4dcb-9aa2-e48bf4806674",
+      "date": "2026-08-13",
+      "mission": "Testmission",
+      "reason": "Reputationstes",
+      "valid": true,
+      "createdAt": "2026-08-13T10:26:53.025Z",
+      "changes": [
+        {
+          "factionId": "yartar-merchants",
+          "delta": 2
+        },
+        {
+          "factionId": "yartar-authority",
+          "delta": -2
+        },
+        {
+          "factionId": "longsaddle",
+          "delta": 3
+        }
+      ]
+    }
+  ],
   "restore": null,
-
-  "updatedAt": null
+  "updatedAt": "2026-08-13T10:26:53.025Z"
 }
