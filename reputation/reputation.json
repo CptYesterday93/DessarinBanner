@@ -1,32 +1,174 @@
 {
-  "version": 3,
-  "decayDays": 30,
-  "decayPoints": 1,
+  "version": 4,
 
-  "statusRules": [
-    {
-      "min": 8,
-      "label": "Verbündet"
+  "settings": {
+    "decay": {
+      "enabled": true,
+      "days": 30,
+      "points": 1,
+      "mode": "linear"
     },
+
+    "statusRules": [
+      {
+        "min": 8,
+        "label": "Verbündet"
+      },
+      {
+        "min": 3,
+        "label": "Wohlwollend"
+      },
+      {
+        "min": -1,
+        "label": "Neutral"
+      },
+      {
+        "min": -4,
+        "label": "Skeptisch"
+      },
+      {
+        "min": -999999,
+        "label": "Feindlich"
+      }
+    ]
+  },
+
+  "places": [
     {
-      "min": 3,
-      "label": "Wohlwollend"
+      "id": "yartar",
+      "name": "Yartar",
+      "featured": true,
+
+      "description": "Die allgemeine Reputation der Gruppe in Yartar wird aus den vier lokalen Bevölkerungs- und Interessengruppen berechnet.",
+
+      "reputationMode": "derived",
+
+      "components": [
+        {
+          "id": "yartar_authority",
+          "name": "Obrigkeit / Wache",
+          "weight": 1,
+          "rep": 0,
+          "lastChange": null,
+
+          "info": "Waterbaron, Stadtverwaltung und örtliche Ordnungskräfte. Repräsentiert die offizielle Macht und öffentliche Ordnung Yartars."
+        },
+        {
+          "id": "yartar_merchants",
+          "name": "Händler",
+          "weight": 1,
+          "rep": 0,
+          "lastChange": null,
+
+          "info": "Die Handels- und Kaufmannsinteressen Yartars. Einzelne Handelsunternehmen werden nicht separat verfolgt."
+        },
+        {
+          "id": "yartar_common",
+          "name": "Gemeines Volk",
+          "weight": 1,
+          "rep": 0,
+          "lastChange": null,
+
+          "info": "Die allgemeine Bevölkerung Yartars. Dieser Wert beschreibt, wie die normalen Bürger die Gruppe wahrnehmen."
+        },
+        {
+          "id": "yartar_underworld",
+          "name": "Unterwelt",
+          "weight": 0.5,
+          "rep": 0,
+          "lastChange": null,
+
+          "info": "Die organisierte Unterwelt und kriminelle Szene Yartars. Die Hand von Yartar ist eine wichtige Gruppierung innerhalb dieses Bereichs, wird aber nicht separat verfolgt."
+        }
+      ]
     },
+
     {
-      "min": -1,
-      "label": "Neutral"
+      "id": "calling_horns",
+      "name": "Calling Horns",
+      "featured": false,
+
+      "description": "Allgemeiner Ruf der Gruppe in Calling Horns.",
+
+      "reputationMode": "direct",
+
+      "rep": 0,
+      "lastChange": null
     },
+
     {
-      "min": -4,
-      "label": "Skeptisch"
+      "id": "everlund",
+      "name": "Everlund",
+      "featured": false,
+
+      "description": "Allgemeiner Ruf der Gruppe in Everlund.",
+
+      "reputationMode": "direct",
+
+      "rep": 0,
+      "lastChange": null
     },
+
     {
-      "min": -999999,
-      "label": "Feindlich"
+      "id": "longsaddle",
+      "name": "Longsaddle",
+      "featured": false,
+
+      "description": "Allgemeiner Ruf der Gruppe in Longsaddle.",
+
+      "reputationMode": "direct",
+
+      "rep": 0,
+      "lastChange": null
+    },
+
+    {
+      "id": "triboar",
+      "name": "Triboar",
+      "featured": false,
+
+      "description": "Allgemeiner Ruf der Gruppe in Triboar.",
+
+      "reputationMode": "direct",
+
+      "rep": 0,
+      "lastChange": null
     }
   ],
 
-  "factions": [],
+  "organizations": [
+    {
+      "id": "harpers",
+      "name": "Harpers",
 
-  "events": []
+      "description": "Überregionale Organisation. Die Reputation wird unabhängig vom Ruf an einzelnen Orten geführt.",
+
+      "rep": 0,
+      "lastChange": null
+    },
+
+    {
+      "id": "zhentarim",
+      "name": "Zhentarim",
+
+      "description": "Überregionale Organisation. Die Reputation wird unabhängig vom Ruf an einzelnen Orten geführt.",
+
+      "rep": 0,
+      "lastChange": null
+    },
+
+    {
+      "id": "kraken_society",
+      "name": "Kraken Society",
+
+      "description": "Überregionales geheimes Netzwerk. Die Reputation wird unabhängig vom Ruf an einzelnen Orten geführt.",
+
+      "rep": 0,
+      "lastChange": null
+    }
+  ],
+
+  "events": [],
+
+  "updatedAt": null
 }
