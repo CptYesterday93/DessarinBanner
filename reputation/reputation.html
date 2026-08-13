@@ -4,177 +4,704 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reputation – Dessarin Banner</title>
+
 <style>
-:root{--bg:#f2f2f2;--paper:#fff;--ink:#171717;--muted:#6b6b6b;--line:#d8d8d8;--soft:#f5f5f5;--blue:#1769aa;--orange:#c65d00;--accent:#3157a6}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Arial,Helvetica,sans-serif}
-.sheet{width:min(1120px,calc(100% - 20px));margin:20px auto 40px;background:var(--paper);padding:28px 32px 44px;box-shadow:0 2px 18px #0001}
-h1{text-align:center;margin:0;font-size:28px}.subtitle{text-align:center;color:var(--muted);margin:3px 0 20px}
-.notice{padding:11px 13px;background:#f3f5fb;border-left:3px solid var(--accent);margin-bottom:20px}
-.section-title{display:flex;align-items:center;gap:7px;font-size:19px;font-weight:700;margin:25px 0 9px;padding:8px 11px;background:#ededed;border-radius:8px}
-.info-btn{width:22px;height:22px;padding:0;border:1px solid #777;border-radius:50%;background:#fff;font-weight:700;font-size:13px;line-height:20px;cursor:pointer}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-th,td{padding:9px 9px;border-bottom:1px solid var(--line);vertical-align:middle;text-align:left}
-th{font-size:12px;color:#444}
-.num{text-align:center;white-space:nowrap}
-.status{font-weight:700}
-.positive{color:var(--blue)}
-.negative{color:var(--orange)}
-.place-main{font-weight:700}
-.place-sub{font-size:12px;color:var(--muted)}
-.child td:first-child{padding-left:38px;font-size:13px}
-button{font:inherit;border:1px solid #999;background:#fff;padding:7px 10px;border-radius:4px;cursor:pointer}
-button:hover{background:#f3f3f3}
-.primary{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
-.primary:hover{background:#294a8c}
-.danger{color:var(--orange);border-color:#d99a6c}
-.actions{display:flex;gap:6px;flex-wrap:wrap}
-.toolbar{display:flex;gap:8px;align-items:end;flex-wrap:wrap;margin:10px 0 16px}
-label{display:block;font-weight:700;font-size:13px;margin-bottom:5px}
-input,select,textarea{font:inherit;border:1px solid #9da4b2;background:#fff;padding:8px 10px;border-radius:3px}
-textarea{width:100%;min-height:70px;resize:vertical}
-.mission{flex:1;min-width:260px}
-.date{width:155px}
-.change-row{display:grid;grid-template-columns:minmax(190px,1fr) 190px auto;gap:10px;align-items:end;padding:9px 0;border-bottom:1px solid var(--line)}
-.log-group{border:1px solid var(--line);border-radius:7px;margin:8px 0;background:#fff;overflow:hidden}
-.log-group>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:10px 13px;font-weight:700}
-.log-group>summary::-webkit-details-marker{display:none}
-.log-group>summary:before{content:"▶";font-size:10px;margin-right:8px;color:var(--muted)}
-.log-group[open]>summary:before{content:"▼"}
-.log-group>summary:hover{background:var(--soft)}
-.log-body{padding:0 10px 8px}
-.log-entry{border-top:1px solid var(--line);padding:10px 3px}
-.log-head{display:flex;justify-content:space-between;gap:12px}
-.muted,.small{font-size:12px;color:var(--muted)}
-.badge{display:inline-block;font-size:11px;padding:2px 6px;border-radius:10px;background:#eee}
-.badge.invalid{color:var(--orange);background:#fff0e7}
-.modal-backdrop{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:18px;z-index:20}
-.modal-backdrop.open{display:flex}
-.modal{width:min(600px,100%);background:#fff;border-radius:8px;padding:20px}
-.modal h2{margin:0 0 10px}
-.modal p{white-space:pre-line}
-.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
-.statusbar{margin-left:auto;color:var(--muted);font-size:12px}
+:root{
+  --bg:#f2f2f2;
+  --paper:#fff;
+  --ink:#171717;
+  --muted:#6b6b6b;
+  --line:#d8d8d8;
+  --soft:#f5f5f5;
+  --blue:#1769aa;
+  --orange:#c65d00;
+  --accent:#3157a6;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:14px/1.45 Arial,Helvetica,sans-serif;
+}
+
+.sheet{
+  width:min(1120px,calc(100% - 20px));
+  margin:20px auto 40px;
+  background:var(--paper);
+  padding:28px 32px 44px;
+  box-shadow:0 2px 18px #0001;
+}
+
+h1{
+  text-align:center;
+  margin:0;
+  font-size:28px;
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  margin:3px 0 20px;
+}
+
+.notice{
+  padding:11px 13px;
+  background:#f3f5fb;
+  border-left:3px solid var(--accent);
+  margin-bottom:20px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:19px;
+  font-weight:700;
+  margin:25px 0 9px;
+  padding:8px 11px;
+  background:#ededed;
+  border-radius:8px;
+}
+
+.info-btn{
+  width:22px;
+  height:22px;
+  padding:0;
+  border:1px solid #777;
+  border-radius:50%;
+  background:#fff;
+  font-weight:700;
+  font-size:13px;
+  line-height:20px;
+  cursor:pointer;
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,
+td{
+  padding:9px;
+  border-bottom:1px solid var(--line);
+  vertical-align:middle;
+  text-align:left;
+}
+
+th{
+  font-size:12px;
+  color:#444;
+}
+
+.num{
+  text-align:center;
+  white-space:nowrap;
+}
+
+.status{
+  font-weight:700;
+}
+
+.positive{
+  color:var(--blue);
+}
+
+.negative{
+  color:var(--orange);
+}
+
+.place-main{
+  font-weight:700;
+}
+
+.child td:first-child{
+  padding-left:38px;
+  font-size:13px;
+}
+
+button{
+  font:inherit;
+  border:1px solid #999;
+  background:#fff;
+  padding:7px 10px;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#f3f3f3;
+}
+
+.primary{
+  background:var(--accent);
+  color:#fff;
+  border-color:var(--accent);
+  font-weight:700;
+}
+
+.primary:hover{
+  background:#294a8c;
+}
+
+.danger{
+  color:var(--orange);
+  border-color:#d99a6c;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+.toolbar{
+  display:flex;
+  gap:8px;
+  align-items:end;
+  flex-wrap:wrap;
+  margin:10px 0 16px;
+}
+
+label{
+  display:block;
+  font-weight:700;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+input,
+select,
+textarea{
+  font:inherit;
+  border:1px solid #9da4b2;
+  background:#fff;
+  padding:8px 10px;
+  border-radius:3px;
+}
+
+textarea{
+  width:100%;
+  min-height:70px;
+  resize:vertical;
+}
+
+.mission{
+  flex:1;
+  min-width:260px;
+}
+
+.date{
+  width:155px;
+}
+
+/* =========================
+   REP-EINGABE
+   ========================= */
+
+.change-header{
+  display:grid;
+  grid-template-columns:minmax(190px,1fr) 190px auto;
+  gap:10px;
+  align-items:end;
+  margin-top:16px;
+}
+
+.change-header > div{
+  font-weight:700;
+  font-size:13px;
+}
+
+.change-header .header-main{
+  grid-column:1;
+}
+
+.change-header .header-effect{
+  grid-column:2;
+}
+
+.change-header .header-actions{
+  grid-column:3;
+}
+
+.change-row{
+  display:grid;
+  grid-template-columns:minmax(190px,1fr) 190px auto;
+  gap:10px;
+  align-items:center;
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.change-row select{
+  width:100%;
+}
+
+.change-row .remove{
+  white-space:nowrap;
+}
+
+.change-row select.invalid{
+  border-color:var(--orange);
+  background:#fff7f1;
+}
+
+.log-group{
+  border:1px solid var(--line);
+  border-radius:7px;
+  margin:8px 0;
+  background:#fff;
+  overflow:hidden;
+}
+
+.log-group > summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 13px;
+  font-weight:700;
+}
+
+.log-group > summary::-webkit-details-marker{
+  display:none;
+}
+
+.log-group > summary:before{
+  content:"▶";
+  font-size:10px;
+  margin-right:8px;
+  color:var(--muted);
+}
+
+.log-group[open] > summary:before{
+  content:"▼";
+}
+
+.log-group > summary:hover{
+  background:var(--soft);
+}
+
+.log-body{
+  padding:0 10px 8px;
+}
+
+.log-entry{
+  border-top:1px solid var(--line);
+  padding:10px 3px;
+}
+
+.log-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.muted,
+.small{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.badge{
+  display:inline-block;
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:10px;
+  background:#eee;
+}
+
+.badge.invalid{
+  color:var(--orange);
+  background:#fff0e7;
+}
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:20;
+}
+
+.modal-backdrop.open{
+  display:flex;
+}
+
+.modal{
+  width:min(600px,100%);
+  background:#fff;
+  border-radius:8px;
+  padding:20px;
+  box-shadow:0 8px 30px #0005;
+}
+
+.modal h2{
+  margin:0 0 10px;
+}
+
+.modal p{
+  white-space:pre-line;
+  margin:0;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:16px;
+}
+
+.statusbar{
+  margin-left:auto;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.retcon-button{
+  margin-top:8px;
+}
+
+.empty{
+  color:var(--muted);
+}
+
 @media(max-width:700px){
-  .sheet{padding:22px 14px}
-  .change-row{grid-template-columns:1fr 1fr}
-  .mission,.date{width:100%;min-width:0}
-  .log-head{display:block}
+
+  .sheet{
+    padding:22px 14px;
+  }
+
+  .change-header,
+  .change-row{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .change-header .header-main{
+    grid-column:1;
+  }
+
+  .change-header .header-effect{
+    grid-column:2;
+  }
+
+  .change-header .header-actions{
+    display:none;
+  }
+
+  .change-row .remove{
+    grid-column:1 / -1;
+    justify-self:start;
+  }
+
+  .mission,
+  .date{
+    width:100%;
+    min-width:0;
+  }
+
+  .log-head{
+    display:block;
+  }
 }
 </style>
 </head>
 
 <body>
+
 <main class="sheet">
 
-<h1>REPUTATIONSÜBERSICHT</h1>
-<div class="subtitle">Dessarin Banner · Reputationspunkte (REP)</div>
+  <h1>REPUTATIONSÜBERSICHT</h1>
 
-<div class="notice">
-<strong>REP</strong> beschreibt den aktuellen Ruf. Einzelne Rufänderungen verlieren nach ihrer jeweiligen Wirkungsdauer ihre Wirkung.
-Positive Änderungen wirken <strong>30 / 60 / 90 Tage</strong>, negative <strong>40 / 80 / 120 Tage</strong>.
-</div>
+  <div class="subtitle">
+    Dessarin Banner · Reputationspunkte (REP)
+  </div>
 
-<div class="section-title">
-  Regionen
-  <button class="info-btn" onclick="showInfo('Regionen','Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.')">i</button>
-</div>
+  <div class="notice">
+    <strong>REP</strong> beschreibt den aktuellen Ruf.
+    Einzelne Rufänderungen verlieren nach ihrer jeweiligen Wirkungsdauer
+    ihre Wirkung. Positive Änderungen wirken
+    <strong>30 / 60 / 90 Tage</strong>, negative
+    <strong>40 / 80 / 120 Tage</strong>.
+  </div>
 
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Region</th>
-<th class="num">REP</th>
-<th>Status</th>
-<th>Letzte Änderung</th>
-<th>Verwaltung</th>
-</tr>
-</thead>
-<tbody id="regionsBody"></tbody>
-</table>
-</div>
 
-<div class="toolbar">
-<button onclick="addFaction('place')">＋ Region hinzufügen</button>
-</div>
+  <!-- =========================
+       REGIONEN
+       ========================= -->
 
-<div class="section-title">
-  Organisationen
-  <button class="info-btn" onclick="showInfo('Organisationen','Überregionale oder eigenständige Organisationen werden separat von Regionen geführt.')">i</button>
-</div>
+  <div class="section-title">
 
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-<th>Organisation</th>
-<th class="num">REP</th>
-<th>Status</th>
-<th>Letzte Änderung</th>
-<th>Verwaltung</th>
-</tr>
-</thead>
-<tbody id="orgsBody"></tbody>
-</table>
-</div>
+    Regionen
 
-<div class="toolbar">
-<button onclick="addFaction('organization')">＋ Organisation hinzufügen</button>
-<span class="statusbar" id="loadStatus">Daten werden geladen…</span>
-</div>
+    <button
+      class="info-btn"
+      onclick="showInfo(
+        'Regionen',
+        'Mit einer Region ist der benannte Ort und sein näheres Umfeld gemeint, einschließlich Höfen, Dörfern und kleineren Siedlungen. Nicht jedes einzelne Dorf oder jeder Hof wird als eigene Region angelegt.'
+      )"
+      aria-label="Informationen zu Regionen"
+    >
+      i
+    </button>
 
-<div class="section-title">Rufänderung eintragen</div>
+  </div>
 
-<div class="toolbar">
-<div class="mission">
-<label>Mission / Ereignis</label>
-<input id="mission" placeholder="z. B. Die verlorene Karawane">
-</div>
+  <div class="table-wrap">
 
-<div class="date">
-<label>Datum</label>
-<input id="changeDate" type="date">
-</div>
-</div>
+    <table>
 
-<label>Beschreibung / Begründung</label>
-<textarea id="reason" placeholder="Was ist passiert und warum beeinflusst es den Ruf?"></textarea>
+      <thead>
+        <tr>
+          <th>Region</th>
+          <th class="num">REP</th>
+          <th>Status</th>
+          <th>Letzte Änderung</th>
+          <th>Verwaltung</th>
+        </tr>
+      </thead>
 
-<div id="changeRows"></div>
+      <tbody id="regionsBody"></tbody>
 
-<div class="toolbar">
-<button onclick="addChangeRow()">＋ REP hinzufügen</button>
-</div>
+    </table>
 
-<button class="primary" onclick="previewApply()">Änderungen übernehmen</button>
+  </div>
 
-<div class="section-title">Änderungsverlauf</div>
-<div id="log"></div>
+  <div class="toolbar">
+    <button onclick="addFaction('place')">
+      ＋ Region hinzufügen
+    </button>
+  </div>
+
+
+  <!-- =========================
+       ORGANISATIONEN
+       ========================= -->
+
+  <div class="section-title">
+
+    Organisationen
+
+    <button
+      class="info-btn"
+      onclick="showInfo(
+        'Organisationen',
+        'Überregionale oder eigenständige Organisationen werden separat von Regionen geführt.'
+      )"
+      aria-label="Informationen zu Organisationen"
+    >
+      i
+    </button>
+
+  </div>
+
+  <div class="table-wrap">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Organisation</th>
+          <th class="num">REP</th>
+          <th>Status</th>
+          <th>Letzte Änderung</th>
+          <th>Verwaltung</th>
+        </tr>
+      </thead>
+
+      <tbody id="orgsBody"></tbody>
+
+    </table>
+
+  </div>
+
+  <div class="toolbar">
+
+    <button onclick="addFaction('organization')">
+      ＋ Organisation hinzufügen
+    </button>
+
+    <span
+      class="statusbar"
+      id="loadStatus"
+    >
+      Daten werden geladen…
+    </span>
+
+  </div>
+
+
+  <!-- =========================
+       RUFÄNDERUNG
+       ========================= -->
+
+  <div class="section-title">
+    Rufänderung eintragen
+  </div>
+
+  <div class="toolbar">
+
+    <div class="mission">
+
+      <label for="mission">
+        Mission / Ereignis
+      </label>
+
+      <input
+        id="mission"
+        placeholder="z. B. Die verlorene Karawane"
+      >
+
+    </div>
+
+    <div class="date">
+
+      <label for="changeDate">
+        Datum
+      </label>
+
+      <input
+        id="changeDate"
+        type="date"
+      >
+
+    </div>
+
+  </div>
+
+
+  <label for="reason">
+    Beschreibung / Begründung
+  </label>
+
+  <textarea
+    id="reason"
+    placeholder="Was ist passiert und warum beeinflusst es den Ruf?"
+  ></textarea>
+
+
+  <!-- EINMALIGE ÜBERSCHRIFT -->
+  <div class="change-header">
+
+    <div class="header-main">
+      Auswirkung auf
+    </div>
+
+    <div class="header-effect">
+      Auswirkung
+    </div>
+
+    <div class="header-actions"></div>
+
+  </div>
+
+
+  <div id="changeRows"></div>
+
+
+  <div class="toolbar">
+
+    <button onclick="addChangeRow()">
+      ＋ REP hinzufügen
+    </button>
+
+  </div>
+
+  <button
+    class="primary"
+    onclick="previewApply()"
+  >
+    Änderungen übernehmen
+  </button>
+
+
+  <!-- =========================
+       ÄNDERUNGSVERLAUF
+       ========================= -->
+
+  <div class="section-title">
+    Änderungsverlauf
+  </div>
+
+  <div id="log"></div>
 
 </main>
 
-<div id="modalBackdrop" class="modal-backdrop">
-<div class="modal">
-<h2 id="modalTitle"></h2>
-<p id="modalText"></p>
 
-<div class="modal-actions">
-<button onclick="closeModal()">Abbrechen</button>
-<button id="modalConfirm" class="primary" onclick="confirmModal()">Übernehmen</button>
-</div>
+<!-- =========================
+     MODAL
+     ========================= -->
+
+<div
+  id="modalBackdrop"
+  class="modal-backdrop"
+  onclick="handleBackdropClick(event)"
+>
+
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    onclick="event.stopPropagation()"
+  >
+
+    <h2 id="modalTitle"></h2>
+
+    <p id="modalText"></p>
+
+    <div class="modal-actions">
+
+      <button
+        onclick="closeModal()"
+      >
+        Abbrechen
+      </button>
+
+      <button
+        id="modalConfirm"
+        class="primary"
+        onclick="confirmModal()"
+      >
+        Übernehmen
+      </button>
+
+    </div>
+
+  </div>
 
 </div>
-</div>
+
 
 <script>
+
+/* =========================================================
+   API
+   ========================================================= */
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
 
+
 let state = null;
 let pendingAction = null;
+
+
+/* =========================================================
+   VERFALL
+   ========================================================= */
 
 const EFFECTS = {
   1: 30,
@@ -185,363 +712,645 @@ const EFFECTS = {
   '-3': 120
 };
 
-function esc(s){
-  return String(s ?? '').replace(/[&<>"']/g,m=>({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;',
-    "'":'&#39;'
-  }[m]));
+
+/* =========================================================
+   HILFSFUNKTIONEN
+   ========================================================= */
+
+function esc(value){
+
+  return String(value ?? '')
+    .replace(/[&<>"']/g, m => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m]));
+
 }
+
+
+function slugify(value){
+
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/ß/g,'ss')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'')
+    || 'neu';
+
+
+}
+
 
 function todayISO(){
-  return new Date().toISOString().slice(0,10);
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
 }
 
-function fmtDate(s){
-  if(!s) return '–';
 
-  const d = new Date(s + 'T00:00:00');
+function fmtDate(value){
+
+  if(!value){
+    return '–';
+  }
+
+  const d =
+    new Date(value + 'T00:00:00');
 
   return isNaN(d)
     ? '–'
     : d.toLocaleDateString('de-DE');
+
 }
 
-function cls(n){
-  return n > 0 ? 'positive' : n < 0 ? 'negative' : '';
+
+function fmtRep(value){
+
+  const n =
+    Number(value) || 0;
+
+  return n > 0
+    ? '+' + n
+    : String(n);
+
 }
+
+
+function cls(value){
+
+  const n =
+    Number(value) || 0;
+
+  if(n > 0) return 'positive';
+  if(n < 0) return 'negative';
+
+  return '';
+
+}
+
 
 function statusFor(rep){
+
+  rep =
+    Number(rep) || 0;
+
   if(rep >= 8) return 'Verbündet';
   if(rep >= 3) return 'Wohlwollend';
   if(rep >= -2) return 'Neutral';
   if(rep >= -4) return 'Skeptisch';
+
   return 'Feindlich';
+
 }
+
+
+/* =========================================================
+   API REQUEST
+   ========================================================= */
 
 async function api(path, options = {}){
 
-  const r = await fetch(
-    API_BASE + path,
-    {
-      ...options,
-      headers:{
-        'Content-Type':'application/json',
-        ...(options.headers || {})
+  const response =
+    await fetch(
+      API_BASE + path,
+      {
+        ...options,
+        headers:{
+          'Content-Type':'application/json',
+          ...(options.headers || {})
+        }
       }
-    }
-  );
+    );
 
-  const d = await r.json().catch(
-    () => ({error:'Ungültige Serverantwort'})
-  );
+  const data =
+    await response
+      .json()
+      .catch(
+        () => ({
+          error:'Ungültige Serverantwort'
+        })
+      );
 
-  if(!r.ok || d.ok === false){
-    throw new Error(d.error || `HTTP ${r.status}`);
+  if(
+    !response.ok ||
+    data.ok === false
+  ){
+
+    throw new Error(
+      data.error ||
+      `HTTP ${response.status}`
+    );
+
   }
 
-  return d;
+  return data;
+
 }
+
+
+/* =========================================================
+   DATEN LADEN
+   ========================================================= */
 
 async function load(){
 
   try{
 
-    state = await api('/data');
+    state =
+      await api('/data');
 
-    document.getElementById('loadStatus').textContent =
-      'Zentral gespeichert';
+    document
+      .getElementById('loadStatus')
+      .textContent =
+        'Zentral gespeichert';
 
     render();
 
-    if(!document.querySelector('.change-row')){
+    if(
+      !document.querySelector(
+        '.change-row'
+      )
+    ){
+
       addChangeRow();
+
     }
 
-  }catch(e){
+  }catch(error){
 
-    document.getElementById('loadStatus').textContent =
-      'Fehler beim Laden';
+    document
+      .getElementById('loadStatus')
+      .textContent =
+        'Fehler beim Laden';
 
     alert(
       'Reputationsdaten konnten nicht geladen werden:\n' +
-      e.message
+      error.message
     );
+
   }
+
 }
+
+
+/* =========================================================
+   EINHEITEN
+   ========================================================= */
+
+function allUnits(){
+
+  const result = [];
+
+  for(
+    const place
+    of state.places || []
+  ){
+
+    if(
+      place.id === 'yartar' &&
+      place.children?.length
+    ){
+
+      for(
+        const child
+        of place.children
+      ){
+
+        result.push({
+          id:child.id,
+          name:
+            `${place.name} – ${child.name}`,
+          type:'child'
+        });
+
+      }
+
+    }else{
+
+      result.push({
+        id:place.id,
+        name:place.name,
+        type:'place'
+      });
+
+      for(
+        const child
+        of place.children || []
+      ){
+
+        result.push({
+          id:child.id,
+          name:
+            `${place.name} – ${child.name}`,
+          type:'child'
+        });
+
+      }
+
+    }
+
+  }
+
+  for(
+    const organization
+    of state.organizations || []
+  ){
+
+    result.push({
+      id:organization.id,
+      name:organization.name,
+      type:'organization'
+    });
+
+  }
+
+  return result;
+
+}
+
+
+function unitName(id){
+
+  return (
+    allUnits()
+      .find(
+        unit => unit.id === id
+      )?.name
+    || id
+  );
+
+}
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
 
 function render(){
 
-  const rb = document.getElementById('regionsBody');
+  renderRegions();
+  renderOrganizations();
+  renderLog();
 
-  rb.innerHTML = (state.places || []).map(p => {
+}
 
-    let row = `
+
+/* =========================================================
+   REGIONEN
+   ========================================================= */
+
+function renderRegions(){
+
+  const body =
+    document.getElementById(
+      'regionsBody'
+    );
+
+  body.innerHTML =
+    (state.places || [])
+      .map(place => {
+
+        const rep =
+          place.effectiveRep ??
+          place.rep ??
+          0;
+
+        const canDelete =
+          place.id !== 'yartar';
+
+        let html = `
+
+          <tr>
+
+            <td>
+
+              <div class="place-main">
+
+                ${esc(place.name)}
+
+                <button
+                  class="info-btn"
+                  onclick="showInfo(
+                    '${esc(place.name)}',
+                    '${esc(
+                      place.info ||
+                      'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.'
+                    )}'
+                  )"
+                  aria-label="Informationen"
+                >
+                  i
+                </button>
+
+              </div>
+
+            </td>
+
+            <td
+              class="num ${cls(rep)}"
+            >
+              ${fmtRep(rep)}
+            </td>
+
+            <td
+              class="status ${cls(rep)}"
+            >
+              ${esc(
+                place.status ||
+                statusFor(rep)
+              )}
+            </td>
+
+            <td>
+              ${fmtDate(
+                place.lastChange
+              )}
+            </td>
+
+            <td>
+
+              <div class="actions">
+
+                <button
+                  onclick="editFaction(
+                    '${esc(place.id)}',
+                    'place'
+                  )"
+                >
+                  Bearbeiten
+                </button>
+
+                ${
+                  canDelete
+                    ? `
+                      <button
+                        class="danger"
+                        onclick="deleteFaction(
+                          '${esc(place.id)}',
+                          'place'
+                        )"
+                      >
+                        Löschen
+                      </button>
+                    `
+                    : ''
+                }
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        `;
+
+
+        for(
+          const child
+          of place.children || []
+        ){
+
+          const childRep =
+            child.effectiveRep ??
+            child.rep ??
+            0;
+
+          html += `
+
+            <tr class="child">
+
+              <td>
+                ${esc(child.name)}
+              </td>
+
+              <td
+                class="num ${cls(childRep)}"
+              >
+                ${fmtRep(childRep)}
+              </td>
+
+              <td
+                class="status ${cls(childRep)}"
+              >
+                ${esc(
+                  child.status ||
+                  statusFor(childRep)
+                )}
+              </td>
+
+              <td>
+                ${fmtDate(
+                  child.lastChange
+                )}
+              </td>
+
+              <td></td>
+
+            </tr>
+
+          `;
+
+        }
+
+        return html;
+
+      })
+      .join('')
+    ||
+    `
       <tr>
-
-        <td>
-          <div class="place-main">
-            ${esc(p.name)}
-
-            <button
-              class="info-btn"
-              onclick="showInfo(
-                '${esc(p.name)}',
-                '${esc(
-                  p.info ||
-                  'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.'
-                )}'
-              )"
-            >i</button>
-
-          </div>
+        <td
+          colspan="5"
+          class="empty"
+        >
+          Keine Regionen vorhanden.
         </td>
-
-        <td class="num ${cls(p.effectiveRep ?? p.rep ?? 0)}">
-          ${fmtRep(p.effectiveRep ?? p.rep ?? 0)}
-        </td>
-
-        <td class="status ${cls(p.effectiveRep ?? p.rep ?? 0)}">
-          ${esc(
-            p.status ||
-            statusFor(p.effectiveRep ?? p.rep ?? 0)
-          )}
-        </td>
-
-        <td>
-          ${fmtDate(p.lastChange)}
-        </td>
-
-        <td>
-          <div class="actions">
-
-            <button
-              onclick="editFaction('${esc(p.id)}','place')"
-            >
-              Bearbeiten
-            </button>
-
-            <button
-              class="danger"
-              onclick="deleteFaction('${esc(p.id)}','place')"
-            >
-              Löschen
-            </button>
-
-          </div>
-        </td>
-
       </tr>
     `;
 
-    for(const c of p.children || []){
+}
 
-      row += `
-        <tr class="child">
 
-          <td>
-            ${esc(c.name)}
-          </td>
+/* =========================================================
+   ORGANISATIONEN
+   ========================================================= */
 
-          <td class="num ${cls(c.effectiveRep ?? c.rep ?? 0)}">
-            ${fmtRep(c.effectiveRep ?? c.rep ?? 0)}
-          </td>
+function renderOrganizations(){
 
-          <td class="status ${cls(c.effectiveRep ?? c.rep ?? 0)}">
-            ${esc(
-              c.status ||
-              statusFor(c.effectiveRep ?? c.rep ?? 0)
-            )}
-          </td>
+  const body =
+    document.getElementById(
+      'orgsBody'
+    );
 
-          <td>
-            ${fmtDate(c.lastChange)}
-          </td>
+  body.innerHTML =
+    (state.organizations || [])
+      .map(org => {
 
-          <td></td>
+        const rep =
+          org.effectiveRep ??
+          org.rep ??
+          0;
 
-        </tr>
-      `;
-    }
+        return `
 
-    return row;
+          <tr>
 
-  }).join('') ||
-  `
-    <tr>
-      <td colspan="5" class="muted">
-        Keine Regionen vorhanden.
-      </td>
-    </tr>
-  `;
+            <td>
 
-  document.getElementById('orgsBody').innerHTML =
-    (state.organizations || []).map(o => `
+              ${esc(org.name)}
 
-      <tr>
+              <button
+                class="info-btn"
+                onclick="showInfo(
+                  '${esc(org.name)}',
+                  '${esc(
+                    org.description ||
+                    'Keine Beschreibung vorhanden.'
+                  )}'
+                )"
+                aria-label="Informationen"
+              >
+                i
+              </button>
 
-        <td>
+            </td>
 
-          ${esc(o.name)}
-
-          <button
-            class="info-btn"
-            onclick="showInfo(
-              '${esc(o.name)}',
-              '${esc(o.description || 'Keine Beschreibung vorhanden.')}'
-            )"
-          >i</button>
-
-        </td>
-
-        <td class="num ${cls(o.effectiveRep ?? o.rep ?? 0)}">
-          ${fmtRep(o.effectiveRep ?? o.rep ?? 0)}
-        </td>
-
-        <td class="status ${cls(o.effectiveRep ?? o.rep ?? 0)}">
-          ${esc(
-            o.status ||
-            statusFor(o.effectiveRep ?? o.rep ?? 0)
-          )}
-        </td>
-
-        <td>
-          ${fmtDate(o.lastChange)}
-        </td>
-
-        <td>
-
-          <div class="actions">
-
-            <button
-              onclick="editFaction('${esc(o.id)}','organization')"
+            <td
+              class="num ${cls(rep)}"
             >
-              Bearbeiten
-            </button>
+              ${fmtRep(rep)}
+            </td>
 
-            <button
-              class="danger"
-              onclick="deleteFaction('${esc(o.id)}','organization')"
+            <td
+              class="status ${cls(rep)}"
             >
-              Löschen
-            </button>
+              ${esc(
+                org.status ||
+                statusFor(rep)
+              )}
+            </td>
 
-          </div>
+            <td>
+              ${fmtDate(
+                org.lastChange
+              )}
+            </td>
 
-        </td>
+            <td>
 
-      </tr>
+              <div class="actions">
 
-    `).join('') ||
+                <button
+                  onclick="editFaction(
+                    '${esc(org.id)}',
+                    'organization'
+                  )"
+                >
+                  Bearbeiten
+                </button>
+
+                <button
+                  class="danger"
+                  onclick="deleteFaction(
+                    '${esc(org.id)}',
+                    'organization'
+                  )"
+                >
+                  Löschen
+                </button>
+
+              </div>
+
+            </td>
+
+          </tr>
+
+        `;
+
+      })
+      .join('')
+    ||
     `
       <tr>
-        <td colspan="5" class="muted">
+        <td
+          colspan="5"
+          class="empty"
+        >
           Keine Organisationen vorhanden.
         </td>
       </tr>
     `;
 
-  renderLog();
 }
 
-function fmtRep(n){
 
-  n = Number(n) || 0;
-
-  return n > 0
-    ? '+' + n
-    : String(n);
-}
-
-function allUnits(){
-
-  const a = [];
-
-  for(const p of state.places || []){
-
-    for(const c of p.children || []){
-
-      a.push({
-        id:c.id,
-        name:`${p.name} – ${c.name}`
-      });
-
-    }
-
-    if(!p.children?.length){
-
-      a.push({
-        id:p.id,
-        name:p.name
-      });
-
-    }
-
-  }
-
-  for(const o of state.organizations || []){
-
-    a.push({
-      id:o.id,
-      name:o.name
-    });
-
-  }
-
-  return a;
-}
-
-function unitName(id){
-
-  return allUnits().find(
-    x => x.id === id
-  )?.name || id;
-
-}
+/* =========================================================
+   REP-ZEILE
+   ========================================================= */
 
 function addChangeRow(){
 
-  const wrap =
-    document.getElementById('changeRows');
+  const container =
+    document.getElementById(
+      'changeRows'
+    );
 
-  const r =
+  const row =
     document.createElement('div');
 
-  r.className = 'change-row';
+  row.className =
+    'change-row';
 
-  const opts =
+
+  const options =
     allUnits()
       .map(
-        u =>
-          `<option value="${esc(u.id)}">${esc(u.name)}</option>`
+        unit => `
+          <option
+            value="${esc(unit.id)}"
+          >
+            ${esc(unit.name)}
+          </option>
+        `
       )
       .join('');
 
-  r.innerHTML = `
+
+  row.innerHTML = `
 
     <div>
 
-      <label>Reputation</label>
-
-      <select class="target">
+      <select
+        class="target"
+        aria-label="Auswirkung auf"
+        onchange="updateTargetOptions()"
+      >
 
         <option value="">
           Bitte auswählen
         </option>
 
-        ${opts}
+        ${options}
 
       </select>
 
     </div>
 
+
     <div>
 
-      <label>Auswirkung</label>
-
-      <select class="effect">
+      <select
+        class="effect"
+        aria-label="Auswirkung"
+      >
 
         <option value="">
           Bitte auswählen
@@ -575,70 +1384,169 @@ function addChangeRow(){
 
     </div>
 
+
     <button
       class="remove"
-      onclick="this.parentElement.remove()"
+      onclick="
+        this.parentElement.remove();
+        updateTargetOptions();
+      "
     >
       Entfernen
     </button>
 
   `;
 
-  wrap.appendChild(r);
+
+  container.appendChild(row);
+
+  updateTargetOptions();
+
 }
+
+
+/* =========================================================
+   DOPPELTE ZIELE VERHINDERN
+   ========================================================= */
+
+function updateTargetOptions(){
+
+  const selects =
+    [
+      ...document.querySelectorAll(
+        '.change-row .target'
+      )
+    ];
+
+  const selected =
+    new Set(
+      selects
+        .map(select => select.value)
+        .filter(Boolean)
+    );
+
+
+  for(
+    const select
+    of selects
+  ){
+
+    const ownValue =
+      select.value;
+
+    for(
+      const option
+      of select.options
+    ){
+
+      if(
+        !option.value
+      ){
+
+        option.disabled = false;
+        continue;
+
+      }
+
+      option.disabled =
+        selected.has(option.value) &&
+        option.value !== ownValue;
+
+    }
+
+  }
+
+}
+
+
+/* =========================================================
+   CHANGES AUSLESEN
+   ========================================================= */
 
 function getChanges(){
 
   return [
-    ...document.querySelectorAll('.change-row')
+    ...document.querySelectorAll(
+      '.change-row'
+    )
   ]
-  .map(r => ({
+  .map(row => ({
+
     factionId:
-      r.querySelector('.target').value,
+      row.querySelector(
+        '.target'
+      ).value,
 
     delta:
       Number(
-        r.querySelector('.effect').value
+        row.querySelector(
+          '.effect'
+        ).value
       )
+
   }))
   .filter(
-    x => x.factionId && x.delta
+    change =>
+      change.factionId &&
+      Number.isFinite(change.delta) &&
+      change.delta !== 0
   );
+
 }
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
 
 function showInfo(title,text){
 
-  document.getElementById('modalTitle')
+  document
+    .getElementById('modalTitle')
     .textContent = title;
 
-  document.getElementById('modalText')
+  document
+    .getElementById('modalText')
     .textContent = text;
 
-  document.getElementById('modalConfirm')
+  document
+    .getElementById('modalConfirm')
     .style.display = 'none';
 
   document
     .getElementById('modalBackdrop')
     .classList.add('open');
+
 }
 
-function openModal(title,text,action){
 
-  pendingAction = action;
+function openModal(
+  title,
+  text,
+  action
+){
 
-  document.getElementById('modalTitle')
+  pendingAction =
+    action;
+
+  document
+    .getElementById('modalTitle')
     .textContent = title;
 
-  document.getElementById('modalText')
+  document
+    .getElementById('modalText')
     .textContent = text;
 
-  document.getElementById('modalConfirm')
+  document
+    .getElementById('modalConfirm')
     .style.display = '';
 
   document
     .getElementById('modalBackdrop')
     .classList.add('open');
+
 }
+
 
 function closeModal(){
 
@@ -646,141 +1554,319 @@ function closeModal(){
     .getElementById('modalBackdrop')
     .classList.remove('open');
 
-  pendingAction = null;
+  pendingAction =
+    null;
+
 }
+
+
+function handleBackdropClick(event){
+
+  if(
+    event.target.id ===
+    'modalBackdrop'
+  ){
+
+    closeModal();
+
+  }
+
+}
+
+
+document.addEventListener(
+  'keydown',
+  event => {
+
+    if(
+      event.key === 'Escape' &&
+      document
+        .getElementById(
+          'modalBackdrop'
+        )
+        .classList
+        .contains('open')
+    ){
+
+      closeModal();
+
+    }
+
+  }
+);
+
 
 async function confirmModal(){
 
-  if(!pendingAction) return;
+  if(!pendingAction){
+    return;
+  }
 
-  const a = pendingAction;
+  const action =
+    pendingAction;
 
   closeModal();
 
   try{
 
-    await a();
+    await action();
+
     await load();
 
-  }catch(e){
+  }catch(error){
 
-    alert(e.message);
+    alert(
+      error.message
+    );
 
   }
+
 }
+
+
+/* =========================================================
+   RUFÄNDERUNG VORSCHAU
+   ========================================================= */
 
 function previewApply(){
 
   const mission =
-    document.getElementById('mission')
-      .value.trim();
+    document
+      .getElementById('mission')
+      .value
+      .trim();
 
   const reason =
-    document.getElementById('reason')
-      .value.trim();
+    document
+      .getElementById('reason')
+      .value
+      .trim();
 
   const date =
-    document.getElementById('changeDate')
-      .value || todayISO();
+    document
+      .getElementById('changeDate')
+      .value ||
+    todayISO();
 
-  const changes = getChanges();
+
+  const rows =
+    [
+      ...document.querySelectorAll(
+        '.change-row'
+      )
+    ];
+
+
+  const changes =
+    getChanges();
+
 
   if(!mission){
 
-    return alert(
+    alert(
       'Bitte Mission / Ereignis eintragen.'
     );
 
+    return;
+
   }
+
 
   if(!changes.length){
 
-    return alert(
+    alert(
       'Bitte mindestens eine REP-Änderung auswählen.'
     );
 
+    return;
+
   }
 
-  if(
-    new Set(
-      changes.map(x => x.factionId)
-    ).size !== changes.length
+
+  /*
+   * Prüfen, ob eine Zeile unvollständig ist.
+   */
+
+  for(
+    const row
+    of rows
   ){
 
-    return alert(
-      'Eine REP-Einheit wurde doppelt ausgewählt.'
-    );
+    const target =
+      row.querySelector(
+        '.target'
+      ).value;
+
+    const effect =
+      row.querySelector(
+        '.effect'
+      ).value;
+
+
+    if(
+      (target && !effect) ||
+      (!target && effect)
+    ){
+
+      alert(
+        'Bitte bei jeder angelegten Zeile sowohl „Auswirkung auf“ als auch „Auswirkung“ auswählen.'
+      );
+
+      return;
+
+    }
 
   }
+
+
+  /*
+   * Doppelte Ziele explizit verhindern.
+   */
+
+  const ids =
+    changes.map(
+      change =>
+        change.factionId
+    );
+
+  const uniqueIds =
+    new Set(ids);
+
+
+  if(
+    uniqueIds.size !== ids.length
+  ){
+
+    alert(
+      'Eine REP-Einheit wurde mehrfach ausgewählt. Bitte jede Einheit nur einmal pro Ereignis verwenden.'
+    );
+
+    return;
+
+  }
+
 
   const lines =
     changes
-      .map(
-        c =>
-          `${unitName(c.factionId)}: ${
-            c.delta > 0 ? '+' : ''
-          }${c.delta} · ${
-            EFFECTS[c.delta]
-          } Tage`
-      )
+      .map(change => {
+
+        const sign =
+          change.delta > 0
+            ? '+'
+            : '';
+
+        const days =
+          EFFECTS[
+            change.delta
+          ] || 30;
+
+        return (
+          `${unitName(change.factionId)}: ` +
+          `${sign}${change.delta} ` +
+          `(${days} Tage)`
+        );
+
+      })
       .join('\n');
+
 
   openModal(
     'Änderungen übernehmen',
-    `${mission}\n\n${lines}\n\n${
-      reason || 'Keine Beschreibung.'
-    }`,
+
+    `${mission}\n\n` +
+    `${lines}\n\n` +
+    `${reason || 'Keine Beschreibung.'}\n\n` +
+    `Die Änderungen werden zentral gespeichert.`,
+
     async () => {
 
       await api(
         '/change',
         {
           method:'POST',
-          body:JSON.stringify({
-            mission,
-            reason,
-            date,
-            changes
-          })
+
+          body:
+            JSON.stringify({
+              mission,
+              reason,
+              date,
+              changes
+            })
+
         }
       );
 
-      document.getElementById('mission')
+
+      document
+        .getElementById('mission')
         .value = '';
 
-      document.getElementById('reason')
+      document
+        .getElementById('reason')
         .value = '';
 
-      document.getElementById('changeRows')
+      document
+        .getElementById('changeRows')
         .innerHTML = '';
 
+      addChangeRow();
+
     }
+
   );
+
 }
+
+
+/* =========================================================
+   REGION / ORGANISATION HINZUFÜGEN
+   ========================================================= */
 
 function addFaction(type){
 
-  const name = prompt(
-    type === 'place'
-      ? 'Name der neuen Region:'
-      : 'Name der neuen Organisation:'
-  );
+  const isPlace =
+    type === 'place';
 
-  if(!name?.trim()) return;
+
+  const name =
+    prompt(
+      isPlace
+        ? 'Name der neuen Region:'
+        : 'Name der neuen Organisation:'
+    );
+
+
+  if(
+    name === null ||
+    !name.trim()
+  ){
+
+    return;
+
+  }
+
 
   const description =
     prompt(
-      type === 'place'
+      isPlace
         ? 'Info zur Region (optional):'
         : 'Beschreibung der Organisation (optional):'
     ) || '';
 
+
+  const id =
+    slugify(name);
+
+
   openModal(
-    type === 'place'
+
+    isPlace
       ? 'Region hinzufügen'
       : 'Organisation hinzufügen',
 
-    `${name}\n\nZentral speichern?`,
+    `${name}\n\n` +
+    `${description || 'Keine Beschreibung.'}\n\n` +
+    `Diese Stammdaten werden zentral gespeichert.`,
 
     async () => {
 
@@ -788,33 +1874,55 @@ function addFaction(type){
         '/faction',
         {
           method:'POST',
-          body:JSON.stringify({
-            action:'create',
-            type,
-            name,
-            description,
-            rep:0,
-            date:todayISO()
-          })
+
+          body:
+            JSON.stringify({
+              action:'create',
+              type,
+              id,
+              name:name.trim(),
+              description,
+              rep:0,
+              date:todayISO()
+            })
+
         }
       );
 
     }
+
   );
+
 }
 
-function editFaction(id,type){
+
+/* =========================================================
+   BEARBEITEN
+   ========================================================= */
+
+function editFaction(
+  id,
+  type
+){
 
   const item =
     type === 'place'
-      ? state.places.find(
+      ? (
+          state.places || []
+        ).find(
           x => x.id === id
         )
-      : state.organizations.find(
+      : (
+          state.organizations || []
+        ).find(
           x => x.id === id
         );
 
-  if(!item) return;
+
+  if(!item){
+    return;
+  }
+
 
   const name =
     prompt(
@@ -822,66 +1930,122 @@ function editFaction(id,type){
       item.name
     );
 
-  if(name === null) return;
+
+  if(name === null){
+    return;
+  }
+
+
+  const oldDescription =
+    type === 'place'
+      ? (
+          item.info || ''
+        )
+      : (
+          item.description || ''
+        );
+
 
   const description =
     prompt(
       type === 'place'
         ? 'Info zur Region:'
         : 'Beschreibung:',
-      type === 'place'
-        ? (item.info || '')
-        : (item.description || '')
+      oldDescription
     );
 
-  if(description === null) return;
+
+  if(description === null){
+    return;
+  }
+
 
   openModal(
+
     'Änderung speichern',
-    `${name}\n\nDie Stammdaten werden zentral geändert.`,
+
+    `${name}\n\n` +
+    `Die Stammdaten werden zentral geändert.`,
 
     async () => {
-
-      const body = {
-        action:'update',
-        type,
-        id,
-        name,
-        description
-      };
-
-      if(type === 'place'){
-        body.info = description;
-      }
 
       await api(
         '/faction',
         {
           method:'POST',
-          body:JSON.stringify(body)
+
+          body:
+            JSON.stringify({
+              action:'update',
+              type,
+              id,
+              name:name.trim(),
+              description
+            })
+
         }
       );
 
     }
+
   );
+
 }
 
-function deleteFaction(id,type){
+
+/* =========================================================
+   LÖSCHEN
+   ========================================================= */
+
+function deleteFaction(
+  id,
+  type
+){
+
+  /*
+   * Yartar ist eine feste Kernregion
+   * und kann nicht gelöscht werden.
+   */
+
+  if(
+    type === 'place' &&
+    id === 'yartar'
+  ){
+
+    alert(
+      'Yartar ist eine feste Kernregion und kann nicht gelöscht werden.'
+    );
+
+    return;
+
+  }
+
 
   const item =
     type === 'place'
-      ? state.places.find(
+      ? (
+          state.places || []
+        ).find(
           x => x.id === id
         )
-      : state.organizations.find(
+      : (
+          state.organizations || []
+        ).find(
           x => x.id === id
         );
 
-  if(!item) return;
+
+  if(!item){
+    return;
+  }
+
 
   openModal(
+
     'Endgültig löschen',
-    `"${item.name}" wird aus den Stammdaten entfernt.\n\nDie Historie bleibt bestehen.`,
+
+    `"${item.name}" wird aus den Stammdaten entfernt.\n\n` +
+    `Die Ereignishistorie bleibt erhalten.`,
 
     async () => {
 
@@ -889,44 +2053,146 @@ function deleteFaction(id,type){
         '/faction',
         {
           method:'POST',
-          body:JSON.stringify({
-            action:'delete',
-            type,
-            id
-          })
+
+          body:
+            JSON.stringify({
+              action:'delete',
+              type,
+              id
+            })
+
         }
       );
 
     }
+
   );
+
 }
+
+
+/* =========================================================
+   RETCON
+   ========================================================= */
+
+async function setEventStatus(
+  eventId,
+  valid
+){
+
+  openModal(
+
+    valid
+      ? 'Ereignis wieder gültig machen'
+      : 'Ereignis als Retcon markieren',
+
+    valid
+      ? 'Dieses Ereignis wird wieder bei der Berechnung berücksichtigt.'
+      : 'Dieses Ereignis bleibt in der Historie, wird aber aus der Berechnung genommen.',
+
+    async () => {
+
+      await api(
+        '/event/status',
+        {
+          method:'POST',
+
+          body:
+            JSON.stringify({
+              eventId,
+              valid
+            })
+
+        }
+      );
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   ÄNDERUNGSVERLAUF
+   ========================================================= */
 
 function renderLog(){
 
   const events =
-    [...(state.events || [])]
-      .sort(
-        (a,b) =>
-          String(b.date)
+    [
+      ...(state.events || [])
+    ]
+    .sort(
+      (a,b) => {
+
+        const dateCompare =
+          String(b.date || '')
             .localeCompare(
-              String(a.date)
-            )
-      );
+              String(a.date || '')
+            );
+
+        if(
+          dateCompare !== 0
+        ){
+
+          return dateCompare;
+
+        }
+
+
+        /*
+         * Bei gleichem Datum:
+         * createdAt entscheidet,
+         * sofern vorhanden.
+         */
+
+        return String(
+          b.createdAt || ''
+        )
+        .localeCompare(
+          String(
+            a.createdAt || ''
+          )
+        );
+
+      }
+    );
+
 
   const groups = {};
 
-  for(const e of events){
 
-    const d =
-      e.date || 'unknown';
+  for(
+    const event
+    of events
+  ){
 
-    const m =
-      d.slice(0,7);
+    const date =
+      event.date ||
+      'unknown';
 
-    (groups[m] ??= [])
-      .push(e);
+    const month =
+      date === 'unknown'
+        ? 'unknown'
+        : date.slice(0,7);
+
+
+    if(
+      !groups[month]
+    ){
+
+      groups[month] = [];
+
+    }
+
+
+    groups[month].push(
+      event
+    );
 
   }
+
 
   const keys =
     Object.keys(groups)
@@ -935,23 +2201,43 @@ function renderLog(){
           b.localeCompare(a)
       );
 
-  document.getElementById('log')
-    .innerHTML = keys.length
 
-      ? keys.map(
-          (key,i) => {
+  document
+    .getElementById('log')
+    .innerHTML =
 
-            const [y,m] =
-              key.split('-');
+    keys.length
 
-            const label =
-              key === 'unknown'
-                ? 'Ohne Datum'
-                : new Date(
-                    Number(y),
-                    Number(m)-1,
+      ? keys
+          .map(
+            (key,index) => {
+
+              let label;
+
+
+              if(
+                key === 'unknown'
+              ){
+
+                label =
+                  'Ohne Datum';
+
+              }else{
+
+                const [
+                  year,
+                  month
+                ] =
+                  key.split('-');
+
+
+                label =
+                  new Date(
+                    Number(year),
+                    Number(month) - 1,
                     1
-                  ).toLocaleDateString(
+                  )
+                  .toLocaleDateString(
                     'de-DE',
                     {
                       month:'long',
@@ -959,136 +2245,218 @@ function renderLog(){
                     }
                   );
 
-            return `
-              <details
-                class="log-group"
-                ${i === 0 ? 'open' : ''}
-              >
+              }
 
-                <summary>
 
-                  <span>
-                    ${esc(label)}
-                  </span>
+              return `
 
-                  <span class="muted">
-                    ${groups[key].length}
-                    ${
-                      groups[key].length === 1
-                        ? 'Änderung'
-                        : 'Änderungen'
-                    }
-                  </span>
+                <details
+                  class="log-group"
+                  ${index === 0 ? 'open' : ''}
+                >
 
-                </summary>
+                  <summary>
 
-                <div class="log-body">
+                    <span>
+                      ${esc(label)}
+                    </span>
 
-                  ${groups[key]
-                    .map(e => {
+                    <span class="muted">
+                      ${groups[key].length}
+                      ${
+                        groups[key].length === 1
+                          ? 'Änderung'
+                          : 'Änderungen'
+                      }
+                    </span>
 
-                      const valid =
-                        e.valid !== false;
+                  </summary>
 
-                      return `
 
-                        <div class="log-entry">
+                  <div class="log-body">
 
-                          <div class="log-head">
+                    ${groups[key]
+                      .map(event => {
 
-                            <strong>
-                              ${esc(
-                                e.mission ||
-                                'Ohne Missionsangabe'
-                              )}
-                            </strong>
+                        const valid =
+                          event.valid !== false;
 
-                            <span class="muted">
-                              ${fmtDate(e.date)}
-                            </span>
 
-                          </div>
+                        const changes =
+                          (
+                            event.changes ||
+                            []
+                          )
+                          .map(change => {
 
-                          <span
-                            class="badge ${
-                              valid
-                                ? ''
-                                : 'invalid'
-                            }"
+                            const days =
+                              change.days ||
+                              EFFECTS[
+                                Number(
+                                  change.delta
+                                )
+                              ] ||
+                              30;
+
+
+                            return `
+
+                              <div>
+
+                                <strong>
+                                  ${esc(
+                                    change.factionName ||
+                                    unitName(
+                                      change.factionId
+                                    )
+                                  )}
+                                </strong>
+
+                                <span
+                                  class="${cls(
+                                    change.delta
+                                  )}"
+                                >
+                                  ${
+                                    Number(
+                                      change.delta
+                                    ) > 0
+                                      ? '+'
+                                      : ''
+                                  }${esc(
+                                    change.delta
+                                  )}
+                                </span>
+
+                                · ${days} Tage
+
+                                ${
+                                  change.active === false
+                                    ? ' · abgelaufen'
+                                    : ''
+                                }
+
+                              </div>
+
+                            `;
+
+                          })
+                          .join('');
+
+
+                        return `
+
+                          <div
+                            class="log-entry"
                           >
-                            ${
-                              valid
-                                ? 'gültig'
-                                : 'RETCON – ungültig'
-                            }
-                          </span>
 
-                          <div>
-                            ${esc(
-                              e.reason ||
-                              'Keine Beschreibung.'
-                            )}
+                            <div
+                              class="log-head"
+                            >
+
+                              <strong>
+                                ${esc(
+                                  event.mission ||
+                                  'Ohne Missionsangabe'
+                                )}
+                              </strong>
+
+                              <span
+                                class="muted"
+                              >
+                                ${fmtDate(
+                                  event.date
+                                )}
+                              </span>
+
+                            </div>
+
+
+                            <div
+                              class="${
+                                valid
+                                  ? 'muted'
+                                  : 'badge invalid'
+                              }"
+                            >
+                              ${
+                                valid
+                                  ? 'gültig'
+                                  : 'RETCON – ungültig'
+                              }
+                            </div>
+
+
+                            <div>
+                              ${esc(
+                                event.reason ||
+                                'Keine Begründung angegeben.'
+                              )}
+                            </div>
+
+
+                            ${changes}
+
+
+                            <div
+                              class="actions retcon-button"
+                            >
+
+                              <button
+                                ${
+                                  valid
+                                    ? 'class="danger"'
+                                    : ''
+                                }
+                                onclick="setEventStatus(
+                                  '${esc(event.id)}',
+                                  ${!valid}
+                                )"
+                              >
+                                ${
+                                  valid
+                                    ? 'Als Retcon ungültig machen'
+                                    : 'Wieder gültig machen'
+                                }
+                              </button>
+
+                            </div>
+
                           </div>
 
-                          ${
-                            (e.changes || [])
-                              .map(
-                                c => `
-                                  <div>
+                        `;
 
-                                    <strong>
-                                      ${esc(
-                                        c.factionName ||
-                                        unitName(c.factionId)
-                                      )}
-                                    </strong>
+                      })
+                      .join('')}
 
-                                    <span
-                                      class="${cls(c.delta)}"
-                                    >
-                                      ${
-                                        c.delta > 0
-                                          ? '+'
-                                          : ''
-                                      }${c.delta}
-                                    </span>
+                  </div>
 
-                                    · ${
-                                      c.days ||
-                                      EFFECTS[c.delta] ||
-                                      30
-                                    } Tage
+                </details>
 
-                                  </div>
-                                `
-                              )
-                              .join('')
-                          }
+              `;
 
-                        </div>
-
-                      `;
-
-                    })
-                    .join('')}
-
-                </div>
-
-              </details>
-            `;
-
-          }
-        ).join('')
+            }
+          )
+          .join('')
 
       : `
-        <p class="muted">
-          Noch keine Rufänderungen gespeichert.
-        </p>
-      `;
+          <p class="muted">
+            Noch keine Rufänderungen gespeichert.
+          </p>
+        `;
+
 }
 
-document.getElementById('changeDate')
-  .value = todayISO();
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document
+  .getElementById('changeDate')
+  .value =
+    todayISO();
+
 
 load();
 
