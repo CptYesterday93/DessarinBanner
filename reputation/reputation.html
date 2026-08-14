@@ -812,7 +812,7 @@ button.primary + .expiry-details{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 7.3</div>
+  <div class="version-tag">HTML VERSION 7.4</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1834,7 +1834,6 @@ function renderRegions(){
                 class="status ${valueClass(rep)}"
               >
                 ${esc(
-                  place.status ||
                   statusFor(rep)
                 )}
               </td>
@@ -2077,7 +2076,6 @@ function renderOrganizations(){
                 class="status ${valueClass(rep)}"
               >
                 ${esc(
-                  org.status ||
                   statusFor(rep)
                 )}
               </td>
@@ -3254,7 +3252,7 @@ function showFactionDetail(id,type){
         <span>Aktuelle REP</span>
       </div>
       <div class="detail-stat">
-        <strong>${esc(item.status || statusFor(rep))}</strong>
+        <strong>${esc(statusFor(rep))}</strong>
         <span>Status</span>
       </div>
     </div>
