@@ -223,22 +223,7 @@
       "lastChange": null
     }
   ],
-  "events": [
-    {
-      "id": "event_74784496-5900-4df1-a03a-755ec272bed3",
-      "date": "2026-05-14",
-      "mission": "test",
-      "reason": "test",
-      "valid": true,
-      "createdAt": "2026-08-14T10:06:48.143Z",
-      "changes": [
-        {
-          "factionId": "yartar-gemeines-volk",
-          "delta": 3
-        }
-      ]
-    }
-  ],
+  "events": [],
   "restore": null,
-  "updatedAt": "2026-08-14T10:19:48.599Z"
+  "updatedAt": "2026-08-14T10:19:51.873Z"
 }
