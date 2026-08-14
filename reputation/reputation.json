@@ -221,6 +221,15 @@
       "baseDate": null,
       "rep": 0,
       "lastChange": null
+    },
+    {
+      "id": "nasenbohrer",
+      "name": "nasenbohrer",
+      "description": "test",
+      "baseRep": 0,
+      "baseDate": "2026-08-14",
+      "lastChange": null,
+      "active": true
     }
   ],
   "events": [
@@ -320,5 +329,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T10:22:36.191Z"
+  "updatedAt": "2026-08-14T10:43:08.607Z"
 }
