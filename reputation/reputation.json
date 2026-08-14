@@ -261,7 +261,7 @@
       "date": "2026-08-14",
       "mission": "4134",
       "reason": "13",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-14T06:27:05.809Z",
       "changes": [
         {
@@ -269,7 +269,7 @@
           "delta": 2
         }
       ],
-      "statusChangedAt": "2026-08-14T08:02:54.194Z"
+      "statusChangedAt": "2026-08-14T08:05:19.115Z"
     },
     {
       "id": "event_a587abc3-94d2-4483-acdc-61990f96e14e",
@@ -341,5 +341,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:05:18.149Z"
+  "updatedAt": "2026-08-14T08:05:19.115Z"
 }
