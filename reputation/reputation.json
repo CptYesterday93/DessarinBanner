@@ -73,27 +73,37 @@
           "description": "Kriminelle Netzwerke, Diebesgruppen und andere Teile der lokalen Unterwelt.",
           "order": 4
         }
-      ]
+      ],
+      "baseRep": 0,
+      "baseDate": null
     },
     {
       "id": "calling-horns",
       "name": "Calling Horns",
-      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
+      "baseRep": 0,
+      "baseDate": null
     },
     {
       "id": "everlund",
       "name": "Everlund",
-      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
+      "baseRep": 0,
+      "baseDate": null
     },
     {
       "id": "longsaddle",
       "name": "Longsaddle",
-      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
+      "baseRep": 0,
+      "baseDate": null
     },
     {
       "id": "triboar",
       "name": "Triboar",
-      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen."
+      "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
+      "baseRep": 0,
+      "baseDate": null
     },
     {
       "id": "test",
@@ -112,17 +122,23 @@
     {
       "id": "harpers",
       "name": "Harpers",
-      "description": "Ein weit verzweigtes Netzwerk, das sich für Freiheit, Wissen und den Schutz vor gefährlichen Mächten einsetzt."
+      "description": "Ein weit verzweigtes Netzwerk, das sich für Freiheit, Wissen und den Schutz vor gefährlichen Mächten einsetzt.",
+      "baseRep": 0,
+      "baseDate": null
     },
     {
       "id": "kraken-society",
       "name": "Kraken Society",
-      "description": "Eine weitreichende kriminelle Organisation mit eigenen Interessen und verdecktem Einfluss."
+      "description": "Eine weitreichende kriminelle Organisation mit eigenen Interessen und verdecktem Einfluss.",
+      "baseRep": 0,
+      "baseDate": null
     },
     {
       "id": "zhentarim",
       "name": "Zhentarim",
-      "description": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten mit starkem Eigeninteresse."
+      "description": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten mit starkem Eigeninteresse.",
+      "baseRep": 0,
+      "baseDate": null
     }
   ],
   "events": [
@@ -186,8 +202,22 @@
           "delta": 3
         }
       ]
+    },
+    {
+      "id": "event_41633fa2-4b48-442d-aee1-517add105872",
+      "date": "2026-08-14",
+      "mission": "4134",
+      "reason": "13",
+      "valid": true,
+      "createdAt": "2026-08-14T06:27:05.809Z",
+      "changes": [
+        {
+          "factionId": "yartar-haendler",
+          "delta": 2
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-13T14:33:08.654Z"
+  "updatedAt": "2026-08-14T06:27:05.809Z"
 }
