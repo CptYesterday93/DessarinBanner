@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 6.7</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 6.8</title>
 
 <style>
 :root{
@@ -759,7 +759,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 6.7</div>
+  <div class="version-tag">HTML VERSION 6.8</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1007,6 +1007,27 @@ textarea{
 
   <div id="log"></div>
 
+  <!-- =========================
+       KAMPAGNEN-RESET
+       ========================= -->
+  <div class="section-title">
+    Kampagne zurücksetzen
+  </div>
+
+  <div class="notice" style="margin-bottom:10px">
+    <strong>Achtung:</strong> Der Reset löscht alle gespeicherten REP-Ereignisse
+    und setzt alle Ausgangs-REP auf <strong>0</strong>.
+    Stammdaten wie Regionen, Untergruppen, Organisationen, Namen und Beschreibungen bleiben erhalten.
+    Der Reset ist derzeit bewusst <strong>ohne Passwort</strong> geschützt.
+  </div>
+
+  <button
+    class="danger"
+    onclick="confirmCampaignReset()"
+  >
+    Kampagne zurücksetzen
+  </button>
+
 </main>
 
 
@@ -1083,7 +1104,7 @@ textarea{
    API
    ========================================================= */
 
-const HTML_VERSION = '6.7';
+const HTML_VERSION = '6.8';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -3176,6 +3197,14 @@ function showFactionDetail(id,type){
             </div>
             <div class="muted">${esc(x.event.reason || 'Keine Begründung angegeben.')}</div>
             <div class="small">Verfall: ${esc(schedule)}</div>
+            <div class="actions" style="margin-top:8px">
+              <button
+                class="danger"
+                onclick="deleteEvent('${esc(x.event.id)}')"
+              >
+                Ereignis löschen
+              </button>
+            </div>
           </div>
         `;
       }).join('') : '<p class="muted">Noch keine REP-Ereignisse vorhanden.</p>'}
@@ -3510,6 +3539,69 @@ function renderExpiryMarkup(targetId=null,targetType=null){
     `;
   }).join('')}</div>`;
 }
+
+/* =========================================================
+   EREIGNIS LÖSCHEN
+   ========================================================= */
+
+function deleteEvent(eventId){
+  const event =
+    (state.events || []).find(
+      entry => entry.id === eventId
+    );
+
+  if(!event){
+    alert('Ereignis nicht gefunden.');
+    return;
+  }
+
+  openModal(
+    'Ereignis endgültig löschen',
+    `"${event.mission || 'Ohne Missionsangabe'}" wird endgültig aus der Historie gelöscht.\n\n` +
+    'Die zugehörigen REP-Wirkungen werden ebenfalls entfernt.\n\n' +
+    'Dieser Vorgang kann nicht rückgängig gemacht werden.',
+    async () => {
+      await api(
+        '/event/delete',
+        {
+          method:'POST',
+          body:JSON.stringify({
+            eventId
+          })
+        }
+      );
+
+      closeDetail();
+    }
+  );
+}
+
+
+/* =========================================================
+   KAMPAGNEN-RESET
+   ========================================================= */
+
+function confirmCampaignReset(){
+  openModal(
+    'KAMPAGNE ZURÜCKSETZEN?',
+    'ACHTUNG!\n\n' +
+    'Alle REP-Ereignisse werden gelöscht.\n' +
+    'Alle Ausgangs-REP werden auf 0 gesetzt.\n' +
+    'Regionen, Untergruppen und Organisationen bleiben erhalten.\n\n' +
+    'Der Vorgang kann nicht rückgängig gemacht werden.\n\n' +
+    'Es ist derzeit kein Passwort erforderlich.',
+    async () => {
+      await api(
+        '/reset',
+        {
+          method:'POST',
+          body:JSON.stringify({})
+        }
+      );
+    }
+  );
+}
+
 
 /* =========================================================
    RETCON
@@ -3858,6 +3950,13 @@ function renderLog(){
                                       : 'Wieder gültig machen'
                                   }
 
+                                </button>
+
+                                <button
+                                  class="danger"
+                                  onclick="deleteEvent('${esc(event.id)}')"
+                                >
+                                  Ereignis löschen
                                 </button>
 
                               </div>
