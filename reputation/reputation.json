@@ -326,8 +326,22 @@
           "delta": 3
         }
       ]
+    },
+    {
+      "id": "event_1ca6f905-7bdb-413f-bf55-cca97dfef992",
+      "date": "2026-08-14",
+      "mission": "132",
+      "reason": "ast",
+      "valid": true,
+      "createdAt": "2026-08-14T07:57:54.997Z",
+      "changes": [
+        {
+          "factionId": "tester",
+          "delta": -1
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T06:37:44.593Z"
+  "updatedAt": "2026-08-14T07:57:54.997Z"
 }
