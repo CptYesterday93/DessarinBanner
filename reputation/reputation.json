@@ -197,7 +197,7 @@
       "date": "2026-08-13",
       "mission": "test",
       "reason": "tests",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-13T14:10:29.111Z",
       "changes": [
         {
@@ -205,7 +205,7 @@
           "delta": -1
         }
       ],
-      "statusChangedAt": "2026-08-14T08:02:59.705Z"
+      "statusChangedAt": "2026-08-14T08:05:26.016Z"
     },
     {
       "id": "event_f5a4e895-eba9-4a41-bf5d-9715b89ebafa",
@@ -341,5 +341,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:05:22.859Z"
+  "updatedAt": "2026-08-14T08:05:26.016Z"
 }
