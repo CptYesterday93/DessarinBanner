@@ -329,7 +329,7 @@
       "date": "2026-08-14",
       "mission": "132",
       "reason": "ast",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-14T07:57:54.997Z",
       "changes": [
         {
@@ -337,9 +337,9 @@
           "delta": -1
         }
       ],
-      "statusChangedAt": "2026-08-14T08:02:52.783Z"
+      "statusChangedAt": "2026-08-14T08:05:18.149Z"
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:03:21.817Z"
+  "updatedAt": "2026-08-14T08:05:18.149Z"
 }
