@@ -237,8 +237,26 @@
           "delta": 2
         }
       ]
+    },
+    {
+      "id": "event_84919302-7170-4a79-a295-c35b7629c931",
+      "date": "2026-08-02",
+      "mission": "t2",
+      "reason": "t2",
+      "valid": true,
+      "createdAt": "2026-08-14T09:55:53.539Z",
+      "changes": [
+        {
+          "factionId": "yartar-gemeines-volk",
+          "delta": 3
+        },
+        {
+          "factionId": "yartar-unterwelt",
+          "delta": -1
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T09:54:54.247Z"
+  "updatedAt": "2026-08-14T09:55:53.539Z"
 }
