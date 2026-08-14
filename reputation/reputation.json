@@ -322,16 +322,17 @@
       "date": "2026-08-14",
       "mission": "132",
       "reason": "ast",
-      "valid": true,
+      "valid": false,
       "createdAt": "2026-08-14T07:57:54.997Z",
       "changes": [
         {
           "factionId": "tester",
           "delta": -1
         }
-      ]
+      ],
+      "statusChangedAt": "2026-08-14T08:02:52.783Z"
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T07:57:54.997Z"
+  "updatedAt": "2026-08-14T08:02:52.783Z"
 }
