@@ -226,14 +226,15 @@
       "date": "2026-08-13",
       "mission": "fehler",
       "reason": "yes",
-      "valid": true,
+      "valid": false,
       "createdAt": "2026-08-13T14:24:49.079Z",
       "changes": [
         {
           "factionId": "yartar",
           "delta": 2
         }
-      ]
+      ],
+      "statusChangedAt": "2026-08-14T08:02:57.102Z"
     },
     {
       "id": "event_4983cbf3-e2e1-4085-8443-734b2b1a58d8",
@@ -336,5 +337,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:02:56.210Z"
+  "updatedAt": "2026-08-14T08:02:57.102Z"
 }
