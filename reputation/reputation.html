@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 4</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 5</title>
 
 <style>
 :root{
@@ -681,7 +681,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 4</div>
+  <div class="version-tag">HTML VERSION 5</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -2882,7 +2882,7 @@ function aggregateRepAt(place, date){
     weight += w;
     total += directRepAt(child.id,date) * w;
   }
-  return weight ? Math.round(total/weight) : 0;
+  return weight ? Math.round((total/weight) * 10) / 10 : 0;
 }
 
 function repAt(id,type,date){
@@ -2966,11 +2966,6 @@ function showFactionDetail(id,type){
       </div>
     </div>
 
-    <details class="expiry-details">
-      <summary>⏳ Bald auslaufende Einflüsse <span class="small" style="float:right">nächste 30 Tage</span></summary>
-      ${renderExpiryMarkup()}
-    </details>
-
     <div class="small" style="margin-bottom:6px">
       Der Verlauf zeigt die wirksame REP. Die Linie bleibt waagerecht und springt erst dann, wenn ein Einfluss beginnt oder ausläuft.
     </div>
@@ -2978,6 +2973,11 @@ function showFactionDetail(id,type){
     <div class="chart-wrap">
       ${renderRepChart(id,type,chart,events)}
     </div>
+
+    <details class="expiry-details">
+      <summary>⏳ Bald auslaufende Einflüsse <span class="small" style="float:right">nächste 30 Tage</span></summary>
+      ${renderExpiryMarkup()}
+    </details>
 
     <div class="detail-events">
       <strong>Ereignisse</strong>
@@ -3031,7 +3031,10 @@ function renderRepChart(id,type,data,events){
     const v = max - ((max-min)*i/steps);
     const yy = y(v);
     grid += `<line class="chart-grid" x1="${pad.l}" x2="${W-pad.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"></line>`;
-    grid += `<text class="chart-axis-label" x="${pad.l-8}" y="${yy+4}" text-anchor="end">${Math.round(v)}</text>`;
+    const axisValue = type === 'place' && (findUnit(id,'place')?.item?.children || []).length
+      ? v.toFixed(1)
+      : String(Math.round(v));
+    grid += `<text class="chart-axis-label" x="${pad.l-8}" y="${yy+4}" text-anchor="end">${axisValue}</text>`;
   }
 
   if(min <= 0 && max >= 0){
@@ -3056,7 +3059,10 @@ function renderRepChart(id,type,data,events){
     const ey = y(repAt(id,type,e.event.date));
     const delta = Number(e.change.delta)||0;
     const child = e.child ? ` · ${e.child.name}` : '';
-    const tip = `${fmtDate(e.event.date)} · ${delta>0?'+':''}${delta} REP${child} · ${e.event.mission || 'Ohne Mission'} · ${e.event.reason || 'Keine Begründung'}`;
+    const aggregateNote = type === 'place' && (findUnit(id,'place')?.item?.children || []).length
+      ? ` · Gesamt: ${repAt(id,type,e.event.date).toFixed(1)}`
+      : '';
+    const tip = `${fmtDate(e.event.date)} · ${delta>0?'+':''}${delta} REP${child}${aggregateNote} · ${e.event.mission || 'Ohne Mission'} · ${e.event.reason || 'Keine Begründung'}`;
     return `<circle class="chart-event" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="4" data-tooltip="${esc(tip)}" onmouseenter="showChartTooltip(event,this)" onmousemove="moveChartTooltip(event)" onmouseleave="hideChartTooltip()" ontouchstart="showChartTooltip(event,this)"></circle>`;
   }).join('');
 
