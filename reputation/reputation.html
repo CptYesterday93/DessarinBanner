@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 6.9</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 7.0</title>
 
 <style>
 :root{
@@ -478,7 +478,14 @@ textarea{
 }
 
 .overview-expiry{
-  margin:25px 0 8px;
+  margin:14px 0 12px;
+}
+
+/* Abstand nach dem Button „Änderungen übernehmen“.
+   Der Selektor ist absichtlich direkt an die beiden Elemente gekoppelt,
+   damit keine andere allgemeine Details-Regel den Abstand überschreibt. */
+button.primary + .expiry-details{
+  margin-top:14px;
 }
 
 .expiry-item{
@@ -772,7 +779,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 6.9</div>
+  <div class="version-tag">HTML VERSION 7.0</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1096,7 +1103,7 @@ textarea{
    API
    ========================================================= */
 
-const HTML_VERSION = '6.9';
+const HTML_VERSION = '7.0';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -3269,8 +3276,10 @@ function renderRepChart(id,type,data,events){
   const MIN_REP = -5;
   const MAX_REP = 10;
 
-  const startDate = data.length ? data[0].date : todayISO();
-  const endDate = data.length ? data[data.length-1].date : todayISO();
+  /* Der sichtbare Zeitraum ist IMMER exakt ±6 Monate um heute.
+     Nicht von Events, baseDate oder dem ältesten Eintrag abhängig machen. */
+  const startDate = addMonthsUTC(todayISO(), -6);
+  const endDate = addMonthsUTC(todayISO(), 6);
   const totalDays = Math.max(1, diffDays(startDate,endDate));
 
   const x = date => pad.l + (diffDays(startDate,date)/totalDays) * plotW;
