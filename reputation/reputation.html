@@ -750,6 +750,19 @@ textarea{
     display:block;
   }
 }
+
+.chart-today-line {
+  stroke: #555;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+  pointer-events: none;
+}
+.chart-today-label {
+  fill: #555;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+}
 </style>
 </head>
 
@@ -759,7 +772,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 6.8</div>
+  <div class="version-tag">HTML VERSION 6.7</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1007,27 +1020,6 @@ textarea{
 
   <div id="log"></div>
 
-  <!-- =========================
-       KAMPAGNEN-RESET
-       ========================= -->
-  <div class="section-title">
-    Kampagne zurücksetzen
-  </div>
-
-  <div class="notice" style="margin-bottom:10px">
-    <strong>Achtung:</strong> Der Reset löscht alle gespeicherten REP-Ereignisse
-    und setzt alle Ausgangs-REP auf <strong>0</strong>.
-    Stammdaten wie Regionen, Untergruppen, Organisationen, Namen und Beschreibungen bleiben erhalten.
-    Der Reset ist derzeit bewusst <strong>ohne Passwort</strong> geschützt.
-  </div>
-
-  <button
-    class="danger"
-    onclick="confirmCampaignReset()"
-  >
-    Kampagne zurücksetzen
-  </button>
-
 </main>
 
 
@@ -1104,7 +1096,7 @@ textarea{
    API
    ========================================================= */
 
-const HTML_VERSION = '6.8';
+const HTML_VERSION = '6.7';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -3056,14 +3048,20 @@ function diffDays(a,b){
 function aggregateRepAt(place, date){
   const children = place.children || [];
   if(!children.length) return directRepAt(place.id,date);
-  let weight = 0;
+
+  /*
+   * Yartar-Aggregat:
+   * Das Gewicht verändert ausschließlich den Beitrag eines Kindes.
+   * Der Nenner bleibt die Anzahl der Kinder/Gruppen.
+   * Beispiel: (5 + 2 + 4 + (-3 * 0.5)) / 4 = 2.375
+   */
   let total = 0;
   for(const child of children){
     const w = Number(child.weight) || 1;
-    weight += w;
     total += directRepAt(child.id,date) * w;
   }
-  return weight ? Math.round((total/weight) * 10) / 10 : 0;
+
+  return Math.round((total / children.length) * 100) / 100;
 }
 
 function repAt(id,type,date){
@@ -3197,14 +3195,6 @@ function showFactionDetail(id,type){
             </div>
             <div class="muted">${esc(x.event.reason || 'Keine Begründung angegeben.')}</div>
             <div class="small">Verfall: ${esc(schedule)}</div>
-            <div class="actions" style="margin-top:8px">
-              <button
-                class="danger"
-                onclick="deleteEvent('${esc(x.event.id)}')"
-              >
-                Ereignis löschen
-              </button>
-            </div>
           </div>
         `;
       }).join('') : '<p class="muted">Noch keine REP-Ereignisse vorhanden.</p>'}
@@ -3271,6 +3261,15 @@ function renderRepChart(id,type,data,events){
            `<text class="chart-axis-label chart-date-label" x="${xx.toFixed(1)}" y="${H-10}" text-anchor="middle">${t.label}</text>`;
   }).join('');
 
+  /* Permanente Heute-Linie: immer an der aktuellen Stelle im Zeitverlauf. */
+  const today = todayISO();
+  const todayInRange = today >= startDate && today <= endDate;
+  const todayX = x(today);
+  const todayLine = todayInRange
+    ? `<line class="chart-today-line" x1="${todayX.toFixed(1)}" x2="${todayX.toFixed(1)}" y1="${pad.t}" y2="${H-pad.b}"></line>` +
+      `<text class="chart-today-label" x="${todayX.toFixed(1)}" y="${pad.t+12}" text-anchor="middle">Heute</text>`
+    : '';
+
   let path='';
   if(data.length){
     path = `M ${x(data[0].date).toFixed(1)} ${y(data[0].rep).toFixed(1)} `;
@@ -3325,6 +3324,7 @@ function renderRepChart(id,type,data,events){
          data-chart-start="${startDate}" data-chart-end="${endDate}">
       ${grid}
       ${monthGrid}
+      ${todayLine}
       ${hoverArea}
       <path class="chart-line" d="${path}"></path>
       ${eventDots}
@@ -3539,69 +3539,6 @@ function renderExpiryMarkup(targetId=null,targetType=null){
     `;
   }).join('')}</div>`;
 }
-
-/* =========================================================
-   EREIGNIS LÖSCHEN
-   ========================================================= */
-
-function deleteEvent(eventId){
-  const event =
-    (state.events || []).find(
-      entry => entry.id === eventId
-    );
-
-  if(!event){
-    alert('Ereignis nicht gefunden.');
-    return;
-  }
-
-  openModal(
-    'Ereignis endgültig löschen',
-    `"${event.mission || 'Ohne Missionsangabe'}" wird endgültig aus der Historie gelöscht.\n\n` +
-    'Die zugehörigen REP-Wirkungen werden ebenfalls entfernt.\n\n' +
-    'Dieser Vorgang kann nicht rückgängig gemacht werden.',
-    async () => {
-      await api(
-        '/event/delete',
-        {
-          method:'POST',
-          body:JSON.stringify({
-            eventId
-          })
-        }
-      );
-
-      closeDetail();
-    }
-  );
-}
-
-
-/* =========================================================
-   KAMPAGNEN-RESET
-   ========================================================= */
-
-function confirmCampaignReset(){
-  openModal(
-    'KAMPAGNE ZURÜCKSETZEN?',
-    'ACHTUNG!\n\n' +
-    'Alle REP-Ereignisse werden gelöscht.\n' +
-    'Alle Ausgangs-REP werden auf 0 gesetzt.\n' +
-    'Regionen, Untergruppen und Organisationen bleiben erhalten.\n\n' +
-    'Der Vorgang kann nicht rückgängig gemacht werden.\n\n' +
-    'Es ist derzeit kein Passwort erforderlich.',
-    async () => {
-      await api(
-        '/reset',
-        {
-          method:'POST',
-          body:JSON.stringify({})
-        }
-      );
-    }
-  );
-}
-
 
 /* =========================================================
    RETCON
@@ -3950,13 +3887,6 @@ function renderLog(){
                                       : 'Wieder gültig machen'
                                   }
 
-                                </button>
-
-                                <button
-                                  class="danger"
-                                  onclick="deleteEvent('${esc(event.id)}')"
-                                >
-                                  Ereignis löschen
                                 </button>
 
                               </div>
