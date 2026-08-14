@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 7.5</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 7.6</title>
 
 <style>
 :root{
@@ -812,7 +812,7 @@ button.primary + .expiry-details{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 7.5</div>
+  <div class="version-tag">HTML VERSION 7.6</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1155,7 +1155,7 @@ button.primary + .expiry-details{
    API
    ========================================================= */
 
-const HTML_VERSION = '7.5';
+const HTML_VERSION = '7.6';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -1717,6 +1717,19 @@ function renderRegions(){
           );
 
         }
+      )
+      .sort(
+        (a,b) => {
+          if(a.id === 'yartar') return -1;
+          if(b.id === 'yartar') return 1;
+
+          return String(a.name || '')
+            .localeCompare(
+              String(b.name || ''),
+              'de-DE',
+              { sensitivity:'base' }
+            );
+        }
       );
 
 
@@ -1807,16 +1820,22 @@ function renderRegions(){
                   </strong>
 
 
-                  <button
-                    class="info-btn"
-                    onclick="showInfo(
-                      '${esc(place.name)}',
-                      '${esc(description)}'
-                    )"
-                    aria-label="Informationen"
-                  >
-                    i
-                  </button>
+                  ${
+                    place.id === 'yartar'
+                      ? `
+                        <button
+                          class="info-btn"
+                          onclick="showInfo(
+                            '${esc(place.name)}',
+                            '${esc(description)}'
+                          )"
+                          aria-label="Informationen"
+                        >
+                          i
+                        </button>
+                      `
+                      : ''
+                  }
 
                 </div>
 
@@ -2020,6 +2039,16 @@ function renderOrganizations(){
 
   body.innerHTML =
     (state.organizations || [])
+      .slice()
+      .sort(
+        (a,b) =>
+          String(a.name || '')
+            .localeCompare(
+              String(b.name || ''),
+              'de-DE',
+              { sensitivity:'base' }
+            )
+      )
       .map(
         org => {
 
@@ -2027,13 +2056,6 @@ function renderOrganizations(){
             org.effectiveRep ??
             org.rep ??
             0;
-
-
-          const description =
-            itemDescription(
-              org,
-              'organization'
-            );
 
 
           return `
@@ -2049,17 +2071,6 @@ function renderOrganizations(){
                 >
                   ${esc(org.name)}
                 </strong>
-
-                <button
-                  class="info-btn"
-                  onclick="showInfo(
-                    '${esc(org.name)}',
-                    '${esc(description)}'
-                  )"
-                  aria-label="Informationen"
-                >
-                  i
-                </button>
 
               </td>
 
