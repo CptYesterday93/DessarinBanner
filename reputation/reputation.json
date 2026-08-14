@@ -277,8 +277,30 @@
           "delta": -1
         }
       ]
+    },
+    {
+      "id": "event_c08b8d87-a0f2-46cd-aa45-0cd72f8ad6e2",
+      "date": "2026-07-15",
+      "mission": "t4",
+      "reason": "4",
+      "valid": true,
+      "createdAt": "2026-08-14T10:21:30.848Z",
+      "changes": [
+        {
+          "factionId": "yartar-obrigkeit",
+          "delta": 3
+        },
+        {
+          "factionId": "yartar-gemeines-volk",
+          "delta": 3
+        },
+        {
+          "factionId": "yartar-haendler",
+          "delta": 1
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T10:21:12.394Z"
+  "updatedAt": "2026-08-14T10:21:30.848Z"
 }
