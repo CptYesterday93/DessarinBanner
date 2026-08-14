@@ -104,18 +104,6 @@
       "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
       "baseRep": 0,
       "baseDate": null
-    },
-    {
-      "id": "test",
-      "name": "test",
-      "description": "da stinkts jetzt weniger",
-      "rep": 0,
-      "baseRep": 0,
-      "baseDate": "2026-08-13",
-      "lastChange": null,
-      "active": true,
-      "featured": false,
-      "reputationMode": "direct"
     }
   ],
   "organizations": [
