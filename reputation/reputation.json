@@ -225,20 +225,6 @@
   ],
   "events": [
     {
-      "id": "event_b630668c-f652-4f67-81da-c57f8249e820",
-      "date": "2026-08-02",
-      "mission": "t1",
-      "reason": "t1",
-      "valid": true,
-      "createdAt": "2026-08-14T09:54:54.247Z",
-      "changes": [
-        {
-          "factionId": "yartar-obrigkeit",
-          "delta": 2
-        }
-      ]
-    },
-    {
       "id": "event_84919302-7170-4a79-a295-c35b7629c931",
       "date": "2026-08-02",
       "mission": "t2",
@@ -272,5 +258,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T10:19:42.874Z"
+  "updatedAt": "2026-08-14T10:19:45.860Z"
 }
