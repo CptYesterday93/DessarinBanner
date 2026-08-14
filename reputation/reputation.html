@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 5</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 6</title>
 
 <style>
 :root{
@@ -456,6 +456,14 @@ textarea{
   background:var(--soft);
 }
 
+.overview-expiry{
+  margin:25px 0 8px;
+}
+
+.expiry-item{
+  cursor:pointer;
+}
+
 .expiry-main strong{
   display:block;
 }
@@ -681,7 +689,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 5</div>
+  <div class="version-tag">HTML VERSION 6</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -689,10 +697,10 @@ textarea{
 
   <div class="notice">
     <strong>REP</strong> beschreibt den aktuellen Ruf.
-    Einzelne Rufänderungen verlieren nach ihrer jeweiligen Wirkungsdauer
-    ihre Wirkung. Positive Änderungen wirken
-    <strong>30 / 60 / 90 Tage</strong>, negative
-    <strong>40 / 80 / 120 Tage</strong>.
+    Einzelne Rufänderungen verlieren ihre Wirkung stufenweise.
+    Die Wirkung wechselt also z. B. von <strong>+3 → +2 → +1 → 0</strong>.
+    Größere positive Einflüsse halten <strong>75 / 60 / 45 Tage</strong> je Stufe,
+    negative <strong>90 / 75 / 60 Tage</strong> je Stufe.
   </div>
 
 
@@ -910,6 +918,16 @@ textarea{
 
 
   <!-- =========================
+       BALD AUSLAUFENDE EINFLÜSSE
+       ========================= -->
+
+  <details class="expiry-details overview-expiry">
+    <summary>⏳ Bald auslaufende Einflüsse <span class="small" style="float:right">nächste 30 Tage</span></summary>
+    <div id="overviewExpiry"></div>
+  </details>
+
+
+  <!-- =========================
        ÄNDERUNGSVERLAUF
        ========================= -->
 
@@ -995,7 +1013,7 @@ textarea{
    API
    ========================================================= */
 
-const HTML_VERSION = '4';
+const HTML_VERSION = '6';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -1010,14 +1028,75 @@ const collapsedRegions = {};
    WIRKUNGSDAUER
    ========================================================= */
 
-const EFFECTS = {
-  1:30,
-  2:60,
-  3:90,
-  '-1':40,
-  '-2':80,
-  '-3':120
+const FALLBACK_DECAY_STAGES = {
+  1:[{delta:1,days:45}],
+  2:[{delta:2,days:60},{delta:1,days:45}],
+  3:[{delta:3,days:75},{delta:2,days:60},{delta:1,days:45}],
+  '-1':[{delta:-1,days:60}],
+  '-2':[{delta:-2,days:75},{delta:-1,days:60}],
+  '-3':[{delta:-3,days:90},{delta:-2,days:75},{delta:-1,days:60}]
 };
+
+function decayStages(delta){
+  const key=String(Number(delta));
+  const fromApi=state?.api?.decayStages?.[key];
+  return Array.isArray(fromApi) && fromApi.length
+    ? fromApi.map(x=>({delta:Number(x.delta),days:Number(x.days)}))
+    : (FALLBACK_DECAY_STAGES[key] || []).map(x=>({...x}));
+}
+
+function totalEffectDays(delta){
+  return decayStages(delta).reduce((sum,s)=>sum+Number(s.days||0),0);
+}
+
+function decayAtAge(delta,ageDays){
+  const stages=decayStages(delta);
+  let elapsed=0;
+  const age=Math.max(0,Number(ageDays)||0);
+  for(let i=0;i<stages.length;i++){
+    const stage=stages[i];
+    const end=elapsed+stage.days;
+    if(age<end){
+      const next=stages[i+1] || null;
+      return {
+        active:true,
+        currentDelta:stage.delta,
+        nextDelta:next ? next.delta : 0,
+        daysRemaining:end-age,
+        stageIndex:i,
+        stageCount:stages.length,
+        stageDays:stage.days
+      };
+    }
+    elapsed=end;
+  }
+  return {
+    active:false,
+    currentDelta:0,
+    nextDelta:0,
+    daysRemaining:0,
+    stageIndex:stages.length,
+    stageCount:stages.length,
+    stageDays:0
+  };
+}
+
+function decaySchedule(delta,startDate){
+  let elapsed=0;
+  return decayStages(delta).map((stage,index)=>{
+    const from=addDays(startDate,elapsed);
+    elapsed+=stage.days;
+    const until=addDays(startDate,elapsed);
+    return {stage:index+1,delta:stage.delta,days:stage.days,from,until,nextDelta:decayStages(delta)[index+1]?.delta ?? 0};
+  });
+}
+
+const EFFECTS = new Proxy({}, {
+  get(_target,key){
+    const n=Number(key);
+    return Number.isFinite(n) ? totalEffectDays(n) : undefined;
+  }
+});
 
 
 /* =========================================================
@@ -2402,11 +2481,13 @@ function previewApply(){
       .map(
         change => {
 
-          const days =
-            EFFECTS[
-              change.delta
-            ] || 30;
-
+          const schedule =
+            decayStages(change.delta)
+              .map(
+                stage =>
+                  `${fmtRep(stage.delta)} für ${stage.days} Tage`
+              )
+              .join(' → ');
 
           return (
 
@@ -2414,13 +2495,9 @@ function previewApply(){
               change.factionId
             )}: ` +
 
-            `${
-              change.delta > 0
-                ? '+'
-                : ''
-            }${change.delta}` +
+            `${fmtRep(change.delta)}` +
 
-            ` (${days} Tage)`
+            ` (${schedule})`
 
           );
 
@@ -2857,9 +2934,11 @@ function directRepAt(id, date){
       const changeUnit = resolveUnit(change.factionId);
       if(!changeUnit || changeUnit.id !== canonicalId) continue;
       const delta = Number(change.delta) || 0;
-      const days = Number(change.days) || EFFECTS[delta] || 30;
       const age = diffDays(event.date, date);
-      if(age >= 0 && age < days) rep += delta;
+      if(age >= 0){
+        const decay=decayAtAge(delta,age);
+        if(decay.active) rep += decay.currentDelta;
+      }
     }
   }
 
@@ -2926,7 +3005,10 @@ function buildChartData(id,type){
 
   for(const x of events){
     addDate(dates,x.event.date);
-    addDate(dates,addDays(x.event.date,x.days));
+    for(const stage of decaySchedule(x.change.delta,x.event.date)){
+      addDate(dates,stage.from);
+      addDate(dates,stage.until);
+    }
   }
 
   if(!dates.size) addDate(dates,todayISO());
@@ -2947,7 +3029,7 @@ function showFactionDetail(id,type){
   if(!unit) return;
 
   const item = unit.item;
-  const rep = Number(item.effectiveRep ?? item.rep ?? 0) || 0;
+  const rep = Number(repAt(id,type,todayISO())) || 0;
   const events = detailEvents(id,type).sort((a,b)=>String(b.event.date).localeCompare(String(a.event.date)));
   const chart = buildChartData(id,type);
 
@@ -2967,7 +3049,7 @@ function showFactionDetail(id,type){
     </div>
 
     <div class="small" style="margin-bottom:6px">
-      Der Verlauf zeigt die wirksame REP. Die Linie bleibt waagerecht und springt erst dann, wenn ein Einfluss beginnt oder ausläuft.
+      Der Verlauf zeigt die wirksame REP. Einflüsse verfallen stufenweise – z. B. <strong>+3 → +2 → +1 → 0</strong>.
     </div>
 
     <div class="chart-wrap">
@@ -2976,15 +3058,30 @@ function showFactionDetail(id,type){
 
     <details class="expiry-details">
       <summary>⏳ Bald auslaufende Einflüsse <span class="small" style="float:right">nächste 30 Tage</span></summary>
-      ${renderExpiryMarkup()}
+      ${renderExpiryMarkup(id,type)}
     </details>
 
     <div class="detail-events">
       <strong>Ereignisse</strong>
       ${events.length ? events.map(x => {
-        const expiry = addDays(x.event.date,x.days);
-        const remaining = diffDays(todayISO(),expiry);
+        const age=diffDays(x.event.date,todayISO());
+        const decay=age>=0 ? decayAtAge(x.change.delta,age) : null;
         const label = unit.type === 'place' && x.child ? x.child.name : '';
+        const original=Number(x.change.delta)||0;
+        const total=totalEffectDays(original);
+        let effectLine='';
+        if(decay?.active){
+          effectLine = decay.nextDelta !== 0
+            ? `${fmtRep(decay.currentDelta)} → ${fmtRep(decay.nextDelta)} in ${decay.daysRemaining} Tagen`
+            : `${fmtRep(decay.currentDelta)} → 0 in ${decay.daysRemaining} Tagen`;
+        }else if(age >= total){
+          effectLine='vollständig verfallen';
+        }else{
+          effectLine='noch nicht aktiv';
+        }
+        const schedule=decaySchedule(original,x.event.date)
+          .map((stage,i)=>`${fmtRep(stage.delta)} für ${stage.days} Tage`)
+          .join(' → ');
         return `
           <div class="detail-event">
             <div class="detail-event-head">
@@ -2993,10 +3090,11 @@ function showFactionDetail(id,type){
             </div>
             <div>
               ${label ? `<span class="muted">${esc(label)} · </span>` : ''}
-              <span class="${valueClass(x.change.delta)}">${Number(x.change.delta)>0?'+':''}${esc(x.change.delta)} REP</span>
-              · ${x.days} Tage
+              <span class="${valueClass(original)}">${fmtRep(original)} REP</span>
+              · ${esc(effectLine)}
             </div>
-            <div class="muted">${esc(x.event.reason || 'Keine Begründung angegeben.')} · ${remaining >= 0 ? `läuft in ${remaining} Tagen aus` : 'bereits abgelaufen'}</div>
+            <div class="muted">${esc(x.event.reason || 'Keine Begründung angegeben.')}</div>
+            <div class="small">Verfall: ${esc(schedule)}</div>
           </div>
         `;
       }).join('') : '<p class="muted">Noch keine REP-Ereignisse vorhanden.</p>'}
@@ -3007,39 +3105,25 @@ function showFactionDetail(id,type){
 }
 
 function renderRepChart(id,type,data,events){
-  const W = 900, H = 300;
-  const pad = {l:48,r:20,t:18,b:38};
+  const W = 900, H = 360;
+  const pad = {l:52,r:20,t:18,b:42};
   const plotW = W-pad.l-pad.r;
   const plotH = H-pad.t-pad.b;
-  const values = data.map(d=>d.rep);
-  const all = values.length ? values : [0];
-  let min = Math.min(...all,0), max = Math.max(...all,0);
-  if(min === max){ min -= 2; max += 2; }
-  const range = max-min || 1;
-  min -= Math.max(1,range*0.08);
-  max += Math.max(1,range*0.08);
+  const MIN_REP = -5;
+  const MAX_REP = 10;
 
   const x = date => {
     if(data.length <= 1) return pad.l + plotW/2;
     return pad.l + (diffDays(data[0].date,date)/Math.max(1,diffDays(data[0].date,data[data.length-1].date))) * plotW;
   };
-  const y = rep => pad.t + (max-rep)/(max-min)*plotH;
+  const y = rep => pad.t + (MAX_REP-Math.max(MIN_REP,Math.min(MAX_REP,rep)))/(MAX_REP-MIN_REP)*plotH;
 
   let grid = '';
-  const steps = 5;
-  for(let i=0;i<=steps;i++){
-    const v = max - ((max-min)*i/steps);
-    const yy = y(v);
-    grid += `<line class="chart-grid" x1="${pad.l}" x2="${W-pad.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"></line>`;
-    const axisValue = type === 'place' && (findUnit(id,'place')?.item?.children || []).length
-      ? v.toFixed(1)
-      : String(Math.round(v));
-    grid += `<text class="chart-axis-label" x="${pad.l-8}" y="${yy+4}" text-anchor="end">${axisValue}</text>`;
-  }
-
-  if(min <= 0 && max >= 0){
-    const yy=y(0);
-    grid += `<line class="chart-zero" x1="${pad.l}" x2="${W-pad.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"></line>`;
+  for(let axisValue=MAX_REP; axisValue>=MIN_REP; axisValue--){
+    const yy = y(axisValue);
+    const cls = axisValue===0 ? 'chart-zero' : 'chart-grid';
+    grid += `<line class="${cls}" x1="${pad.l}" x2="${W-pad.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"></line>`;
+    grid += `<text class="chart-axis-label" x="${pad.l-8}" y="${yy+4}" text-anchor="end">${axisValue>0?'+':''}${axisValue}</text>`;
   }
 
   let path='';
@@ -3054,15 +3138,20 @@ function renderRepChart(id,type,data,events){
   const dateLabels = data.length ? [data[0].date, todayISO(), data[data.length-1].date].filter((v,i,a)=>a.indexOf(v)===i) : [todayISO()];
   const labels = dateLabels.map(d=>`<text class="chart-axis-label" x="${x(d)}" y="${H-10}" text-anchor="middle">${fmtDate(d)}</text>`).join('');
 
-  const eventDots = events.map((e,index)=>{
+  const eventDots = events.map(e=>{
     const ex = x(e.event.date);
     const ey = y(repAt(id,type,e.event.date));
-    const delta = Number(e.change.delta)||0;
+    const original = Number(e.change.delta)||0;
+    const age = diffDays(e.event.date,todayISO());
+    const current = age>=0 ? decayAtAge(original,age) : null;
     const child = e.child ? ` · ${e.child.name}` : '';
     const aggregateNote = type === 'place' && (findUnit(id,'place')?.item?.children || []).length
       ? ` · Gesamt: ${repAt(id,type,e.event.date).toFixed(1)}`
       : '';
-    const tip = `${fmtDate(e.event.date)} · ${delta>0?'+':''}${delta} REP${child}${aggregateNote} · ${e.event.mission || 'Ohne Mission'} · ${e.event.reason || 'Keine Begründung'}`;
+    const transition = current?.active
+      ? (current.nextDelta !== 0 ? ` · ${fmtRep(current.currentDelta)} → ${fmtRep(current.nextDelta)} in ${current.daysRemaining} Tagen` : ` · ${fmtRep(current.currentDelta)} → 0 in ${current.daysRemaining} Tagen`)
+      : '';
+    const tip = `${fmtDate(e.event.date)} · ${fmtRep(original)} REP${child}${aggregateNote}${transition} · ${e.event.mission || 'Ohne Mission'} · ${e.event.reason || 'Keine Begründung'}`;
     return `<circle class="chart-event" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="4" data-tooltip="${esc(tip)}" onmouseenter="showChartTooltip(event,this)" onmousemove="moveChartTooltip(event)" onmouseleave="hideChartTooltip()" ontouchstart="showChartTooltip(event,this)"></circle>`;
   }).join('');
 
@@ -3109,41 +3198,60 @@ function handleDetailBackdrop(event){
    BALD AUSLAUFENDE EINFLÜSSE
    ========================================================= */
 
-function renderExpiryMarkup(){
+function renderExpiryMarkup(targetId=null,targetType=null){
   const today=todayISO();
   const rows=[];
+  const targetUnit = targetId ? findUnit(targetId,targetType) : null;
 
   for(const event of (state.events || [])){
     if(event.valid === false) continue;
     for(const change of (event.changes || [])){
-      const days=Number(change.days)||EFFECTS[Number(change.delta)]||30;
-      const expiry=addDays(event.date,days);
-      const remaining=diffDays(today,expiry);
-      if(remaining >= 0 && remaining <= 30){
-        rows.push({event,change,days,expiry,remaining});
+      if(targetId){
+        const resolved=resolveUnit(change.factionId);
+        if(!resolved) continue;
+        if(targetUnit?.type === 'place' && targetUnit.item?.children?.length){
+          if(!targetUnit.item.children.some(c=>c.id===resolved.id)) continue;
+        }else if(resolved.id !== targetUnit?.id){
+          continue;
+        }
       }
+
+      const age=diffDays(event.date,today);
+      if(age < 0) continue;
+      const decay=decayAtAge(change.delta,age);
+      if(!decay.active || decay.daysRemaining < 0 || decay.daysRemaining > 30) continue;
+
+      rows.push({
+        event,
+        change,
+        remaining:decay.daysRemaining,
+        currentDelta:decay.currentDelta,
+        nextDelta:decay.nextDelta,
+        factionId:change.factionId
+      });
     }
   }
 
   rows.sort((a,b)=>a.remaining-b.remaining || String(a.event.date).localeCompare(String(b.event.date)));
 
   if(!rows.length){
-    return '<div class="expiry-list"><div class="muted">In den nächsten 30 Tagen läuft kein aktiver Einfluss aus.</div></div>';
+    return '<div class="expiry-list"><div class="muted">In den nächsten 30 Tagen findet kein Stufenwechsel statt.</div></div>';
   }
 
   return `<div class="expiry-list">${rows.map(x=>{
-    const name=unitName(x.change.factionId);
+    const name=unitName(x.factionId);
     const urgent=x.remaining<=3;
     const soon=x.remaining<=7;
-    const resolved=findUnit(x.change.factionId,'child') || findUnit(x.change.factionId,'organization') || findUnit(x.change.factionId,'place');
+    const resolved=findUnit(x.factionId,'child') || findUnit(x.factionId,'organization') || findUnit(x.factionId,'place');
     const type=resolved?.type || 'place';
+    const transition=`${fmtRep(x.currentDelta)} → ${fmtRep(x.nextDelta)}`;
     return `
-      <div class="expiry-item" onclick="showFactionDetail('${esc(x.change.factionId)}','${type}')">
+      <div class="expiry-item" onclick="showFactionDetail('${esc(x.factionId)}','${type}')">
         <div class="expiry-main">
           <strong>${esc(name)}</strong>
-          <div class="muted">${esc(x.event.mission || 'Ohne Missionsangabe')} · ${fmtDate(x.expiry)}</div>
+          <div class="muted">${esc(x.event.mission || 'Ohne Missionsangabe')} · ${fmtDate(x.event.date)}</div>
         </div>
-        <div class="${valueClass(x.change.delta)}">${Number(x.change.delta)>0?'+':''}${esc(x.change.delta)} REP</div>
+        <div class="${valueClass(x.currentDelta)}">${esc(transition)}</div>
         <div class="expiry-days ${urgent?'urgent':soon?'soon':''}">${x.remaining===0?'heute':`in ${x.remaining} Tagen`}</div>
       </div>
     `;
@@ -3378,14 +3486,12 @@ function renderLog(){
                             .map(
                               change => {
 
-                                const days =
-                                  change.days ||
-                                  EFFECTS[
-                                    Number(
-                                      change.delta
-                                    )
-                                  ] ||
-                                  30;
+                                const original = Number(change.originalDelta ?? change.delta) || 0;
+                                const age = diffDays(event.date,todayISO());
+                                const decay = age >= 0 ? decayAtAge(original,age) : null;
+                                const transition = decay?.active
+                                  ? (decay.nextDelta !== 0 ? `${fmtRep(decay.currentDelta)} → ${fmtRep(decay.nextDelta)}` : `${fmtRep(decay.currentDelta)} → 0`)
+                                  : 'verfallen';
 
 
                                 return `
@@ -3402,24 +3508,12 @@ function renderLog(){
                                     </strong>
 
                                     <span
-                                      class="${valueClass(
-                                        change.delta
-                                      )}"
+                                      class="${valueClass(original)}"
                                     >
-
-                                      ${
-                                        Number(
-                                          change.delta
-                                        ) > 0
-                                          ? '+'
-                                          : ''
-                                      }${esc(
-                                        change.delta
-                                      )}
-
+                                      ${fmtRep(original)}
                                     </span>
 
-                                    · ${days} Tage
+                                    · ${esc(transition)}
 
                                     ${
                                       change.active === false
