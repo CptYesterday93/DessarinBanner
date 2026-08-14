@@ -113,8 +113,10 @@
           "weight": 1,
           "description": "Stadtverwaltung, Stadtwache und andere offizielle Stellen Yartars.",
           "order": 1,
-          "baseRep": -3,
-          "baseDate": null
+          "baseRep": 0,
+          "baseDate": null,
+          "rep": 0,
+          "lastChange": null
         },
         {
           "id": "yartar-haendler",
@@ -122,8 +124,10 @@
           "weight": 1,
           "description": "Händler, Handelsunternehmen und lokale Handelsinteressen.",
           "order": 2,
-          "baseRep": -2,
-          "baseDate": null
+          "baseRep": 0,
+          "baseDate": null,
+          "rep": 0,
+          "lastChange": null
         },
         {
           "id": "yartar-gemeines-volk",
@@ -131,8 +135,10 @@
           "weight": 1,
           "description": "Die allgemeine Bevölkerung Yartars ohne besondere Zugehörigkeit.",
           "order": 3,
-          "baseRep": -6,
-          "baseDate": null
+          "baseRep": 0,
+          "baseDate": null,
+          "rep": 0,
+          "lastChange": null
         },
         {
           "id": "yartar-unterwelt",
@@ -140,40 +146,52 @@
           "weight": 0.5,
           "description": "Kriminelle Netzwerke, Diebesgruppen und andere Teile der lokalen Unterwelt.",
           "order": 4,
-          "baseRep": 4,
-          "baseDate": null
+          "baseRep": 0,
+          "baseDate": null,
+          "rep": 0,
+          "lastChange": null
         }
       ],
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     },
     {
       "id": "calling-horns",
       "name": "Calling Horns",
       "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     },
     {
       "id": "everlund",
       "name": "Everlund",
       "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     },
     {
       "id": "longsaddle",
       "name": "Longsaddle",
       "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     },
     {
       "id": "triboar",
       "name": "Triboar",
       "info": "Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.",
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     }
   ],
   "organizations": [
@@ -182,172 +200,30 @@
       "name": "Harpers",
       "description": "Ein weit verzweigtes Netzwerk, das sich für Freiheit, Wissen und den Schutz vor gefährlichen Mächten einsetzt.",
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     },
     {
       "id": "kraken-society",
       "name": "Kraken Society",
       "description": "Eine weitreichende kriminelle Organisation mit eigenen Interessen und verdecktem Einfluss.",
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     },
     {
       "id": "zhentarim",
       "name": "Zhentarim",
       "description": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten mit starkem Eigeninteresse.",
       "baseRep": 0,
-      "baseDate": null
+      "baseDate": null,
+      "rep": 0,
+      "lastChange": null
     }
   ],
-  "events": [
-    {
-      "id": "event_910adff6-7d89-4c20-aa1b-9530dae81c17",
-      "date": "2026-08-13",
-      "mission": "test",
-      "reason": "tests",
-      "valid": true,
-      "createdAt": "2026-08-13T14:10:29.111Z",
-      "changes": [
-        {
-          "factionId": "harpers",
-          "delta": -1
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:26.016Z"
-    },
-    {
-      "id": "event_f5a4e895-eba9-4a41-bf5d-9715b89ebafa",
-      "date": "2026-08-13",
-      "mission": "2",
-      "reason": "2",
-      "valid": true,
-      "createdAt": "2026-08-13T14:16:27.503Z",
-      "changes": [
-        {
-          "factionId": "triboar",
-          "delta": 3
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:22.859Z"
-    },
-    {
-      "id": "event_c4b4c695-625b-416a-b307-9f9c5442d60a",
-      "date": "2026-08-13",
-      "mission": "fehler",
-      "reason": "yes",
-      "valid": true,
-      "createdAt": "2026-08-13T14:24:49.079Z",
-      "changes": [
-        {
-          "factionId": "yartar",
-          "delta": 2
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:21.481Z"
-    },
-    {
-      "id": "event_4983cbf3-e2e1-4085-8443-734b2b1a58d8",
-      "date": "2026-08-13",
-      "mission": "test",
-      "reason": "tessst",
-      "valid": true,
-      "createdAt": "2026-08-13T14:33:08.654Z",
-      "changes": [
-        {
-          "factionId": "triboar",
-          "delta": 1
-        },
-        {
-          "factionId": "everlund",
-          "delta": 3
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:20.276Z"
-    },
-    {
-      "id": "event_41633fa2-4b48-442d-aee1-517add105872",
-      "date": "2026-08-14",
-      "mission": "4134",
-      "reason": "13",
-      "valid": true,
-      "createdAt": "2026-08-14T06:27:05.809Z",
-      "changes": [
-        {
-          "factionId": "yartar-haendler",
-          "delta": 2
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:19.115Z"
-    },
-    {
-      "id": "event_a587abc3-94d2-4483-acdc-61990f96e14e",
-      "date": "2026-07-12",
-      "mission": "23",
-      "reason": "123",
-      "valid": true,
-      "createdAt": "2026-08-14T06:37:10.325Z",
-      "changes": [
-        {
-          "factionId": "yartar-gemeines-volk",
-          "delta": 3
-        },
-        {
-          "factionId": "yartar-unterwelt",
-          "delta": -1
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:29.547Z"
-    },
-    {
-      "id": "event_ea10d8af-e707-483a-a2a5-f9fdd321de5d",
-      "date": "2026-07-18",
-      "mission": "t13",
-      "reason": "gwd",
-      "valid": true,
-      "createdAt": "2026-08-14T06:37:22.286Z",
-      "changes": [
-        {
-          "factionId": "yartar-unterwelt",
-          "delta": -3
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:31.026Z"
-    },
-    {
-      "id": "event_9e067d5c-a9d1-43df-87d7-92f9bd83286b",
-      "date": "2026-06-18",
-      "mission": "5tgrw",
-      "reason": "wet214",
-      "valid": true,
-      "createdAt": "2026-08-14T06:37:44.593Z",
-      "changes": [
-        {
-          "factionId": "yartar-obrigkeit",
-          "delta": 3
-        },
-        {
-          "factionId": "yartar-gemeines-volk",
-          "delta": 3
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:34.459Z"
-    },
-    {
-      "id": "event_1ca6f905-7bdb-413f-bf55-cca97dfef992",
-      "date": "2026-08-14",
-      "mission": "132",
-      "reason": "ast",
-      "valid": true,
-      "createdAt": "2026-08-14T07:57:54.997Z",
-      "changes": [
-        {
-          "factionId": "tester",
-          "delta": -1
-        }
-      ],
-      "statusChangedAt": "2026-08-14T08:05:18.149Z"
-    }
-  ],
+  "events": [],
   "restore": null,
-  "updatedAt": "2026-08-14T09:52:39.879Z"
+  "updatedAt": "2026-08-14T09:52:43.490Z"
 }
