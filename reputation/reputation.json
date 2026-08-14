@@ -189,16 +189,6 @@
       "description": "Ein mächtiges Netzwerk aus Händlern, Söldnern und Agenten mit starkem Eigeninteresse.",
       "baseRep": 0,
       "baseDate": null
-    },
-    {
-      "id": "tester",
-      "name": "tester",
-      "description": "test",
-      "baseRep": 0,
-      "baseDate": "2026-08-14",
-      "rep": 0,
-      "lastChange": null,
-      "active": true
     }
   ],
   "events": [
