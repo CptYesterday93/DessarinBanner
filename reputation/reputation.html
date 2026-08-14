@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 3</title>
 
 <style>
 :root{
@@ -47,15 +47,6 @@ h1{
   text-align:center;
   color:var(--muted);
   margin:3px 0 20px;
-}
-
-.app-version{
-  text-align:center;
-  font-size:12px;
-  color:var(--muted);
-  margin:-14px 0 16px;
-  font-weight:700;
-  letter-spacing:.03em;
 }
 
 .notice{
@@ -422,6 +413,191 @@ textarea{
   color:var(--muted);
 }
 
+
+.version-tag{
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.08em;
+  margin:-1px 0 16px;
+}
+
+.clickable-name{
+  cursor:pointer;
+  text-decoration:underline;
+  text-decoration-color:#bbb;
+  text-underline-offset:3px;
+}
+
+.clickable-name:hover{
+  color:var(--blue);
+  text-decoration-color:var(--blue);
+}
+
+.expiry-list{
+  display:grid;
+  gap:7px;
+  margin:8px 0 20px;
+}
+
+.expiry-item{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) auto auto;
+  gap:12px;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:9px 11px;
+  background:#fff;
+  cursor:pointer;
+}
+
+.expiry-item:hover{
+  background:var(--soft);
+}
+
+.expiry-main strong{
+  display:block;
+}
+
+.expiry-main .muted{
+  margin-top:2px;
+}
+
+.expiry-days{
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.expiry-days.urgent{
+  color:var(--negative);
+}
+
+.expiry-days.soon{
+  color:#9a6a00;
+}
+
+.detail-meta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:12px 0 16px;
+}
+
+.detail-stat{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:9px;
+  background:var(--soft);
+}
+
+.detail-stat strong{
+  display:block;
+  font-size:18px;
+}
+
+.detail-stat span{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.chart-wrap{
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px;
+  background:#fff;
+  overflow:hidden;
+}
+
+.rep-chart{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.chart-grid{
+  stroke:#ddd;
+  stroke-width:1;
+}
+
+.chart-zero{
+  stroke:#999;
+  stroke-width:1.2;
+}
+
+.chart-axis-label{
+  fill:#777;
+  font-size:11px;
+}
+
+.chart-line{
+  fill:none;
+  stroke:var(--blue);
+  stroke-width:2.5;
+  stroke-linejoin:miter;
+  stroke-linecap:square;
+}
+
+.chart-event{
+  fill:#fff;
+  stroke:var(--blue);
+  stroke-width:2;
+  cursor:pointer;
+}
+
+.chart-event:hover{
+  fill:#dbe3f7;
+}
+
+.chart-tooltip{
+  position:fixed;
+  z-index:50;
+  display:none;
+  max-width:280px;
+  padding:8px 10px;
+  background:#171717;
+  color:#fff;
+  border-radius:5px;
+  font-size:12px;
+  line-height:1.4;
+  pointer-events:none;
+  box-shadow:0 3px 12px #0005;
+}
+
+.detail-events{
+  margin-top:14px;
+}
+
+.detail-event{
+  border-top:1px solid var(--line);
+  padding:9px 0;
+}
+
+.detail-event:first-child{
+  border-top:0;
+}
+
+.detail-event-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+@media(max-width:700px){
+  .expiry-item{
+    grid-template-columns:1fr auto;
+  }
+
+  .expiry-item .expiry-days{
+    grid-row:1 / span 2;
+    grid-column:2;
+  }
+
+  .detail-meta{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
 @media(max-width:700px){
 
   .sheet{
@@ -467,11 +643,11 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
+  <div class="version-tag">HTML VERSION 3</div>
+
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
   </div>
-
-  <div class="app-version">HTML VERSION 2</div>
 
   <div class="notice">
     <strong>REP</strong> beschreibt den aktuellen Ruf.
@@ -480,6 +656,14 @@ textarea{
     <strong>30 / 60 / 90 Tage</strong>, negative
     <strong>40 / 80 / 120 Tage</strong>.
   </div>
+
+  <div class="section-title">
+    <span>⏳ Bald auslaufende Einflüsse</span>
+    <span class="section-title-spacer"></span>
+    <span class="small" id="expirySummary"></span>
+  </div>
+
+  <div id="expiryList" class="expiry-list"></div>
 
 
   <!-- =========================
@@ -709,6 +893,31 @@ textarea{
 
 
 <!-- =========================
+     DETAIL-MODAL
+     ========================= -->
+<div
+  id="detailBackdrop"
+  class="modal-backdrop"
+  onclick="handleDetailBackdrop(event)"
+>
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="detailTitle"
+    onclick="event.stopPropagation()"
+  >
+    <h2 id="detailTitle"></h2>
+    <div id="detailContent"></div>
+    <div class="modal-actions">
+      <button onclick="closeDetail()">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<div id="chartTooltip" class="chart-tooltip"></div>
+
+<!-- =========================
      MODAL
      ========================= -->
 
@@ -753,19 +962,13 @@ textarea{
 <script>
 
 /* =========================================================
-   VERSION
-   ========================================================= */
-
-const HTML_VERSION = '2';
-
-/* =========================================================
    API
    ========================================================= */
 
+const HTML_VERSION = '3';
+
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
-
-// Frontend-Version: 7 – Update ohne startRep; robuste Yartar-ID-Auflösung.
 
 let state = null;
 let pendingAction = null;
@@ -1137,69 +1340,57 @@ function allUnits(){
 }
 
 
-/*
- * Liefert die kanonische ID aus den aktuell geladenen Daten.
- *
- * Wichtig für Yartar:
- * In älteren Datenständen können Kinder einmal über eine
- * aus dem Namen erzeugte ID angesprochen worden sein, während
- * die eigentliche child.id inzwischen anders lautet. Wir ändern
- * die gespeicherten IDs NICHT, sondern lösen solche alten Werte
- * hier auf die aktuell vorhandene ID auf.
- */
-function resolveUnitId(id){
+function resolveUnit(id){
 
-  const raw =
-    String(id ?? '').trim();
+  const wanted = String(id ?? '');
 
-  if(!raw || !state){
-    return raw;
+  for(const place of (state.places || [])){
+
+    if(place.id === wanted){
+      return {
+        id: place.id,
+        name: place.name,
+        type: 'place',
+        item: place
+      };
+    }
+
+    for(const child of (place.children || [])){
+      const aliases = [
+        child.id,
+        slugify(child.name),
+        `${slugify(place.name)}-${slugify(child.name)}`
+      ];
+
+      if(aliases.includes(wanted)){
+        return {
+          id: child.id,
+          name: `${place.name} – ${child.name}`,
+          type: 'child',
+          item: child,
+          place
+        };
+      }
+    }
   }
 
-  const units =
-    allUnits();
-
-  const exact =
-    units.find(
-      unit =>
-        unit.id === raw
-    );
-
-  if(exact){
-    return exact.id;
+  for(const organization of (state.organizations || [])){
+    if(organization.id === wanted){
+      return {
+        id: organization.id,
+        name: organization.name,
+        type: 'organization',
+        item: organization
+      };
+    }
   }
 
-  const normalizedId =
-    slugify(raw);
-
-  const byDisplayName =
-    units.find(
-      unit =>
-        slugify(unit.name) === normalizedId
-    );
-
-  if(byDisplayName){
-    return byDisplayName.id;
-  }
-
-  return raw;
+  return null;
 }
-
 
 function unitName(id){
 
-  const canonicalId =
-    resolveUnitId(id);
-
-  return (
-    allUnits()
-      .find(
-        unit =>
-          unit.id === canonicalId
-      )
-      ?.name ||
-    id
-  );
+  return resolveUnit(id)?.name || id;
 
 }
 
@@ -1215,6 +1406,8 @@ function render(){
   renderOrganizations();
 
   renderLog();
+
+  renderExpiry();
 
 }
 
@@ -1351,7 +1544,11 @@ function renderRegions(){
                   }
 
 
-                  <strong>
+                  <strong
+                    class="clickable-name"
+                    onclick="showFactionDetail('${esc(place.id)}','place')"
+                    title="REP-Verlauf anzeigen"
+                  >
                     ${esc(place.name)}
                   </strong>
 
@@ -1469,7 +1666,11 @@ function renderRegions(){
                         ${esc(place.name)} –
                       </span>
 
-                      <strong>
+                      <strong
+                        class="clickable-name"
+                        onclick="showFactionDetail('${esc(child.id)}','child')"
+                        title="REP-Verlauf anzeigen"
+                      >
                         ${esc(child.name)}
                       </strong>
 
@@ -1589,7 +1790,11 @@ function renderOrganizations(){
 
               <td>
 
-                <strong>
+                <strong
+                  class="clickable-name"
+                  onclick="showFactionDetail('${esc(org.id)}','organization')"
+                  title="REP-Verlauf anzeigen"
+                >
                   ${esc(org.name)}
                 </strong>
 
@@ -1882,11 +2087,9 @@ function getChanges(){
       row => ({
 
         factionId:
-          resolveUnitId(
-            row.querySelector(
-              '.target'
-            ).value
-          ),
+          row.querySelector(
+            '.target'
+          ).value,
 
         delta:
           Number(
@@ -2144,19 +2347,8 @@ function previewApply(){
   }
 
 
-  const canonicalChanges =
-    changes.map(
-      change => ({
-        ...change,
-        factionId:
-          resolveUnitId(
-            change.factionId
-          )
-      })
-    );
-
   const ids =
-    canonicalChanges.map(
+    changes.map(
       change =>
         change.factionId
     );
@@ -2177,7 +2369,7 @@ function previewApply(){
 
 
   const lines =
-    canonicalChanges
+    changes
       .map(
         change => {
 
@@ -2233,8 +2425,7 @@ function previewApply(){
 
               date,
 
-              changes:
-                canonicalChanges
+              changes
 
             })
 
@@ -2481,13 +2672,18 @@ function editFaction(
           body:
             JSON.stringify({
 
-              // Bewusst KEIN startRep/rep: Bearbeiten ändert nur
-              // Stammdaten und darf niemals die REP-Berechnung anfassen.
-              action: 'update',
-              type: type,
-              id: id,
-              name: name.trim(),
-              description: description.trim()
+              action:
+                'update',
+
+              type,
+
+              id,
+
+              name:
+                name.trim(),
+
+              description:
+                description.trim()
 
             })
 
@@ -2583,6 +2779,341 @@ function deleteFaction(
 
 }
 
+
+
+/* =========================================================
+   REP-DETAILANSICHT / VERLAUF
+   ========================================================= */
+
+function allEventsForTarget(id){
+
+  return (state.events || [])
+    .filter(event => event.valid !== false)
+    .flatMap(event =>
+      (event.changes || [])
+        .filter(change => change.factionId === id)
+        .map(change => ({
+          event,
+          change,
+          days: Number(change.days) || EFFECTS[Number(change.delta)] || 30
+        }))
+    );
+}
+
+function findUnit(id, type){
+  const resolved = resolveUnit(id);
+  if(!resolved) return null;
+
+  if(type === 'child' && resolved.type !== 'child') return null;
+  if(type === 'place' && resolved.type !== 'place') return null;
+  if(type === 'organization' && resolved.type !== 'organization') return null;
+
+  return resolved;
+}
+
+function directRepAt(id, date){
+  const unit = findUnit(id, 'child') || findUnit(id, 'place') || findUnit(id, 'organization');
+  if(!unit) return 0;
+  const canonicalId = unit.id;
+
+  let rep = Number(unit.item.baseRep ?? unit.item.rep ?? 0) || 0;
+  const baseDate = unit.item.baseDate || null;
+
+  for(const event of (state.events || [])){
+    if(event.valid === false) continue;
+    if(baseDate && String(event.date) < String(baseDate)) continue;
+    if(String(event.date) > String(date)) continue;
+
+    for(const change of (event.changes || [])){
+      const changeUnit = resolveUnit(change.factionId);
+      if(!changeUnit || changeUnit.id !== canonicalId) continue;
+      const delta = Number(change.delta) || 0;
+      const days = Number(change.days) || EFFECTS[delta] || 30;
+      const age = diffDays(event.date, date);
+      if(age >= 0 && age < days) rep += delta;
+    }
+  }
+
+  return rep;
+}
+
+function diffDays(a,b){
+  const da = new Date(String(a).slice(0,10) + 'T00:00:00');
+  const db = new Date(String(b).slice(0,10) + 'T00:00:00');
+  return Math.floor((db-da)/86400000);
+}
+
+function aggregateRepAt(place, date){
+  const children = place.children || [];
+  if(!children.length) return directRepAt(place.id,date);
+  let weight = 0;
+  let total = 0;
+  for(const child of children){
+    const w = Number(child.weight) || 1;
+    weight += w;
+    total += directRepAt(child.id,date) * w;
+  }
+  return weight ? Math.round(total/weight) : 0;
+}
+
+function repAt(id,type,date){
+  const unit = findUnit(id,type);
+  if(!unit) return 0;
+  if(unit.type === 'place') return aggregateRepAt(unit.item,date);
+  return directRepAt(id,date);
+}
+
+function detailEvents(id,type){
+  if(type === 'place'){
+    const place = findUnit(id,'place')?.item;
+    if(place?.children?.length){
+      const childIds = new Set(place.children.map(c=>c.id));
+      return (state.events || [])
+        .filter(e => e.valid !== false)
+        .flatMap(event => (event.changes || [])
+          .filter(c => childIds.has(c.factionId))
+          .map(c => ({event,change:c,days:Number(c.days)||EFFECTS[Number(c.delta)]||30,child:place.children.find(x=>x.id===c.factionId)})));
+    }
+  }
+  return allEventsForTarget(id);
+}
+
+function addDate(set,date){
+  if(date && /^\d{4}-\d{2}-\d{2}$/.test(String(date).slice(0,10))) set.add(String(date).slice(0,10));
+}
+
+function addDays(date,days){
+  const d = new Date(String(date).slice(0,10) + 'T00:00:00');
+  d.setDate(d.getDate()+days);
+  return d.toISOString().slice(0,10);
+}
+
+function buildChartData(id,type){
+  const events = detailEvents(id,type);
+  const dates = new Set();
+  const unit = findUnit(id,type);
+  addDate(dates, unit?.item?.baseDate);
+  addDate(dates, todayISO());
+
+  for(const x of events){
+    addDate(dates,x.event.date);
+    addDate(dates,addDays(x.event.date,x.days));
+  }
+
+  if(!dates.size) addDate(dates,todayISO());
+
+  const sorted = [...dates].sort();
+  return sorted.map(date => ({
+    date,
+    rep: repAt(id,type,date)
+  }));
+}
+
+function svgEscape(value){
+  return esc(value);
+}
+
+function showFactionDetail(id,type){
+  const unit = findUnit(id,type);
+  if(!unit) return;
+
+  const item = unit.item;
+  const rep = Number(item.effectiveRep ?? item.rep ?? 0) || 0;
+  const historical = Number(item.rep ?? item.baseRep ?? 0) || 0;
+  const events = detailEvents(id,type).sort((a,b)=>String(b.event.date).localeCompare(String(a.event.date)));
+  const chart = buildChartData(id,type);
+
+  document.getElementById('detailTitle').textContent =
+    unit.type === 'child' ? `${unit.place.name} – ${item.name}` : item.name;
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-meta">
+      <div class="detail-stat">
+        <strong class="${valueClass(rep)}">${fmtRep(rep)}</strong>
+        <span>Effektive REP</span>
+      </div>
+      <div class="detail-stat">
+        <strong class="${valueClass(historical)}">${fmtRep(historical)}</strong>
+        <span>Historische REP</span>
+      </div>
+      <div class="detail-stat">
+        <strong>${esc(item.status || statusFor(rep))}</strong>
+        <span>Status</span>
+      </div>
+    </div>
+
+    <div class="small" style="margin-bottom:6px">
+      Der Verlauf zeigt die wirksame REP. Wirkungen fallen nach ihrer jeweiligen Dauer stufenweise weg.
+    </div>
+
+    <div class="chart-wrap">
+      ${renderRepChart(id,type,chart,events)}
+    </div>
+
+    <div class="detail-events">
+      <strong>Ereignisse</strong>
+      ${events.length ? events.map(x => {
+        const expiry = addDays(x.event.date,x.days);
+        const remaining = diffDays(todayISO(),expiry);
+        const label = unit.type === 'place' && x.child ? x.child.name : '';
+        return `
+          <div class="detail-event">
+            <div class="detail-event-head">
+              <strong>${esc(x.event.mission || 'Ohne Missionsangabe')}</strong>
+              <span class="muted">${fmtDate(x.event.date)}</span>
+            </div>
+            <div>
+              ${label ? `<span class="muted">${esc(label)} · </span>` : ''}
+              <span class="${valueClass(x.change.delta)}">${Number(x.change.delta)>0?'+':''}${esc(x.change.delta)} REP</span>
+              · ${x.days} Tage
+            </div>
+            <div class="muted">${esc(x.event.reason || 'Keine Begründung angegeben.')} · ${remaining >= 0 ? `läuft in ${remaining} Tagen aus` : 'bereits abgelaufen'}</div>
+          </div>
+        `;
+      }).join('') : '<p class="muted">Noch keine REP-Ereignisse vorhanden.</p>'}
+    </div>
+  `;
+
+  document.getElementById('detailBackdrop').classList.add('open');
+}
+
+function renderRepChart(id,type,data,events){
+  const W = 900, H = 300;
+  const pad = {l:48,r:20,t:18,b:38};
+  const plotW = W-pad.l-pad.r;
+  const plotH = H-pad.t-pad.b;
+  const values = data.map(d=>d.rep);
+  const all = values.length ? values : [0];
+  let min = Math.min(...all,0), max = Math.max(...all,0);
+  if(min === max){ min -= 2; max += 2; }
+  const range = max-min || 1;
+  min -= Math.max(1,range*0.08);
+  max += Math.max(1,range*0.08);
+
+  const x = date => {
+    if(data.length <= 1) return pad.l + plotW/2;
+    return pad.l + (diffDays(data[0].date,date)/Math.max(1,diffDays(data[0].date,data[data.length-1].date))) * plotW;
+  };
+  const y = rep => pad.t + (max-rep)/(max-min)*plotH;
+
+  let grid = '';
+  const steps = 5;
+  for(let i=0;i<=steps;i++){
+    const v = max - ((max-min)*i/steps);
+    const yy = y(v);
+    grid += `<line class="chart-grid" x1="${pad.l}" x2="${W-pad.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"></line>`;
+    grid += `<text class="chart-axis-label" x="${pad.l-8}" y="${yy+4}" text-anchor="end">${Math.round(v)}</text>`;
+  }
+
+  if(min <= 0 && max >= 0){
+    const yy=y(0);
+    grid += `<line class="chart-zero" x1="${pad.l}" x2="${W-pad.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"></line>`;
+  }
+
+  let path='';
+  data.forEach((p,i)=>{
+    path += `${i?'L':'M'} ${x(p.date).toFixed(1)} ${y(p.rep).toFixed(1)} `;
+  });
+
+  const dateLabels = data.length ? [data[0].date, todayISO(), data[data.length-1].date].filter((v,i,a)=>a.indexOf(v)===i) : [todayISO()];
+  const labels = dateLabels.map(d=>`<text class="chart-axis-label" x="${x(d)}" y="${H-10}" text-anchor="middle">${fmtDate(d)}</text>`).join('');
+
+  const eventDots = events.map((e,index)=>{
+    const ex = x(e.event.date);
+    const ey = y(repAt(id,type,e.event.date));
+    const delta = Number(e.change.delta)||0;
+    const child = e.child ? ` · ${e.child.name}` : '';
+    const tip = `${fmtDate(e.event.date)} · ${delta>0?'+':''}${delta} REP${child} · ${e.event.mission || 'Ohne Mission'} · ${e.event.reason || 'Keine Begründung'}`;
+    return `<circle class="chart-event" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="4" data-tooltip="${esc(tip)}" onmouseenter="showChartTooltip(event,this)" onmousemove="moveChartTooltip(event)" onmouseleave="hideChartTooltip()" ontouchstart="showChartTooltip(event,this)"></circle>`;
+  }).join('');
+
+  return `
+    <svg class="rep-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="REP-Verlauf für die ausgewählte Fraktion">
+      ${grid}
+      <path class="chart-line" d="${path}"></path>
+      ${eventDots}
+      ${labels}
+    </svg>
+  `;
+}
+
+function showChartTooltip(event,node){
+  const tip=document.getElementById('chartTooltip');
+  tip.textContent=node.getAttribute('data-tooltip') || '';
+  tip.style.display='block';
+  moveChartTooltip(event);
+}
+
+function moveChartTooltip(event){
+  const tip=document.getElementById('chartTooltip');
+  if(tip.style.display !== 'block') return;
+  const x=Math.min(window.innerWidth-295, event.clientX+12);
+  const y=Math.min(window.innerHeight-80, event.clientY+12);
+  tip.style.left=Math.max(8,x)+'px';
+  tip.style.top=Math.max(8,y)+'px';
+}
+
+function hideChartTooltip(){
+  document.getElementById('chartTooltip').style.display='none';
+}
+
+function closeDetail(){
+  hideChartTooltip();
+  document.getElementById('detailBackdrop').classList.remove('open');
+}
+
+function handleDetailBackdrop(event){
+  if(event.target.id === 'detailBackdrop') closeDetail();
+}
+
+/* =========================================================
+   BALD AUSLAUFENDE EINFLÜSSE
+   ========================================================= */
+
+function renderExpiry(){
+  const today=todayISO();
+  const limit=addDays(today,30);
+  const rows=[];
+
+  for(const event of (state.events || [])){
+    if(event.valid === false) continue;
+    for(const change of (event.changes || [])){
+      const days=Number(change.days)||EFFECTS[Number(change.delta)]||30;
+      const expiry=addDays(event.date,days);
+      const remaining=diffDays(today,expiry);
+      if(remaining >= 0 && remaining <= 30){
+        rows.push({event,change,days,expiry,remaining});
+      }
+    }
+  }
+
+  rows.sort((a,b)=>a.remaining-b.remaining || String(a.event.date).localeCompare(String(b.event.date)));
+
+  const el=document.getElementById('expiryList');
+  const summary=document.getElementById('expirySummary');
+  summary.textContent=rows.length ? `${rows.length} ${rows.length===1?'Einfluss':'Einflüsse'}` : '';
+
+  if(!rows.length){
+    el.innerHTML='<div class="muted">In den nächsten 30 Tagen läuft kein aktiver Einfluss aus.</div>';
+    return;
+  }
+
+  el.innerHTML=rows.map(x=>{
+    const name=unitName(x.change.factionId);
+    const urgent=x.remaining<=3;
+    const soon=x.remaining<=7;
+    return `
+      <div class="expiry-item" onclick="showFactionDetail('${esc(x.change.factionId)}','${findUnit(x.change.factionId,'child')?'child':findUnit(x.change.factionId,'organization')?'organization':'place'}')">
+        <div class="expiry-main">
+          <strong>${esc(name)}</strong>
+          <div class="muted">${esc(x.event.mission || 'Ohne Missionsangabe')} · ${fmtDate(x.expiry)}</div>
+        </div>
+        <div class="${valueClass(x.change.delta)}">${Number(x.change.delta)>0?'+':''}${esc(x.change.delta)} REP</div>
+        <div class="expiry-days ${urgent?'urgent':soon?'soon':''}">${x.remaining===0?'heute':`in ${x.remaining} Tagen`}</div>
+      </div>
+    `;
+  }).join('');
+}
 
 /* =========================================================
    RETCON
