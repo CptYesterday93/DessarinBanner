@@ -112,28 +112,36 @@
           "name": "Obrigkeit / Stadtwache",
           "weight": 1,
           "description": "Stadtverwaltung, Stadtwache und andere offizielle Stellen Yartars.",
-          "order": 1
+          "order": 1,
+          "baseRep": -3,
+          "baseDate": null
         },
         {
           "id": "yartar-haendler",
           "name": "Händler",
           "weight": 1,
           "description": "Händler, Handelsunternehmen und lokale Handelsinteressen.",
-          "order": 2
+          "order": 2,
+          "baseRep": -2,
+          "baseDate": null
         },
         {
           "id": "yartar-gemeines-volk",
           "name": "Gemeines Volk",
           "weight": 1,
           "description": "Die allgemeine Bevölkerung Yartars ohne besondere Zugehörigkeit.",
-          "order": 3
+          "order": 3,
+          "baseRep": -6,
+          "baseDate": null
         },
         {
           "id": "yartar-unterwelt",
           "name": "Unterwelt",
           "weight": 0.5,
           "description": "Kriminelle Netzwerke, Diebesgruppen und andere Teile der lokalen Unterwelt.",
-          "order": 4
+          "order": 4,
+          "baseRep": 4,
+          "baseDate": null
         }
       ],
       "baseRep": 0,
@@ -338,8 +346,30 @@
         }
       ],
       "statusChangedAt": "2026-08-14T08:05:18.149Z"
+    },
+    {
+      "id": "event_635bfd38-8ad0-401d-a974-90d5004b7da9",
+      "date": "2026-08-14",
+      "mission": "542",
+      "reason": "wq4ert",
+      "valid": true,
+      "createdAt": "2026-08-14T08:57:16.081Z",
+      "changes": [
+        {
+          "factionId": "yartar-obrigkeit",
+          "delta": 3
+        },
+        {
+          "factionId": "yartar-gemeines-volk",
+          "delta": 3
+        },
+        {
+          "factionId": "yartar-haendler",
+          "delta": 2
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:05:34.459Z"
+  "updatedAt": "2026-08-14T08:57:16.081Z"
 }
