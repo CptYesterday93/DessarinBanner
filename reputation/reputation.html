@@ -3,6 +3,3727 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reputation – Dessarin Banner · HTML VERSION 6.3</title>
+
+<style>
+:root{
+  --bg:#f2f2f2;
+  --paper:#fff;
+  --ink:#171717;
+  --muted:#6b6b6b;
+  --line:#d8d8d8;
+  --soft:#f5f5f5;
+  --blue:#3157a6;
+  --positive:#155fa0;
+  --negative:#c45b00;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:14px/1.45 Arial,Helvetica,sans-serif;
+}
+
+.sheet{
+  width:min(1120px,calc(100% - 20px));
+  margin:20px auto 40px;
+  background:var(--paper);
+  padding:28px 32px 44px;
+  box-shadow:0 2px 18px #0001;
+}
+
+h1{
+  text-align:center;
+  margin:0;
+  font-size:28px;
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  margin:3px 0 20px;
+}
+
+.notice{
+  padding:11px 13px;
+  background:#f3f5fb;
+  border-left:3px solid var(--blue);
+  margin-bottom:20px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:19px;
+  font-weight:700;
+  margin:25px 0 9px;
+  padding:8px 11px;
+  background:#ededed;
+  border-radius:8px;
+}
+
+.section-title-spacer{
+  flex:1;
+}
+
+.section-search{
+  margin-left:auto;
+  width:min(390px,45%);
+}
+
+.section-search input{
+  width:100%;
+  padding:7px 10px;
+  font-weight:400;
+  font-size:14px;
+}
+
+.info-btn{
+  width:22px;
+  height:22px;
+  padding:0;
+  border:1px solid #777;
+  border-radius:50%;
+  background:#fff;
+  font-weight:700;
+  font-size:13px;
+  line-height:20px;
+  cursor:pointer;
+}
+
+.info-btn:hover{
+  background:#f3f3f3;
+}
+
+.table-wrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,
+td{
+  padding:9px;
+  border-bottom:1px solid var(--line);
+  vertical-align:middle;
+  text-align:left;
+}
+
+th{
+  font-size:12px;
+  color:#444;
+}
+
+.num{
+  text-align:center;
+  white-space:nowrap;
+}
+
+.status{
+  font-weight:700;
+}
+
+.positive{
+  color:var(--positive);
+}
+
+.negative{
+  color:var(--negative);
+}
+
+.region-name{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+}
+
+.region-toggle{
+  border:0;
+  background:transparent;
+  padding:0;
+  width:18px;
+  height:20px;
+  font-size:13px;
+  cursor:pointer;
+  color:#333;
+}
+
+.region-toggle:hover{
+  background:transparent;
+}
+
+.child td:first-child{
+  padding-left:42px;
+  font-size:13px;
+}
+
+.child-name{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.child-parent{
+  color:var(--muted);
+  font-size:12px;
+  margin-right:4px;
+}
+
+.actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+
+button{
+  font:inherit;
+  border:1px solid #999;
+  background:#fff;
+  padding:7px 10px;
+  border-radius:4px;
+  cursor:pointer;
+}
+
+button:hover{
+  background:#f3f3f3;
+}
+
+.primary{
+  background:var(--blue);
+  color:#fff;
+  border-color:var(--blue);
+  font-weight:700;
+}
+
+.primary:hover{
+  background:#294a8c;
+}
+
+.danger{
+  color:var(--negative);
+  border-color:#d99a6c;
+}
+
+.toolbar{
+  display:flex;
+  gap:8px;
+  align-items:end;
+  flex-wrap:wrap;
+  margin:10px 0 16px;
+}
+
+label{
+  display:block;
+  font-weight:700;
+  font-size:13px;
+  margin-bottom:5px;
+}
+
+input,
+select,
+textarea{
+  font:inherit;
+  border:1px solid #9da4b2;
+  background:#fff;
+  padding:8px 10px;
+  border-radius:3px;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+  outline:2px solid #dbe3f7;
+}
+
+textarea{
+  width:100%;
+  min-height:70px;
+  resize:vertical;
+}
+
+.mission{
+  flex:1;
+  min-width:260px;
+}
+
+.date{
+  width:155px;
+}
+
+/* REP-Zeilen */
+
+.change-header{
+  display:grid;
+  grid-template-columns:minmax(190px,1fr) 190px auto;
+  gap:10px;
+  align-items:end;
+  margin-top:16px;
+  padding-bottom:4px;
+}
+
+.change-header > div{
+  font-weight:700;
+  font-size:13px;
+}
+
+.change-row{
+  display:grid;
+  grid-template-columns:minmax(190px,1fr) 190px auto;
+  gap:10px;
+  align-items:end;
+  padding:9px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.change-row select{
+  width:100%;
+}
+
+/* Verlauf */
+
+.log-group{
+  border:1px solid var(--line);
+  border-radius:7px;
+  margin:8px 0;
+  background:#fff;
+  overflow:hidden;
+}
+
+.log-group > summary{
+  list-style:none;
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 13px;
+  font-weight:700;
+}
+
+.log-group > summary::-webkit-details-marker{
+  display:none;
+}
+
+.log-group > summary:before{
+  content:"▶";
+  font-size:10px;
+  margin-right:8px;
+  color:var(--muted);
+}
+
+.log-group[open] > summary:before{
+  content:"▼";
+}
+
+.log-group > summary:hover{
+  background:var(--soft);
+}
+
+.log-body{
+  padding:0 10px 8px;
+}
+
+.log-entry{
+  border-top:1px solid var(--line);
+  padding:10px 3px;
+}
+
+.log-head{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.muted,
+.small{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.badge{
+  display:inline-block;
+  font-size:11px;
+  padding:2px 6px;
+  border-radius:10px;
+  background:#eee;
+}
+
+.badge.invalid{
+  color:var(--negative);
+  background:#fff0e7;
+}
+
+/* Modal */
+
+ .modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:#0008;
+  display:none;
+  align-items:flex-start;
+  justify-content:center;
+  padding:12px;
+  z-index:20;
+  box-sizing:border-box;
+  overflow:hidden;
+}
+
+.modal-backdrop.open{
+  display:flex;
+}
+
+.modal{
+  width:min(760px,100%);
+  max-height:calc(100vh - 24px);
+  overflow-y:auto;
+  overflow-x:hidden;
+  box-sizing:border-box;
+  background:#fff;
+  border-radius:8px;
+  padding:20px;
+  margin:0;
+  box-shadow:0 8px 30px #0005;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Lange Detailansichten (z.B. Yartar) bleiben vollständig erreichbar.
+   Das Fenster bleibt vollständig im Browserfenster; nur der Inhalt scrollt. */
+@media(max-width:700px){
+  .modal-backdrop{
+    padding:8px;
+  }
+
+  .modal{
+    max-height:calc(100vh - 16px);
+    padding:14px;
+  }
+}
+
+.modal h2{
+  margin:0 0 10px;
+}
+
+.modal p{
+  white-space:pre-line;
+  margin:0;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:16px;
+}
+
+.statusbar{
+  margin-left:auto;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.empty{
+  color:var(--muted);
+}
+
+
+.version-tag{
+  text-align:center;
+  color:var(--muted);
+  font-size:11px;
+  letter-spacing:.08em;
+  margin:-1px 0 16px;
+}
+
+.clickable-name{
+  cursor:pointer;
+  text-decoration:underline;
+  text-decoration-color:#bbb;
+  text-underline-offset:3px;
+}
+
+.clickable-name:hover{
+  color:var(--blue);
+  text-decoration-color:var(--blue);
+}
+
+.expiry-list{
+  display:grid;
+  gap:7px;
+  margin:8px 0 20px;
+}
+
+.expiry-item{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) auto auto;
+  gap:12px;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:9px 11px;
+  background:#fff;
+  cursor:pointer;
+}
+
+.expiry-item:hover{
+  background:var(--soft);
+}
+
+.overview-expiry{
+  margin:25px 0 8px;
+}
+
+.expiry-item{
+  cursor:pointer;
+}
+
+.expiry-main strong{
+  display:block;
+}
+
+.expiry-main .muted{
+  margin-top:2px;
+}
+
+.expiry-days{
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.expiry-days.urgent{
+  color:var(--negative);
+}
+
+.expiry-days.soon{
+  color:#9a6a00;
+}
+
+ .expiry-details{
+  margin:0 0 12px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:#fff;
+}
+
+.expiry-details > summary{
+  cursor:pointer;
+  list-style:none;
+  padding:9px 11px;
+  font-weight:700;
+}
+
+.expiry-details > summary::-webkit-details-marker{
+  display:none;
+}
+
+.expiry-details > summary:before{
+  content:"▶";
+  font-size:10px;
+  margin-right:8px;
+  color:var(--muted);
+}
+
+.expiry-details[open] > summary:before{
+  content:"▼";
+}
+
+.expiry-details > summary:hover{
+  background:var(--soft);
+}
+
+.expiry-details .expiry-list{
+  margin:0;
+  padding:0 8px 8px;
+}
+
+.detail-meta{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin:12px 0 16px;
+}
+
+.detail-stat{
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:9px;
+  background:var(--soft);
+}
+
+.detail-stat strong{
+  display:block;
+  font-size:18px;
+}
+
+.detail-stat span{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.chart-wrap{
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px;
+  background:#fff;
+  overflow:hidden;
+}
+
+.rep-chart{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+.chart-grid{
+  stroke:#ddd;
+  stroke-width:1;
+}
+
+.chart-zero{
+  stroke:#999;
+  stroke-width:1.2;
+}
+
+.chart-axis-label{
+  fill:#888;
+  font-size:10px;
+}
+
+.chart-date-label{
+  fill:#666;
+  font-size:10px;
+}
+
+.chart-tick{
+  stroke:#cfcfcf;
+  stroke-width:1;
+}
+
+.detail-date{
+  color:#aaa;
+  font-size:11px;
+  white-space:nowrap;
+}
+
+.chart-line{
+  fill:none;
+  stroke:var(--blue);
+  stroke-width:2.5;
+  stroke-linejoin:miter;
+  stroke-linecap:square;
+}
+
+.chart-event{
+  fill:#fff;
+  stroke:var(--blue);
+  stroke-width:2;
+  cursor:pointer;
+}
+
+.chart-event:hover{
+  fill:#dbe3f7;
+}
+
+.chart-tooltip{
+  position:fixed;
+  z-index:50;
+  display:none;
+  max-width:280px;
+  padding:8px 10px;
+  background:#171717;
+  color:#fff;
+  border-radius:5px;
+  font-size:12px;
+  line-height:1.4;
+  pointer-events:none;
+  box-shadow:0 3px 12px #0005;
+}
+
+.detail-events{
+  margin-top:14px;
+}
+
+.detail-event{
+  border-top:1px solid var(--line);
+  padding:9px 0;
+}
+
+.detail-event:first-child{
+  border-top:0;
+}
+
+.detail-event-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+
+@media(max-width:700px){
+  .expiry-item{
+    grid-template-columns:1fr auto;
+  }
+
+  .expiry-item .expiry-days{
+    grid-row:1 / span 2;
+    grid-column:2;
+  }
+
+  .detail-meta{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:700px){
+
+  .sheet{
+    padding:22px 14px;
+  }
+
+  .section-title{
+    flex-wrap:wrap;
+  }
+
+  .section-search{
+    width:100%;
+    margin-left:0;
+    order:10;
+  }
+
+  .change-header,
+  .change-row{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .change-row .remove{
+    grid-column:2;
+    justify-self:end;
+  }
+
+  .mission,
+  .date{
+    width:100%;
+    min-width:0;
+  }
+
+  .log-head{
+    display:block;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<main class="sheet">
+
+  <h1>REPUTATIONSÜBERSICHT</h1>
+
+  <div class="version-tag">HTML VERSION 6.3</div>
+
+  <div class="subtitle">
+    Dessarin Banner · Reputationspunkte (REP)
+  </div>
+
+  <div class="notice">
+    <strong>REP</strong> beschreibt den aktuellen Ruf.
+    Einzelne Rufänderungen verlieren ihre Wirkung stufenweise.
+    Die Wirkung wechselt also z. B. von <strong>+3 → +2 → +1 → 0</strong>.
+    Größere positive Einflüsse halten <strong>75 / 60 / 45 Tage</strong> je Stufe,
+    negative <strong>90 / 75 / 60 Tage</strong> je Stufe.
+  </div>
+
+
+  <!-- =========================
+       REGIONEN
+       ========================= -->
+
+  <div class="section-title">
+
+    <span>
+      Regionen
+    </span>
+
+    <button
+      class="info-btn"
+      onclick="showInfo(
+        'Regionen',
+        'Mit einer Region ist der benannte Ort und sein näheres Umfeld gemeint, einschließlich Höfen, Dörfern und kleineren Siedlungen. Nicht jedes einzelne Dorf oder jeder Hof wird als eigene Region angelegt.'
+      )"
+      aria-label="Informationen zu Regionen"
+    >
+      i
+    </button>
+
+    <div class="section-search">
+
+      <input
+        id="regionSearch"
+        type="search"
+        placeholder="🔎 Region suchen …"
+        autocomplete="off"
+        oninput="renderRegions()"
+      >
+
+    </div>
+
+  </div>
+
+
+  <div class="table-wrap">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Region</th>
+          <th class="num">REP</th>
+          <th>Status</th>
+          <th>Letzte Änderung</th>
+          <th>Verwaltung</th>
+        </tr>
+      </thead>
+
+      <tbody id="regionsBody"></tbody>
+
+    </table>
+
+  </div>
+
+
+  <div class="toolbar">
+
+    <button onclick="addFaction('place')">
+      ＋ Region hinzufügen
+    </button>
+
+  </div>
+
+
+  <!-- =========================
+       ORGANISATIONEN
+       ========================= -->
+
+  <div class="section-title">
+
+    <span>
+      Organisationen
+    </span>
+
+    <button
+      class="info-btn"
+      onclick="showInfo(
+        'Organisationen',
+        'Organisationen werden unabhängig von Regionen geführt. Ihr Ruf ist nicht automatisch an eine Region gebunden.'
+      )"
+      aria-label="Informationen zu Organisationen"
+    >
+      i
+    </button>
+
+  </div>
+
+
+  <div class="table-wrap">
+
+    <table>
+
+      <thead>
+        <tr>
+          <th>Organisation</th>
+          <th class="num">REP</th>
+          <th>Status</th>
+          <th>Letzte Änderung</th>
+          <th>Verwaltung</th>
+        </tr>
+      </thead>
+
+      <tbody id="orgsBody"></tbody>
+
+    </table>
+
+  </div>
+
+
+  <div class="toolbar">
+
+    <button onclick="addFaction('organization')">
+      ＋ Organisation hinzufügen
+    </button>
+
+    <span
+      class="statusbar"
+      id="loadStatus"
+    >
+      Daten werden geladen…
+    </span>
+
+  </div>
+
+
+  <!-- =========================
+       RUFÄNDERUNG
+       ========================= -->
+
+  <div class="section-title">
+    Rufänderung eintragen
+  </div>
+
+
+  <div class="toolbar">
+
+    <div class="mission">
+
+      <label for="mission">
+        Mission / Ereignis
+      </label>
+
+      <input
+        id="mission"
+        placeholder="z. B. Die verlorene Karawane"
+      >
+
+    </div>
+
+
+    <div class="date">
+
+      <label for="changeDate">
+        Datum
+      </label>
+
+      <input
+        id="changeDate"
+        type="date"
+      >
+
+    </div>
+
+  </div>
+
+
+  <label for="reason">
+    Beschreibung / Begründung
+  </label>
+
+  <textarea
+    id="reason"
+    placeholder="Was ist passiert und warum beeinflusst es den Ruf?"
+  ></textarea>
+
+
+  <div class="change-header">
+
+    <div>
+      Auswirkung auf
+    </div>
+
+    <div>
+      Auswirkung
+    </div>
+
+    <div></div>
+
+  </div>
+
+
+  <div id="changeRows"></div>
+
+
+  <div class="toolbar">
+
+    <button onclick="addChangeRow()">
+      ＋ REP hinzufügen
+    </button>
+
+  </div>
+
+
+  <button
+    class="primary"
+    onclick="previewApply()"
+  >
+    Änderungen übernehmen
+  </button>
+
+
+  <!-- =========================
+       BALD AUSLAUFENDE EINFLÜSSE
+       ========================= -->
+
+  <details class="expiry-details overview-expiry">
+    <summary>⏳ Bald auslaufende Einflüsse <span class="small" style="float:right">nächste 30 Tage</span></summary>
+    <div id="overviewExpiry"></div>
+  </details>
+
+
+  <!-- =========================
+       ÄNDERUNGSVERLAUF
+       ========================= -->
+
+  <div class="section-title">
+    Änderungsverlauf
+  </div>
+
+  <div id="log"></div>
+
+</main>
+
+
+<!-- =========================
+     DETAIL-MODAL
+     ========================= -->
+<div
+  id="detailBackdrop"
+  class="modal-backdrop"
+  onclick="handleDetailBackdrop(event)"
+>
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="detailTitle"
+    onclick="event.stopPropagation()"
+  >
+    <h2 id="detailTitle"></h2>
+    <div id="detailContent"></div>
+    <div class="modal-actions">
+      <button onclick="closeDetail()">Schließen</button>
+    </div>
+  </div>
+</div>
+
+<div id="chartTooltip" class="chart-tooltip"></div>
+
+<!-- =========================
+     MODAL
+     ========================= -->
+
+<div
+  id="modalBackdrop"
+  class="modal-backdrop"
+  onclick="handleBackdropClick(event)"
+>
+
+  <div
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    onclick="event.stopPropagation()"
+  >
+
+    <h2 id="modalTitle"></h2>
+
+    <p id="modalText"></p>
+
+    <div class="modal-actions">
+
+      <button onclick="closeModal()">
+        Abbrechen
+      </button>
+
+      <button
+        id="modalConfirm"
+        class="primary"
+        onclick="confirmModal()"
+      >
+        Übernehmen
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   API
+   ========================================================= */
+
+const HTML_VERSION = '6.2';
+
+const API_BASE =
+  'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
+
+let state = null;
+let pendingAction = null;
+
+const collapsedRegions = {};
+
+
+/* =========================================================
+   WIRKUNGSDAUER
+   ========================================================= */
+
+const FALLBACK_DECAY_STAGES = {
+  1:[{delta:1,days:45}],
+  2:[{delta:2,days:60},{delta:1,days:45}],
+  3:[{delta:3,days:75},{delta:2,days:60},{delta:1,days:45}],
+  '-1':[{delta:-1,days:60}],
+  '-2':[{delta:-2,days:75},{delta:-1,days:60}],
+  '-3':[{delta:-3,days:90},{delta:-2,days:75},{delta:-1,days:60}]
+};
+
+function decayStages(delta){
+  const key=String(Number(delta));
+  const fromApi=state?.api?.decayStages?.[key];
+  return Array.isArray(fromApi) && fromApi.length
+    ? fromApi.map(x=>({delta:Number(x.delta),days:Number(x.days)}))
+    : (FALLBACK_DECAY_STAGES[key] || []).map(x=>({...x}));
+}
+
+function totalEffectDays(delta){
+  return decayStages(delta).reduce((sum,s)=>sum+Number(s.days||0),0);
+}
+
+function decayAtAge(delta,ageDays){
+  const stages=decayStages(delta);
+  let elapsed=0;
+  const age=Math.max(0,Number(ageDays)||0);
+  for(let i=0;i<stages.length;i++){
+    const stage=stages[i];
+    const end=elapsed+stage.days;
+    if(age<end){
+      const next=stages[i+1] || null;
+      return {
+        active:true,
+        currentDelta:stage.delta,
+        nextDelta:next ? next.delta : 0,
+        daysRemaining:end-age,
+        stageIndex:i,
+        stageCount:stages.length,
+        stageDays:stage.days
+      };
+    }
+    elapsed=end;
+  }
+  return {
+    active:false,
+    currentDelta:0,
+    nextDelta:0,
+    daysRemaining:0,
+    stageIndex:stages.length,
+    stageCount:stages.length,
+    stageDays:0
+  };
+}
+
+function decaySchedule(delta,startDate){
+  let elapsed=0;
+  return decayStages(delta).map((stage,index)=>{
+    const from=addDays(startDate,elapsed);
+    elapsed+=stage.days;
+    const until=addDays(startDate,elapsed);
+    return {stage:index+1,delta:stage.delta,days:stage.days,from,until,nextDelta:decayStages(delta)[index+1]?.delta ?? 0};
+  });
+}
+
+const EFFECTS = new Proxy({}, {
+  get(_target,key){
+    const n=Number(key);
+    return Number.isFinite(n) ? totalEffectDays(n) : undefined;
+  }
+});
+
+
+/* =========================================================
+   HILFSFUNKTIONEN
+   ========================================================= */
+
+function esc(value){
+
+  return String(value ?? '')
+    .replace(/[&<>"']/g, m => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m]));
+
+}
+
+
+function slugify(value){
+
+  return String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/ß/g,'ss')
+    .replace(/[^a-z0-9]+/g,'-')
+    .replace(/^-+|-+$/g,'')
+    || 'neu';
+
+}
+
+
+function todayISO(){
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
+}
+
+
+function fmtDate(value){
+
+  if(!value){
+    return '–';
+  }
+
+  const d =
+    new Date(value + 'T00:00:00');
+
+  return isNaN(d)
+    ? '–'
+    : d.toLocaleDateString('de-DE');
+
+}
+
+
+function fmtRep(value){
+
+  const n =
+    Number(value) || 0;
+
+  return n > 0
+    ? '+' + n
+    : String(n);
+
+}
+
+
+function valueClass(value){
+
+  const n =
+    Number(value) || 0;
+
+  if(n > 0){
+    return 'positive';
+  }
+
+  if(n < 0){
+    return 'negative';
+  }
+
+  return '';
+
+}
+
+
+function statusFor(rep){
+
+  rep =
+    Number(rep) || 0;
+
+  if(rep >= 8){
+    return 'Verbündet';
+  }
+
+  if(rep >= 3){
+    return 'Wohlwollend';
+  }
+
+  if(rep >= -2){
+    return 'Neutral';
+  }
+
+  if(rep >= -4){
+    return 'Skeptisch';
+  }
+
+  return 'Feindlich';
+
+}
+
+
+/*
+ * Bei Regionen:
+ *
+ * - neue/aktualisierte Daten können "description" haben
+ * - deine bestehende JSON kann "info" haben
+ *
+ * description wird deshalb bewusst bevorzugt.
+ */
+
+function itemDescription(
+  item,
+  type
+){
+
+  if(type === 'place'){
+
+    return (
+      item.description ??
+      item.info ??
+      'Der benannte Ort und sein näheres Umfeld, einschließlich Höfen, Dörfern und kleineren Siedlungen.'
+    );
+
+  }
+
+  return (
+    item.description ??
+    'Keine Beschreibung vorhanden.'
+  );
+
+}
+
+
+/* =========================================================
+   API
+   ========================================================= */
+
+async function api(
+  path,
+  options = {}
+){
+
+  const response =
+    await fetch(
+      API_BASE + path,
+      {
+        ...options,
+        headers:{
+          'Content-Type':
+            'application/json',
+          ...(options.headers || {})
+        }
+      }
+    );
+
+
+  const data =
+    await response
+      .json()
+      .catch(
+        () => ({
+          error:
+            'Ungültige Serverantwort'
+        })
+      );
+
+
+  if(
+    !response.ok ||
+    data.ok === false
+  ){
+
+    throw new Error(
+      data.error ||
+      `HTTP ${response.status}`
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+/* =========================================================
+   LADEN
+   ========================================================= */
+
+async function load(){
+
+  try{
+
+    state =
+      await api('/data');
+
+
+    document
+      .getElementById(
+        'loadStatus'
+      )
+      .textContent =
+        `Zentral gespeichert · Worker v${
+          state.api?.version || '?'
+        }`;
+
+
+    render();
+
+
+    if(
+      !document.querySelector(
+        '.change-row'
+      )
+    ){
+
+      addChangeRow();
+
+    }
+
+
+  }catch(error){
+
+    document
+      .getElementById(
+        'loadStatus'
+      )
+      .textContent =
+        'Fehler beim Laden';
+
+
+    alert(
+      'Reputationsdaten konnten nicht geladen werden:\n' +
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   REP-ZIELE
+   ========================================================= */
+
+function allUnits(){
+
+  const result = [];
+
+
+  for(
+    const place
+    of state.places || []
+  ){
+
+    /*
+     * Eine Region mit Kindern ist ein
+     * berechneter Aggregate-Wert.
+     *
+     * Deshalb darf z.B. Yartar NICHT
+     * direkt als REP-Ziel erscheinen.
+     */
+
+    if(
+      Array.isArray(place.children) &&
+      place.children.length
+    ){
+
+      for(
+        const child
+        of place.children
+      ){
+
+        result.push({
+
+          id:
+            child.id,
+
+          name:
+            `${place.name} – ${child.name}`,
+
+          type:
+            'child',
+
+          parentId:
+            place.id
+
+        });
+
+      }
+
+    }else{
+
+      result.push({
+
+        id:
+          place.id,
+
+        name:
+          place.name,
+
+        type:
+          'place'
+
+      });
+
+    }
+
+  }
+
+
+  for(
+    const organization
+    of state.organizations || []
+  ){
+
+    result.push({
+
+      id:
+        organization.id,
+
+      name:
+        organization.name,
+
+      type:
+        'organization'
+
+    });
+
+  }
+
+
+  return result;
+
+}
+
+
+function resolveUnit(id){
+
+  const wanted = String(id ?? '');
+
+  for(const place of (state.places || [])){
+
+    if(place.id === wanted){
+      return {
+        id: place.id,
+        name: place.name,
+        type: 'place',
+        item: place
+      };
+    }
+
+    for(const child of (place.children || [])){
+      const aliases = [
+        child.id,
+        slugify(child.name),
+        `${slugify(place.name)}-${slugify(child.name)}`
+      ];
+
+      if(aliases.includes(wanted)){
+        return {
+          id: child.id,
+          name: `${place.name} – ${child.name}`,
+          type: 'child',
+          item: child,
+          place
+        };
+      }
+    }
+  }
+
+  for(const organization of (state.organizations || [])){
+    if(organization.id === wanted){
+      return {
+        id: organization.id,
+        name: organization.name,
+        type: 'organization',
+        item: organization
+      };
+    }
+  }
+
+  return null;
+}
+
+function unitName(id){
+
+  return resolveUnit(id)?.name || id;
+
+}
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+function render(){
+
+  renderRegions();
+
+  renderOrganizations();
+
+  renderLog();
+
+
+}
+
+
+/* =========================================================
+   REGIONEN
+   ========================================================= */
+
+function renderRegions(){
+
+  const body =
+    document.getElementById(
+      'regionsBody'
+    );
+
+
+  const search =
+    document
+      .getElementById(
+        'regionSearch'
+      )
+      .value
+      .trim()
+      .toLocaleLowerCase(
+        'de-DE'
+      );
+
+
+  const places =
+    (state.places || [])
+      .filter(
+        place => {
+
+          if(!search){
+            return true;
+          }
+
+
+          const text = [
+
+            place.name,
+
+            itemDescription(
+              place,
+              'place'
+            )
+
+          ]
+            .join(' ')
+            .toLocaleLowerCase(
+              'de-DE'
+            );
+
+
+          return text.includes(
+            search
+          );
+
+        }
+      );
+
+
+  body.innerHTML =
+    places
+      .map(
+        place => {
+
+          const rep =
+            place.effectiveRep ??
+            place.rep ??
+            0;
+
+
+          const hasChildren =
+            Array.isArray(
+              place.children
+            ) &&
+            place.children.length > 0;
+
+
+          const collapsed =
+            Boolean(
+              collapsedRegions[
+                place.id
+              ]
+            );
+
+
+          const description =
+            itemDescription(
+              place,
+              'place'
+            );
+
+
+          let html = `
+
+            <tr>
+
+              <td>
+
+                <div class="region-name">
+
+                  ${
+                    hasChildren
+                      ? `
+
+                        <button
+                          class="region-toggle"
+                          onclick="toggleRegion(
+                            '${esc(place.id)}'
+                          )"
+                          aria-label="${
+                            collapsed
+                              ? 'Region aufklappen'
+                              : 'Region einklappen'
+                          }"
+                        >
+                          ${
+                            collapsed
+                              ? '▶'
+                              : '▼'
+                          }
+                        </button>
+
+                      `
+                      : `
+
+                        <span
+                          style="width:18px"
+                        ></span>
+
+                      `
+                  }
+
+
+                  <strong
+                    class="clickable-name"
+                    onclick="showFactionDetail('${esc(place.id)}','place')"
+                    title="REP-Verlauf anzeigen"
+                  >
+                    ${esc(place.name)}
+                  </strong>
+
+
+                  <button
+                    class="info-btn"
+                    onclick="showInfo(
+                      '${esc(place.name)}',
+                      '${esc(description)}'
+                    )"
+                    aria-label="Informationen"
+                  >
+                    i
+                  </button>
+
+                </div>
+
+              </td>
+
+
+              <td
+                class="num ${valueClass(rep)}"
+              >
+                ${fmtRep(rep)}
+              </td>
+
+
+              <td
+                class="status ${valueClass(rep)}"
+              >
+                ${esc(
+                  place.status ||
+                  statusFor(rep)
+                )}
+              </td>
+
+
+              <td>
+                ${fmtDate(
+                  place.lastChange
+                )}
+              </td>
+
+
+              <td>
+
+                <div class="actions">
+
+                  <button
+                    onclick="editFaction(
+                      '${esc(place.id)}',
+                      'place'
+                    )"
+                  >
+                    Bearbeiten
+                  </button>
+
+                  ${
+                    place.id === 'yartar'
+                      ? ''
+                      : `
+
+                        <button
+                          class="danger"
+                          onclick="deleteFaction(
+                            '${esc(place.id)}',
+                            'place'
+                          )"
+                        >
+                          Löschen
+                        </button>
+
+                      `
+                  }
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          `;
+
+
+          /*
+           * Untergruppen nur anzeigen,
+           * wenn Region aufgeklappt ist.
+           */
+
+          if(
+            hasChildren &&
+            !collapsed
+          ){
+
+            for(
+              const child
+              of place.children
+            ){
+
+              const childRep =
+                child.effectiveRep ??
+                child.rep ??
+                0;
+
+
+              html += `
+
+                <tr class="child">
+
+                  <td>
+
+                    <div class="child-name">
+
+                      <span class="child-parent">
+                        ${esc(place.name)} –
+                      </span>
+
+                      <strong
+                        class="clickable-name"
+                        onclick="showFactionDetail('${esc(child.id)}','child')"
+                        title="REP-Verlauf anzeigen"
+                      >
+                        ${esc(child.name)}
+                      </strong>
+
+                    </div>
+
+                  </td>
+
+
+                  <td
+                    class="num ${valueClass(childRep)}"
+                  >
+                    ${fmtRep(childRep)}
+                  </td>
+
+
+                  <td
+                    class="status ${valueClass(childRep)}"
+                  >
+                    ${esc(
+                      child.status ||
+                      statusFor(childRep)
+                    )}
+                  </td>
+
+
+                  <td>
+                    ${fmtDate(
+                      child.lastChange
+                    )}
+                  </td>
+
+
+                  <td></td>
+
+                </tr>
+
+              `;
+
+            }
+
+          }
+
+
+          return html;
+
+        }
+      )
+      .join('');
+
+
+  if(!body.innerHTML){
+
+    body.innerHTML = `
+
+      <tr>
+
+        <td
+          colspan="5"
+          class="empty"
+        >
+          Keine passende Region gefunden.
+
+        </td>
+
+      </tr>
+
+    `;
+
+  }
+
+}
+
+
+function toggleRegion(id){
+
+  collapsedRegions[id] =
+    !collapsedRegions[id];
+
+  renderRegions();
+
+}
+
+
+/* =========================================================
+   ORGANISATIONEN
+   ========================================================= */
+
+function renderOrganizations(){
+
+  const body =
+    document.getElementById(
+      'orgsBody'
+    );
+
+
+  body.innerHTML =
+    (state.organizations || [])
+      .map(
+        org => {
+
+          const rep =
+            org.effectiveRep ??
+            org.rep ??
+            0;
+
+
+          const description =
+            itemDescription(
+              org,
+              'organization'
+            );
+
+
+          return `
+
+            <tr>
+
+              <td>
+
+                <strong
+                  class="clickable-name"
+                  onclick="showFactionDetail('${esc(org.id)}','organization')"
+                  title="REP-Verlauf anzeigen"
+                >
+                  ${esc(org.name)}
+                </strong>
+
+                <button
+                  class="info-btn"
+                  onclick="showInfo(
+                    '${esc(org.name)}',
+                    '${esc(description)}'
+                  )"
+                  aria-label="Informationen"
+                >
+                  i
+                </button>
+
+              </td>
+
+
+              <td
+                class="num ${valueClass(rep)}"
+              >
+                ${fmtRep(rep)}
+              </td>
+
+
+              <td
+                class="status ${valueClass(rep)}"
+              >
+                ${esc(
+                  org.status ||
+                  statusFor(rep)
+                )}
+              </td>
+
+
+              <td>
+                ${fmtDate(
+                  org.lastChange
+                )}
+              </td>
+
+
+              <td>
+
+                <div class="actions">
+
+                  <button
+                    onclick="editFaction(
+                      '${esc(org.id)}',
+                      'organization'
+                    )"
+                  >
+                    Bearbeiten
+                  </button>
+
+
+                  <button
+                    class="danger"
+                    onclick="deleteFaction(
+                      '${esc(org.id)}',
+                      'organization'
+                    )"
+                  >
+                    Löschen
+                  </button>
+
+                </div>
+
+              </td>
+
+            </tr>
+
+          `;
+
+        }
+      )
+      .join('');
+
+
+}
+
+
+/* =========================================================
+   REP-ZEILEN
+   ========================================================= */
+
+function addChangeRow(){
+
+  const container =
+    document.getElementById(
+      'changeRows'
+    );
+
+
+  const row =
+    document.createElement(
+      'div'
+    );
+
+
+  row.className =
+    'change-row';
+
+
+  row.innerHTML = `
+
+    <div>
+
+      <select
+        class="target"
+        aria-label="Auswirkung auf"
+        onchange="refreshTargetOptions()"
+      >
+
+        <option value="">
+          Bitte auswählen
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div>
+
+      <select
+        class="effect"
+        aria-label="Auswirkung"
+      >
+
+        <option value="">
+          Bitte auswählen
+        </option>
+
+        <option value="3">
+          Sehr positiv (+3)
+        </option>
+
+        <option value="2">
+          Positiv (+2)
+        </option>
+
+        <option value="1">
+          Leicht positiv (+1)
+        </option>
+
+        <option value="-1">
+          Leicht negativ (-1)
+        </option>
+
+        <option value="-2">
+          Negativ (-2)
+        </option>
+
+        <option value="-3">
+          Sehr negativ (-3)
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <button
+      class="remove"
+      onclick="
+        this.parentElement.remove();
+        refreshTargetOptions();
+      "
+    >
+      Entfernen
+    </button>
+
+  `;
+
+
+  container.appendChild(
+    row
+  );
+
+
+  refreshTargetOptions();
+
+}
+
+
+/*
+ * Bereits verwendete REP-Ziele werden aus
+ * den anderen Dropdowns komplett entfernt.
+ */
+
+function refreshTargetOptions(){
+
+  const selects =
+    [
+      ...document.querySelectorAll(
+        '.change-row .target'
+      )
+    ];
+
+
+  const selected =
+    new Set(
+      selects
+        .map(
+          select =>
+            select.value
+        )
+        .filter(Boolean)
+    );
+
+
+  const units =
+    allUnits();
+
+
+  for(
+    const select
+    of selects
+  ){
+
+    const current =
+      select.value;
+
+
+    select.innerHTML = `
+
+      <option value="">
+        Bitte auswählen
+      </option>
+
+    `;
+
+
+    for(
+      const unit
+      of units
+    ){
+
+      if(
+        selected.has(unit.id) &&
+        unit.id !== current
+      ){
+
+        continue;
+
+      }
+
+
+      const option =
+        document.createElement(
+          'option'
+        );
+
+
+      option.value =
+        unit.id;
+
+
+      option.textContent =
+        unit.name;
+
+
+      select.appendChild(
+        option
+      );
+
+    }
+
+
+    select.value =
+      current || '';
+
+  }
+
+}
+
+
+/* =========================================================
+   REP-ÄNDERUNGEN
+   ========================================================= */
+
+function getChanges(){
+
+  return [
+    ...document.querySelectorAll(
+      '.change-row'
+    )
+  ]
+    .map(
+      row => ({
+
+        factionId:
+          row.querySelector(
+            '.target'
+          ).value,
+
+        delta:
+          Number(
+            row.querySelector(
+              '.effect'
+            ).value
+          )
+
+      })
+    )
+    .filter(
+      change =>
+        change.factionId &&
+        Number.isFinite(
+          change.delta
+        ) &&
+        change.delta !== 0
+    );
+
+}
+
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+
+function showInfo(
+  title,
+  text
+){
+
+  document
+    .getElementById(
+      'modalTitle'
+    )
+    .textContent =
+      title;
+
+
+  document
+    .getElementById(
+      'modalText'
+    )
+    .textContent =
+      text;
+
+
+  document
+    .getElementById(
+      'modalConfirm'
+    )
+    .style.display =
+      'none';
+
+
+  document
+    .getElementById(
+      'modalBackdrop'
+    )
+    .classList
+    .add('open');
+
+}
+
+
+function openModal(
+  title,
+  text,
+  action
+){
+
+  pendingAction =
+    action;
+
+
+  document
+    .getElementById(
+      'modalTitle'
+    )
+    .textContent =
+      title;
+
+
+  document
+    .getElementById(
+      'modalText'
+    )
+    .textContent =
+      text;
+
+
+  document
+    .getElementById(
+      'modalConfirm'
+    )
+    .style.display =
+      '';
+
+
+  document
+    .getElementById(
+      'modalBackdrop'
+    )
+    .classList
+    .add('open');
+
+}
+
+
+function closeModal(){
+
+  document
+    .getElementById(
+      'modalBackdrop'
+    )
+    .classList
+    .remove('open');
+
+
+  pendingAction =
+    null;
+
+}
+
+
+function handleBackdropClick(
+  event
+){
+
+  if(
+    event.target.id ===
+    'modalBackdrop'
+  ){
+
+    closeModal();
+
+  }
+
+}
+
+
+document.addEventListener(
+  'keydown',
+  event => {
+
+    if(
+      event.key === 'Escape' &&
+      document
+        .getElementById(
+          'modalBackdrop'
+        )
+        .classList
+        .contains('open')
+    ){
+
+      closeModal();
+
+    }
+
+  }
+);
+
+
+async function confirmModal(){
+
+  if(!pendingAction){
+    return;
+  }
+
+
+  const action =
+    pendingAction;
+
+
+  pendingAction =
+    null;
+
+
+  closeModal();
+
+
+  try{
+
+    await action();
+
+    await load();
+
+  }catch(error){
+
+    alert(
+      error.message
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ÄNDERUNGEN ÜBERNEHMEN
+   ========================================================= */
+
+function previewApply(){
+
+  const mission =
+    document
+      .getElementById(
+        'mission'
+      )
+      .value
+      .trim();
+
+
+  const reason =
+    document
+      .getElementById(
+        'reason'
+      )
+      .value
+      .trim();
+
+
+  const date =
+    document
+      .getElementById(
+        'changeDate'
+      )
+      .value ||
+    todayISO();
+
+
+  const changes =
+    getChanges();
+
+
+  if(!mission){
+
+    alert(
+      'Bitte Mission / Ereignis eintragen.'
+    );
+
+    return;
+
+  }
+
+
+  if(!changes.length){
+
+    alert(
+      'Bitte mindestens eine REP-Änderung auswählen.'
+    );
+
+    return;
+
+  }
+
+
+  const ids =
+    changes.map(
+      change =>
+        change.factionId
+    );
+
+
+  if(
+    new Set(ids).size !==
+    ids.length
+  ){
+
+    alert(
+      'Eine REP-Einheit wurde doppelt ausgewählt.'
+    );
+
+    return;
+
+  }
+
+
+  const lines =
+    changes
+      .map(
+        change => {
+
+          const schedule =
+            decayStages(change.delta)
+              .map(
+                stage =>
+                  `${fmtRep(stage.delta)} für ${stage.days} Tage`
+              )
+              .join(' → ');
+
+          return (
+
+            `${unitName(
+              change.factionId
+            )}: ` +
+
+            `${fmtRep(change.delta)}` +
+
+            ` (${schedule})`
+
+          );
+
+        }
+      )
+      .join('\n');
+
+
+  openModal(
+
+    'Änderungen übernehmen',
+
+    `${mission}\n\n` +
+    `${lines}\n\n` +
+    `${reason || 'Keine Beschreibung.'}\n\n` +
+    `Die Änderungen werden zentral gespeichert.`,
+
+    async () => {
+
+      await api(
+        '/change',
+        {
+          method:'POST',
+
+          body:
+            JSON.stringify({
+
+              mission,
+
+              reason,
+
+              date,
+
+              changes
+
+            })
+
+        }
+      );
+
+
+      document
+        .getElementById(
+          'mission'
+        )
+        .value = '';
+
+
+      document
+        .getElementById(
+          'reason'
+        )
+        .value = '';
+
+
+      document
+        .getElementById(
+          'changeRows'
+        )
+        .innerHTML = '';
+
+
+      addChangeRow();
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   REGION / ORGANISATION ANLEGEN
+   ========================================================= */
+
+function addFaction(
+  type
+){
+
+  const isPlace =
+    type === 'place';
+
+
+  const name =
+    prompt(
+      isPlace
+        ? 'Name der neuen Region:'
+        : 'Name der neuen Organisation:'
+    );
+
+
+  if(
+    name === null ||
+    !name.trim()
+  ){
+
+    return;
+
+  }
+
+
+  const description =
+    prompt(
+      isPlace
+        ? 'Info zur Region (optional):'
+        : 'Beschreibung der Organisation (optional):'
+    );
+
+
+  if(
+    description === null
+  ){
+
+    return;
+
+  }
+
+
+  const id =
+    slugify(name);
+
+
+  openModal(
+
+    isPlace
+      ? 'Region hinzufügen'
+      : 'Organisation hinzufügen',
+
+    `${name.trim()}\n\n` +
+    `${description || 'Keine Beschreibung.'}`,
+
+    async () => {
+
+      await api(
+        '/faction',
+        {
+          method:'POST',
+
+          body:
+            JSON.stringify({
+
+              action:
+                'create',
+
+              type,
+
+              id,
+
+              name:
+                name.trim(),
+
+              description:
+                description.trim(),
+
+              rep:0,
+
+              date:
+                todayISO()
+
+            })
+
+        }
+      );
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   BEARBEITEN
+   ========================================================= */
+
+function editFaction(
+  id,
+  type
+){
+
+  let item = null;
+
+
+  if(
+    type === 'place'
+  ){
+
+    item =
+      (state.places || [])
+        .find(
+          place =>
+            place.id === id
+        );
+
+  }else{
+
+    item =
+      (state.organizations || [])
+        .find(
+          org =>
+            org.id === id
+        );
+
+  }
+
+
+  if(!item){
+
+    alert(
+      'Eintrag nicht gefunden.'
+    );
+
+    return;
+
+  }
+
+
+  const name =
+    prompt(
+      'Name:',
+      item.name
+    );
+
+
+  if(
+    name === null
+  ){
+
+    return;
+
+  }
+
+
+  const description =
+    prompt(
+      type === 'place'
+        ? 'Info zur Region:'
+        : 'Beschreibung:',
+      itemDescription(
+        item,
+        type
+      )
+    );
+
+
+  if(
+    description === null
+  ){
+
+    return;
+
+  }
+
+
+  openModal(
+
+    'Änderung speichern',
+
+    `${name.trim()}\n\n` +
+    `${description || 'Keine Beschreibung.'}\n\n` +
+    `Der bestehende REP-Wert wird nicht verändert.`,
+
+    async () => {
+
+      /*
+       * Der Worker unterstützt beim Update:
+       * action, type, id, name, description.
+       *
+       * Kein startRep!
+       * Kein REP-Reset!
+       */
+
+      await api(
+        '/faction',
+        {
+          method:'POST',
+
+          body:
+            JSON.stringify({
+
+              action:
+                'update',
+
+              type,
+
+              id,
+
+              name:
+                name.trim(),
+
+              description:
+                description.trim()
+
+            })
+
+        }
+      );
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   LÖSCHEN
+   ========================================================= */
+
+function deleteFaction(
+  id,
+  type
+){
+
+  /*
+   * Yartar ist die feste Aggregate-Region
+   * und darf nicht gelöscht werden.
+   */
+
+  if(
+    type === 'place' &&
+    id === 'yartar'
+  ){
+
+    alert(
+      'Yartar ist eine feste Kernregion und kann nicht gelöscht werden.'
+    );
+
+    return;
+
+  }
+
+
+  const collection =
+    type === 'place'
+      ? state.places
+      : state.organizations;
+
+
+  const item =
+    (collection || [])
+      .find(
+        entry =>
+          entry.id === id
+      );
+
+
+  if(!item){
+    return;
+  }
+
+
+  openModal(
+
+    'Endgültig löschen',
+
+    `"${item.name}" wird aus den Stammdaten entfernt.\n\n` +
+    `Die Ereignishistorie bleibt erhalten.`,
+
+    async () => {
+
+      await api(
+        '/faction',
+        {
+          method:'POST',
+
+          body:
+            JSON.stringify({
+
+              action:
+                'delete',
+
+              type,
+
+              id
+
+            })
+
+        }
+      );
+
+    }
+
+  );
+
+}
+
+
+
+/* =========================================================
+   REP-DETAILANSICHT / VERLAUF
+   ========================================================= */
+
+function allEventsForTarget(id){
+
+  return (state.events || [])
+    .filter(event => event.valid !== false)
+    .flatMap(event =>
+      (event.changes || [])
+        .filter(change => change.factionId === id)
+        .map(change => ({
+          event,
+          change,
+          days: Number(change.days) || EFFECTS[Number(change.delta)] || 30
+        }))
+    );
+}
+
+function findUnit(id, type){
+  const resolved = resolveUnit(id);
+  if(!resolved) return null;
+
+  if(type === 'child' && resolved.type !== 'child') return null;
+  if(type === 'place' && resolved.type !== 'place') return null;
+  if(type === 'organization' && resolved.type !== 'organization') return null;
+
+  return resolved;
+}
+
+function directRepAt(id, date){
+  const unit = findUnit(id, 'child') || findUnit(id, 'place') || findUnit(id, 'organization');
+  if(!unit) return 0;
+  const canonicalId = unit.id;
+
+  let rep = Number(unit.item.baseRep ?? unit.item.rep ?? 0) || 0;
+  const baseDate = unit.item.baseDate || null;
+
+  for(const event of (state.events || [])){
+    if(event.valid === false) continue;
+    if(baseDate && String(event.date) < String(baseDate)) continue;
+    if(String(event.date) > String(date)) continue;
+
+    for(const change of (event.changes || [])){
+      const changeUnit = resolveUnit(change.factionId);
+      if(!changeUnit || changeUnit.id !== canonicalId) continue;
+      const delta = Number(change.delta) || 0;
+      const age = diffDays(event.date, date);
+      if(age >= 0){
+        const decay=decayAtAge(delta,age);
+        if(decay.active) rep += decay.currentDelta;
+      }
+    }
+  }
+
+  return rep;
+}
+
+function diffDays(a,b){
+  const da = new Date(String(a).slice(0,10) + 'T00:00:00');
+  const db = new Date(String(b).slice(0,10) + 'T00:00:00');
+  return Math.floor((db-da)/86400000);
+}
+
+function aggregateRepAt(place, date){
+  const children = place.children || [];
+  if(!children.length) return directRepAt(place.id,date);
+  let weight = 0;
+  let total = 0;
+  for(const child of children){
+    const w = Number(child.weight) || 1;
+    weight += w;
+    total += directRepAt(child.id,date) * w;
+  }
+  return weight ? Math.round((total/weight) * 10) / 10 : 0;
+}
+
+function repAt(id,type,date){
+  const unit = findUnit(id,type);
+  if(!unit) return 0;
+  if(unit.type === 'place') return aggregateRepAt(unit.item,date);
+  return directRepAt(id,date);
+}
+
+function detailEvents(id,type){
+  if(type === 'place'){
+    const place = findUnit(id,'place')?.item;
+    if(place?.children?.length){
+      const childIds = new Set(place.children.map(c=>c.id));
+      return (state.events || [])
+        .filter(e => e.valid !== false)
+        .flatMap(event => (event.changes || [])
+          .filter(c => childIds.has(c.factionId))
+          .map(c => ({event,change:c,days:Number(c.days)||EFFECTS[Number(c.delta)]||30,child:place.children.find(x=>x.id===c.factionId)})));
+    }
+  }
+  return allEventsForTarget(id);
+}
+
+function addDate(set,date){
+  if(date && /^\d{4}-\d{2}-\d{2}$/.test(String(date).slice(0,10))) set.add(String(date).slice(0,10));
+}
+
+function addDays(date,days){
+  const d = new Date(String(date).slice(0,10) + 'T00:00:00');
+  d.setDate(d.getDate()+days);
+  return d.toISOString().slice(0,10);
+}
+
+function buildChartData(id,type){
+  const events = detailEvents(id,type);
+  const dates = new Set();
+  const unit = findUnit(id,type);
+  addDate(dates, unit?.item?.baseDate);
+  addDate(dates, todayISO());
+
+  for(const x of events){
+    addDate(dates,x.event.date);
+    for(const stage of decaySchedule(x.change.delta,x.event.date)){
+      addDate(dates,stage.from);
+      addDate(dates,stage.until);
+    }
+  }
+
+  if(!dates.size) addDate(dates,todayISO());
+
+  const sorted = [...dates].sort();
+  return sorted.map(date => ({
+    date,
+    rep: repAt(id,type,date)
+  }));
+}
+
+function svgEscape(value){
+  return esc(value);
+}
+
+function showFactionDetail(id,type){
+  const unit = findUnit(id,type);
+  if(!unit) return;
+
+  const item = unit.item;
+  const rep = Number(repAt(id,type,todayISO())) || 0;
+  const events = detailEvents(id,type).sort((a,b)=>String(b.event.date).localeCompare(String(a.event.date)));
+  const chart = buildChartData(id,type);
+
+  document.getElementById('detailTitle').textContent =
+    unit.type === 'child' ? `${unit.place.name} – ${item.name}` : item.name;
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="detail-meta">
+      <div class="detail-stat">
+        <strong class="${valueClass(rep)}">${fmtRep(rep)}</strong>
+        <span>Aktuelle REP</span>
+      </div>
+      <div class="detail-stat">
+        <strong>${esc(item.status || statusFor(rep))}</strong>
+        <span>Status</span>
+      </div>
+    </div>
+
+    <div class="small" style="margin-bottom:6px">
+      Der Verlauf zeigt die wirksame REP. Einflüsse verfallen stufenweise – z. B. <strong>+3 → +2 → +1 → 0</strong>.
+    </div>
+
+    <div class="chart-wrap">
+      ${renderRepChart(id,type,chart,events)}
+    </div>
+
+    <details class="expiry-details">
+      <summary>⏳ Bald auslaufende Einflüsse <span class="small" style="float:right">nächste 30 Tage</span></summary>
+      ${renderExpiryMarkup(id,type)}
+    </details>
+
+    <div class="detail-events">
+      <strong>Ereignisse</strong>
+      ${events.length ? events.map(x => {
+        const age=diffDays(x.event.date,todayISO());
+        const decay=age>=0 ? decayAtAge(x.change.delta,age) : null;
+        const label = unit.type === 'place' && x.child ? x.child.name : '';
+        const original=Number(x.change.delta)||0;
+        const total=totalEffectDays(original);
+        let effectLine='';
+        if(decay?.active){
+          effectLine = decay.nextDelta !== 0
+            ? `${fmtRep(decay.currentDelta)} → ${fmtRep(decay.nextDelta)} in ${decay.daysRemaining} Tagen`
+            : `${fmtRep(decay.currentDelta)} → 0 in ${decay.daysRemaining} Tagen`;
+        }else if(age >= total){
+          effectLine='vollständig verfallen';
+        }else{
+          effectLine='noch nicht aktiv';
+        }
+        const schedule=decaySchedule(original,x.event.date)
+          .map((stage,i)=>`${fmtRep(stage.delta)} für ${stage.days} Tage`)
+          .join(' → ');
+        return `
+          <div class="detail-event">
+            <div class="detail-event-head">
+              <strong>${esc(x.event.mission || 'Ohne Missionsangabe')}</strong>
+              <span class="detail-date">${fmtDate(x.event.date)}</span>
+            </div>
+            <div>
+              ${label ? `<span class="muted">${esc(label)} · </span>` : ''}
+              <span class="${valueClass(original)}">${fmtRep(original)} REP</span>
+              · ${esc(effectLine)}
+            </div>
+            <div class="muted">${esc(x.event.reason || 'Keine Begründung angegeben.')}</div>
+            <div class="small">Verfall: ${esc(schedule)}</div>
+          </div>
+        `;
+      }).join('') : '<p class="muted">Noch keine REP-Ereignisse vorhanden.</p>'}
+    </div>
+  `;
+
+  document.getElementById('detailBackdrop').classList.add('open');
+}
+
+function renderRepChart(id,type,data,events){
+  const W = 900, H = 360;
+  const pad = {l:52,r:20,t:18,b:42};
+  const plotW = W-pad.l-pad.r;
+  const plotH = H-pad.t-pad.b;
+  const MIN_REP = -5;
+  const MAX_REP = 10;
+
+  const x = date => {
+    if(data.length <= 1) return pad.l + plotW/2;
+    return pad.l + (diffDays(data[0].date,date)/Math.max(1,diffDays(data[0].date,data[data.length-1].date))) * plotW;
+  };
+  const y = rep => pad.t + (MAX_REP-Math.max(MIN_REP,Math.min(MAX_REP,rep)))/(MAX_REP-MIN_REP)*plotH;
+
+  let grid = '';
+  for(let axisValue=MAX_REP; axisValue>=MIN_REP; axisValue--){
+    const yy = y(axisValue);
+    const cls = axisValue===0 ? 'chart-zero' : 'chart-grid';
+    grid += `<line class="${cls}" x1="${pad.l}" x2="${W-pad.r}" y1="${yy.toFixed(1)}" y2="${yy.toFixed(1)}"></line>`;
+    grid += `<text class="chart-axis-label" x="${pad.l-8}" y="${yy+4}" text-anchor="end">${axisValue>0?'+':''}${axisValue}</text>`;
+  }
+
+  let path='';
+  if(data.length){
+    path = `M ${x(data[0].date).toFixed(1)} ${y(data[0].rep).toFixed(1)} `;
+    for(let i=1;i<data.length;i++){
+      const p=data[i];
+      path += `H ${x(p.date).toFixed(1)} V ${y(p.rep).toFixed(1)} `;
+    }
+  }
+
+  /*
+   * Zeitachse: keine drei "Zufallsdaten" mehr.
+   * Stattdessen feste 30-Tage-Schritte über den gesamten
+   * sichtbaren Zeitraum. Dadurch ist auf einen Blick klar,
+   * wo welcher Zeitpunkt auf der X-Achse liegt.
+   */
+  let dateLabels = [];
+  if(data.length){
+    const start = data[0].date;
+    const end = data[data.length-1].date;
+    const totalDays = Math.max(0, diffDays(start,end));
+    const stepDays = totalDays <= 90 ? 15 : 30;
+
+    for(let d=0; d<=totalDays; d+=stepDays){
+      dateLabels.push(addDays(start,d));
+    }
+
+    if(dateLabels[dateLabels.length-1] !== end){
+      dateLabels.push(end);
+    }
+  }else{
+    dateLabels=[todayISO()];
+  }
+
+  const labels = dateLabels.map(d=>{
+    const xx=x(d);
+    return `<line class="chart-tick" x1="${xx.toFixed(1)}" x2="${xx.toFixed(1)}" y1="${H-pad.b+2}" y2="${H-pad.b+7}"></line>` +
+           `<text class="chart-axis-label chart-date-label" x="${xx.toFixed(1)}" y="${H-10}" text-anchor="middle">${fmtDate(d)}</text>`;
+  }).join('');
+
+  const eventDots = events.map(e=>{
+    const ex = x(e.event.date);
+    const ey = y(repAt(id,type,e.event.date));
+    const original = Number(e.change.delta)||0;
+    const age = diffDays(e.event.date,todayISO());
+    const current = age>=0 ? decayAtAge(original,age) : null;
+    const child = e.child ? ` · ${e.child.name}` : '';
+    const aggregateNote = type === 'place' && (findUnit(id,'place')?.item?.children || []).length
+      ? ` · Gesamt: ${repAt(id,type,e.event.date).toFixed(1)}`
+      : '';
+    const transition = current?.active
+      ? (current.nextDelta !== 0 ? ` · ${fmtRep(current.currentDelta)} → ${fmtRep(current.nextDelta)} in ${current.daysRemaining} Tagen` : ` · ${fmtRep(current.currentDelta)} → 0 in ${current.daysRemaining} Tagen`)
+      : '';
+    const tip = `${fmtDate(e.event.date)} · ${fmtRep(original)} REP${child}${aggregateNote}${transition} · ${e.event.mission || 'Ohne Mission'} · ${e.event.reason || 'Keine Begründung'}`;
+    return `<circle class="chart-event" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="4" data-tooltip="${esc(tip)}" onmouseenter="showChartTooltip(event,this)" onmousemove="moveChartTooltip(event)" onmouseleave="hideChartTooltip()" ontouchstart="showChartTooltip(event,this)"></circle>`;
+  }).join('');
+
+  return `
+    <svg class="rep-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="REP-Verlauf für die ausgewählte Fraktion">
+      ${grid}
+      <path class="chart-line" d="${path}"></path>
+      ${eventDots}
+      ${labels}
+    </svg>
+  `;
+}
+
+function showChartTooltip(event,node){
+  const tip=document.getElementById('chartTooltip');
+  tip.textContent=node.getAttribute('data-tooltip') || '';
+  tip.style.display='block';
+  moveChartTooltip(event);
+}
+
+function moveChartTooltip(event){
+  const tip=document.getElementById('chartTooltip');
+  if(tip.style.display !== 'block') return;
+  const x=Math.min(window.innerWidth-295, event.clientX+12);
+  const y=Math.min(window.innerHeight-80, event.clientY+12);
+  tip.style.left=Math.max(8,x)+'px';
+  tip.style.top=Math.max(8,y)+'px';
+}
+
+function hideChartTooltip(){
+  document.getElementById('chartTooltip').style.display='none';
+}
+
+function closeDetail(){
+  hideChartTooltip();
+  document.getElementById('detailBackdrop').classList.remove('open');
+}
+
+function handleDetailBackdrop(event){
+  if(event.target.id === 'detailBackdrop') closeDetail();
+}
+
+/* =========================================================
+   BALD AUSLAUFENDE EINFLÜSSE
+   ========================================================= */
+
+function renderExpiryMarkup(targetId=null,targetType=null){
+  const today=todayISO();
+  const rows=[];
+  const targetUnit = targetId ? findUnit(targetId,targetType) : null;
+
+  for(const event of (state.events || [])){
+    if(event.valid === false) continue;
+    for(const change of (event.changes || [])){
+      if(targetId){
+        const resolved=resolveUnit(change.factionId);
+        if(!resolved) continue;
+        if(targetUnit?.type === 'place' && targetUnit.item?.children?.length){
+          if(!targetUnit.item.children.some(c=>c.id===resolved.id)) continue;
+        }else if(resolved.id !== targetUnit?.id){
+          continue;
+        }
+      }
+
+      const age=diffDays(event.date,today);
+      if(age < 0) continue;
+      const decay=decayAtAge(change.delta,age);
+      if(!decay.active || decay.daysRemaining < 0 || decay.daysRemaining > 30) continue;
+
+      rows.push({
+        event,
+        change,
+        remaining:decay.daysRemaining,
+        currentDelta:decay.currentDelta,
+        nextDelta:decay.nextDelta,
+        factionId:change.factionId
+      });
+    }
+  }
+
+  rows.sort((a,b)=>a.remaining-b.remaining || String(a.event.date).localeCompare(String(b.event.date)));
+
+  if(!rows.length){
+    return '<div class="expiry-list"><div class="muted">In den nächsten 30 Tagen findet kein Stufenwechsel statt.</div></div>';
+  }
+
+  return `<div class="expiry-list">${rows.map(x=>{
+    const name=unitName(x.factionId);
+    const urgent=x.remaining<=3;
+    const soon=x.remaining<=7;
+    const resolved=findUnit(x.factionId,'child') || findUnit(x.factionId,'organization') || findUnit(x.factionId,'place');
+    const type=resolved?.type || 'place';
+    const transition=`${fmtRep(x.currentDelta)} → ${fmtRep(x.nextDelta)}`;
+    return `
+      <div class="expiry-item" onclick="showFactionDetail('${esc(x.factionId)}','${type}')">
+        <div class="expiry-main">
+          <strong>${esc(name)}</strong>
+          <div class="muted">${esc(x.event.mission || 'Ohne Missionsangabe')}</div>
+        </div>
+        <div class="${valueClass(x.currentDelta)}">${esc(transition)}</div>
+        <div class="expiry-days ${urgent?'urgent':soon?'soon':''}">${x.remaining===0?'heute':`in ${x.remaining} Tagen`}</div>
+      </div>
+    `;
+  }).join('')}</div>`;
+}
+
+/* =========================================================
+   RETCON
+   ========================================================= */
+
+function setEventStatus(
+  eventId,
+  valid
+){
+
+  openModal(
+
+    valid
+      ? 'Ereignis wieder gültig machen'
+      : 'Ereignis als Retcon markieren',
+
+    valid
+      ? 'Dieses Ereignis wird wieder bei der Berechnung berücksichtigt.'
+      : 'Dieses Ereignis bleibt in der Historie, wird aber aus der Berechnung genommen.',
+
+    async () => {
+
+      await api(
+        '/event/status',
+        {
+          method:'POST',
+
+          body:
+            JSON.stringify({
+
+              eventId,
+
+              valid
+
+            })
+
+        }
+      );
+
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   ÄNDERUNGSVERLAUF
+   ========================================================= */
+
+function renderLog(){
+
+  const events =
+    [
+      ...(state.events || [])
+    ]
+    .sort(
+      (a,b) => {
+
+        const dateCompare =
+          String(
+            b.date || ''
+          )
+          .localeCompare(
+            String(
+              a.date || ''
+            )
+          );
+
+
+        if(
+          dateCompare !== 0
+        ){
+
+          return dateCompare;
+
+        }
+
+
+        return String(
+          b.createdAt || ''
+        )
+        .localeCompare(
+          String(
+            a.createdAt || ''
+          )
+        );
+
+      }
+    );
+
+
+  const groups = {};
+
+
+  for(
+    const event
+    of events
+  ){
+
+    const date =
+      event.date ||
+      'unknown';
+
+
+    const month =
+      date === 'unknown'
+        ? 'unknown'
+        : date.slice(0,7);
+
+
+    if(
+      !groups[month]
+    ){
+
+      groups[month] = [];
+
+    }
+
+
+    groups[month].push(
+      event
+    );
+
+  }
+
+
+  const keys =
+    Object.keys(groups)
+      .sort(
+        (a,b) =>
+          b.localeCompare(a)
+      );
+
+
+  document
+    .getElementById(
+      'log'
+    )
+    .innerHTML =
+
+    keys.length
+
+      ? keys
+          .map(
+            (key,index) => {
+
+              let label;
+
+
+              if(
+                key === 'unknown'
+              ){
+
+                label =
+                  'Ohne Datum';
+
+              }else{
+
+                const [
+                  year,
+                  month
+                ] =
+                  key.split('-');
+
+
+                label =
+                  new Date(
+                    Number(year),
+                    Number(month) - 1,
+                    1
+                  )
+                  .toLocaleDateString(
+                    'de-DE',
+                    {
+                      month:'long',
+                      year:'numeric'
+                    }
+                  );
+
+              }
+
+
+              return `
+
+                <details
+                  class="log-group"
+                  ${index === 0 ? 'open' : ''}
+                >
+
+                  <summary>
+
+                    <span>
+                      ${esc(label)}
+                    </span>
+
+                    <span class="muted">
+
+                      ${groups[key].length}
+
+                      ${
+                        groups[key].length === 1
+                          ? 'Änderung'
+                          : 'Änderungen'
+                      }
+
+                    </span>
+
+                  </summary>
+
+
+                  <div class="log-body">
+
+                    ${groups[key]
+                      .map(
+                        event => {
+
+                          const valid =
+                            event.valid !== false;
+
+
+                          const changes =
+                            (
+                              event.changes ||
+                              []
+                            )
+                            .map(
+                              change => {
+
+                                const original = Number(change.originalDelta ?? change.delta) || 0;
+                                const age = diffDays(event.date,todayISO());
+                                const decay = age >= 0 ? decayAtAge(original,age) : null;
+                                const transition = decay?.active
+                                  ? (decay.nextDelta !== 0 ? `${fmtRep(decay.currentDelta)} → ${fmtRep(decay.nextDelta)}` : `${fmtRep(decay.currentDelta)} → 0`)
+                                  : 'verfallen';
+
+
+                                return `
+
+                                  <div>
+
+                                    <strong>
+                                      ${esc(
+                                        change.factionName ||
+                                        unitName(
+                                          change.factionId
+                                        )
+                                      )}
+                                    </strong>
+
+                                    <span
+                                      class="${valueClass(original)}"
+                                    >
+                                      ${fmtRep(original)}
+                                    </span>
+
+                                    · ${esc(transition)}
+
+                                    ${
+                                      change.active === false
+                                        ? ' · abgelaufen'
+                                        : ''
+                                    }
+
+                                  </div>
+
+                                `;
+
+                              }
+                            )
+                            .join('');
+
+
+                          return `
+
+                            <div class="log-entry">
+
+                              <div class="log-head">
+
+                                <strong>
+                                  ${esc(
+                                    event.mission ||
+                                    'Ohne Missionsangabe'
+                                  )}
+                                </strong>
+
+                                <span class="muted">
+                                  ${fmtDate(
+                                    event.date
+                                  )}
+                                </span>
+
+                              </div>
+
+
+                              <div
+                                class="${
+                                  valid
+                                    ? 'muted'
+                                    : 'badge invalid'
+                                }"
+                              >
+
+                                ${
+                                  valid
+                                    ? 'gültig'
+                                    : 'RETCON – ungültig'
+                                }
+
+                              </div>
+
+
+                              <div>
+
+                                ${esc(
+                                  event.reason ||
+                                  'Keine Begründung angegeben.'
+                                )}
+
+                              </div>
+
+
+                              ${changes}
+
+
+                              <div
+                                class="actions"
+                                style="margin-top:8px"
+                              >
+
+                                <button
+                                  class="${
+                                    valid
+                                      ? 'danger'
+                                      : ''
+                                  }"
+                                  onclick="setEventStatus(
+                                    '${esc(event.id)}',
+                                    ${!valid}
+                                  )"
+                                >
+
+                                  ${
+                                    valid
+                                      ? 'Als Retcon ungültig machen'
+                                      : 'Wieder gültig machen'
+                                  }
+
+                                </button>
+
+                              </div>
+
+                            </div>
+
+                          `;
+
+                        }
+                      )
+                      .join('')}
+
+                  </div>
+
+                </details>
+
+              `;
+
+            }
+          )
+          .join('')
+
+      : `
+
+          <p class="muted">
+            Noch keine Rufänderungen gespeichert.
+          </p>
+
+        `;
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+document
+  .getElementById(
+    'changeDate'
+  )
+  .value =
+    todayISO();
+
+
+load();
+
+</script>
+
+</body>
+</html><!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reputation – Dessarin Banner · HTML VERSION 6</title>
 
 <style>
