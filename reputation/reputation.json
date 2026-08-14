@@ -222,8 +222,22 @@
           "delta": -1
         }
       ]
+    },
+    {
+      "id": "event_ea10d8af-e707-483a-a2a5-f9fdd321de5d",
+      "date": "2026-07-18",
+      "mission": "t13",
+      "reason": "gwd",
+      "valid": true,
+      "createdAt": "2026-08-14T06:37:22.286Z",
+      "changes": [
+        {
+          "factionId": "yartar-unterwelt",
+          "delta": -3
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T06:37:10.325Z"
+  "updatedAt": "2026-08-14T06:37:22.286Z"
 }
