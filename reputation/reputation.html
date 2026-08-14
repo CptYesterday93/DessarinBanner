@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 7.4</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 7.5</title>
 
 <style>
 :root{
@@ -812,7 +812,7 @@ button.primary + .expiry-details{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 7.4</div>
+  <div class="version-tag">HTML VERSION 7.5</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1155,7 +1155,7 @@ button.primary + .expiry-details{
    API
    ========================================================= */
 
-const HTML_VERSION = '7.4';
+const HTML_VERSION = '7.5';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -1943,7 +1943,6 @@ function renderRegions(){
                     class="status ${valueClass(childRep)}"
                   >
                     ${esc(
-                      child.status ||
                       statusFor(childRep)
                     )}
                   </td>
