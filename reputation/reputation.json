@@ -192,6 +192,18 @@
       "baseDate": null,
       "rep": 0,
       "lastChange": null
+    },
+    {
+      "id": "amphail",
+      "name": "Amphail",
+      "description": "",
+      "baseRep": 0,
+      "baseDate": "2026-08-14",
+      "lastChange": null,
+      "active": true,
+      "featured": false,
+      "reputationMode": "direct",
+      "children": []
     }
   ],
   "organizations": [
@@ -329,5 +341,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T10:43:08.607Z"
+  "updatedAt": "2026-08-14T10:43:45.292Z"
 }
