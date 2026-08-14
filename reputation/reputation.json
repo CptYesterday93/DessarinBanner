@@ -240,7 +240,7 @@
       "date": "2026-08-13",
       "mission": "test",
       "reason": "tessst",
-      "valid": true,
+      "valid": false,
       "createdAt": "2026-08-13T14:33:08.654Z",
       "changes": [
         {
@@ -251,7 +251,8 @@
           "factionId": "everlund",
           "delta": 3
         }
-      ]
+      ],
+      "statusChangedAt": "2026-08-14T08:02:56.210Z"
     },
     {
       "id": "event_41633fa2-4b48-442d-aee1-517add105872",
@@ -335,5 +336,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:02:54.194Z"
+  "updatedAt": "2026-08-14T08:02:56.210Z"
 }
