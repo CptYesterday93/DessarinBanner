@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 7.3</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 7.4</title>
 
 <style>
 :root{
@@ -1155,7 +1155,7 @@ button.primary + .expiry-details{
    API
    ========================================================= */
 
-const HTML_VERSION = '7.0';
+const HTML_VERSION = '7.4';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -1342,7 +1342,7 @@ function statusFor(rep){
     return 'Wohlwollend';
   }
 
-  if(rep >= -2){
+  if(rep >= -1){
     return 'Neutral';
   }
 
@@ -1726,9 +1726,13 @@ function renderRegions(){
         place => {
 
           const rep =
-            place.effectiveRep ??
-            place.rep ??
-            0;
+            Array.isArray(place.children) && place.children.length
+              ? aggregateRepAt(place, todayISO())
+              : (
+                  place.effectiveRep ??
+                  place.rep ??
+                  0
+                );
 
 
           const hasChildren =
@@ -3104,6 +3108,8 @@ function diffDays(a,b){
   return Math.floor((db-da)/86400000);
 }
 
+const YARTAR_AGGREGATION_MULTIPLIER = 2;
+
 function aggregateRepAt(place, date){
   const children = place.children || [];
   if(!children.length) return directRepAt(place.id,date);
@@ -3112,7 +3118,13 @@ function aggregateRepAt(place, date){
    * Yartar-Aggregat:
    * Das Gewicht verändert ausschließlich den Beitrag eines Kindes.
    * Der Nenner bleibt die Anzahl der Kinder/Gruppen.
-   * Beispiel: (5 + 2 + 4 + (-3 * 0.5)) / 4 = 2.375
+   *
+   * Der Multiplikator gilt NUR für den Gesamtwert von Yartar.
+   * Die REP-Werte der einzelnen Untergruppen bleiben unverändert.
+   *
+   * Beispiel:
+   * (5 + 2 + 4 + (-3 * 0.5)) / 4 = 2.75
+   * 2.75 * 2 = 5.5 für Yartar.
    */
   let total = 0;
   for(const child of children){
@@ -3120,7 +3132,12 @@ function aggregateRepAt(place, date){
     total += directRepAt(child.id,date) * w;
   }
 
-  return Math.round((total / children.length) * 100) / 100;
+  const average = total / children.length;
+  const multiplier = place.id === 'yartar'
+    ? YARTAR_AGGREGATION_MULTIPLIER
+    : 1;
+
+  return Math.round(average * multiplier * 100) / 100;
 }
 
 function repAt(id,type,date){
