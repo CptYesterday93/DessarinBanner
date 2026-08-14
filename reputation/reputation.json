@@ -197,14 +197,15 @@
       "date": "2026-08-13",
       "mission": "test",
       "reason": "tests",
-      "valid": true,
+      "valid": false,
       "createdAt": "2026-08-13T14:10:29.111Z",
       "changes": [
         {
           "factionId": "harpers",
           "delta": -1
         }
-      ]
+      ],
+      "statusChangedAt": "2026-08-14T08:02:59.705Z"
     },
     {
       "id": "event_f5a4e895-eba9-4a41-bf5d-9715b89ebafa",
@@ -337,5 +338,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:02:57.102Z"
+  "updatedAt": "2026-08-14T08:02:59.705Z"
 }
