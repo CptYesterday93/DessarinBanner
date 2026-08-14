@@ -223,7 +223,22 @@
       "lastChange": null
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "id": "event_b630668c-f652-4f67-81da-c57f8249e820",
+      "date": "2026-08-02",
+      "mission": "t1",
+      "reason": "t1",
+      "valid": true,
+      "createdAt": "2026-08-14T09:54:54.247Z",
+      "changes": [
+        {
+          "factionId": "yartar-obrigkeit",
+          "delta": 2
+        }
+      ]
+    }
+  ],
   "restore": null,
-  "updatedAt": "2026-08-14T09:52:43.490Z"
+  "updatedAt": "2026-08-14T09:54:54.247Z"
 }
