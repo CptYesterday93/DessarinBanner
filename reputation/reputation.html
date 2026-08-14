@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 6.5</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 6.6</title>
 
 <style>
 :root{
@@ -661,6 +661,7 @@ textarea{
 }
 
 .chart-event:hover{
+  cursor:pointer;
   fill:#dbe3f7;
 }
 
@@ -758,7 +759,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 6.5</div>
+  <div class="version-tag">HTML VERSION 6.6</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1082,7 +1083,7 @@ textarea{
    API
    ========================================================= */
 
-const HTML_VERSION = '6.2';
+const HTML_VERSION = '6.6';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -3207,9 +3208,7 @@ function renderRepChart(id,type,data,events){
   const endDate = data.length ? data[data.length-1].date : todayISO();
   const totalDays = Math.max(1, diffDays(startDate,endDate));
 
-  const x = date => {
-    return pad.l + (diffDays(startDate,date)/totalDays) * plotW;
-  };
+  const x = date => pad.l + (diffDays(startDate,date)/totalDays) * plotW;
   const y = rep => pad.t + (MAX_REP-Math.max(MIN_REP,Math.min(MAX_REP,rep)))/(MAX_REP-MIN_REP)*plotH;
 
   let grid = '';
@@ -3220,7 +3219,6 @@ function renderRepChart(id,type,data,events){
     grid += `<text class="chart-axis-label" x="${pad.l-8}" y="${yy+4}" text-anchor="end">${axisValue>0?'+':''}${axisValue}</text>`;
   }
 
-  // Jeder Monatserste bekommt eine feine vertikale Orientierungslinie.
   const monthTicks = buildMonthStartTicks(startDate,endDate);
   const monthGrid = monthTicks.map(t=>{
     const xx=x(t.date);
@@ -3242,21 +3240,43 @@ function renderRepChart(id,type,data,events){
     }
   }
 
-  const eventDots = events.map(e=>{
+  /*
+   * The invisible hover area is deliberately BEFORE the event points.
+   * Otherwise it sits on top of the circles and prevents their own
+   * hover/click handlers from firing.
+   */
+  const hoverArea = `<rect class="chart-hover-area" x="${pad.l}" y="${pad.t}" width="${plotW}" height="${plotH}" fill="transparent"
+        data-pad-left="${pad.l}" data-plot-width="${plotW}" data-start="${startDate}" data-end="${endDate}"
+        onmousemove="handleChartHover(event,this)" onmouseleave="handleChartLeave(event,this)"></rect>`;
+
+  const eventDots = events.map((e,index)=>{
     const ex = x(e.event.date);
-    const ey = y(repAt(id,type,e.event.date));
+    const eventRep = repAt(id,type,e.event.date);
+    const ey = y(eventRep);
     const original = Number(e.change.delta)||0;
     const age = diffDays(e.event.date,todayISO());
     const current = age>=0 ? decayAtAge(original,age) : null;
     const child = e.child ? ` · ${e.child.name}` : '';
     const aggregateNote = type === 'place' && (findUnit(id,'place')?.item?.children || []).length
-      ? ` · Gesamt: ${repAt(id,type,e.event.date).toFixed(1)}`
+      ? ` · Gesamt: ${eventRep.toFixed(1)}`
       : '';
     const transition = current?.active
-      ? (current.nextDelta !== 0 ? ` · ${fmtRep(current.currentDelta)} → ${fmtRep(current.nextDelta)} in ${current.daysRemaining} Tagen` : ` · ${fmtRep(current.currentDelta)} → 0 in ${current.daysRemaining} Tagen`)
+      ? (current.nextDelta !== 0
+          ? ` · aktuell ${fmtRep(current.currentDelta)} → ${fmtRep(current.nextDelta)} in ${current.daysRemaining} Tagen`
+          : ` · aktuell ${fmtRep(current.currentDelta)} → 0 in ${current.daysRemaining} Tagen`)
       : '';
-    const tip = `${fmtDate(e.event.date)} · ${fmtRep(original)} REP${child}${aggregateNote}${transition} · ${e.event.mission || 'Ohne Mission'} · ${e.event.reason || 'Keine Begründung'}`;
-    return `<circle class="chart-event" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="4" data-tooltip="${esc(tip)}" onmouseenter="showChartTooltip(event,this)" onmousemove="moveChartTooltip(event)" onmouseleave="hideChartTooltip()" ontouchstart="showChartTooltip(event,this)"></circle>`;
+
+    /* Event-specific tooltip: mission + influence are always present. */
+    const tip = `${e.event.mission || 'Ohne Mission'} · ${fmtRep(original)} REP${child}${aggregateNote}${transition} · ${e.event.reason || 'Keine Begründung'}`;
+
+    return `<circle class="chart-event" cx="${ex.toFixed(1)}" cy="${ey.toFixed(1)}" r="5"
+      data-tooltip="${esc(tip)}"
+      data-event-date="${esc(e.event.date)}"
+      onmouseenter="showChartTooltip(event,this)"
+      onmousemove="moveChartTooltip(event)"
+      onmouseleave="hideChartTooltip()"
+      onclick="showChartTooltip(event,this)"
+      ontouchstart="showChartTooltip(event,this)"></circle>`;
   }).join('');
 
   return `
@@ -3265,36 +3285,81 @@ function renderRepChart(id,type,data,events){
          data-chart-start="${startDate}" data-chart-end="${endDate}">
       ${grid}
       ${monthGrid}
+      ${hoverArea}
       <path class="chart-line" d="${path}"></path>
       ${eventDots}
       ${monthLabels}
       <line class="chart-cursor-line" x1="-10" x2="-10" y1="${pad.t}" y2="${H-pad.b}" style="display:none"></line>
       <circle class="chart-cursor-dot" cx="-10" cy="-10" r="3" style="display:none"></circle>
-      <rect class="chart-hover-area" x="${pad.l}" y="${pad.t}" width="${plotW}" height="${plotH}" fill="transparent"
-        data-pad-left="${pad.l}" data-plot-width="${plotW}" data-start="${startDate}" data-end="${endDate}"
-        onmousemove="handleChartHover(event,this)" onmouseleave="handleChartLeave(event,this)"></rect>
     </svg>
   `;
 }
 
-function chartDateFromX(startDate,endDate,localX,plotW){
+/*
+ * Convert a screen coordinate into the SVG's own coordinate system.
+ * This avoids the old hard-coded 900/rect.width calculation and keeps
+ * the cursor accurate when the SVG is scaled responsively.
+ */
+function screenPointInSvg(svg,event){
+  const pt = svg.createSVGPoint();
+  pt.x = event.clientX;
+  pt.y = event.clientY;
+  const matrix = svg.getScreenCTM();
+  if(!matrix) return null;
+  return pt.matrixTransform(matrix.inverse());
+}
+
+function chartDateFromSvgX(startDate,endDate,svgX,padLeft,plotW){
+  const localX = Math.max(0,Math.min(plotW,svgX-padLeft));
   const total = Math.max(1,diffDays(startDate,endDate));
   const ratio = Math.max(0,Math.min(1,localX/plotW));
   const day = Math.round(total*ratio);
   return addDays(startDate,day);
 }
 
+/*
+ * For a stair-step chart the value at an arbitrary date is the value of
+ * the last chart point at or before that date. There is NO interpolation.
+ * This is the same data that produced the blue line, so the tooltip can
+ * never disagree with the line because of a second calculation.
+ */
+function chartValueAtDate(svg,date){
+  const id = svg.dataset.chartId;
+  const type = svg.dataset.chartType;
+  const unit = findUnit(id,type);
+  if(!unit) return 0;
+
+  const data = buildChartData(id,type);
+  if(!data.length) return 0;
+
+  let value = Number(data[0].rep) || 0;
+  for(const point of data){
+    if(String(point.date) <= String(date)){
+      value = Number(point.rep) || 0;
+    }else{
+      break;
+    }
+  }
+  return value;
+}
+
 function handleChartHover(event,area){
   const svg = area.ownerSVGElement;
-  const rect = svg.getBoundingClientRect();
-  if(!rect.width) return;
+  const point = screenPointInSvg(svg,event);
+  if(!point) return;
 
   const padLeft = Number(area.dataset.padLeft) || 52;
   const plotWidth = Number(area.dataset.plotWidth) || 1;
-  const svgX = (event.clientX - rect.left) * (900 / rect.width);
-  const localX = Math.max(0,Math.min(plotWidth,svgX-padLeft));
-  const date = chartDateFromX(area.dataset.start,area.dataset.end,localX,plotWidth);
-  const rep = repAt(svg.dataset.chartId,svg.dataset.chartType,date);
+  const date = chartDateFromSvgX(
+    area.dataset.start,
+    area.dataset.end,
+    point.x,
+    padLeft,
+    plotWidth
+  );
+
+  /* Read the exact value from the same stair-step data used to draw the line. */
+  const rep = chartValueAtDate(svg,date);
 
   const totalDays = Math.max(1,diffDays(area.dataset.start,area.dataset.end));
   const ratio = Math.max(0,Math.min(1,diffDays(area.dataset.start,date)/totalDays));
@@ -3324,9 +3389,10 @@ function handleChartLeave(event,area){
   if(dot) dot.style.display='none';
   hideChartTooltip();
 }
+
 function showChartTooltip(event,node){
   const tip=document.getElementById('chartTooltip');
-  tip.textContent=node.getAttribute('data-tooltip') || '';
+  tip.innerHTML=node.getAttribute('data-tooltip') || '';
   tip.style.display='block';
   moveChartTooltip(event);
 }
@@ -3334,19 +3400,18 @@ function showChartTooltip(event,node){
 function moveChartTooltip(event){
   const tip=document.getElementById('chartTooltip');
   if(tip.style.display !== 'block') return;
-  const x=Math.min(window.innerWidth-295, event.clientX+12);
-  const y=Math.min(window.innerHeight-80, event.clientY+12);
+  const tipWidth = Math.min(320, Math.max(160, tip.offsetWidth || 220));
+  const tipHeight = tip.offsetHeight || 70;
+  let x = event.clientX + 12;
+  let y = event.clientY + 12;
+  if(x + tipWidth > window.innerWidth - 8) x = event.clientX - tipWidth - 12;
+  if(y + tipHeight > window.innerHeight - 8) y = event.clientY - tipHeight - 12;
   tip.style.left=Math.max(8,x)+'px';
   tip.style.top=Math.max(8,y)+'px';
 }
 
 function hideChartTooltip(){
   document.getElementById('chartTooltip').style.display='none';
-}
-
-function closeDetail(){
-  hideChartTooltip();
-  document.getElementById('detailBackdrop').classList.remove('open');
 }
 
 function handleDetailBackdrop(event){
