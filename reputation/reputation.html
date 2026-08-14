@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 3</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 4</title>
 
 <style>
 :root{
@@ -477,6 +477,44 @@ textarea{
   color:#9a6a00;
 }
 
+ .expiry-details{
+  margin:0 0 12px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  background:#fff;
+}
+
+.expiry-details > summary{
+  cursor:pointer;
+  list-style:none;
+  padding:9px 11px;
+  font-weight:700;
+}
+
+.expiry-details > summary::-webkit-details-marker{
+  display:none;
+}
+
+.expiry-details > summary:before{
+  content:"▶";
+  font-size:10px;
+  margin-right:8px;
+  color:var(--muted);
+}
+
+.expiry-details[open] > summary:before{
+  content:"▼";
+}
+
+.expiry-details > summary:hover{
+  background:var(--soft);
+}
+
+.expiry-details .expiry-list{
+  margin:0;
+  padding:0 8px 8px;
+}
+
 .detail-meta{
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
@@ -643,7 +681,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 3</div>
+  <div class="version-tag">HTML VERSION 4</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -656,14 +694,6 @@ textarea{
     <strong>30 / 60 / 90 Tage</strong>, negative
     <strong>40 / 80 / 120 Tage</strong>.
   </div>
-
-  <div class="section-title">
-    <span>⏳ Bald auslaufende Einflüsse</span>
-    <span class="section-title-spacer"></span>
-    <span class="small" id="expirySummary"></span>
-  </div>
-
-  <div id="expiryList" class="expiry-list"></div>
 
 
   <!-- =========================
@@ -965,7 +995,7 @@ textarea{
    API
    ========================================================= */
 
-const HTML_VERSION = '3';
+const HTML_VERSION = '4';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -1407,7 +1437,6 @@ function render(){
 
   renderLog();
 
-  renderExpiry();
 
 }
 
@@ -2919,7 +2948,6 @@ function showFactionDetail(id,type){
 
   const item = unit.item;
   const rep = Number(item.effectiveRep ?? item.rep ?? 0) || 0;
-  const historical = Number(item.rep ?? item.baseRep ?? 0) || 0;
   const events = detailEvents(id,type).sort((a,b)=>String(b.event.date).localeCompare(String(a.event.date)));
   const chart = buildChartData(id,type);
 
@@ -2930,11 +2958,7 @@ function showFactionDetail(id,type){
     <div class="detail-meta">
       <div class="detail-stat">
         <strong class="${valueClass(rep)}">${fmtRep(rep)}</strong>
-        <span>Effektive REP</span>
-      </div>
-      <div class="detail-stat">
-        <strong class="${valueClass(historical)}">${fmtRep(historical)}</strong>
-        <span>Historische REP</span>
+        <span>Aktuelle REP</span>
       </div>
       <div class="detail-stat">
         <strong>${esc(item.status || statusFor(rep))}</strong>
@@ -2942,8 +2966,13 @@ function showFactionDetail(id,type){
       </div>
     </div>
 
+    <details class="expiry-details">
+      <summary>⏳ Bald auslaufende Einflüsse <span class="small" style="float:right">nächste 30 Tage</span></summary>
+      ${renderExpiryMarkup()}
+    </details>
+
     <div class="small" style="margin-bottom:6px">
-      Der Verlauf zeigt die wirksame REP. Wirkungen fallen nach ihrer jeweiligen Dauer stufenweise weg.
+      Der Verlauf zeigt die wirksame REP. Die Linie bleibt waagerecht und springt erst dann, wenn ein Einfluss beginnt oder ausläuft.
     </div>
 
     <div class="chart-wrap">
@@ -3011,9 +3040,13 @@ function renderRepChart(id,type,data,events){
   }
 
   let path='';
-  data.forEach((p,i)=>{
-    path += `${i?'L':'M'} ${x(p.date).toFixed(1)} ${y(p.rep).toFixed(1)} `;
-  });
+  if(data.length){
+    path = `M ${x(data[0].date).toFixed(1)} ${y(data[0].rep).toFixed(1)} `;
+    for(let i=1;i<data.length;i++){
+      const p=data[i];
+      path += `H ${x(p.date).toFixed(1)} V ${y(p.rep).toFixed(1)} `;
+    }
+  }
 
   const dateLabels = data.length ? [data[0].date, todayISO(), data[data.length-1].date].filter((v,i,a)=>a.indexOf(v)===i) : [todayISO()];
   const labels = dateLabels.map(d=>`<text class="chart-axis-label" x="${x(d)}" y="${H-10}" text-anchor="middle">${fmtDate(d)}</text>`).join('');
@@ -3070,9 +3103,8 @@ function handleDetailBackdrop(event){
    BALD AUSLAUFENDE EINFLÜSSE
    ========================================================= */
 
-function renderExpiry(){
+function renderExpiryMarkup(){
   const today=todayISO();
-  const limit=addDays(today,30);
   const rows=[];
 
   for(const event of (state.events || [])){
@@ -3089,21 +3121,18 @@ function renderExpiry(){
 
   rows.sort((a,b)=>a.remaining-b.remaining || String(a.event.date).localeCompare(String(b.event.date)));
 
-  const el=document.getElementById('expiryList');
-  const summary=document.getElementById('expirySummary');
-  summary.textContent=rows.length ? `${rows.length} ${rows.length===1?'Einfluss':'Einflüsse'}` : '';
-
   if(!rows.length){
-    el.innerHTML='<div class="muted">In den nächsten 30 Tagen läuft kein aktiver Einfluss aus.</div>';
-    return;
+    return '<div class="expiry-list"><div class="muted">In den nächsten 30 Tagen läuft kein aktiver Einfluss aus.</div></div>';
   }
 
-  el.innerHTML=rows.map(x=>{
+  return `<div class="expiry-list">${rows.map(x=>{
     const name=unitName(x.change.factionId);
     const urgent=x.remaining<=3;
     const soon=x.remaining<=7;
+    const resolved=findUnit(x.change.factionId,'child') || findUnit(x.change.factionId,'organization') || findUnit(x.change.factionId,'place');
+    const type=resolved?.type || 'place';
     return `
-      <div class="expiry-item" onclick="showFactionDetail('${esc(x.change.factionId)}','${findUnit(x.change.factionId,'child')?'child':findUnit(x.change.factionId,'organization')?'organization':'place'}')">
+      <div class="expiry-item" onclick="showFactionDetail('${esc(x.change.factionId)}','${type}')">
         <div class="expiry-main">
           <strong>${esc(name)}</strong>
           <div class="muted">${esc(x.event.mission || 'Ohne Missionsangabe')} · ${fmtDate(x.expiry)}</div>
@@ -3112,7 +3141,7 @@ function renderExpiry(){
         <div class="expiry-days ${urgent?'urgent':soon?'soon':''}">${x.remaining===0?'heute':`in ${x.remaining} Tagen`}</div>
       </div>
     `;
-  }).join('');
+  }).join('')}</div>`;
 }
 
 /* =========================================================
