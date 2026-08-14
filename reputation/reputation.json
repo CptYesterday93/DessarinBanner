@@ -212,7 +212,7 @@
       "date": "2026-08-13",
       "mission": "2",
       "reason": "2",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-13T14:16:27.503Z",
       "changes": [
         {
@@ -220,7 +220,7 @@
           "delta": 3
         }
       ],
-      "statusChangedAt": "2026-08-14T08:03:17.272Z"
+      "statusChangedAt": "2026-08-14T08:05:22.859Z"
     },
     {
       "id": "event_c4b4c695-625b-416a-b307-9f9c5442d60a",
@@ -341,5 +341,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:05:21.481Z"
+  "updatedAt": "2026-08-14T08:05:22.859Z"
 }
