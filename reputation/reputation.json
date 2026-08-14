@@ -310,7 +310,7 @@
       "date": "2026-06-18",
       "mission": "5tgrw",
       "reason": "wet214",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-14T06:37:44.593Z",
       "changes": [
         {
@@ -322,7 +322,7 @@
           "delta": 3
         }
       ],
-      "statusChangedAt": "2026-08-14T08:03:06.740Z"
+      "statusChangedAt": "2026-08-14T08:05:34.459Z"
     },
     {
       "id": "event_1ca6f905-7bdb-413f-bf55-cca97dfef992",
@@ -341,5 +341,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:05:31.026Z"
+  "updatedAt": "2026-08-14T08:05:34.459Z"
 }
