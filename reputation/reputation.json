@@ -223,7 +223,30 @@
       "lastChange": null
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "id": "event_cfda28d1-4e24-40f6-8334-c63466b52963",
+      "date": "2026-06-14",
+      "mission": "t1",
+      "reason": "1",
+      "valid": true,
+      "createdAt": "2026-08-14T10:20:18.614Z",
+      "changes": [
+        {
+          "factionId": "yartar-unterwelt",
+          "delta": -1
+        },
+        {
+          "factionId": "yartar-haendler",
+          "delta": 2
+        },
+        {
+          "factionId": "yartar-obrigkeit",
+          "delta": 1
+        }
+      ]
+    }
+  ],
   "restore": null,
-  "updatedAt": "2026-08-14T10:19:51.873Z"
+  "updatedAt": "2026-08-14T10:20:18.614Z"
 }
