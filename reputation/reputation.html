@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 6.8</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 6.9</title>
 
 <style>
 :root{
@@ -772,7 +772,7 @@ textarea{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 6.7</div>
+  <div class="version-tag">HTML VERSION 6.9</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -1096,7 +1096,7 @@ textarea{
    API
    ========================================================= */
 
-const HTML_VERSION = '6.7';
+const HTML_VERSION = '6.9';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -3096,12 +3096,39 @@ function addDays(date,days){
   return d.toISOString().slice(0,10);
 }
 
+function addMonthsUTC(dateString, months){
+  const d = new Date(String(dateString).slice(0,10) + 'T00:00:00Z');
+  d.setUTCMonth(d.getUTCMonth() + months);
+  return d.toISOString().slice(0,10);
+}
+
+function monthStartUTC(dateString){
+  const d = new Date(String(dateString).slice(0,10) + 'T00:00:00Z');
+  d.setUTCDate(1);
+  return d.toISOString().slice(0,10);
+}
+
 function buildChartData(id,type){
   const events = detailEvents(id,type);
   const dates = new Set();
   const unit = findUnit(id,type);
+  const today = todayISO();
+
+  /*
+   * Das Diagramm zeigt immer einen festen Zeitraum:
+   * sechs Monate vor dem aktuellen Monat bis sechs Monate
+   * nach dem aktuellen Monat. Dadurch bleiben die Ansichten
+   * zwischen verschiedenen Fraktionen direkt vergleichbar.
+   *
+   * Die Monatslinien markieren jeweils den 1. des Monats.
+   */
+  const startDate = addMonthsUTC(today, -6);
+  const endDate = addMonthsUTC(today, 6);
+
+  addDate(dates, startDate);
+  addDate(dates, endDate);
+  addDate(dates, today);
   addDate(dates, unit?.item?.baseDate);
-  addDate(dates, todayISO());
 
   for(const x of events){
     addDate(dates,x.event.date);
@@ -3111,9 +3138,17 @@ function buildChartData(id,type){
     }
   }
 
-  if(!dates.size) addDate(dates,todayISO());
+  const sorted = [...dates]
+    .filter(date => date >= startDate && date <= endDate)
+    .sort();
 
-  const sorted = [...dates].sort();
+  /*
+   * Die Randpunkte werden immer mitgeführt, damit die Stufenlinie
+   * über den kompletten sichtbaren Zeitraum gezeichnet wird.
+   */
+  if(!sorted.includes(startDate)) sorted.unshift(startDate);
+  if(!sorted.includes(endDate)) sorted.push(endDate);
+
   return sorted.map(date => ({
     date,
     rep: repAt(id,type,date)
