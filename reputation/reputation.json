@@ -294,14 +294,15 @@
       "date": "2026-07-18",
       "mission": "t13",
       "reason": "gwd",
-      "valid": true,
+      "valid": false,
       "createdAt": "2026-08-14T06:37:22.286Z",
       "changes": [
         {
           "factionId": "yartar-unterwelt",
           "delta": -3
         }
-      ]
+      ],
+      "statusChangedAt": "2026-08-14T08:03:01.892Z"
     },
     {
       "id": "event_9e067d5c-a9d1-43df-87d7-92f9bd83286b",
@@ -338,5 +339,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:02:59.705Z"
+  "updatedAt": "2026-08-14T08:03:01.892Z"
 }
