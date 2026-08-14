@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reputation – Dessarin Banner · HTML VERSION 7.6</title>
+<title>Reputation – Dessarin Banner · HTML VERSION 7.8</title>
 
 <style>
 :root{
@@ -148,8 +148,17 @@ th{
   white-space:nowrap;
 }
 
-.status{
+ .status{
   font-weight:700;
+}
+
+.status-forecast{
+  display:inline-block;
+  margin-left:8px;
+  font-size:11px;
+  font-weight:600;
+  color:var(--muted);
+  white-space:nowrap;
 }
 
 .positive{
@@ -812,7 +821,7 @@ button.primary + .expiry-details{
 
   <h1>REPUTATIONSÜBERSICHT</h1>
 
-  <div class="version-tag">HTML VERSION 7.6</div>
+  <div class="version-tag">HTML VERSION 7.8</div>
 
   <div class="subtitle">
     Dessarin Banner · Reputationspunkte (REP)
@@ -872,6 +881,7 @@ button.primary + .expiry-details{
           <th>Region</th>
           <th class="num">REP</th>
           <th>Status</th>
+          <th>Statusänderung</th>
           <th>Letzte Änderung</th>
           <th>Verwaltung</th>
         </tr>
@@ -926,6 +936,7 @@ button.primary + .expiry-details{
           <th>Organisation</th>
           <th class="num">REP</th>
           <th>Status</th>
+          <th>Statusänderung</th>
           <th>Letzte Änderung</th>
           <th>Verwaltung</th>
         </tr>
@@ -1155,7 +1166,7 @@ button.primary + .expiry-details{
    API
    ========================================================= */
 
-const HTML_VERSION = '7.6';
+const HTML_VERSION = '7.8';
 
 const API_BASE =
   'https://dessarin-reputation-api.johannes-keiler-reichle.workers.dev';
@@ -1353,6 +1364,88 @@ function statusFor(rep){
   return 'Feindlich';
 
 }
+
+/*
+ * Zeigt nur dann eine Prognose an, wenn der nächste
+ * bevorstehende Verfall tatsächlich den Beziehungsstatus ändert.
+ *
+ * Die Berechnung benutzt dieselben REP-Funktionen wie die
+ * eigentliche Anzeige. Für Yartar gilt damit automatisch
+ * die Yartar-Aggregation inklusive Multiplikator.
+ */
+function nextStatusForecast(id, type){
+  const today = todayISO();
+  const unit = findUnit(id, type);
+  if(!unit) return null;
+
+  const currentRep = repAt(id, type, today);
+  const currentStatus = statusFor(currentRep);
+
+  const candidates = new Set();
+
+  const relevantEvents =
+    type === 'place'
+      ? detailEvents(id, type)
+      : allEventsForTarget(id);
+
+  for(const item of relevantEvents){
+    const eventDate = String(item.event?.date || '').slice(0,10);
+    if(eventDate > today){
+      candidates.add(eventDate);
+    }
+
+    const delta = Number(item.change?.delta) || 0;
+    for(const stage of decaySchedule(delta, eventDate)){
+      const until = String(stage.until || '').slice(0,10);
+      if(until > today){
+        candidates.add(until);
+      }
+    }
+  }
+
+  const ordered = [...candidates]
+    .filter(date => date > today)
+    .sort();
+
+  for(const date of ordered){
+    const futureRep = repAt(id, type, date);
+    const futureStatus = statusFor(futureRep);
+
+    if(futureStatus !== currentStatus){
+      return {
+        currentStatus,
+        nextStatus: futureStatus,
+        days: Math.max(0, diffDays(today, date)),
+        date
+      };
+    }
+  }
+
+  return null;
+}
+
+function statusCellHtml(id, type, rep){
+  const currentStatus = statusFor(rep);
+
+  return `
+    <span class="status ${valueClass(rep)}">
+      ${esc(currentStatus)}
+    </span>
+  `;
+}
+
+function statusForecastCellHtml(id, type){
+  const forecast = nextStatusForecast(id, type);
+
+  return forecast
+    ? `
+      <span class="status-forecast">
+        ${esc(forecast.nextStatus)} in ${forecast.days} Tagen
+      </span>
+    `
+    : '';
+}
+
 
 
 /*
@@ -1849,11 +1942,19 @@ function renderRegions(){
               </td>
 
 
-              <td
-                class="status ${valueClass(rep)}"
-              >
-                ${esc(
-                  statusFor(rep)
+              <td>
+                ${statusCellHtml(
+                  esc(place.id),
+                  'place',
+                  rep
+                )}
+              </td>
+
+
+              <td>
+                ${statusForecastCellHtml(
+                  esc(place.id),
+                  'place'
                 )}
               </td>
 
@@ -1958,11 +2059,19 @@ function renderRegions(){
                   </td>
 
 
-                  <td
-                    class="status ${valueClass(childRep)}"
-                  >
-                    ${esc(
-                      statusFor(childRep)
+                  <td>
+                    ${statusCellHtml(
+                      esc(child.id),
+                      'child',
+                      childRep
+                    )}
+                  </td>
+
+
+                  <td>
+                    ${statusForecastCellHtml(
+                      esc(child.id),
+                      'child'
                     )}
                   </td>
 
@@ -1999,7 +2108,7 @@ function renderRegions(){
       <tr>
 
         <td
-          colspan="5"
+          colspan="6"
           class="empty"
         >
           Keine passende Region gefunden.
@@ -2082,11 +2191,19 @@ function renderOrganizations(){
               </td>
 
 
-              <td
-                class="status ${valueClass(rep)}"
-              >
-                ${esc(
-                  statusFor(rep)
+              <td>
+                ${statusCellHtml(
+                  esc(org.id),
+                  'organization',
+                  rep
+                )}
+              </td>
+
+
+              <td>
+                ${statusForecastCellHtml(
+                  esc(org.id),
+                  'organization'
                 )}
               </td>
 
