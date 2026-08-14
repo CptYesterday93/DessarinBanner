@@ -295,7 +295,7 @@
       "date": "2026-07-18",
       "mission": "t13",
       "reason": "gwd",
-      "valid": false,
+      "valid": true,
       "createdAt": "2026-08-14T06:37:22.286Z",
       "changes": [
         {
@@ -303,7 +303,7 @@
           "delta": -3
         }
       ],
-      "statusChangedAt": "2026-08-14T08:03:03.059Z"
+      "statusChangedAt": "2026-08-14T08:05:31.026Z"
     },
     {
       "id": "event_9e067d5c-a9d1-43df-87d7-92f9bd83286b",
@@ -341,5 +341,5 @@
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T08:05:29.547Z"
+  "updatedAt": "2026-08-14T08:05:31.026Z"
 }
