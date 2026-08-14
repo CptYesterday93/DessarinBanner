@@ -299,8 +299,26 @@
           "delta": 1
         }
       ]
+    },
+    {
+      "id": "event_98368892-8347-4625-8849-0a1778f27aa8",
+      "date": "2026-07-30",
+      "mission": "t5",
+      "reason": "",
+      "valid": true,
+      "createdAt": "2026-08-14T10:22:36.191Z",
+      "changes": [
+        {
+          "factionId": "yartar-obrigkeit",
+          "delta": 2
+        },
+        {
+          "factionId": "yartar-unterwelt",
+          "delta": -1
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-08-14T10:22:15.563Z"
+  "updatedAt": "2026-08-14T10:22:36.191Z"
 }
