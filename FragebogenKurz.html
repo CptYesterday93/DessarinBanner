@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
+<title>Charakterfragebogen – Für das Dessarin Banner</title>
+<style>
+:root{
+ --ink:#171717; --muted:#666; --line:#aeb4c0; --field:#e8edfc;
+ --accent:#3157a6; --paper:#fff; --page:#f2f2f2; --help:#fffdf0;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--page);color:var(--ink);font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.35}
+.sheet{width:min(920px,calc(100% - 28px));margin:24px auto 40px;background:var(--paper);padding:40px 48px 60px;box-shadow:0 2px 18px #0001}
+h1{text-align:center;font-size:30px;letter-spacing:.03em;margin:0}
+.subtitle{text-align:center;color:#444;margin:3px 0 22px;font-size:16px}
+.intro{margin:0 0 22px;max-width:820px}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 26px}
+.action{border:1px solid #999;background:#fff;padding:8px 12px;border-radius:4px;cursor:pointer}
+.action:hover{background:#f5f5f5}
+.status{font-size:12px;color:var(--muted);margin-left:auto}.danger-action{margin-left:0;color:#777;font-size:12px}
+.section-title{font-size:22px;margin:28px 0 18px;padding:9px 12px;background:#ededed;border-radius:10px;font-weight:700}
+.question{margin:0 0 22px;position:relative}
+.question-title{font-size:18px;font-weight:700;margin:0 0 7px}
+.subquestion{margin:0 0 15px}
+.subquestion-label{font-size:14px;margin:0 0 7px}
+.field{width:100%;border:1px solid #9da4b2;background:var(--field);color:#111;padding:9px 11px;font:inherit;border-radius:0;outline:none}
+.field:focus{border-color:var(--accent);box-shadow:0 0 0 2px #3157a61a}
+input.field{height:38px}
+textarea.field{min-height:86px;resize:vertical}
+textarea.large{min-height:120px}
+.helpbtn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-left:7px;border:1px solid #666;border-radius:50%;background:#fff;color:#444;font-size:12px;font-weight:700;cursor:pointer;vertical-align:1px}
+.helpbox{display:none;position:absolute;z-index:20;right:0;top:28px;width:min(420px,calc(100vw - 44px));padding:14px 16px;background:var(--help);border:1px solid #c8c09e;box-shadow:0 7px 24px #0002;font-size:13px}
+.helpbox.open{display:block}
+.helpbox strong{display:block;margin-bottom:5px;padding-right:22px;font-style:normal;font-weight:400}.helpbox .idea-text{font-style:italic}
+.helpclose{position:absolute;right:7px;top:5px;border:0;background:transparent;color:#666;font-size:20px;line-height:1;cursor:pointer;padding:2px 5px}
+.helpclose:hover{color:#111}
+.example{margin-top:8px;color:#555;font-style:italic}
+.identity-heading{font-size:18px;margin:0 0 12px}.identity-top{display:grid;grid-template-columns:1.45fr 1.05fr .8fr .8fr;gap:14px 16px;margin-bottom:14px}
+.identity-top .question{margin:0}
+.identity-top .question-title{font-size:15px;margin-bottom:6px}
+.identity-bottom{display:grid;grid-template-columns:150px 150px minmax(0,1fr);gap:14px 16px;margin-bottom:24px}
+.identity-bottom .question{margin:0}
+.identity-bottom .question-title{font-size:15px;margin-bottom:6px}
+.identity-bottom input.field{height:36px}
+.conversion-row{display:flex;align-items:center;gap:8px}
+.conversion-row .field{min-width:0;flex:1}
+.conversion{font-size:12px;color:#555;white-space:nowrap}
+.birth-row{display:flex;align-items:stretch;gap:10px}
+.birth-input-wrap{flex:1;min-width:0}
+.year-info{flex:0 0 138px;padding:7px 10px;background:#f7f7f7;border:1px solid #d0d0d0;font-size:12px;line-height:1.3}
+.year-formula{color:var(--muted);font-size:11px;margin-top:2px}
+.birth-result{margin-top:7px;padding:7px 10px;background:#f7f7f7;border:1px solid #d0d0d0;font-size:13px}
+.traits{width:min(620px,100%);margin:8px auto 4px}
+.trait-instruction{margin:0 0 6px;text-align:center;color:var(--muted);font-size:12px;font-style:italic}
+.trait-row{display:grid;grid-template-columns:minmax(0,1fr) 24px 24px minmax(0,1fr);align-items:center;column-gap:10px;min-height:34px;border-bottom:1px solid #e3e3e3}
+.trait-row:last-child{border-bottom:0}
+.trait-word{font-size:14px;cursor:pointer}
+.trait-word.left{text-align:right;grid-column:1}
+.trait-word.right{text-align:left;grid-column:4}
+.trait-row input{width:18px;height:18px;accent-color:var(--accent);margin:0;cursor:pointer}
+.trait-row input:nth-of-type(1){grid-column:2}
+.trait-row input:nth-of-type(2){grid-column:3}
+.note{font-size:12px;color:var(--muted);margin-top:25px;padding:10px 13px;border-left:4px solid var(--accent);background:#f3f5fb}
+.footer-note{margin-top:36px;text-align:center;font-size:11px;color:#777}
+@media(max-width:700px){
+ .sheet{padding:28px 22px 48px}
+ .identity-top{grid-template-columns:1fr 1fr}
+ .identity-bottom{grid-template-columns:1fr 1fr}
+ .identity-bottom .question:last-child{grid-column:1/-1}
+ .birth-row{display:block}
+ .year-info{margin-top:8px}
+ .traits{gap:9px 20px}
+}
+@media(max-width:500px){
+ h1{font-size:24px;letter-spacing:.01em;white-space:nowrap}
+ .subtitle{font-size:14px}
+
+ .identity-top,.identity-bottom{grid-template-columns:1fr}
+ .identity-bottom .question:last-child{grid-column:auto}
+ .traits{width:100%}
+ .trait-row{grid-template-columns:minmax(0,1fr) 20px 20px minmax(0,1fr);column-gap:6px}
+ .status{width:100%;margin-left:0}
+}
+@media print{
+ body{background:#fff}
+ .sheet{width:auto;margin:0;padding:24px;box-shadow:none}
+ .toolbar{display:none}
+ .helpbox{display:none!important}
+ .section-title{break-after:avoid}
+ .question{break-inside:avoid}
+}
+
+.q-badge{display:inline-block;margin-left:8px;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:700;vertical-align:3px;letter-spacing:.03em}
+.q-badge.required{background:#3157a6;color:#fff}
+.q-badge.optional{background:#e9e9e9;color:#555}
+.answer-row{position:relative}
+.question-title{display:flex;align-items:center;flex-wrap:wrap;gap:2px}
+.question > .helpbox{top:30px}
+</style>
+</head>
+
+<body>
+<main class="sheet">
+<h1>CHARAKTERFRAGEBOGEN</h1>
+<div class="subtitle">Für das Dessarin Banner</div>
+<p class="intro">Die folgenden Fragen sollen dir dabei helfen, deinen Charakter besser kennenzulernen und ihm mehr Tiefe zu geben. Sie sind als Denkanstöße gedacht – du musst nicht alles ausführlich beantworten. Auch ein „Nein“, ein kurzer Satz oder eine knappe Entscheidung kann eine vollständige Antwort sein.</p>
+<div class="toolbar">
+  <button class="action" onclick="saveFile()">Einreichen</button>
+  <button class="action" onclick="window.print()">Drucken / als PDF speichern</button>
+  <button class="action danger-action" onclick="resetForm()">Alle Antworten löschen</button>
+  <span class="status" id="status">Änderungen werden automatisch gespeichert.</span>
+</div>
+<h2 class="section-title">I. Pflichtteil</h2><div class="identity-top"><div class="question"><h3 class="question-title">Charaktername</h3><input class="field" data-key="name"/></div><div class="question"><h3 class="question-title">Discord-Name / Nick</h3><input class="field" data-key="discord"/></div><div class="question"><h3 class="question-title">Rasse</h3><input class="field" data-key="rasse"/></div><div class="question"><h3 class="question-title">Geschlecht</h3><input class="field" data-key="geschlecht"/></div></div><div class="identity-bottom"><div class="question"><h3 class="question-title">Größe</h3><div class="conversion-row"><input class="field" data-key="groesse" id="height" placeholder="z.B. 1,72"/><span class="conversion" id="heightImperial">–</span></div></div><div class="question"><h3 class="question-title">Gewicht</h3><div class="conversion-row"><input class="field" data-key="gewicht" id="weight" placeholder="z.B. 70 kg"/><span class="conversion" id="weightImperial">–</span></div></div><div class="question"><h3 class="question-title">Geburtsdatum</h3><div class="birth-row"><div class="birth-input-wrap"><input class="field" data-key="geburtsdatum" id="birthDate" placeholder="z.B. 14.05.1466 DR"/></div><div class="year-info"><div><strong>Derzeitiges Jahr:</strong> <span id="currentDR">-</span> DR</div><div class="year-formula">Reales Jahr - 530</div></div></div><div class="birth-result" id="birthResult">Aktuelles Alter: –</div></div></div><section class="question">
+  <h3 class="question-title"><span>1. Woran würde man deinen Charakter erkennen?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_1"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wie sieht er aus? Wie kleidet er sich normalerweise? Gibt es etwas, das anderen sofort auffällt – etwa Stimme, Sprechweise, Gestik, Haltung oder ein besonderes Merkmal?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>2. Woher kommt dein Charakter?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_2"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wo wurde er geboren und wo ist er aufgewachsen? Was betrachtet er als seine Heimat? Wie groß war die Welt, die er bisher kennengelernt hat?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>3. Wie ist dein Charakter aufgewachsen?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_3"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wer hat ihn großgezogen? Wie war sein Verhältnis zu seiner Familie? War seine Kindheit wohlbehütet? Was aus dieser Zeit prägt ihn bis heute?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>4. Welche Personen haben deinen Charakter geprägt?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_4"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wer hat ihm etwas Wichtiges beigebracht? Wen hat er bewundert oder verehrt? Wer hat ihn enttäuscht oder verletzt? Von wem wollte er sich bewusst unterscheiden?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>5. Welche Personen aus der Vergangenheit spielen heute noch eine Rolle?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_5"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es jemanden, den dein Charakter vermisst? Gibt es jemanden, den er heute lieber nicht wiedersehen würde?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>6. Welche Ereignisse haben deinen Charakter geprägt?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_6"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was war sein schönstes und sein schlimmstes Erlebnis? Was war seine größte Leistung und sein größter Fehler? Welches Ereignis hat ihn am stärksten verändert?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>7. Warum ist dein Charakter Abenteurer geworden?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_7"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was hat ihn dazu gebracht, dieses Leben zu wählen? Was reizt ihn daran? Was erhofft er sich davon? Was möchte er als Abenteurer erleben, erreichen oder herausfinden?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>8. Warum ist dein Charakter Teil der Gilde?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_8"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div>Warum arbeitet er lieber mit anderen, statt auf eigene Faust zu reisen? Was bietet ihm die Gilde, das er allein nicht hätte? Was erwartet er von der Gilde und seinen Gefährten?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>9. Was will dein Charakter erreichen?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_9"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was ist sein konkretes Ziel? Was ist sein größeres, langfristiges Ziel? Warum ist ihm dieses Ziel wichtig? Woran würde er erkennen, dass er es erreicht hat?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>10. Wie steht dein Charakter zu anderen Völkern und Kulturen?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_10"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es Völker oder Kulturen, denen er besonders positiv oder negativ gegenübersteht? Welche Erfahrungen hat er mit ihnen gemacht? Was bewundert oder lehnt er an anderen Lebensweisen ab? Wie wichtig sind ihm die Bräuche seiner eigenen Kultur?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>11. Welche Vorurteile hat dein Charakter, und woher kommen sie?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_11"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es Völker, Kulturen oder Gruppen, denen er mit Vorurteilen begegnet? Was glaubt er über sie, obwohl er nicht sicher weiß, ob es stimmt? Hat er schon einmal erlebt, dass eines seiner Vorurteile nicht zutraf?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>12. Unter welchen Umständen würde dein Charakter stehlen oder lügen?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_12"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Würde er es aus Geldnot tun, um sich selbst zu schützen, um einem Freund oder Fremden zu helfen, für den eigenen Vorteil oder wenn er sicher wäre, nicht erwischt zu werden? Wie unterschiedlich sind seine Grenzen beim Stehlen und Lügen?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>13. Welche Grenze würde dein Charakter niemals überschreiten?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_13"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es etwas, das er selbst unter größtem Druck niemals tun würde – auch dann nicht, wenn er dadurch einen großen Vorteil hätte oder jemanden retten könnte?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>14. Wovor hat dein Charakter Angst?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_14"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welche konkreten Dinge, Situationen oder Folgen fürchtet er? Was ist seine größte Angst?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>15. Was ist ein wunder Punkt deines Charakters?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_15"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was kann ihn besonders verletzen, beschämen oder emotional aus dem Gleichgewicht bringen?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>16. Was tut dein Charakter, wenn niemand hinsieht?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_16"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was tut, denkt oder macht er, wenn er sich nicht darum kümmern muss, wie andere ihn wahrnehmen?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>17. Wie leicht vertraut dein Charakter anderen?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_17"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wie verhält er sich gegenüber jemandem, den er gerade erst kennengelernt hat? Was muss jemand tun, um sein Vertrauen zu gewinnen? Was kann es zerstören? Wie schwer ist es, nach einem Vertrauensbruch wieder zu vertrauen? Wie verhält er sich, wenn eine fremde Person seine Hilfe braucht?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>18. Für wen oder was würde dein Charakter große persönliche Risiken eingehen?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_18"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div>Für welche Person, Gruppe, Sache oder welches Ideal wäre er bereit, sich selbst in Gefahr zu bringen oder einen hohen Preis zu zahlen?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>19. Gibt es etwas, das dein Charakter vor anderen verbirgt?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_19"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was verbirgt er? Vor wem? Warum soll es niemand erfahren? Was würde passieren, wenn es herauskäme?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>20. Hat dein Charakter sich Feinde gemacht?</span> <span class="q-badge required">Pflicht</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="core_20"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wer ist sein Feind? Warum sind sie zu Feinden geworden? Was will diese Person von deinem Charakter? Weiß er, wo sich der Feind aufhält?</div>
+        </div>
+</section><h2 class="section-title">II. Freiwillige Vertiefung</h2>
+<section class="question">
+  <h3 class="question-title"><span>21. Worauf ist dein Charakter stolz, und wofür schämt er sich?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_1"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was würde er selbst als Erfolg oder als etwas Besonderes ansehen? Gibt es etwas, das er bereut oder lieber ungeschehen machen würde?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>22. Was wäre dein Charakter geworden, wenn er niemals Abenteurer geworden wäre?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_2"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welches andere Leben hätte zu ihm gepasst?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>23. Was ist der größte Wunsch deines Charakters, und was möchte er in seinem Leben noch erleben?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_3"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es etwas, das er unbedingt sehen, ausprobieren oder erfahren möchte, auch wenn es nicht zu seinem aktuellen Ziel gehört?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>24. Welche Rolle spielen Götter und Religion im Leben deines Charakters?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_4"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welche Bedeutung haben Götter oder Religion für ihn? Gehört er einer bestimmten Religion oder einem Kult an? Haben persönliche Erfahrungen seine Haltung geprägt? Hat sie sich im Laufe seines Lebens verändert?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>25. Wie steht dein Charakter zu Magie?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_5"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welche Erfahrungen hat er mit Magie oder magischen Wesen gemacht? Wie fühlt er sich in ihrer Gegenwart? Was hält er von Menschen, die Magie wirken? Würde er selbst Magie erlernen oder nutzen?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>26. Was tut dein Charakter, wenn Gesetz und Gerechtigkeit nicht dasselbe sind?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_6"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wie würde er bei einem offensichtlich ungerechten Gesetz handeln? Was tut er bei Machtmissbrauch durch eine Autorität, einem geschützten Schuldigen oder wenn er durch einen Gesetzesbruch einem Unschuldigen helfen könnte?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>27. Wie steht dein Charakter zu Gewalt?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_7"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Würde er Gewalt einsetzen, um seinen Willen durchzusetzen? Jemanden verletzen, um Informationen zu bekommen? Einen Gegner töten, wenn es nicht notwendig wäre? Einen besiegten oder wehrlosen Gegner töten?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>28. Was hält deinen Charakter nachts wach?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_8"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welche Sorgen, Erinnerungen, ungelösten Probleme oder verdrängten Gedanken lassen ihn nicht zur Ruhe kommen?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>29. Wann ist dein Charakter besonders gut oder schlecht gelaunt – und was bringt ihn dazu, die Beherrschung zu verlieren?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_9"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was bringt ihn zum Aufblühen? Was verdirbt ihm die Stimmung? Welche Situationen, Worte oder Verhaltensweisen bringen ihn an seine Grenze?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>30. Was macht deinen Charakter neugierig?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_10"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welche Menschen, Orte, Themen, Geheimnisse oder Dinge ziehen seine Aufmerksamkeit besonders auf sich?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>31. Wie geht dein Charakter mit Lob, Misserfolg und unerwarteten Wendungen um?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_11"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Wie reagiert er auf Anerkennung? Auf Niederlagen? Was macht er, wenn etwas völlig anders läuft als geplant?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>32. Welche Eigenschaften beschreiben deinen Charakter am besten?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_12"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Du kannst einige Eigenschaften auswählen und bei Bedarf eigene ergänzen. Die Auswahl soll dir eher als Denkanstoß dienen als eine vollständige Definition zu sein.</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>33. Welche Angewohnheiten oder Eigenheiten hat dein Charakter?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_13"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es kleine Macken, Rituale oder wiederkehrende Verhaltensweisen?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>34. Was kann dein Charakter überhaupt nicht?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_14"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es etwas, worin er besonders schlecht ist, das ihm schwerfällt oder das ihm einfach nicht liegt?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>35. Was isst und trinkt dein Charakter gerne?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_15"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was mag er besonders oder überhaupt nicht? Wie steht er zu Alkohol und wie geht er damit um?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>36. Was macht dein Charakter in seiner Freizeit?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_16"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Womit beschäftigt er sich, wenn gerade kein Abenteuer ansteht?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>37. Was findet dein Charakter schön?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_17"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welche Menschen, Orte, Dinge, Kunstformen oder Situationen faszinieren, beeindrucken oder berühren ihn?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>38. Wie steht dein Charakter zu Tieren?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_18"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Welche Tiere mag oder fürchtet er? Wie behandelt er Tiere, die ihm nichts nützen? Hatte er schon einmal ein Tier als Gefährten oder Haustier?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>39. Gibt es etwas, womit man deinen Charakter erpressen könnte?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_19"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Was könnte man gegen ihn in der Hand haben? Wer könnte davon wissen? Was würde dein Charakter tun, wenn jemand ihn damit erpresst?</div>
+        </div>
+</section>
+<section class="question">
+  <h3 class="question-title"><span>40. Gibt es etwas Wichtiges über deinen Charakter, das bisher nicht gefragt wurde?</span> <span class="q-badge optional">Vertiefung</span><button class="helpbtn" type="button" aria-label="Denkanstöße" onclick="toggleHelp(this)">i</button></h3>
+  <div class="answer-row"><textarea class="field" data-key="opt_20"></textarea></div>
+  
+        <div class="helpbox">
+          <button class="helpclose" type="button" aria-label="Hinweis schließen" onclick="this.parentElement.classList.remove('open')">×</button>
+          <strong>Ideen</strong>
+          <div class="idea-text">Gibt es etwas, das für deinen Charakter wichtig ist, aber in keine der bisherigen Fragen passt?</div>
+        </div>
+</section>
+<div class="note"><strong>Hinweis:</strong> Die Antworten werden automatisch in diesem Browser gespeichert. Mit „Einreichen“ kannst du zusätzlich eine Datei mit deinen Antworten sichern und später wieder laden.</div>
+<div class="footer-note">Charakterfragebogen · Für das Dessarin Banner</div>
+</main>
+<script>
+const STORAGE_KEY='dessarin-held-v2-verdichtet';
+const IS_EXPORTED=false;
+
+function fields(){
+  return [...document.querySelectorAll('[data-key]')];
+}
+function persist(){
+  const data={};
+  fields().forEach(el=>{
+    if(el.type==='radio'){
+      if(el.checked) data[el.dataset.key]=el.value;
+    }else if(el.type==='checkbox'){
+      data[el.dataset.key]=el.checked;
+    }else{
+      data[el.dataset.key]=el.value;
+    }
+  });
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+  const s=document.getElementById('status');
+  if(s) s.textContent='Gespeichert – '+new Date().toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+}
+function restore(){
+  if(IS_EXPORTED) return;
+  try{
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+    fields().forEach(el=>{
+      if(data[el.dataset.key]===undefined) return;
+      if(el.type==='radio') el.checked=(el.value===data[el.dataset.key]);
+      else if(el.type==='checkbox') el.checked=!!data[el.dataset.key];
+      else el.value=data[el.dataset.key];
+    });
+    document.getElementById('currentDR').textContent=new Date().getFullYear()-530;
+    updateBirthAge(); updateHeight(); updateWeight();
+    if(Object.keys(data).length){
+      document.getElementById('status').textContent='Gespeicherte Antworten geladen.';
+    }
+  }catch(e){}
+}
+function toggleHelp(btn){
+  const box=btn.closest('.question').querySelector('.helpbox');
+  document.querySelectorAll('.helpbox.open').forEach(x=>{if(x!==box)x.classList.remove('open')});
+  box.classList.toggle('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.question')) document.querySelectorAll('.helpbox.open').forEach(x=>x.classList.remove('open'));
+});
+function updateBirthAge(){
+  const input=document.getElementById('birthDate');
+  const result=document.getElementById('birthResult');
+  const currentDR=new Date().getFullYear()-530;
+  document.getElementById('currentDR').textContent=currentDR;
+  const value=input.value.trim();
+  if(!value){result.textContent='Aktuelles Alter: –';return;}
+  const m=value.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})\s*(?:DR)?$/i);
+  if(!m){result.textContent='Bitte als TT.MM.JJJJ DR eingeben.';return;}
+  const day=+m[1], month=+m[2], birthDR=+m[3];
+  const now=new Date();
+  let age=currentDR-birthDR;
+  if(month>now.getMonth()+1 || (month===now.getMonth()+1 && day>now.getDate())) age--;
+  if(age<0 || month<1 || month>12 || day<1 || day>31){
+    result.textContent='Bitte ein gültiges Geburtsdatum eingeben.';return;
+  }
+  result.textContent=`Aktuelles Alter: ${age} Jahre`;
+}
+function updateHeight(){
+  const value=document.getElementById('height').value.trim().replace(',','.');
+  const out=document.getElementById('heightImperial');
+  const m=value.match(/(\d+(?:\.\d+)?)\s*m?/i);
+  if(!m){out.textContent='–';return;}
+  const cm=+m[1]*100;
+  if(!Number.isFinite(cm)||cm<30||cm>300){out.textContent='–';return;}
+  const total=cm/2.54;
+  const feet=Math.floor(total/12);
+  let inches=Math.round(total-feet*12);
+  if(inches===12){out.textContent=`${feet+1}' 0"`;}else out.textContent=`${feet}' ${inches}"`;
+}
+function updateWeight(){
+  const value=document.getElementById('weight').value.trim().replace(',','.');
+  const out=document.getElementById('weightImperial');
+  const m=value.match(/(\d+(?:\.\d+)?)\s*(?:kg)?/i);
+  if(!m){out.textContent='–';return;}
+  const kg=+m[1];
+  if(!Number.isFinite(kg)||kg<=0||kg>1000){out.textContent='–';return;}
+  out.textContent=`${Math.round(kg*2.2046226218)} lb`;
+}
+function saveFile(){
+  persist();
+
+  const nameField=document.querySelector('[data-key="name"]');
+  const discordField=document.querySelector('[data-key="discord"]');
+  const characterName=(nameField?.value||'Charakter').trim()
+    .replace(/[^a-zA-Z0-9äöüÄÖÜß _-]/g,'')
+    .replace(/\s+/g,'_') || 'Charakter';
+  const discordName=(discordField?.value||'Spieler').trim()
+    .replace(/[^a-zA-Z0-9äöüÄÖÜß _-]/g,'')
+    .replace(/\s+/g,'_') || 'Spieler';
+
+  const clone=document.documentElement.cloneNode(true);
+
+  // Embed the current values directly into the HTML.
+  const sourceFields=fields();
+  const clonedFields=[...clone.querySelectorAll('[data-key]')];
+
+  sourceFields.forEach((source,index)=>{
+    const target=clonedFields[index];
+    if(!target)return;
+
+    if(source.type==='radio' || source.type==='checkbox'){
+      if(source.checked) target.setAttribute('checked','checked');
+      else target.removeAttribute('checked');
+    }else{
+      target.setAttribute('value',source.value);
+      if(target.tagName.toLowerCase()==='textarea') target.textContent=source.value;
+    }
+  });
+
+  // Keep calculated display values visible in the saved copy.
+  const currentDR=clone.querySelector('#currentDR');
+  const birthResult=clone.querySelector('#birthResult');
+  const heightImperial=clone.querySelector('#heightImperial');
+  const weightImperial=clone.querySelector('#weightImperial');
+
+  if(currentDR) currentDR.textContent=document.getElementById('currentDR').textContent;
+  if(birthResult) birthResult.textContent=document.getElementById('birthResult').textContent;
+  if(heightImperial) heightImperial.textContent=document.getElementById('heightImperial').textContent;
+  if(weightImperial) weightImperial.textContent=document.getElementById('weightImperial').textContent;
+
+  // Mark the exported document so it does not overwrite the embedded answers
+  // with whatever happens to be stored in the browser where it is opened.
+  clone.querySelectorAll('script').forEach(script=>{
+    if(script.textContent.includes("const IS_EXPORTED=false;")){
+      script.textContent=script.textContent.replace(
+        "const IS_EXPORTED=false;",
+        "const IS_EXPORTED=true;"
+      );
+    }
+  });
+
+  // Update the status in the exported copy.
+  const status=clone.querySelector('#status');
+  if(status) status.textContent='Ausgefüllte Version gespeichert.';
+
+  const html='<!doctype html>\n'+clone.outerHTML;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=discordName+'_'+characterName+'.html';
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function resetForm(){
+  if(!confirm('Wirklich alle Antworten in diesem Browser löschen?')) return;
+  fields().forEach(el=>{if(el.type==='checkbox'||el.type==='radio')el.checked=false;else el.value=''});
+  localStorage.removeItem(STORAGE_KEY);
+  updateBirthAge();updateHeight();updateWeight();
+  document.getElementById('status').textContent='Antworten gelöscht.';
+}
+fields().forEach(el=>el.addEventListener('input',persist));
+document.getElementById('birthDate').addEventListener('input',updateBirthAge);
+document.getElementById('height').addEventListener('input',updateHeight);
+document.getElementById('weight').addEventListener('input',updateWeight);
+document.querySelectorAll('input[type=checkbox],input[type=radio]').forEach(el=>el.addEventListener('change',persist));
+restore();
+</script>
+</body>
+</html>
