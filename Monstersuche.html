@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V15</title>
+<title>DnD Monster Database – V16</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -872,7 +872,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V15</h1>
+      <h1>DnD Monster Database – V16</h1>
     </div>
 
     <table>
@@ -965,6 +965,7 @@ tbody tr:hover{
 
     </div>
 
+
     <div class="filter-group">
 
       <label>XP</label>
@@ -989,6 +990,7 @@ tbody tr:hover{
 
     </div>
 
+
     <div class="filter-group">
 
       <button
@@ -1008,6 +1010,7 @@ tbody tr:hover{
       </button>
 
     </div>
+
 
     <div class="filter-group">
 
@@ -1032,6 +1035,7 @@ tbody tr:hover{
 
     </div>
 
+
     <div class="filter-group">
 
       <label>
@@ -1044,6 +1048,7 @@ tbody tr:hover{
       ></div>
 
     </div>
+
 
     <div class="filter-group">
 
@@ -1067,6 +1072,7 @@ tbody tr:hover{
 
     </div>
 
+
     <div>
       Suchergebnisse:
       <span id="resultCount">0</span>
@@ -1075,6 +1081,11 @@ tbody tr:hover{
   </div>
 
 </div>
+
+
+<!-- =======================================================
+     INFO MODAL
+======================================================= -->
 
 <div
   id="infoModal"
@@ -1288,25 +1299,21 @@ let sortDirection =
 function buildCRDropdowns(){
 
   const minSelect =
-    document.getElementById(
-      "crMin"
-    );
+    document.getElementById("crMin");
 
   const maxSelect =
-    document.getElementById(
-      "crMax"
-    );
+    document.getElementById("crMax");
+
 
   minSelect.innerHTML = "";
   maxSelect.innerHTML = "";
+
 
   CR_VALUES.forEach(
     cr => {
 
       const minOption =
-        document.createElement(
-          "option"
-        );
+        document.createElement("option");
 
       minOption.value =
         cr.value === null
@@ -1322,9 +1329,7 @@ function buildCRDropdowns(){
 
 
       const maxOption =
-        document.createElement(
-          "option"
-        );
+        document.createElement("option");
 
       maxOption.value =
         cr.value === null
@@ -1341,11 +1346,9 @@ function buildCRDropdowns(){
     }
   );
 
-  minSelect.value =
-    "";
 
-  maxSelect.value =
-    "";
+  minSelect.value = "";
+  maxSelect.value = "";
 
 }
 
@@ -1363,9 +1366,7 @@ async function loadSheet(){
 
 
     const response =
-      await fetch(
-        url
-      );
+      await fetch(url);
 
 
     if(!response.ok){
@@ -1407,12 +1408,10 @@ async function loadSheet(){
               name:
                 cells[0]?.v ?? "",
 
-
               link:
                 getCellLink(
                   cells[1]
                 ),
-
 
               cr:
                 parseCR(
@@ -1420,13 +1419,11 @@ async function loadSheet(){
                   cells[2]?.v
                 ),
 
-
               xp:
                 parseNumber(
                   cells[3]?.f ??
                   cells[3]?.v
                 ),
-
 
               unique:
                 String(
@@ -1435,9 +1432,7 @@ async function loadSheet(){
                   ""
                 ).trim(),
 
-
               habitats:{},
-
 
               climates:{}
 
@@ -1516,7 +1511,9 @@ async function loadSheet(){
       <tr>
 
         <td colspan="7">
+
           Fehler beim Laden der Monsterdaten.
+
         </td>
 
       </tr>
@@ -1688,7 +1685,9 @@ function parseCR(value){
     )
   ){
 
-    return unicodeFractions[text];
+    return unicodeFractions[
+      text
+    ];
 
   }
 
@@ -1727,30 +1726,22 @@ function formatCR(value){
 
 
   if(value === 0){
-
     return "0";
-
   }
 
 
   if(value === 0.125){
-
     return "1/8";
-
   }
 
 
   if(value === 0.25){
-
     return "1/4";
-
   }
 
 
   if(value === 0.5){
-
     return "1/2";
-
   }
 
 
@@ -1823,32 +1814,22 @@ function buildHabitatUI(){
     habitat => {
 
       const row =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       row.className =
         "region-row";
 
 
       const name =
-        document.createElement(
-          "div"
-        );
-
+        document.createElement("div");
 
       name.className =
         "region-name";
 
-
       name.textContent =
         habitat.label;
 
-
-      row.appendChild(
-        name
-      );
+      row.appendChild(name);
 
 
       if(
@@ -1859,10 +1840,7 @@ function buildHabitatUI(){
       ){
 
         const stars =
-          document.createElement(
-            "div"
-          );
-
+          document.createElement("div");
 
         stars.className =
           "region-stars";
@@ -1874,24 +1852,17 @@ function buildHabitatUI(){
         );
 
 
-        row.appendChild(
-          stars
-        );
+        row.appendChild(stars);
 
 
         const remove =
-          document.createElement(
-            "button"
-          );
-
+          document.createElement("button");
 
         remove.className =
           "region-remove";
 
-
         remove.textContent =
           "×";
-
 
         remove.title =
           "Aus Region entfernen";
@@ -1905,7 +1876,6 @@ function buildHabitatUI(){
               habitat.label
             ];
 
-
             buildHabitatUI();
 
             filterMonsters();
@@ -1914,21 +1884,15 @@ function buildHabitatUI(){
         );
 
 
-        row.appendChild(
-          remove
-        );
+        row.appendChild(remove);
 
       }else{
 
         const selectButton =
-          document.createElement(
-            "button"
-          );
-
+          document.createElement("button");
 
         selectButton.className =
           "region-select";
-
 
         selectButton.textContent =
           "Auswählen";
@@ -1941,7 +1905,6 @@ function buildHabitatUI(){
             regionWeights[
               habitat.label
             ] = 3;
-
 
             buildHabitatUI();
 
@@ -1958,9 +1921,7 @@ function buildHabitatUI(){
       }
 
 
-      container.appendChild(
-        row
-      );
+      container.appendChild(row);
 
     }
   );
@@ -1993,9 +1954,7 @@ function buildRegionStars(
   ){
 
     const star =
-      document.createElement(
-        "button"
-      );
+      document.createElement("button");
 
 
     star.className =
@@ -2008,9 +1967,7 @@ function buildRegionStars(
         : "☆";
 
 
-    if(
-      i <= current
-    ){
+    if(i <= current){
 
       star.classList.add(
         "active"
@@ -2030,7 +1987,6 @@ function buildRegionStars(
         regionWeights[
           habitat
         ] = i;
-
 
         buildHabitatUI();
 
@@ -2140,9 +2096,7 @@ function buildClimateUI(){
     climate => {
 
       const button =
-        document.createElement(
-          "button"
-        );
+        document.createElement("button");
 
 
       button.type =
@@ -2159,7 +2113,6 @@ function buildClimateUI(){
 
           selectedClimate =
             climate.label;
-
 
           updateClimateUI();
 
@@ -2233,10 +2186,13 @@ document
 
 
 /* =========================================================
-   HABITAT SCORE
+   SCORE-BERECHNUNG
 ========================================================= */
 
-function getHabitatScore(monster){
+function calculateScores(monster){
+
+  let habitatScore = null;
+
 
   const habitats =
     Object.keys(
@@ -2245,150 +2201,132 @@ function getHabitatScore(monster){
 
 
   if(
-    habitats.length === 0
+    habitats.length > 0
   ){
 
-    return null;
-
-  }
-
-
-  let weightedScore =
-    0;
+    let weightedScore = 0;
+    let totalWeight = 0;
 
 
-  let totalWeight =
-    0;
+    habitats.forEach(
+      habitat => {
+
+        const monsterScore =
+          monster.habitats[
+            habitat
+          ];
 
 
-  habitats.forEach(
-    habitat => {
+        if(
+          monsterScore === null ||
+          monsterScore === undefined
+        ){
 
-      const monsterScore =
-        monster.habitats[
-          habitat
-        ];
+          return;
+
+        }
 
 
-      if(
-        monsterScore === null ||
-        monsterScore === undefined
-      ){
+        const regionWeight =
+          regionWeights[
+            habitat
+          ];
 
-        return;
+
+        weightedScore +=
+          monsterScore *
+          regionWeight;
+
+
+        totalWeight +=
+          regionWeight;
 
       }
+    );
 
 
-      const regionWeight =
-        regionWeights[
-          habitat
-        ];
+    if(
+      totalWeight > 0
+    ){
 
-
-      weightedScore +=
-        monsterScore *
-        regionWeight;
-
-
-      totalWeight +=
-        regionWeight;
+      habitatScore =
+        weightedScore /
+        totalWeight;
 
     }
-  );
-
-
-  if(
-    totalWeight === 0
-  ){
-
-    return null;
 
   }
 
 
-  return (
-    weightedScore /
-    totalWeight
-  );
+  const climateScore =
+    selectedClimate
+      ? (
+          monster.climates[
+            selectedClimate
+          ] ?? null
+        )
+      : null;
+
+
+  let totalScore = null;
+
+
+  if(
+    habitatScore === null &&
+    climateScore === null
+  ){
+
+    totalScore = null;
+
+  }else if(
+    habitatScore === null
+  ){
+
+    totalScore =
+      climateScore;
+
+  }else if(
+    climateScore === null
+  ){
+
+    totalScore =
+      habitatScore;
+
+  }else{
+
+    totalScore =
+      habitatScore * (2 / 3) +
+      climateScore * (1 / 3);
+
+  }
+
+
+  return {
+    habitat: habitatScore,
+    climate: climateScore,
+    total: totalScore
+  };
 
 }
 
 
 /* =========================================================
-   KLIMA SCORE
+   SCORE FORMAT
 ========================================================= */
 
-function getClimateScore(monster){
+function formatScore(score){
 
   if(
-    !selectedClimate
+    score === null ||
+    score === undefined
   ){
 
-    return null;
+    return "—";
 
   }
 
 
-  return (
-    monster.climates[
-      selectedClimate
-    ] ?? null
-  );
-
-}
-
-
-/* =========================================================
-   GESAMT
-========================================================= */
-
-function getTotalScore(monster){
-
-  const habitat =
-    getHabitatScore(
-      monster
-    );
-
-
-  const climate =
-    getClimateScore(
-      monster
-    );
-
-
-  if(
-    habitat === null &&
-    climate === null
-  ){
-
-    return null;
-
-  }
-
-
-  if(
-    habitat === null
-  ){
-
-    return climate;
-
-  }
-
-
-  if(
-    climate === null
-  ){
-
-    return habitat;
-
-  }
-
-
-  return (
-    habitat * (2 / 3) +
-    climate * (1 / 3)
-  );
+  return score.toFixed(2);
 
 }
 
@@ -2435,7 +2373,9 @@ function getStars(score){
    DETAILWERTE
 ========================================================= */
 
-function renderHabitatDetails(monster){
+function renderHabitatDetails(
+  monster
+){
 
   const details = [];
 
@@ -2491,29 +2431,6 @@ function renderHabitatDetails(monster){
 
 
 /* =========================================================
-   SCORE FORMAT
-========================================================= */
-
-function formatScore(score){
-
-  if(
-    score === null ||
-    score === undefined
-  ){
-
-    return "—";
-
-  }
-
-
-  return score.toFixed(
-    2
-  );
-
-}
-
-
-/* =========================================================
    FILTER
 ========================================================= */
 
@@ -2544,17 +2461,13 @@ function filterMonsters(){
   const crMin =
     crMinValue === ""
       ? null
-      : Number(
-          crMinValue
-        );
+      : Number(crMinValue);
 
 
   const crMax =
     crMaxValue === ""
       ? null
-      : Number(
-          crMaxValue
-        );
+      : Number(crMaxValue);
 
 
   const xpMin =
@@ -2573,79 +2486,100 @@ function filterMonsters(){
     );
 
 
-  let filtered =
-    monsters.filter(
-      monster => {
+  const isMobileView =
+    window.innerWidth <= 700;
 
 
-        if(
-          !showUnique &&
-          monster.unique === "Ja"
-        ){
-
-          return false;
-
-        }
+  const filtered = [];
 
 
-        if(
-          crMin !== null &&
-          monster.cr < crMin
-        ){
+  for(
+    let i = 0;
+    i < monsters.length;
+    i++
+  ){
 
-          return false;
-
-        }
-
-
-        if(
-          crMax !== null &&
-          monster.cr > crMax
-        ){
-
-          return false;
-
-        }
+    const monster =
+      monsters[i];
 
 
-        if(
-          !isNaN(xpMin) &&
-          monster.xp < xpMin
-        ){
+    if(
+      !showUnique &&
+      monster.unique === "Ja"
+    ){
 
-          return false;
+      continue;
 
-        }
-
-
-        if(
-          !isNaN(xpMax) &&
-          monster.xp > xpMax
-        ){
-
-          return false;
-
-        }
+    }
 
 
-        if(
-          search &&
-          !monster.name
-            .toLowerCase()
-            .includes(
-              search
-            )
-        ){
+    if(
+      crMin !== null &&
+      monster.cr < crMin
+    ){
 
-          return false;
+      continue;
 
-        }
+    }
 
 
-        return true;
+    if(
+      crMax !== null &&
+      monster.cr > crMax
+    ){
 
-      }
-    );
+      continue;
+
+    }
+
+
+    if(
+      !isNaN(xpMin) &&
+      monster.xp < xpMin
+    ){
+
+      continue;
+
+    }
+
+
+    if(
+      !isNaN(xpMax) &&
+      monster.xp > xpMax
+    ){
+
+      continue;
+
+    }
+
+
+    if(
+      search &&
+      !monster.name
+        .toLowerCase()
+        .includes(search)
+    ){
+
+      continue;
+
+    }
+
+
+    const scores =
+      calculateScores(
+        monster
+      );
+
+
+    filtered.push({
+      monster,
+      index:i,
+      habitat:scores.habitat,
+      climate:scores.climate,
+      total:scores.total
+    });
+
+  }
 
 
   filtered.sort(
@@ -2655,75 +2589,52 @@ function filterMonsters(){
       let y;
 
 
-      switch(
-        sortColumn
-      ){
+      switch(sortColumn){
 
         case "cr":
 
-          x = a.cr;
-          y = b.cr;
+          x = a.monster.cr;
+          y = b.monster.cr;
 
           break;
 
 
         case "xp":
 
-          x = a.xp;
-          y = b.xp;
+          x = a.monster.xp;
+          y = b.monster.xp;
 
           break;
 
 
         case "total":
 
-          x =
-            getTotalScore(
-              a
-            );
-
-          y =
-            getTotalScore(
-              b
-            );
+          x = a.total;
+          y = b.total;
 
           break;
 
 
         case "habitat":
 
-          x =
-            getHabitatScore(
-              a
-            );
-
-          y =
-            getHabitatScore(
-              b
-            );
+          x = a.habitat;
+          y = b.habitat;
 
           break;
 
 
         case "climate":
 
-          x =
-            getClimateScore(
-              a
-            );
-
-          y =
-            getClimateScore(
-              b
-            );
+          x = a.climate;
+          y = b.climate;
 
           break;
 
 
         default:
 
-          x = a.name;
-          y = b.name;
+          x = a.monster.name;
+          y = b.monster.name;
 
       }
 
@@ -2752,18 +2663,13 @@ function filterMonsters(){
         typeof x === "string"
       ){
 
-        x =
-          x.toLowerCase();
-
-        y =
-          y.toLowerCase();
+        x = x.toLowerCase();
+        y = y.toLowerCase();
 
       }
 
 
-      if(
-        x < y
-      ){
+      if(x < y){
 
         return sortDirection === "asc"
           ? -1
@@ -2772,9 +2678,7 @@ function filterMonsters(){
       }
 
 
-      if(
-        x > y
-      ){
+      if(x > y){
 
         return sortDirection === "asc"
           ? 1
@@ -2789,14 +2693,19 @@ function filterMonsters(){
   );
 
 
-  renderTable(
-    filtered
-  );
+  if(isMobileView){
 
+    renderMobileCards(
+      filtered
+    );
 
-  renderMobileCards(
-    filtered
-  );
+  }else{
+
+    renderTable(
+      filtered
+    );
+
+  }
 
 
   document
@@ -2821,108 +2730,92 @@ function renderTable(data){
     );
 
 
-  body.innerHTML = "";
+  let html = "";
 
 
-  data.forEach(
-    monster => {
+  for(
+    let i = 0;
+    i < data.length;
+    i++
+  ){
 
-      const tr =
-        document.createElement(
-          "tr"
-        );
+    const item =
+      data[i];
 
-
-      const uniqueClass =
-        monster.unique === "Ja"
-          ? "unique-yes"
-          : "unique-no";
+    const monster =
+      item.monster;
 
 
-      const nameHTML =
-        monster.link
-
-          ? `
-
-            <div class="monster-cell">
-
-              <a
-                class="monster-link"
-                href="${escapeAttribute(
-                  monster.link
-                )}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                ${escapeHTML(
-                  monster.name
-                )}
-              </a>
-
-              <button
-                type="button"
-                class="info-button"
-                data-monster-index="${monsters.indexOf(
-                  monster
-                )}"
-              >
-                Info
-              </button>
-
-            </div>
-
-          `
-
-          : `
-
-            <div class="monster-cell">
-
-              <span>
-                ${escapeHTML(
-                  monster.name
-                )}
-              </span>
-
-              <button
-                type="button"
-                class="info-button"
-                data-monster-index="${monsters.indexOf(
-                  monster
-                )}"
-              >
-                Info
-              </button>
-
-            </div>
-
-          `;
+    const uniqueClass =
+      monster.unique === "Ja"
+        ? "unique-yes"
+        : "unique-no";
 
 
-      const total =
-        getTotalScore(
-          monster
-        );
+    const details =
+      renderHabitatDetails(
+        monster
+      );
 
 
-      const habitat =
-        getHabitatScore(
-          monster
-        );
+    const nameHTML =
+      monster.link
+
+        ? `
+
+          <div class="monster-cell">
+
+            <a
+              class="monster-link"
+              href="${escapeAttribute(
+                monster.link
+              )}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ${escapeHTML(
+                monster.name
+              )}
+            </a>
+
+            <button
+              type="button"
+              class="info-button"
+              data-monster-index="${item.index}"
+            >
+              Info
+            </button>
+
+          </div>
+
+        `
+
+        : `
+
+          <div class="monster-cell">
+
+            <span>
+              ${escapeHTML(
+                monster.name
+              )}
+            </span>
+
+            <button
+              type="button"
+              class="info-button"
+              data-monster-index="${item.index}"
+            >
+              Info
+            </button>
+
+          </div>
+
+        `;
 
 
-      const climate =
-        getClimateScore(
-          monster
-        );
+    html += `
 
-
-      const details =
-        renderHabitatDetails(
-          monster
-        );
-
-
-      tr.innerHTML = `
+      <tr>
 
         <td>
           ${nameHTML}
@@ -2952,7 +2845,7 @@ function renderTable(data){
 
         <td class="score score-total">
           ${formatScore(
-            total
+            item.total
           )}
         </td>
 
@@ -2960,7 +2853,7 @@ function renderTable(data){
         <td class="score">
 
           ${formatScore(
-            habitat
+            item.habitat
           )}
 
           ${
@@ -2981,7 +2874,7 @@ function renderTable(data){
         <td class="score">
 
           ${formatScore(
-            climate
+            item.climate
           )}
 
           <div
@@ -2998,59 +2891,266 @@ function renderTable(data){
 
         </td>
 
-      `;
+      </tr>
+
+    `;
+
+  }
 
 
-      body.appendChild(
-        tr
+  body.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   MOBILE CARDS
+========================================================= */
+
+function renderMobileCards(data){
+
+  const container =
+    document.getElementById(
+      "mobileCards"
+    );
+
+
+  let html = "";
+
+
+  for(
+    let i = 0;
+    i < data.length;
+    i++
+  ){
+
+    const item =
+      data[i];
+
+    const monster =
+      item.monster;
+
+
+    const nameHTML =
+      monster.link
+
+        ? `
+
+          <a
+            href="${escapeAttribute(
+              monster.link
+            )}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ${escapeHTML(
+              monster.name
+            )}
+          </a>
+
+        `
+
+        : escapeHTML(
+            monster.name
+          );
+
+
+    html += `
+
+      <div class="mobile-card">
+
+        <div class="mobile-card-title">
+
+          ${nameHTML}
+
+          <button
+            type="button"
+            class="info-button"
+            data-monster-index="${item.index}"
+          >
+            Info
+          </button>
+
+        </div>
+
+
+        <div class="mobile-card-grid">
+
+          <div>
+
+            <div class="mobile-label">
+              CR
+            </div>
+
+            <div class="mobile-value">
+              ${formatCR(
+                monster.cr
+              )}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              XP
+            </div>
+
+            <div class="mobile-value">
+              ${monster.xp.toLocaleString(
+                "de-DE"
+              )}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              Einzigartig
+            </div>
+
+            <div class="mobile-value">
+              ${escapeHTML(
+                monster.unique || "-"
+              )}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              Gesamt
+            </div>
+
+            <div class="mobile-score">
+              ${formatScore(
+                item.total
+              )}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              Lebensraum
+            </div>
+
+            <div class="mobile-value">
+              ${formatScore(
+                item.habitat
+              )}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              Klima
+            </div>
+
+            <div class="mobile-value">
+              ${formatScore(
+                item.climate
+              )}
+              –
+              ${escapeHTML(
+                selectedClimate
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }
+
+
+  container.innerHTML =
+    html;
+
+}
+
+
+/* =========================================================
+   INFO BUTTON – EVENT DELEGATION
+========================================================= */
+
+document
+  .getElementById(
+    "tableBody"
+  )
+  .addEventListener(
+    "click",
+    event => {
+
+      const button =
+        event.target.closest(
+          ".info-button"
+        );
+
+
+      if(!button)
+        return;
+
+
+      const index =
+        Number(
+          button.dataset.monsterIndex
+        );
+
+
+      openInfoModal(
+        monsters[index]
       );
 
     }
   );
 
 
-  attachInfoButtons();
+document
+  .getElementById(
+    "mobileCards"
+  )
+  .addEventListener(
+    "click",
+    event => {
 
-}
-
-
-/* =========================================================
-   INFO BUTTONS
-========================================================= */
-
-function attachInfoButtons(){
-
-  document
-    .querySelectorAll(
-      ".info-button"
-    )
-    .forEach(
-      button => {
-
-        button.addEventListener(
-          "click",
-          ()=>{
-
-            const index =
-              Number(
-                button.dataset
-                  .monsterIndex
-              );
-
-
-            openInfoModal(
-              monsters[
-                index
-              ]
-            );
-
-          }
+      const button =
+        event.target.closest(
+          ".info-button"
         );
 
-      }
-    );
 
-}
+      if(!button)
+        return;
+
+
+      const index =
+        Number(
+          button.dataset.monsterIndex
+        );
+
+
+      openInfoModal(
+        monsters[index]
+      );
+
+    }
+  );
 
 
 /* =========================================================
@@ -3085,8 +3185,7 @@ function openInfoModal(monster){
     monster.name;
 
 
-  let habitatHTML =
-    "";
+  let habitatHTML = "";
 
 
   HABITATS.forEach(
@@ -3122,8 +3221,7 @@ function openInfoModal(monster){
   );
 
 
-  let climateHTML =
-    "";
+  let climateHTML = "";
 
 
   CLIMATES.forEach(
@@ -3159,20 +3257,8 @@ function openInfoModal(monster){
   );
 
 
-  const total =
-    getTotalScore(
-      monster
-    );
-
-
-  const habitat =
-    getHabitatScore(
-      monster
-    );
-
-
-  const climate =
-    getClimateScore(
+  const scores =
+    calculateScores(
       monster
     );
 
@@ -3221,7 +3307,7 @@ function openInfoModal(monster){
 
           <span class="profile-item-score">
             ${formatScore(
-              total
+              scores.total
             )}
           </span>
 
@@ -3236,7 +3322,7 @@ function openInfoModal(monster){
 
           <span class="profile-item-score">
             ${formatScore(
-              habitat
+              scores.habitat
             )}
           </span>
 
@@ -3253,7 +3339,7 @@ function openInfoModal(monster){
 
           <span class="profile-item-score">
             ${formatScore(
-              climate
+              scores.climate
             )}
           </span>
 
@@ -3385,216 +3471,6 @@ document.addEventListener(
 
   }
 );
-
-
-/* =========================================================
-   MOBILE CARDS
-========================================================= */
-
-function renderMobileCards(data){
-
-  const container =
-    document.getElementById(
-      "mobileCards"
-    );
-
-
-  container.innerHTML = "";
-
-
-  data.forEach(
-    monster => {
-
-      const card =
-        document.createElement(
-          "div"
-        );
-
-
-      card.className =
-        "mobile-card";
-
-
-      const nameHTML =
-        monster.link
-
-          ? `
-
-            <a
-              href="${escapeAttribute(
-                monster.link
-              )}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              ${escapeHTML(
-                monster.name
-              )}
-            </a>
-
-          `
-
-          : `
-
-            ${escapeHTML(
-              monster.name
-            )}
-
-          `;
-
-
-      const index =
-        monsters.indexOf(
-          monster
-        );
-
-
-      const total =
-        getTotalScore(
-          monster
-        );
-
-
-      const habitat =
-        getHabitatScore(
-          monster
-        );
-
-
-      const climate =
-        getClimateScore(
-          monster
-        );
-
-
-      card.innerHTML = `
-
-        <div class="mobile-card-title">
-
-          ${nameHTML}
-
-          <button
-            type="button"
-            class="info-button"
-            data-monster-index="${index}"
-          >
-            Info
-          </button>
-
-        </div>
-
-
-        <div class="mobile-card-grid">
-
-          <div>
-
-            <div class="mobile-label">
-              CR
-            </div>
-
-            <div class="mobile-value">
-              ${formatCR(
-                monster.cr
-              )}
-            </div>
-
-          </div>
-
-
-          <div>
-
-            <div class="mobile-label">
-              XP
-            </div>
-
-            <div class="mobile-value">
-              ${monster.xp.toLocaleString(
-                "de-DE"
-              )}
-            </div>
-
-          </div>
-
-
-          <div>
-
-            <div class="mobile-label">
-              Einzigartig
-            </div>
-
-            <div class="mobile-value">
-              ${escapeHTML(
-                monster.unique || "-"
-              )}
-            </div>
-
-          </div>
-
-
-          <div>
-
-            <div class="mobile-label">
-              Gesamt
-            </div>
-
-            <div class="mobile-score">
-              ${formatScore(
-                total
-              )}
-            </div>
-
-          </div>
-
-
-          <div>
-
-            <div class="mobile-label">
-              Lebensraum
-            </div>
-
-            <div class="mobile-value">
-              ${formatScore(
-                habitat
-              )}
-            </div>
-
-          </div>
-
-
-          <div>
-
-            <div class="mobile-label">
-              Klima
-            </div>
-
-            <div class="mobile-value">
-              ${formatScore(
-                climate
-              )}
-              –
-              ${escapeHTML(
-                selectedClimate
-              )}
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-
-      container.appendChild(
-        card
-      );
-
-    }
-  );
-
-
-  attachInfoButtons();
-
-}
 
 
 /* =========================================================
