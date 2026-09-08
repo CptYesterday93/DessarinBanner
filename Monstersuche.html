@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V05</title>
+<title>DnD Monster Database – V06</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -161,7 +161,7 @@ th,
 td{
   padding:12px;
   text-align:left;
-  white-space:nowrap;
+  vertical-align:top;
 
   border-bottom:1px solid #3f3f3f;
   border-right:1px solid rgba(255,255,255,0.06);
@@ -243,6 +243,30 @@ tbody tr:hover{
 
 .habitat-score{
   font-weight:bold;
+  min-width:220px;
+}
+
+.habitat-details{
+  margin-top:6px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:5px 12px;
+  font-size:12px;
+  line-height:1.35;
+  color:#d5d5d5;
+}
+
+.habitat-detail{
+  white-space:nowrap;
+}
+
+.habitat-name{
+  opacity:.85;
+}
+
+.habitat-stars{
+  letter-spacing:1px;
+  font-size:13px;
 }
 
 .search-row{
@@ -333,6 +357,12 @@ tbody tr:hover{
 .mobile-score{
   font-size:18px;
   font-weight:bold;
+}
+
+.mobile-habitat-details{
+  grid-column:1 / -1;
+  font-size:13px;
+  line-height:1.5;
 }
 
 #scrollTopBtn{
@@ -478,7 +508,7 @@ tbody tr:hover{
 
 <div class="topbar">
 
-<h1>DnD Monster Database – V05</h1>
+<h1>DnD Monster Database – V06</h1>
 
 </div>
 
@@ -549,7 +579,6 @@ Habitat-Fit <span class="sort-arrow"></span>
   type="number"
   id="xpMin"
   placeholder="von"
-  step="1"
   min="0"
 >
 
@@ -557,7 +586,6 @@ Habitat-Fit <span class="sort-arrow"></span>
   type="number"
   id="xpMax"
   placeholder="bis"
-  step="1"
   min="0"
 >
 
@@ -766,7 +794,7 @@ const HABITATS = [
   },
 
   {
-    label:"Vulkanisch",
+    label:"Vulkan",
     columnIndex:17
   },
 
@@ -783,26 +811,32 @@ const HABITATS = [
    ========================================================= */
 
 const CR_VALUES = [
+
   {
     label:"Alle",
     value:null
   },
+
   {
     label:"0",
     value:0
   },
+
   {
     label:"1/8",
     value:0.125
   },
+
   {
     label:"1/4",
     value:0.25
   },
+
   {
     label:"1/2",
     value:0.5
   }
+
 ];
 
 for(let i = 1; i <= 30; i++){
@@ -1130,10 +1164,6 @@ function parseCR(value){
       .replace(/^cr\s*/,"");
 
 
-  /*
-   * Normale Brüche.
-   */
-
   if(
     text.includes("/")
   ){
@@ -1170,10 +1200,6 @@ function parseCR(value){
   }
 
 
-  /*
-   * Unicode-Brüche.
-   */
-
   const unicodeFractions = {
 
     "⅛":0.125,
@@ -1197,10 +1223,7 @@ function parseCR(value){
 
   const number =
     Number(
-      text.replace(
-        ",",
-        "."
-      )
+      text.replace(",",".")
     );
 
 
@@ -1502,9 +1525,6 @@ function filterMonsters(){
         /*
          * Aktuelle Habitat-Logik:
          * OR
-         *
-         * Die genaue Auswertung wird
-         * später überarbeitet.
          */
 
         if(
@@ -1571,14 +1591,16 @@ function filterMonsters(){
 
         case "fit":
 
-          x = getHabitatFit(a);
-          y = getHabitatFit(b);
+          x =
+            getHabitatFit(
+              a
+            );
 
-          /*
-           * Monster ohne Fit kommen
-           * beim Absteigend-Sortieren
-           * nach hinten.
-           */
+          y =
+            getHabitatFit(
+              b
+            );
+
 
           if(x === null)
             x = -1;
@@ -1634,9 +1656,13 @@ function filterMonsters(){
   );
 
 
-  renderTable(filtered);
+  renderTable(
+    filtered
+  );
 
-  renderMobileCards(filtered);
+  renderMobileCards(
+    filtered
+  );
 
 
   document
@@ -1694,17 +1720,90 @@ function getHabitatFit(monster){
 
 
 /* =========================================================
-   FORMAT HABITAT FIT
+   STERNE
+   ========================================================= */
+
+function getStars(score){
+
+  const rounded =
+    Math.max(
+      0,
+      Math.min(
+        5,
+        Math.round(score)
+      )
+    );
+
+  return (
+    "★".repeat(rounded) +
+    "☆".repeat(5 - rounded)
+  );
+
+}
+
+
+/* =========================================================
+   AUSGEWÄHLTE HABITATE
+   ========================================================= */
+
+function renderHabitatDetails(monster){
+
+  if(
+    !selectedHabitats.length
+  ){
+
+    return "";
+
+  }
+
+
+  return selectedHabitats
+    .map(
+      habitat => {
+
+        const score =
+          monster.habitats[
+            habitat
+          ] ?? 0;
+
+
+        return `
+          <span class="habitat-detail">
+            <span class="habitat-name">
+              ${escapeHTML(habitat)}
+            </span>
+            <span class="habitat-stars">
+              ${getStars(score)}
+            </span>
+          </span>
+        `;
+
+      }
+    )
+    .join("");
+
+}
+
+
+/* =========================================================
+   HABITAT FIT FORMAT
    ========================================================= */
 
 function formatHabitatFit(monster){
 
   const fit =
-    getHabitatFit(monster);
+    getHabitatFit(
+      monster
+    );
 
 
-  if(fit === null)
+  if(
+    fit === null
+  ){
+
     return "-";
+
+  }
 
 
   return `${fit.toFixed(1)} / 5`;
@@ -1767,13 +1866,16 @@ function renderTable(data){
           ${nameHTML}
         </td>
 
+
         <td>
           ${formatCR(monster.cr)}
         </td>
 
+
         <td>
           ${monster.xp.toLocaleString("de-DE")}
         </td>
+
 
         <td class="${uniqueClass}">
           ${escapeHTML(
@@ -1781,8 +1883,23 @@ function renderTable(data){
           )}
         </td>
 
+
         <td class="habitat-score">
-          ${formatHabitatFit(monster)}
+
+          <strong>
+            ${formatHabitatFit(monster)}
+          </strong>
+
+          ${
+            selectedHabitats.length
+              ? `
+                <div class="habitat-details">
+                  ${renderHabitatDetails(monster)}
+                </div>
+              `
+              : ""
+          }
+
         </td>
 
       `;
@@ -1905,6 +2022,23 @@ function renderMobileCards(data){
             </div>
 
           </div>
+
+
+          ${
+            selectedHabitats.length
+              ? `
+                <div class="mobile-habitat-details">
+
+                  <div class="mobile-label">
+                    Ausgewählte Habitate
+                  </div>
+
+                  ${renderHabitatDetails(monster)}
+
+                </div>
+              `
+              : ""
+          }
 
         </div>
 
@@ -2094,14 +2228,10 @@ document
         );
 
 
-      const nameHeader =
-        document
-          .querySelector(
-            '[data-sort="name"]'
-          );
-
-
-      nameHeader
+      document
+        .querySelector(
+          '[data-sort="name"]'
+        )
         .querySelector(
           ".sort-arrow"
         )
@@ -2147,7 +2277,23 @@ document
           }else{
 
             sortColumn = column;
-            sortDirection = "asc";
+
+            /*
+             * Habitat-Fit startet immer
+             * beim ersten Klick absteigend.
+             */
+
+            if(
+              column === "fit"
+            ){
+
+              sortDirection = "desc";
+
+            }else{
+
+              sortDirection = "asc";
+
+            }
 
           }
 
