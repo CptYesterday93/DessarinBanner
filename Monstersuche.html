@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V04</title>
+<title>DnD Monster Database – V05</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -80,6 +80,7 @@ h1,h2{
 }
 
 input,
+select,
 button{
   width:100%;
   padding:11px;
@@ -91,6 +92,10 @@ button{
 }
 
 button{
+  cursor:pointer;
+}
+
+select{
   cursor:pointer;
 }
 
@@ -473,7 +478,7 @@ tbody tr:hover{
 
 <div class="topbar">
 
-<h1>DnD Monster Database – V04</h1>
+<h1>DnD Monster Database – V05</h1>
 
 </div>
 
@@ -498,12 +503,8 @@ XP <span class="sort-arrow"></span>
 Einzigartig? <span class="sort-arrow"></span>
 </th>
 
-<th>
-DDB Habitat
-</th>
-
-<th>
-Habitat-Fit
+<th class="sortable" data-sort="fit">
+Habitat-Fit <span class="sort-arrow"></span>
 </th>
 
 </tr>
@@ -517,9 +518,11 @@ Habitat-Fit
 
 </div>
 
+
 <div class="sidebar">
 
 <h2>Suchfilter</h2>
+
 
 <div class="filter-group">
 
@@ -527,23 +530,14 @@ Habitat-Fit
 
 <div class="range-grid">
 
-<input
-  type="number"
-  id="crMin"
-  placeholder="von"
-  step="0.125"
->
+<select id="crMin"></select>
 
-<input
-  type="number"
-  id="crMax"
-  placeholder="bis"
-  step="0.125"
->
+<select id="crMax"></select>
 
 </div>
 
 </div>
+
 
 <div class="filter-group">
 
@@ -555,17 +549,22 @@ Habitat-Fit
   type="number"
   id="xpMin"
   placeholder="von"
+  step="1"
+  min="0"
 >
 
 <input
   type="number"
   id="xpMax"
   placeholder="bis"
+  step="1"
+  min="0"
 >
 
 </div>
 
 </div>
+
 
 <div class="filter-group">
 
@@ -604,6 +603,7 @@ Nein
 
 </div>
 
+
 <div class="filter-group">
 
 <label>Lebensräume</label>
@@ -633,6 +633,7 @@ Keine
 
 </div>
 
+
 <div class="filter-group">
 
 <label>Suchbegriff</label>
@@ -653,6 +654,7 @@ Keine
 
 </div>
 
+
 <div>
 Suchergebnisse:
 <span id="resultCount">0</span>
@@ -661,6 +663,7 @@ Suchergebnisse:
 </div>
 
 </div>
+
 
 <script>
 
@@ -776,6 +779,43 @@ const HABITATS = [
 
 
 /* =========================================================
+   D&D CR-STUFEN
+   ========================================================= */
+
+const CR_VALUES = [
+  {
+    label:"Alle",
+    value:null
+  },
+  {
+    label:"0",
+    value:0
+  },
+  {
+    label:"1/8",
+    value:0.125
+  },
+  {
+    label:"1/4",
+    value:0.25
+  },
+  {
+    label:"1/2",
+    value:0.5
+  }
+];
+
+for(let i = 1; i <= 30; i++){
+
+  CR_VALUES.push({
+    label:String(i),
+    value:i
+  });
+
+}
+
+
+/* =========================================================
    STATE
    ========================================================= */
 
@@ -787,6 +827,65 @@ let uniqueState = "Alle";
 
 let sortColumn = "name";
 let sortDirection = "asc";
+
+
+/* =========================================================
+   CR DROPDOWNS
+   ========================================================= */
+
+function buildCRDropdowns(){
+
+  const minSelect =
+    document.getElementById("crMin");
+
+  const maxSelect =
+    document.getElementById("crMax");
+
+
+  minSelect.innerHTML = "";
+  maxSelect.innerHTML = "";
+
+
+  CR_VALUES.forEach(cr => {
+
+    const minOption =
+      document.createElement("option");
+
+    minOption.value =
+      cr.value === null
+        ? ""
+        : cr.value;
+
+    minOption.textContent =
+      cr.label;
+
+    minSelect.appendChild(
+      minOption
+    );
+
+
+    const maxOption =
+      document.createElement("option");
+
+    maxOption.value =
+      cr.value === null
+        ? ""
+        : cr.value;
+
+    maxOption.textContent =
+      cr.label;
+
+    maxSelect.appendChild(
+      maxOption
+    );
+
+  });
+
+
+  minSelect.value = "";
+  maxSelect.value = "";
+
+}
 
 
 /* =========================================================
@@ -802,6 +901,7 @@ async function loadSheet(){
 
     const response =
       await fetch(url);
+
 
     if(!response.ok){
 
@@ -828,7 +928,6 @@ async function loadSheet(){
 
     monsters =
       rows
-
         .map(row => {
 
           const cells =
@@ -840,22 +939,10 @@ async function loadSheet(){
             name:
               cells[0]?.v ?? "",
 
-
             link:
               getCellLink(
                 cells[1]
               ),
-
-
-            /*
-             * WICHTIG:
-             * Für CR wird zuerst der
-             * formatierte Wert .f verwendet.
-             * Dadurch bleibt z.B. "1/4"
-             * erhalten und wird nicht als
-             * Sheets-interne Zahl wie 46113
-             * interpretiert.
-             */
 
             cr:
               parseCR(
@@ -863,13 +950,11 @@ async function loadSheet(){
                 cells[2]?.v
               ),
 
-
             xp:
               parseNumber(
                 cells[3]?.f ??
                 cells[3]?.v
               ),
-
 
             unique:
               String(
@@ -877,13 +962,6 @@ async function loadSheet(){
                 cells[4]?.v ??
                 ""
               ).trim(),
-
-
-            ddbHabitat:
-              cells[5]?.f ??
-              cells[5]?.v ??
-              "",
-
 
             habitats:{}
 
@@ -912,7 +990,6 @@ async function loadSheet(){
           return monster;
 
         })
-
         .filter(
           monster =>
             monster.name
@@ -938,7 +1015,7 @@ async function loadSheet(){
 
       <tr>
 
-        <td colspan="6">
+        <td colspan="5">
 
           Fehler beim Laden der Monsterdaten.
 
@@ -982,12 +1059,8 @@ function getCellLink(cell){
 
 
   if(
-    value.startsWith(
-      "http://"
-    ) ||
-    value.startsWith(
-      "https://"
-    )
+    value.startsWith("http://") ||
+    value.startsWith("https://")
   ){
 
     return value;
@@ -1053,21 +1126,12 @@ function parseCR(value){
   let text =
     String(value)
       .trim()
-      .toLowerCase();
-
-
-  text =
-    text.replace(
-      /^cr\s*/,
-      ""
-    );
+      .toLowerCase()
+      .replace(/^cr\s*/,"");
 
 
   /*
-   * Normale Brüche:
-   * 1/8
-   * 1/4
-   * 1/2
+   * Normale Brüche.
    */
 
   if(
@@ -1107,8 +1171,7 @@ function parseCR(value){
 
 
   /*
-   * Manchmal können Zeichen wie
-   * ¼, ½ oder ⅛ auftauchen.
+   * Unicode-Brüche.
    */
 
   const unicodeFractions = {
@@ -1131,10 +1194,6 @@ function parseCR(value){
 
   }
 
-
-  /*
-   * Normale Zahlen
-   */
 
   const number =
     Number(
@@ -1217,7 +1276,6 @@ function buildHabitatFilters(){
 
 
       button.type = "button";
-
 
       button.textContent =
         habitat.label;
@@ -1345,43 +1403,43 @@ function filterMonsters(){
       .trim();
 
 
+  const crMinValue =
+    document.getElementById(
+      "crMin"
+    ).value;
+
+
+  const crMaxValue =
+    document.getElementById(
+      "crMax"
+    ).value;
+
+
   const crMin =
-    parseFloat(
-      document
-        .getElementById(
-          "crMin"
-        )
-        .value
-    );
+    crMinValue === ""
+      ? null
+      : Number(crMinValue);
 
 
   const crMax =
-    parseFloat(
-      document
-        .getElementById(
-          "crMax"
-        )
-        .value
-    );
+    crMaxValue === ""
+      ? null
+      : Number(crMaxValue);
 
 
   const xpMin =
     parseFloat(
-      document
-        .getElementById(
-          "xpMin"
-        )
-        .value
+      document.getElementById(
+        "xpMin"
+      ).value
     );
 
 
   const xpMax =
     parseFloat(
-      document
-        .getElementById(
-          "xpMax"
-        )
-        .value
+      document.getElementById(
+        "xpMax"
+      ).value
     );
 
 
@@ -1391,14 +1449,14 @@ function filterMonsters(){
 
 
         if(
-          !isNaN(crMin) &&
+          crMin !== null &&
           monster.cr < crMin
         )
           return false;
 
 
         if(
-          !isNaN(crMax) &&
+          crMax !== null &&
           monster.cr > crMax
         )
           return false;
@@ -1432,26 +1490,21 @@ function filterMonsters(){
           return false;
 
 
-        const combined =
-          `
-          ${monster.name}
-          ${monster.ddbHabitat}
-          `
-          .toLowerCase();
-
-
         if(
           search &&
-          !combined.includes(
-            search
-          )
+          !monster.name
+            .toLowerCase()
+            .includes(search)
         )
           return false;
 
 
         /*
-         * Mehrere ausgewählte Habitate:
-         * aktuell OR-Logik.
+         * Aktuelle Habitat-Logik:
+         * OR
+         *
+         * Die genaue Auswertung wird
+         * später überarbeitet.
          */
 
         if(
@@ -1516,6 +1569,26 @@ function filterMonsters(){
           break;
 
 
+        case "fit":
+
+          x = getHabitatFit(a);
+          y = getHabitatFit(b);
+
+          /*
+           * Monster ohne Fit kommen
+           * beim Absteigend-Sortieren
+           * nach hinten.
+           */
+
+          if(x === null)
+            x = -1;
+
+          if(y === null)
+            y = -1;
+
+          break;
+
+
         default:
 
           x = a.name;
@@ -1561,14 +1634,9 @@ function filterMonsters(){
   );
 
 
-  renderTable(
-    filtered
-  );
+  renderTable(filtered);
 
-
-  renderMobileCards(
-    filtered
-  );
+  renderMobileCards(filtered);
 
 
   document
@@ -1620,7 +1688,26 @@ function getHabitatFit(monster){
   return (
     total /
     values.length
-  ).toFixed(1);
+  );
+
+}
+
+
+/* =========================================================
+   FORMAT HABITAT FIT
+   ========================================================= */
+
+function formatHabitatFit(monster){
+
+  const fit =
+    getHabitatFit(monster);
+
+
+  if(fit === null)
+    return "-";
+
+
+  return `${fit.toFixed(1)} / 5`;
 
 }
 
@@ -1653,18 +1740,6 @@ function renderTable(data){
         monster.unique === "Ja"
           ? "unique-yes"
           : "unique-no";
-
-
-      const fit =
-        getHabitatFit(
-          monster
-        );
-
-
-      const habitatFit =
-        fit === null
-          ? "-"
-          : `${fit} / 5`;
 
 
       const nameHTML =
@@ -1706,14 +1781,8 @@ function renderTable(data){
           )}
         </td>
 
-        <td>
-          ${escapeHTML(
-            monster.ddbHabitat || "-"
-          )}
-        </td>
-
         <td class="habitat-score">
-          ${habitatFit}
+          ${formatHabitatFit(monster)}
         </td>
 
       `;
@@ -1746,12 +1815,6 @@ function renderMobileCards(data){
 
   data.forEach(
     monster => {
-
-      const fit =
-        getHabitatFit(
-          monster
-        );
-
 
       const card =
         document.createElement(
@@ -1838,28 +1901,7 @@ function renderMobileCards(data){
             </div>
 
             <div class="mobile-score">
-              ${
-                fit === null
-                  ? "-"
-                  : `${fit} / 5`
-              }
-            </div>
-
-          </div>
-
-
-          <div
-            style="grid-column:1 / -1;"
-          >
-
-            <div class="mobile-label">
-              DDB Habitat
-            </div>
-
-            <div class="mobile-value">
-              ${escapeHTML(
-                monster.ddbHabitat || "-"
-              )}
+              ${formatHabitatFit(monster)}
             </div>
 
           </div>
@@ -1929,8 +1971,6 @@ document
    ========================================================= */
 
 [
-  "crMin",
-  "crMax",
   "xpMin",
   "xpMax",
   "searchInput"
@@ -1949,6 +1989,30 @@ document
 
   }
 );
+
+
+/* =========================================================
+   CR SELECTS
+   ========================================================= */
+
+document
+  .getElementById(
+    "crMin"
+  )
+  .addEventListener(
+    "change",
+    filterMonsters
+  );
+
+
+document
+  .getElementById(
+    "crMax"
+  )
+  .addEventListener(
+    "change",
+    filterMonsters
+  );
 
 
 /* =========================================================
@@ -2014,6 +2078,34 @@ document
 
 
       selectedHabitats = [];
+
+
+      sortColumn = "name";
+      sortDirection = "asc";
+
+
+      document
+        .querySelectorAll(
+          ".sort-arrow"
+        )
+        .forEach(
+          arrow =>
+            arrow.textContent = ""
+        );
+
+
+      const nameHeader =
+        document
+          .querySelector(
+            '[data-sort="name"]'
+          );
+
+
+      nameHeader
+        .querySelector(
+          ".sort-arrow"
+        )
+        .textContent = "▲";
 
 
       buildHabitatFilters();
@@ -2328,6 +2420,8 @@ function escapeAttribute(value){
 /* =========================================================
    START
    ========================================================= */
+
+buildCRDropdowns();
 
 loadSheet();
 
