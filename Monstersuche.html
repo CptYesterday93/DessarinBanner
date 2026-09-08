@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V17</title>
+<title>DnD Monster Database – V18</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -919,7 +919,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V17</h1>
+      <h1>DnD Monster Database – V18</h1>
     </div>
 
     <table>
@@ -1002,10 +1002,6 @@ tbody tr:hover{
     <h2>Suchfilter</h2>
 
 
-    <!-- =====================================================
-         CR
-    ====================================================== -->
-
     <div class="filter-group">
 
       <label>CR</label>
@@ -1020,10 +1016,6 @@ tbody tr:hover{
 
     </div>
 
-
-    <!-- =====================================================
-         XP
-    ====================================================== -->
 
     <div class="filter-group">
 
@@ -1050,10 +1042,6 @@ tbody tr:hover{
     </div>
 
 
-    <!-- =====================================================
-         EINZIGARTIG
-    ====================================================== -->
-
     <div class="filter-group">
 
       <button
@@ -1074,10 +1062,6 @@ tbody tr:hover{
 
     </div>
 
-
-    <!-- =====================================================
-         LEBENSRÄUME
-    ====================================================== -->
 
     <div class="filter-group">
 
@@ -1125,10 +1109,6 @@ tbody tr:hover{
     </div>
 
 
-    <!-- =====================================================
-         KLIMA
-    ====================================================== -->
-
     <div class="filter-group">
 
       <label>
@@ -1142,10 +1122,6 @@ tbody tr:hover{
 
     </div>
 
-
-    <!-- =====================================================
-         SUCHE
-    ====================================================== -->
 
     <div class="filter-group">
 
@@ -1181,10 +1157,6 @@ tbody tr:hover{
 
 </div>
 
-
-<!-- =======================================================
-     INFO MODAL
-======================================================= -->
 
 <div
   id="infoModal"
@@ -1381,47 +1353,21 @@ for(
 
 let monsters = [];
 
-
-/*
- * Aktuell eingestellte Region.
- * Diese Werte ändern sich beim Klicken,
- * werden aber erst mit "Filter anwenden"
- * übernommen.
- */
-
 let regionWeights = {};
 
-
-/*
- * Tatsächlich angewendete Region.
- */
-
 let appliedRegionWeights = {};
-
-
-/*
- * Aktuell ausgewähltes Klima.
- */
 
 let selectedClimate =
   "Gemäßigt";
 
-
-/*
- * Tatsächlich angewendetes Klima.
- */
-
 let appliedClimate =
   "Gemäßigt";
-
 
 let showUnique =
   false;
 
-
 let sortColumn =
   "name";
-
 
 let sortDirection =
   "asc";
@@ -1492,8 +1438,11 @@ function buildCRDropdowns(){
   );
 
 
-  minSelect.value = "";
-  maxSelect.value = "";
+  minSelect.value =
+    "";
+
+  maxSelect.value =
+    "";
 
 }
 
@@ -2090,8 +2039,11 @@ function buildHabitatUI(){
 
         remove.addEventListener(
           "click",
-          ()=>{
-            
+          event => {
+
+            event.stopPropagation();
+
+
             delete regionWeights[
               habitat.label
             ];
@@ -2232,6 +2184,50 @@ function updateHabitatQuickButton(){
 }
 
 
+document
+  .getElementById(
+    "habitatQuick"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      const count =
+        Object.keys(
+          regionWeights
+        ).length;
+
+
+      if(
+        count === HABITATS.length
+      ){
+
+        regionWeights = {};
+
+      }else{
+
+        regionWeights = {};
+
+
+        HABITATS.forEach(
+          habitat => {
+
+            regionWeights[
+              habitat.label
+            ] = 3;
+
+          }
+        );
+
+      }
+
+
+      buildHabitatUI();
+
+    }
+  );
+
+
 /* =========================================================
    KLIMA
 ========================================================= */
@@ -2338,54 +2334,6 @@ document
 
 
 /* =========================================================
-   HABITAT ALLE
-========================================================= */
-
-document
-  .getElementById(
-    "habitatQuick"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      const count =
-        Object.keys(
-          regionWeights
-        ).length;
-
-
-      if(
-        count === HABITATS.length
-      ){
-
-        regionWeights = {};
-
-      }else{
-
-        regionWeights = {};
-
-
-        HABITATS.forEach(
-          habitat => {
-
-            regionWeights[
-              habitat.label
-            ] = 3;
-
-          }
-        );
-
-      }
-
-
-      buildHabitatUI();
-
-    }
-  );
-
-
-/* =========================================================
    EINZIGARTIGE
 ========================================================= */
 
@@ -2418,10 +2366,77 @@ document
 
 
 /* =========================================================
-   SCORE-BERECHNUNG
+   PROFILÄHNLICHKEIT
 ========================================================= */
 
-function calculateScores(monster){
+/*
+ * Zielwert = Wert des gewünschten Profils
+ *
+ * Monsterwert = tatsächlicher Wert des Monsters
+ *
+ * Abstand 0:
+ *     perfekte Übereinstimmung
+ *
+ * Je größer der Abstand,
+ * desto kleiner die Ähnlichkeit.
+ *
+ * Das Quadrat sorgt dafür,
+ * dass große Abweichungen
+ * deutlich stärker bestraft werden.
+ *
+ * 5 gesucht / 5 Monster = 1.00
+ * 5 gesucht / 4 Monster = 0.9375
+ * 5 gesucht / 3 Monster = 0.75
+ * 5 gesucht / 1 Monster = 0.00
+ *
+ * 2 gesucht / 2 Monster = 1.00
+ * 2 gesucht / 3 Monster = 0.9375
+ * 2 gesucht / 5 Monster = 0.4375
+ */
+
+function profileSimilarity(
+  monsterScore,
+  targetScore
+){
+
+  if(
+    monsterScore === null ||
+    monsterScore === undefined ||
+    targetScore === null ||
+    targetScore === undefined
+  ){
+
+    return null;
+
+  }
+
+
+  const difference =
+    Math.abs(
+      monsterScore -
+      targetScore
+    );
+
+
+  return Math.max(
+    0,
+    1 -
+    (
+      difference *
+      difference
+    ) / 16
+  );
+
+}
+
+
+/* =========================================================
+   HABITAT SCORE
+========================================================= */
+
+function getHabitatSimilarity(
+  monster
+){
 
   const habitats =
     Object.keys(
@@ -2429,123 +2444,184 @@ function calculateScores(monster){
     );
 
 
-  let habitatScore =
-    null;
-
-
   if(
-    habitats.length > 0
+    habitats.length === 0
   ){
 
-    let weightedScore =
-      0;
-
-
-    let totalWeight =
-      0;
-
-
-    for(
-      let i = 0;
-      i < habitats.length;
-      i++
-    ){
-
-      const habitat =
-        habitats[i];
-
-
-      const monsterScore =
-        monster.habitats[
-          habitat
-        ];
-
-
-      if(
-        monsterScore === null ||
-        monsterScore === undefined
-      ){
-
-        continue;
-
-      }
-
-
-      const weight =
-        appliedRegionWeights[
-          habitat
-        ];
-
-
-      weightedScore +=
-        monsterScore *
-        weight;
-
-
-      totalWeight +=
-        weight;
-
-    }
-
-
-    if(
-      totalWeight > 0
-    ){
-
-      habitatScore =
-        weightedScore /
-        totalWeight;
-
-    }
+    return null;
 
   }
 
 
-  const climateScore =
+  let similarityTotal =
+    0;
+
+  let count =
+    0;
+
+
+  for(
+    let i = 0;
+    i < habitats.length;
+    i++
+  ){
+
+    const habitat =
+      habitats[i];
+
+
+    const monsterScore =
+      monster.habitats[
+        habitat
+      ];
+
+
+    const targetScore =
+      appliedRegionWeights[
+        habitat
+      ];
+
+
+    const similarity =
+      profileSimilarity(
+        monsterScore,
+        targetScore
+      );
+
+
+    if(
+      similarity === null
+    ){
+
+      continue;
+
+    }
+
+
+    similarityTotal +=
+      similarity;
+
+
+    count++;
+
+  }
+
+
+  if(
+    count === 0
+  ){
+
+    return null;
+
+  }
+
+
+  return (
+    similarityTotal /
+    count
+  );
+
+}
+
+
+/* =========================================================
+   KLIMA SCORE
+========================================================= */
+
+function getClimateSimilarity(
+  monster
+){
+
+  const monsterScore =
     monster.climates[
       appliedClimate
-    ] ?? null;
+    ];
 
 
-  let totalScore =
+  if(
+    monsterScore === null ||
+    monsterScore === undefined
+  ){
+
+    return null;
+
+  }
+
+
+  /*
+   * Das Klima selbst bekommt
+   * standardmäßig den Zielwert 5.
+   *
+   * Dadurch bedeutet die Auswahl
+   * Kalt / Gemäßigt / Heiß:
+   * Wir suchen Monster, die in diesem
+   * Klima besonders typisch sind.
+   */
+
+  return profileSimilarity(
+    monsterScore,
+    5
+  );
+
+}
+
+
+/* =========================================================
+   GESAMT
+========================================================= */
+
+function calculateScores(
+  monster
+){
+
+  const habitat =
+    getHabitatSimilarity(
+      monster
+    );
+
+
+  const climate =
+    getClimateSimilarity(
+      monster
+    );
+
+
+  let total =
     null;
 
 
   if(
-    habitatScore === null &&
-    climateScore === null
+    habitat === null &&
+    climate === null
   ){
 
-    totalScore =
-      null;
+    total = null;
 
   }else if(
-    habitatScore === null
+    habitat === null
   ){
 
-    totalScore =
-      climateScore;
+    total = climate;
 
   }else if(
-    climateScore === null
+    climate === null
   ){
 
-    totalScore =
-      habitatScore;
+    total = habitat;
 
   }else{
 
-    totalScore =
-      habitatScore * (2 / 3) +
-      climateScore * (1 / 3);
+    total =
+      habitat * (2 / 3) +
+      climate * (1 / 3);
 
   }
 
 
   return {
-    habitat:habitatScore,
-    climate:climateScore,
-    total:totalScore
+    habitat,
+    climate,
+    total
   };
 
 }
@@ -2555,7 +2631,9 @@ function calculateScores(monster){
    SCORE FORMAT
 ========================================================= */
 
-function formatScore(score){
+function formatScore(
+  score
+){
 
   if(
     score === null ||
@@ -2578,7 +2656,9 @@ function formatScore(score){
    STERNE
 ========================================================= */
 
-function getStars(score){
+function getStars(
+  score
+){
 
   if(
     score === null ||
@@ -2644,6 +2724,12 @@ function renderHabitatDetails(
       }
 
 
+      const target =
+        appliedRegionWeights[
+          habitat
+        ];
+
+
       details.push(`
 
         <span class="score-detail-item">
@@ -2658,6 +2744,15 @@ function renderHabitatDetails(
             ${getStars(
               score
             )}
+          </span>
+
+          <span
+            style="
+              opacity:.55;
+              margin-left:3px;
+            "
+          >
+            ${target}/5
           </span>
 
         </span>
@@ -3009,7 +3104,9 @@ function filterMonsters(){
    TABELLE
 ========================================================= */
 
-function renderTable(data){
+function renderTable(
+  data
+){
 
   const body =
     document.getElementById(
@@ -3197,7 +3294,9 @@ function renderTable(data){
    MOBILE CARDS
 ========================================================= */
 
-function renderMobileCards(data){
+function renderMobileCards(
+  data
+){
 
   const container =
     document.getElementById(
@@ -3377,7 +3476,7 @@ function renderMobileCards(data){
 
 
 /* =========================================================
-   INFO BUTTON EVENT DELEGATION
+   INFO BUTTONS
 ========================================================= */
 
 document
@@ -3450,7 +3549,9 @@ document
    INFO MODAL
 ========================================================= */
 
-function openInfoModal(monster){
+function openInfoModal(
+  monster
+){
 
   if(!monster)
     return;
@@ -4195,7 +4296,9 @@ scrollTopBtn.addEventListener(
    ESCAPE
 ========================================================= */
 
-function escapeHTML(value){
+function escapeHTML(
+  value
+){
 
   return String(value)
     .replace(
@@ -4222,7 +4325,9 @@ function escapeHTML(value){
 }
 
 
-function escapeAttribute(value){
+function escapeAttribute(
+  value
+){
 
   return escapeHTML(
     value
