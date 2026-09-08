@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V08</title>
+<title>DnD Monster Database – V09</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,6 +100,7 @@ select{
 }
 
 /* Keine +/- Spinner bei Zahlenfeldern */
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button{
   -webkit-appearance:none;
@@ -144,20 +145,28 @@ input[type="number"]{
   border-color:#7c74ff;
 }
 
-.quick-buttons{
-  display:flex;
-  gap:8px;
-  margin-bottom:10px;
+/* Kleine, dezente Schnellwahl */
+
+.quick-action{
+  display:inline-block;
+  width:auto;
+  padding:4px 8px;
+  margin-bottom:8px;
+
+  border:1px solid #444;
+  border-radius:7px;
+
+  background:#292929;
+  color:#aaa;
+
+  font-size:12px;
+  line-height:1;
 }
 
-.quick-buttons button{
-  flex:1;
+.quick-action:hover{
   background:#333;
-}
-
-.quick-buttons button:hover,
-.multi-select button:hover{
-  background:#444;
+  color:#ddd;
+  border-color:#555;
 }
 
 table{
@@ -526,7 +535,7 @@ tbody tr:hover{
 <div class="table-section">
 
 <div class="topbar">
-<h1>DnD Monster Database – V08</h1>
+<h1>DnD Monster Database – V09</h1>
 </div>
 
 <table>
@@ -661,23 +670,15 @@ Nein
 
 <label>Lebensräume</label>
 
-<div class="quick-buttons">
+<br>
 
 <button
   type="button"
-  id="habitatAll"
+  id="habitatQuick"
+  class="quick-action"
 >
 Alle
 </button>
-
-<button
-  type="button"
-  id="habitatNone"
->
-Keine
-</button>
-
-</div>
 
 <div
   id="habitatFilter"
@@ -693,23 +694,15 @@ Keine
 
 <label>Klima</label>
 
-<div class="quick-buttons">
+<br>
 
 <button
   type="button"
-  id="climateAll"
+  id="climateQuick"
+  class="quick-action"
 >
 Alle
 </button>
-
-<button
-  type="button"
-  id="climateNone"
->
-Keine
-</button>
-
-</div>
 
 <div
   id="climateFilter"
@@ -1083,8 +1076,6 @@ async function loadSheet(){
           };
 
 
-          /* Lebensräume */
-
           HABITATS.forEach(
             habitat => {
 
@@ -1103,8 +1094,6 @@ async function loadSheet(){
             }
           );
 
-
-          /* Klima */
 
           CLIMATES.forEach(
             climate => {
@@ -1136,6 +1125,8 @@ async function loadSheet(){
 
     buildHabitatFilters();
     buildClimateFilters();
+
+    updateQuickButtons();
 
     filterMonsters();
 
@@ -1446,6 +1437,7 @@ function buildHabitatFilters(){
 
 
           buildHabitatFilters();
+          updateQuickButtons();
           filterMonsters();
 
         }
@@ -1531,6 +1523,7 @@ function buildClimateFilters(){
 
 
           buildClimateFilters();
+          updateQuickButtons();
           filterMonsters();
 
         }
@@ -1548,25 +1541,68 @@ function buildClimateFilters(){
 
 
 /* =========================================================
-   HABITAT ALLE
+   SCHNELLBUTTONS AKTUALISIEREN
+   ========================================================= */
+
+function updateQuickButtons(){
+
+  const habitatButton =
+    document.getElementById(
+      "habitatQuick"
+    );
+
+
+  const climateButton =
+    document.getElementById(
+      "climateQuick"
+    );
+
+
+  habitatButton.textContent =
+    selectedHabitats.length === HABITATS.length
+      ? "Keine"
+      : "Alle";
+
+
+  climateButton.textContent =
+    selectedClimates.length === CLIMATES.length
+      ? "Keine"
+      : "Alle";
+
+}
+
+
+/* =========================================================
+   LEBENSRÄUME SCHNELLWAHL
    ========================================================= */
 
 document
   .getElementById(
-    "habitatAll"
+    "habitatQuick"
   )
   .addEventListener(
     "click",
     ()=>{
 
-      selectedHabitats =
-        HABITATS.map(
-          habitat =>
-            habitat.label
-        );
+      if(
+        selectedHabitats.length === HABITATS.length
+      ){
+
+        selectedHabitats = [];
+
+      }else{
+
+        selectedHabitats =
+          HABITATS.map(
+            habitat =>
+              habitat.label
+          );
+
+      }
 
 
       buildHabitatFilters();
+      updateQuickButtons();
       filterMonsters();
 
     }
@@ -1574,67 +1610,36 @@ document
 
 
 /* =========================================================
-   HABITAT KEINE
+   KLIMA SCHNELLWAHL
    ========================================================= */
 
 document
   .getElementById(
-    "habitatNone"
+    "climateQuick"
   )
   .addEventListener(
     "click",
     ()=>{
 
-      selectedHabitats = [];
+      if(
+        selectedClimates.length === CLIMATES.length
+      ){
 
-      buildHabitatFilters();
-      filterMonsters();
+        selectedClimates = [];
 
-    }
-  );
+      }else{
 
+        selectedClimates =
+          CLIMATES.map(
+            climate =>
+              climate.label
+          );
 
-/* =========================================================
-   KLIMA ALLE
-   ========================================================= */
-
-document
-  .getElementById(
-    "climateAll"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      selectedClimates =
-        CLIMATES.map(
-          climate =>
-            climate.label
-        );
+      }
 
 
       buildClimateFilters();
-      filterMonsters();
-
-    }
-  );
-
-
-/* =========================================================
-   KLIMA KEINE
-   ========================================================= */
-
-document
-  .getElementById(
-    "climateNone"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      selectedClimates = [];
-
-      buildClimateFilters();
+      updateQuickButtons();
       filterMonsters();
 
     }
@@ -1753,8 +1758,8 @@ function filterMonsters(){
 
 
         /*
-         * Lebensräume:
-         * aktuell OR innerhalb der Auswahl.
+         * Aktuelle Lebensraum-Logik:
+         * OR innerhalb der Auswahl.
          */
 
         if(
@@ -1777,8 +1782,8 @@ function filterMonsters(){
 
 
         /*
-         * Klima:
-         * aktuell OR innerhalb der Auswahl.
+         * Aktuelle Klima-Logik:
+         * OR innerhalb der Auswahl.
          */
 
         if(
@@ -1938,8 +1943,15 @@ function getHabitatFit(monster){
         ];
 
 
-      if(score !== null)
-        scores.push(score);
+      if(
+        score !== null
+      ){
+
+        scores.push(
+          score
+        );
+
+      }
 
     }
   );
@@ -1954,8 +1966,15 @@ function getHabitatFit(monster){
         ];
 
 
-      if(score !== null)
-        scores.push(score);
+      if(
+        score !== null
+      ){
+
+        scores.push(
+          score
+        );
+
+      }
 
     }
   );
@@ -2033,17 +2052,24 @@ function renderHabitatDetails(monster){
         ];
 
 
-      if(score !== null){
+      if(
+        score !== null
+      ){
 
         details.push(`
+
           <span class="habitat-detail">
+
             <span class="habitat-name">
               ${escapeHTML(habitat)}
             </span>
+
             <span class="habitat-stars">
               ${getStars(score)}
             </span>
+
           </span>
+
         `);
 
       }
@@ -2061,17 +2087,24 @@ function renderHabitatDetails(monster){
         ];
 
 
-      if(score !== null){
+      if(
+        score !== null
+      ){
 
         details.push(`
+
           <span class="habitat-detail">
+
             <span class="habitat-name">
               ${escapeHTML(climate)}
             </span>
+
             <span class="habitat-stars">
               ${getStars(score)}
             </span>
+
           </span>
+
         `);
 
       }
@@ -2092,7 +2125,9 @@ function renderHabitatDetails(monster){
 function formatHabitatFit(monster){
 
   const fit =
-    getHabitatFit(monster);
+    getHabitatFit(
+      monster
+    );
 
 
   if(
@@ -2143,6 +2178,7 @@ function renderTable(data){
         monster.link
 
           ? `
+
             <a
               class="monster-link"
               href="${escapeAttribute(monster.link)}"
@@ -2151,10 +2187,13 @@ function renderTable(data){
             >
               ${escapeHTML(monster.name)}
             </a>
+
           `
 
           : `
+
             ${escapeHTML(monster.name)}
+
           `;
 
 
@@ -2170,13 +2209,16 @@ function renderTable(data){
           ${nameHTML}
         </td>
 
+
         <td>
           ${formatCR(monster.cr)}
         </td>
 
+
         <td>
           ${monster.xp.toLocaleString("de-DE")}
         </td>
+
 
         <td class="${uniqueClass}">
           ${escapeHTML(
@@ -2184,18 +2226,22 @@ function renderTable(data){
           )}
         </td>
 
+
         <td class="habitat-score">
 
           <strong>
             ${formatHabitatFit(monster)}
           </strong>
 
+
           ${
             details
               ? `
+
                 <div class="habitat-details">
                   ${details}
                 </div>
+
               `
               : ""
           }
@@ -2247,6 +2293,7 @@ function renderMobileCards(data){
         monster.link
 
           ? `
+
             <a
               href="${escapeAttribute(monster.link)}"
               target="_blank"
@@ -2254,10 +2301,13 @@ function renderMobileCards(data){
             >
               ${escapeHTML(monster.name)}
             </a>
+
           `
 
           : `
+
             ${escapeHTML(monster.name)}
+
           `;
 
 
@@ -2333,6 +2383,7 @@ function renderMobileCards(data){
           ${
             details
               ? `
+
                 <div class="mobile-habitat-details">
 
                   <div class="mobile-label">
@@ -2342,6 +2393,7 @@ function renderMobileCards(data){
                   ${details}
 
                 </div>
+
               `
               : ""
           }
@@ -2546,6 +2598,7 @@ document
 
       buildHabitatFilters();
       buildClimateFilters();
+      updateQuickButtons();
 
       filterMonsters();
 
