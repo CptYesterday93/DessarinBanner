@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V18</title>
+<title>DnD Monster Database – V19</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -919,7 +919,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V18</h1>
+      <h1>DnD Monster Database – V19</h1>
     </div>
 
     <table>
@@ -2369,31 +2369,6 @@ document
    PROFILÄHNLICHKEIT
 ========================================================= */
 
-/*
- * Zielwert = Wert des gewünschten Profils
- *
- * Monsterwert = tatsächlicher Wert des Monsters
- *
- * Abstand 0:
- *     perfekte Übereinstimmung
- *
- * Je größer der Abstand,
- * desto kleiner die Ähnlichkeit.
- *
- * Das Quadrat sorgt dafür,
- * dass große Abweichungen
- * deutlich stärker bestraft werden.
- *
- * 5 gesucht / 5 Monster = 1.00
- * 5 gesucht / 4 Monster = 0.9375
- * 5 gesucht / 3 Monster = 0.75
- * 5 gesucht / 1 Monster = 0.00
- *
- * 2 gesucht / 2 Monster = 1.00
- * 2 gesucht / 3 Monster = 0.9375
- * 2 gesucht / 5 Monster = 0.4375
- */
-
 function profileSimilarity(
   monsterScore,
   targetScore
@@ -2425,6 +2400,35 @@ function profileSimilarity(
       difference *
       difference
     ) / 16
+  );
+
+}
+
+
+/* =========================================================
+   ÄHNLICHKEIT AUF 1–5 SKALA
+========================================================= */
+
+function similarityToFive(
+  similarity
+){
+
+  if(
+    similarity === null ||
+    similarity === undefined
+  ){
+
+    return null;
+
+  }
+
+
+  return (
+    1 +
+    (
+      similarity *
+      4
+    )
   );
 
 }
@@ -2516,9 +2520,13 @@ function getHabitatSimilarity(
   }
 
 
-  return (
+  const normalized =
     similarityTotal /
-    count
+    count;
+
+
+  return similarityToFive(
+    normalized
   );
 
 }
@@ -2548,19 +2556,15 @@ function getClimateSimilarity(
   }
 
 
-  /*
-   * Das Klima selbst bekommt
-   * standardmäßig den Zielwert 5.
-   *
-   * Dadurch bedeutet die Auswahl
-   * Kalt / Gemäßigt / Heiß:
-   * Wir suchen Monster, die in diesem
-   * Klima besonders typisch sind.
-   */
+  const similarity =
+    profileSimilarity(
+      monsterScore,
+      5
+    );
 
-  return profileSimilarity(
-    monsterScore,
-    5
+
+  return similarityToFive(
+    similarity
   );
 
 }
@@ -2595,19 +2599,22 @@ function calculateScores(
     climate === null
   ){
 
-    total = null;
+    total =
+      null;
 
   }else if(
     habitat === null
   ){
 
-    total = climate;
+    total =
+      climate;
 
   }else if(
     climate === null
   ){
 
-    total = habitat;
+    total =
+      habitat;
 
   }else{
 
@@ -2752,7 +2759,7 @@ function renderHabitatDetails(
               margin-left:3px;
             "
           >
-            ${target}/5
+            Ziel ${target}/5
           </span>
 
         </span>
@@ -3966,17 +3973,13 @@ document
       ).value = "";
 
 
-      regionWeights =
-        {};
+      regionWeights = {};
 
-
-      appliedRegionWeights =
-        {};
+      appliedRegionWeights = {};
 
 
       selectedClimate =
         "Gemäßigt";
-
 
       appliedClimate =
         "Gemäßigt";
