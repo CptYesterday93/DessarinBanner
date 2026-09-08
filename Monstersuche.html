@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V07</title>
+<title>DnD Monster Database – V08</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,7 +100,6 @@ select{
 }
 
 /* Keine +/- Spinner bei Zahlenfeldern */
-
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button{
   -webkit-appearance:none;
@@ -256,7 +255,7 @@ tbody tr:hover{
 
 .habitat-score{
   font-weight:bold;
-  min-width:240px;
+  min-width:260px;
 }
 
 .habitat-details{
@@ -527,7 +526,7 @@ tbody tr:hover{
 <div class="table-section">
 
 <div class="topbar">
-<h1>DnD Monster Database – V07</h1>
+<h1>DnD Monster Database – V08</h1>
 </div>
 
 <table>
@@ -572,6 +571,8 @@ Habitat-Fit <span class="sort-arrow"></span>
 <h2>Suchfilter</h2>
 
 
+<!-- CR -->
+
 <div class="filter-group">
 
 <label>CR</label>
@@ -586,6 +587,8 @@ Habitat-Fit <span class="sort-arrow"></span>
 
 </div>
 
+
+<!-- XP -->
 
 <div class="filter-group">
 
@@ -611,6 +614,8 @@ Habitat-Fit <span class="sort-arrow"></span>
 
 </div>
 
+
+<!-- EINZIGARTIG -->
 
 <div class="filter-group">
 
@@ -650,6 +655,8 @@ Nein
 </div>
 
 
+<!-- LEBENSRÄUME -->
+
 <div class="filter-group">
 
 <label>Lebensräume</label>
@@ -679,6 +686,40 @@ Keine
 
 </div>
 
+
+<!-- KLIMA -->
+
+<div class="filter-group">
+
+<label>Klima</label>
+
+<div class="quick-buttons">
+
+<button
+  type="button"
+  id="climateAll"
+>
+Alle
+</button>
+
+<button
+  type="button"
+  id="climateNone"
+>
+Keine
+</button>
+
+</div>
+
+<div
+  id="climateFilter"
+  class="multi-select"
+></div>
+
+</div>
+
+
+<!-- SUCHBEGRIFF -->
 
 <div class="filter-group">
 
@@ -735,23 +776,24 @@ const SHEET_NAME = "Sheet1";
    F = Wald
    G = Grasland
    H = Wüste
-   I = Hügel
+   I = Sumpf
    J = Gebirge
-   K = Sumpf
-   L = Küste
+   K = Küste
+   L = Fluss/See
    M = Meer
-   N = Fluss/See
-   O = Höhle
-   P = Untergrund
-   Q = Arktis
-   R = Vulkan
-   S = Urban
+   N = Höhle
+   O = Untergrund
+   P = Ruinen
+   Q = Siedlung
+   R = Kalt
+   S = Gemäßigt
+   T = Heiß
 
    ========================================================= */
 
 
 /* =========================================================
-   HABITATE
+   LEBENSRÄUME
    ========================================================= */
 
 const HABITATS = [
@@ -772,7 +814,7 @@ const HABITATS = [
   },
 
   {
-    label:"Hügel",
+    label:"Sumpf",
     columnIndex:8
   },
 
@@ -782,12 +824,12 @@ const HABITATS = [
   },
 
   {
-    label:"Sumpf",
+    label:"Küste",
     columnIndex:10
   },
 
   {
-    label:"Küste",
+    label:"Fluss/See",
     columnIndex:11
   },
 
@@ -797,33 +839,47 @@ const HABITATS = [
   },
 
   {
-    label:"Fluss/See",
+    label:"Höhle",
     columnIndex:13
   },
 
   {
-    label:"Höhle",
+    label:"Untergrund",
     columnIndex:14
   },
 
   {
-    label:"Untergrund",
+    label:"Ruinen",
     columnIndex:15
   },
 
   {
-    label:"Arktis",
+    label:"Siedlung",
     columnIndex:16
-  },
+  }
+
+];
+
+
+/* =========================================================
+   KLIMA
+   ========================================================= */
+
+const CLIMATES = [
 
   {
-    label:"Vulkan",
+    label:"Kalt",
     columnIndex:17
   },
 
   {
-    label:"Urban",
+    label:"Gemäßigt",
     columnIndex:18
+  },
+
+  {
+    label:"Heiß",
+    columnIndex:19
   }
 
 ];
@@ -879,6 +935,7 @@ for(let i = 1; i <= 30; i++){
 let monsters = [];
 
 let selectedHabitats = [];
+let selectedClimates = [];
 
 let uniqueState = "Alle";
 
@@ -1020,10 +1077,13 @@ async function loadSheet(){
                 ""
               ).trim(),
 
-            habitats:{}
+            habitats:{},
+            climates:{}
 
           };
 
+
+          /* Lebensräume */
 
           HABITATS.forEach(
             habitat => {
@@ -1031,12 +1091,33 @@ async function loadSheet(){
               monster.habitats[
                 habitat.label
               ] =
-                parseHabitatScore(
+                parseScore(
                   cells[
                     habitat.columnIndex
                   ]?.f ??
                   cells[
                     habitat.columnIndex
+                  ]?.v
+                );
+
+            }
+          );
+
+
+          /* Klima */
+
+          CLIMATES.forEach(
+            climate => {
+
+              monster.climates[
+                climate.label
+              ] =
+                parseScore(
+                  cells[
+                    climate.columnIndex
+                  ]?.f ??
+                  cells[
+                    climate.columnIndex
                   ]?.v
                 );
 
@@ -1054,6 +1135,7 @@ async function loadSheet(){
 
 
     buildHabitatFilters();
+    buildClimateFilters();
 
     filterMonsters();
 
@@ -1256,10 +1338,10 @@ function parseCR(value){
 
 
 /* =========================================================
-   HABITAT SCORE
+   SCORE
    ========================================================= */
 
-function parseHabitatScore(value){
+function parseScore(value){
 
   if(
     value === undefined ||
@@ -1267,7 +1349,7 @@ function parseHabitatScore(value){
     value === ""
   ){
 
-    return 0;
+    return null;
 
   }
 
@@ -1281,11 +1363,11 @@ function parseHabitatScore(value){
 
 
   if(isNaN(number))
-    return 0;
+    return null;
 
 
   return Math.max(
-    0,
+    1,
     Math.min(
       5,
       number
@@ -1364,7 +1446,91 @@ function buildHabitatFilters(){
 
 
           buildHabitatFilters();
+          filterMonsters();
 
+        }
+      );
+
+
+      container.appendChild(
+        button
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   KLIMA FILTER
+   ========================================================= */
+
+function buildClimateFilters(){
+
+  const container =
+    document.getElementById(
+      "climateFilter"
+    );
+
+
+  container.innerHTML = "";
+
+
+  CLIMATES.forEach(
+    climate => {
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+
+      button.type = "button";
+
+      button.textContent =
+        climate.label;
+
+
+      if(
+        selectedClimates.includes(
+          climate.label
+        )
+      ){
+
+        button.classList.add(
+          "active"
+        );
+
+      }
+
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          if(
+            selectedClimates.includes(
+              climate.label
+            )
+          ){
+
+            selectedClimates =
+              selectedClimates.filter(
+                c =>
+                  c !== climate.label
+              );
+
+          }else{
+
+            selectedClimates.push(
+              climate.label
+            );
+
+          }
+
+
+          buildClimateFilters();
           filterMonsters();
 
         }
@@ -1401,7 +1567,6 @@ document
 
 
       buildHabitatFilters();
-
       filterMonsters();
 
     }
@@ -1422,9 +1587,54 @@ document
 
       selectedHabitats = [];
 
-
       buildHabitatFilters();
+      filterMonsters();
 
+    }
+  );
+
+
+/* =========================================================
+   KLIMA ALLE
+   ========================================================= */
+
+document
+  .getElementById(
+    "climateAll"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      selectedClimates =
+        CLIMATES.map(
+          climate =>
+            climate.label
+        );
+
+
+      buildClimateFilters();
+      filterMonsters();
+
+    }
+  );
+
+
+/* =========================================================
+   KLIMA KEINE
+   ========================================================= */
+
+document
+  .getElementById(
+    "climateNone"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      selectedClimates = [];
+
+      buildClimateFilters();
       filterMonsters();
 
     }
@@ -1491,7 +1701,6 @@ function filterMonsters(){
     monsters.filter(
       monster => {
 
-
         if(
           crMin !== null &&
           monster.cr < crMin
@@ -1544,8 +1753,8 @@ function filterMonsters(){
 
 
         /*
-         * Aktuelle Habitat-Logik:
-         * OR
+         * Lebensräume:
+         * aktuell OR innerhalb der Auswahl.
          */
 
         if(
@@ -1557,11 +1766,35 @@ function filterMonsters(){
               habitat =>
                 monster.habitats[
                   habitat
-                ] > 0
+                ] !== null
             );
 
 
           if(!habitatMatch)
+            return false;
+
+        }
+
+
+        /*
+         * Klima:
+         * aktuell OR innerhalb der Auswahl.
+         */
+
+        if(
+          selectedClimates.length
+        ){
+
+          const climateMatch =
+            selectedClimates.some(
+              climate =>
+                monster.climates[
+                  climate
+                ] !== null
+            );
+
+
+          if(!climateMatch)
             return false;
 
         }
@@ -1674,7 +1907,6 @@ function filterMonsters(){
 
 
   renderTable(filtered);
-
   renderMobileCards(filtered);
 
 
@@ -1694,30 +1926,47 @@ function filterMonsters(){
 
 function getHabitatFit(monster){
 
-  if(
-    !selectedHabitats.length
-  ){
-
-    return null;
-
-  }
+  const scores = [];
 
 
-  const values =
-    selectedHabitats.map(
-      habitat =>
+  selectedHabitats.forEach(
+    habitat => {
+
+      const score =
         monster.habitats[
           habitat
-        ] ?? 0
-    );
+        ];
 
 
-  if(!values.length)
+      if(score !== null)
+        scores.push(score);
+
+    }
+  );
+
+
+  selectedClimates.forEach(
+    climate => {
+
+      const score =
+        monster.climates[
+          climate
+        ];
+
+
+      if(score !== null)
+        scores.push(score);
+
+    }
+  );
+
+
+  if(!scores.length)
     return null;
 
 
   const total =
-    values.reduce(
+    scores.reduce(
       (sum,value)=>
         sum + value,
       0
@@ -1726,7 +1975,7 @@ function getHabitatFit(monster){
 
   return (
     total /
-    values.length
+    scores.length
   );
 
 }
@@ -1738,9 +1987,19 @@ function getHabitatFit(monster){
 
 function getStars(score){
 
+  if(
+    score === null ||
+    score === undefined
+  ){
+
+    return "—";
+
+  }
+
+
   const rounded =
     Math.max(
-      0,
+      1,
       Math.min(
         5,
         Math.round(score)
@@ -1762,26 +2021,21 @@ function getStars(score){
 
 function renderHabitatDetails(monster){
 
-  if(
-    !selectedHabitats.length
-  ){
-
-    return "";
-
-  }
+  const details = [];
 
 
-  return selectedHabitats
-    .map(
-      habitat => {
+  selectedHabitats.forEach(
+    habitat => {
 
-        const score =
-          monster.habitats[
-            habitat
-          ] ?? 0;
+      const score =
+        monster.habitats[
+          habitat
+        ];
 
 
-        return `
+      if(score !== null){
+
+        details.push(`
           <span class="habitat-detail">
             <span class="habitat-name">
               ${escapeHTML(habitat)}
@@ -1790,11 +2044,43 @@ function renderHabitatDetails(monster){
               ${getStars(score)}
             </span>
           </span>
-        `;
+        `);
 
       }
-    )
-    .join("");
+
+    }
+  );
+
+
+  selectedClimates.forEach(
+    climate => {
+
+      const score =
+        monster.climates[
+          climate
+        ];
+
+
+      if(score !== null){
+
+        details.push(`
+          <span class="habitat-detail">
+            <span class="habitat-name">
+              ${escapeHTML(climate)}
+            </span>
+            <span class="habitat-stars">
+              ${getStars(score)}
+            </span>
+          </span>
+        `);
+
+      }
+
+    }
+  );
+
+
+  return details.join("");
 
 }
 
@@ -1872,22 +2158,25 @@ function renderTable(data){
           `;
 
 
+      const details =
+        renderHabitatDetails(
+          monster
+        );
+
+
       tr.innerHTML = `
 
         <td>
           ${nameHTML}
         </td>
 
-
         <td>
           ${formatCR(monster.cr)}
         </td>
 
-
         <td>
           ${monster.xp.toLocaleString("de-DE")}
         </td>
-
 
         <td class="${uniqueClass}">
           ${escapeHTML(
@@ -1895,19 +2184,17 @@ function renderTable(data){
           )}
         </td>
 
-
         <td class="habitat-score">
 
           <strong>
             ${formatHabitatFit(monster)}
           </strong>
 
-
           ${
-            selectedHabitats.length
+            details
               ? `
                 <div class="habitat-details">
-                  ${renderHabitatDetails(monster)}
+                  ${details}
                 </div>
               `
               : ""
@@ -1974,6 +2261,12 @@ function renderMobileCards(data){
           `;
 
 
+      const details =
+        renderHabitatDetails(
+          monster
+        );
+
+
       card.innerHTML = `
 
         <div class="mobile-card-title">
@@ -2038,15 +2331,15 @@ function renderMobileCards(data){
 
 
           ${
-            selectedHabitats.length
+            details
               ? `
                 <div class="mobile-habitat-details">
 
                   <div class="mobile-label">
-                    Ausgewählte Habitate
+                    Ausgewählte Filter
                   </div>
 
-                  ${renderHabitatDetails(monster)}
+                  ${details}
 
                 </div>
               `
@@ -2224,6 +2517,7 @@ document
 
 
       selectedHabitats = [];
+      selectedClimates = [];
 
 
       sortColumn = "name";
@@ -2251,6 +2545,7 @@ document
 
 
       buildHabitatFilters();
+      buildClimateFilters();
 
       filterMonsters();
 
@@ -2292,8 +2587,8 @@ document
 
 
             /*
-             * Habitat-Fit startet
-             * beim ersten Klick absteigend.
+             * Habitat-Fit startet beim
+             * ersten Klick absteigend.
              */
 
             if(
@@ -2587,4 +2882,4 @@ loadSheet();
 </script>
 
 </body>
-</htm>
+</html>
