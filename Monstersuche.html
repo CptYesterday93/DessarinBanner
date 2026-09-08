@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V06</title>
+<title>DnD Monster Database – V07</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -97,6 +97,19 @@ button{
 
 select{
   cursor:pointer;
+}
+
+/* Keine +/- Spinner bei Zahlenfeldern */
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button{
+  -webkit-appearance:none;
+  margin:0;
+}
+
+input[type="number"]{
+  -moz-appearance:textfield;
+  appearance:textfield;
 }
 
 .filter-group{
@@ -243,11 +256,11 @@ tbody tr:hover{
 
 .habitat-score{
   font-weight:bold;
-  min-width:220px;
+  min-width:240px;
 }
 
 .habitat-details{
-  margin-top:6px;
+  margin-top:7px;
   display:flex;
   flex-wrap:wrap;
   gap:5px 12px;
@@ -262,6 +275,7 @@ tbody tr:hover{
 
 .habitat-name{
   opacity:.85;
+  margin-right:4px;
 }
 
 .habitat-stars{
@@ -363,6 +377,12 @@ tbody tr:hover{
   grid-column:1 / -1;
   font-size:13px;
   line-height:1.5;
+}
+
+.mobile-habitat-details .habitat-detail{
+  display:inline-block;
+  margin-right:10px;
+  margin-bottom:4px;
 }
 
 #scrollTopBtn{
@@ -507,9 +527,7 @@ tbody tr:hover{
 <div class="table-section">
 
 <div class="topbar">
-
-<h1>DnD Monster Database – V06</h1>
-
+<h1>DnD Monster Database – V07</h1>
 </div>
 
 <table>
@@ -714,19 +732,19 @@ const SHEET_NAME = "Sheet1";
    C = CR
    D = XP
    E = Einzigartig?
-   F = DDB Habitat
-   G = Wald
-   H = Grasland
-   I = Wüste
-   J = Hügel
-   K = Gebirge
-   L = Sumpf/Moor
-   M = Küste
-   N = Süßwasser
+   F = Wald
+   G = Grasland
+   H = Wüste
+   I = Hügel
+   J = Gebirge
+   K = Sumpf
+   L = Küste
+   M = Meer
+   N = Fluss/See
    O = Höhle
-   P = Tunnel/Underdark
+   P = Untergrund
    Q = Arktis
-   R = Vulkanisch
+   R = Vulkan
    S = Urban
 
    ========================================================= */
@@ -740,41 +758,46 @@ const HABITATS = [
 
   {
     label:"Wald",
-    columnIndex:6
+    columnIndex:5
   },
 
   {
     label:"Grasland",
-    columnIndex:7
+    columnIndex:6
   },
 
   {
     label:"Wüste",
-    columnIndex:8
+    columnIndex:7
   },
 
   {
     label:"Hügel",
-    columnIndex:9
+    columnIndex:8
   },
 
   {
     label:"Gebirge",
-    columnIndex:10
+    columnIndex:9
   },
 
   {
     label:"Sumpf",
-    columnIndex:11
+    columnIndex:10
   },
 
   {
     label:"Küste",
+    columnIndex:11
+  },
+
+  {
+    label:"Meer",
     columnIndex:12
   },
 
   {
-    label:"Süßwasser",
+    label:"Fluss/See",
     columnIndex:13
   },
 
@@ -784,7 +807,7 @@ const HABITATS = [
   },
 
   {
-    label:"Tunnel",
+    label:"Untergrund",
     columnIndex:15
   },
 
@@ -1050,9 +1073,7 @@ async function loadSheet(){
       <tr>
 
         <td colspan="5">
-
           Fehler beim Laden der Monsterdaten.
-
         </td>
 
       </tr>
@@ -1592,14 +1613,10 @@ function filterMonsters(){
         case "fit":
 
           x =
-            getHabitatFit(
-              a
-            );
+            getHabitatFit(a);
 
           y =
-            getHabitatFit(
-              b
-            );
+            getHabitatFit(b);
 
 
           if(x === null)
@@ -1656,13 +1673,9 @@ function filterMonsters(){
   );
 
 
-  renderTable(
-    filtered
-  );
+  renderTable(filtered);
 
-  renderMobileCards(
-    filtered
-  );
+  renderMobileCards(filtered);
 
 
   document
@@ -1734,6 +1747,7 @@ function getStars(score){
       )
     );
 
+
   return (
     "★".repeat(rounded) +
     "☆".repeat(5 - rounded)
@@ -1743,7 +1757,7 @@ function getStars(score){
 
 
 /* =========================================================
-   AUSGEWÄHLTE HABITATE
+   HABITAT DETAILS
    ========================================================= */
 
 function renderHabitatDetails(monster){
@@ -1792,9 +1806,7 @@ function renderHabitatDetails(monster){
 function formatHabitatFit(monster){
 
   const fit =
-    getHabitatFit(
-      monster
-    );
+    getHabitatFit(monster);
 
 
   if(
@@ -1889,6 +1901,7 @@ function renderTable(data){
           <strong>
             ${formatHabitatFit(monster)}
           </strong>
+
 
           ${
             selectedHabitats.length
@@ -2126,7 +2139,7 @@ document
 
 
 /* =========================================================
-   CR SELECTS
+   CR
    ========================================================= */
 
 document
@@ -2186,8 +2199,7 @@ document
       ).value = "";
 
 
-      uniqueState =
-        "Alle";
+      uniqueState = "Alle";
 
 
       document
@@ -2278,8 +2290,9 @@ document
 
             sortColumn = column;
 
+
             /*
-             * Habitat-Fit startet immer
+             * Habitat-Fit startet
              * beim ersten Klick absteigend.
              */
 
@@ -2574,4 +2587,4 @@ loadSheet();
 </script>
 
 </body>
-</html>
+</htm>
