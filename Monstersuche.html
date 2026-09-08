@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V03</title>
+<title>DnD Monster Database – V04</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -473,7 +473,7 @@ tbody tr:hover{
 
 <div class="topbar">
 
-<h1>DnD Monster Database – DM</h1>
+<h1>DnD Monster Database – V04</h1>
 
 </div>
 
@@ -804,18 +804,23 @@ async function loadSheet(){
       await fetch(url);
 
     if(!response.ok){
+
       throw new Error(
         `Google Sheets HTTP ${response.status}`
       );
+
     }
+
 
     const text =
       await response.text();
+
 
     const json =
       JSON.parse(
         text.substring(47).slice(0,-2)
       );
+
 
     const rows =
       json.table.rows;
@@ -823,6 +828,7 @@ async function loadSheet(){
 
     monsters =
       rows
+
         .map(row => {
 
           const cells =
@@ -834,48 +840,89 @@ async function loadSheet(){
             name:
               cells[0]?.v ?? "",
 
+
             link:
-              getCellLink(cells[1]),
+              getCellLink(
+                cells[1]
+              ),
+
+
+            /*
+             * WICHTIG:
+             * Für CR wird zuerst der
+             * formatierte Wert .f verwendet.
+             * Dadurch bleibt z.B. "1/4"
+             * erhalten und wird nicht als
+             * Sheets-interne Zahl wie 46113
+             * interpretiert.
+             */
 
             cr:
-              parseCR(cells[2]?.v),
+              parseCR(
+                cells[2]?.f ??
+                cells[2]?.v
+              ),
+
 
             xp:
-              parseNumber(cells[3]?.v),
+              parseNumber(
+                cells[3]?.f ??
+                cells[3]?.v
+              ),
+
 
             unique:
-              String(cells[4]?.v ?? "")
-                .trim(),
+              String(
+                cells[4]?.f ??
+                cells[4]?.v ??
+                ""
+              ).trim(),
+
 
             ddbHabitat:
-              cells[5]?.v ?? "",
+              cells[5]?.f ??
+              cells[5]?.v ??
+              "",
+
 
             habitats:{}
 
           };
 
 
-          HABITATS.forEach(habitat => {
+          HABITATS.forEach(
+            habitat => {
 
-            monster.habitats[habitat.label] =
-              parseHabitatScore(
-                cells[habitat.columnIndex]?.v
-              );
+              monster.habitats[
+                habitat.label
+              ] =
+                parseHabitatScore(
+                  cells[
+                    habitat.columnIndex
+                  ]?.f ??
+                  cells[
+                    habitat.columnIndex
+                  ]?.v
+                );
 
-          });
+            }
+          );
 
 
           return monster;
 
         })
+
         .filter(
-          monster => monster.name
+          monster =>
+            monster.name
         );
 
 
     buildHabitatFilters();
 
     filterMonsters();
+
 
   }catch(error){
 
@@ -884,14 +931,21 @@ async function loadSheet(){
       error
     );
 
+
     document.getElementById(
       "tableBody"
     ).innerHTML = `
+
       <tr>
+
         <td colspan="6">
+
           Fehler beim Laden der Monsterdaten.
+
         </td>
+
       </tr>
+
     `;
 
   }
@@ -908,36 +962,38 @@ function getCellLink(cell){
   if(!cell)
     return "";
 
-  /*
-   * Falls Google Sheets die URL als Link
-   * überliefert, versuchen wir verschiedene
-   * mögliche Felder.
-   */
 
   if(cell.u)
     return cell.u;
 
+
   if(cell.href)
     return cell.href;
+
 
   if(cell.link)
     return cell.link;
 
-  /*
-   * Falls die Zelle einfach eine URL als Text enthält.
-   */
 
   const value =
-    String(cell.v ?? "").trim();
+    String(
+      cell.v ?? ""
+    ).trim();
+
 
   if(
-    value.startsWith("http://") ||
-    value.startsWith("https://")
+    value.startsWith(
+      "http://"
+    ) ||
+    value.startsWith(
+      "https://"
+    )
   ){
 
     return value;
 
   }
+
 
   return "";
 
@@ -960,14 +1016,17 @@ function parseNumber(value){
 
   }
 
+
   if(typeof value === "number")
     return value;
+
 
   const text =
     String(value)
       .trim()
       .replace(/\./g,"")
       .replace(",", ".");
+
 
   return Number(text) || 0;
 
@@ -991,41 +1050,29 @@ function parseCR(value){
   }
 
 
-  /*
-   * Falls Sheets bereits eine Zahl liefert.
-   */
-
-  if(typeof value === "number"){
-
-    /*
-     * Werte wie 0.25, 0.5 etc.
-     * werden direkt übernommen.
-     */
-
-    return value;
-
-  }
-
-
   let text =
     String(value)
       .trim()
       .toLowerCase();
 
 
-  /*
-   * "CR 1/4"
-   */
-
   text =
-    text.replace(/^cr\s*/,"");
+    text.replace(
+      /^cr\s*/,
+      ""
+    );
 
 
   /*
-   * Brüche wie 1/8, 1/4, 1/2
+   * Normale Brüche:
+   * 1/8
+   * 1/4
+   * 1/2
    */
 
-  if(text.includes("/")){
+  if(
+    text.includes("/")
+  ){
 
     const parts =
       text.split("/");
@@ -1033,15 +1080,13 @@ function parseCR(value){
 
     const numerator =
       Number(
-        parts[0]
-          .trim()
+        parts[0].trim()
       );
 
 
     const denominator =
       Number(
-        parts[1]
-          .trim()
+        parts[1].trim()
       );
 
 
@@ -1062,12 +1107,41 @@ function parseCR(value){
 
 
   /*
+   * Manchmal können Zeichen wie
+   * ¼, ½ oder ⅛ auftauchen.
+   */
+
+  const unicodeFractions = {
+
+    "⅛":0.125,
+    "¼":0.25,
+    "½":0.5
+
+  };
+
+
+  if(
+    Object.prototype.hasOwnProperty.call(
+      unicodeFractions,
+      text
+    )
+  ){
+
+    return unicodeFractions[text];
+
+  }
+
+
+  /*
    * Normale Zahlen
    */
 
   const number =
     Number(
-      text.replace(",",".")
+      text.replace(
+        ",",
+        "."
+      )
     );
 
 
@@ -1129,68 +1203,78 @@ function buildHabitatFilters(){
       "habitatFilter"
     );
 
+
   container.innerHTML = "";
 
 
-  HABITATS.forEach(habitat => {
+  HABITATS.forEach(
+    habitat => {
 
-    const button =
-      document.createElement("button");
-
-    button.type = "button";
-
-    button.textContent =
-      habitat.label;
+      const button =
+        document.createElement(
+          "button"
+        );
 
 
-    if(
-      selectedHabitats.includes(
-        habitat.label
-      )
-    ){
+      button.type = "button";
 
-      button.classList.add(
-        "active"
+
+      button.textContent =
+        habitat.label;
+
+
+      if(
+        selectedHabitats.includes(
+          habitat.label
+        )
+      ){
+
+        button.classList.add(
+          "active"
+        );
+
+      }
+
+
+      button.addEventListener(
+        "click",
+        ()=>{
+
+          if(
+            selectedHabitats.includes(
+              habitat.label
+            )
+          ){
+
+            selectedHabitats =
+              selectedHabitats.filter(
+                h =>
+                  h !== habitat.label
+              );
+
+          }else{
+
+            selectedHabitats.push(
+              habitat.label
+            );
+
+          }
+
+
+          buildHabitatFilters();
+
+          filterMonsters();
+
+        }
+      );
+
+
+      container.appendChild(
+        button
       );
 
     }
-
-
-    button.addEventListener(
-      "click",
-      ()=>{
-
-        if(
-          selectedHabitats.includes(
-            habitat.label
-          )
-        ){
-
-          selectedHabitats =
-            selectedHabitats.filter(
-              h =>
-                h !== habitat.label
-            );
-
-        }else{
-
-          selectedHabitats.push(
-            habitat.label
-          );
-
-        }
-
-
-        buildHabitatFilters();
-        filterMonsters();
-
-      }
-    );
-
-
-    container.appendChild(button);
-
-  });
+  );
 
 }
 
@@ -1200,7 +1284,9 @@ function buildHabitatFilters(){
    ========================================================= */
 
 document
-  .getElementById("habitatAll")
+  .getElementById(
+    "habitatAll"
+  )
   .addEventListener(
     "click",
     ()=>{
@@ -1211,7 +1297,9 @@ document
             habitat.label
         );
 
+
       buildHabitatFilters();
+
       filterMonsters();
 
     }
@@ -1223,14 +1311,18 @@ document
    ========================================================= */
 
 document
-  .getElementById("habitatNone")
+  .getElementById(
+    "habitatNone"
+  )
   .addEventListener(
     "click",
     ()=>{
 
       selectedHabitats = [];
 
+
       buildHabitatFilters();
+
       filterMonsters();
 
     }
@@ -1244,43 +1336,52 @@ document
 function filterMonsters(){
 
   const search =
-    document.getElementById(
-      "searchInput"
-    )
-    .value
-    .toLowerCase()
-    .trim();
+    document
+      .getElementById(
+        "searchInput"
+      )
+      .value
+      .toLowerCase()
+      .trim();
 
 
   const crMin =
     parseFloat(
-      document.getElementById(
-        "crMin"
-      ).value
+      document
+        .getElementById(
+          "crMin"
+        )
+        .value
     );
 
 
   const crMax =
     parseFloat(
-      document.getElementById(
-        "crMax"
-      ).value
+      document
+        .getElementById(
+          "crMax"
+        )
+        .value
     );
 
 
   const xpMin =
     parseFloat(
-      document.getElementById(
-        "xpMin"
-      ).value
+      document
+        .getElementById(
+          "xpMin"
+        )
+        .value
     );
 
 
   const xpMax =
     parseFloat(
-      document.getElementById(
-        "xpMax"
-      ).value
+      document
+        .getElementById(
+          "xpMax"
+        )
+        .value
     );
 
 
@@ -1332,23 +1433,25 @@ function filterMonsters(){
 
 
         const combined =
-          `${monster.name} ${monster.ddbHabitat}`
-            .toLowerCase();
+          `
+          ${monster.name}
+          ${monster.ddbHabitat}
+          `
+          .toLowerCase();
 
 
         if(
           search &&
-          !combined.includes(search)
+          !combined.includes(
+            search
+          )
         )
           return false;
 
 
         /*
-         * Mehrere Habitate:
-         * OR-Logik.
-         *
-         * Später können wir hier eine
-         * Ranking-/AND-Logik ergänzen.
+         * Mehrere ausgewählte Habitate:
+         * aktuell OR-Logik.
          */
 
         if(
@@ -1421,10 +1524,15 @@ function filterMonsters(){
       }
 
 
-      if(typeof x === "string"){
+      if(
+        typeof x === "string"
+      ){
 
-        x = x.toLowerCase();
-        y = y.toLowerCase();
+        x =
+          x.toLowerCase();
+
+        y =
+          y.toLowerCase();
 
       }
 
@@ -1453,9 +1561,14 @@ function filterMonsters(){
   );
 
 
-  renderTable(filtered);
+  renderTable(
+    filtered
+  );
 
-  renderMobileCards(filtered);
+
+  renderMobileCards(
+    filtered
+  );
 
 
   document
@@ -1523,88 +1636,95 @@ function renderTable(data){
       "tableBody"
     );
 
+
   body.innerHTML = "";
 
 
-  data.forEach(monster => {
+  data.forEach(
+    monster => {
 
-    const tr =
-      document.createElement(
-        "tr"
+      const tr =
+        document.createElement(
+          "tr"
+        );
+
+
+      const uniqueClass =
+        monster.unique === "Ja"
+          ? "unique-yes"
+          : "unique-no";
+
+
+      const fit =
+        getHabitatFit(
+          monster
+        );
+
+
+      const habitatFit =
+        fit === null
+          ? "-"
+          : `${fit} / 5`;
+
+
+      const nameHTML =
+        monster.link
+
+          ? `
+            <a
+              class="monster-link"
+              href="${escapeAttribute(monster.link)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ${escapeHTML(monster.name)}
+            </a>
+          `
+
+          : `
+            ${escapeHTML(monster.name)}
+          `;
+
+
+      tr.innerHTML = `
+
+        <td>
+          ${nameHTML}
+        </td>
+
+        <td>
+          ${formatCR(monster.cr)}
+        </td>
+
+        <td>
+          ${monster.xp.toLocaleString("de-DE")}
+        </td>
+
+        <td class="${uniqueClass}">
+          ${escapeHTML(
+            monster.unique || "-"
+          )}
+        </td>
+
+        <td>
+          ${escapeHTML(
+            monster.ddbHabitat || "-"
+          )}
+        </td>
+
+        <td class="habitat-score">
+          ${habitatFit}
+        </td>
+
+      `;
+
+
+      body.appendChild(
+        tr
       );
 
-
-    const uniqueClass =
-      monster.unique === "Ja"
-        ? "unique-yes"
-        : "unique-no";
-
-
-    const fit =
-      getHabitatFit(monster);
-
-
-    const habitatFit =
-      fit === null
-        ? "-"
-        : `${fit} / 5`;
-
-
-    const nameHTML =
-      monster.link
-
-        ? `
-          <a
-            class="monster-link"
-            href="${escapeAttribute(monster.link)}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ${escapeHTML(monster.name)}
-          </a>
-        `
-
-        : `
-          ${escapeHTML(monster.name)}
-        `;
-
-
-    tr.innerHTML = `
-
-      <td>
-        ${nameHTML}
-      </td>
-
-      <td>
-        ${formatCR(monster.cr)}
-      </td>
-
-      <td>
-        ${monster.xp.toLocaleString("de-DE")}
-      </td>
-
-      <td class="${uniqueClass}">
-        ${escapeHTML(
-          monster.unique || "-"
-        )}
-      </td>
-
-      <td>
-        ${escapeHTML(
-          monster.ddbHabitat || "-"
-        )}
-      </td>
-
-      <td class="habitat-score">
-        ${habitatFit}
-      </td>
-
-    `;
-
-
-    body.appendChild(tr);
-
-  });
+    }
+  );
 
 }
 
@@ -1620,133 +1740,141 @@ function renderMobileCards(data){
       "mobileCards"
     );
 
+
   container.innerHTML = "";
 
 
-  data.forEach(monster => {
+  data.forEach(
+    monster => {
 
-    const fit =
-      getHabitatFit(monster);
+      const fit =
+        getHabitatFit(
+          monster
+        );
 
 
-    const card =
-      document.createElement(
-        "div"
+      const card =
+        document.createElement(
+          "div"
+        );
+
+
+      card.className =
+        "mobile-card";
+
+
+      const nameHTML =
+        monster.link
+
+          ? `
+            <a
+              href="${escapeAttribute(monster.link)}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ${escapeHTML(monster.name)}
+            </a>
+          `
+
+          : `
+            ${escapeHTML(monster.name)}
+          `;
+
+
+      card.innerHTML = `
+
+        <div class="mobile-card-title">
+          ${nameHTML}
+        </div>
+
+
+        <div class="mobile-card-grid">
+
+          <div>
+
+            <div class="mobile-label">
+              CR
+            </div>
+
+            <div class="mobile-value">
+              ${formatCR(monster.cr)}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              XP
+            </div>
+
+            <div class="mobile-value">
+              ${monster.xp.toLocaleString("de-DE")}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              Einzigartig
+            </div>
+
+            <div class="mobile-value">
+              ${escapeHTML(
+                monster.unique || "-"
+              )}
+            </div>
+
+          </div>
+
+
+          <div>
+
+            <div class="mobile-label">
+              Habitat-Fit
+            </div>
+
+            <div class="mobile-score">
+              ${
+                fit === null
+                  ? "-"
+                  : `${fit} / 5`
+              }
+            </div>
+
+          </div>
+
+
+          <div
+            style="grid-column:1 / -1;"
+          >
+
+            <div class="mobile-label">
+              DDB Habitat
+            </div>
+
+            <div class="mobile-value">
+              ${escapeHTML(
+                monster.ddbHabitat || "-"
+              )}
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+
+      container.appendChild(
+        card
       );
 
-    card.className =
-      "mobile-card";
-
-
-    const nameHTML =
-      monster.link
-
-        ? `
-          <a
-            href="${escapeAttribute(monster.link)}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            ${escapeHTML(monster.name)}
-          </a>
-        `
-
-        : `
-          ${escapeHTML(monster.name)}
-        `;
-
-
-    card.innerHTML = `
-
-      <div class="mobile-card-title">
-        ${nameHTML}
-      </div>
-
-
-      <div class="mobile-card-grid">
-
-        <div>
-
-          <div class="mobile-label">
-            CR
-          </div>
-
-          <div class="mobile-value">
-            ${formatCR(monster.cr)}
-          </div>
-
-        </div>
-
-
-        <div>
-
-          <div class="mobile-label">
-            XP
-          </div>
-
-          <div class="mobile-value">
-            ${monster.xp.toLocaleString("de-DE")}
-          </div>
-
-        </div>
-
-
-        <div>
-
-          <div class="mobile-label">
-            Einzigartig
-          </div>
-
-          <div class="mobile-value">
-            ${escapeHTML(
-              monster.unique || "-"
-            )}
-          </div>
-
-        </div>
-
-
-        <div>
-
-          <div class="mobile-label">
-            Habitat-Fit
-          </div>
-
-          <div class="mobile-score">
-            ${
-              fit === null
-                ? "-"
-                : `${fit} / 5`
-            }
-          </div>
-
-        </div>
-
-
-        <div
-          style="grid-column:1 / -1;"
-        >
-
-          <div class="mobile-label">
-            DDB Habitat
-          </div>
-
-          <div class="mobile-value">
-            ${escapeHTML(
-              monster.ddbHabitat || "-"
-            )}
-          </div>
-
-        </div>
-
-      </div>
-
-    `;
-
-
-    container.appendChild(card);
-
-  });
+    }
+  );
 
 }
 
@@ -1759,38 +1887,41 @@ document
   .querySelectorAll(
     ".unique-btn"
   )
-  .forEach(button => {
+  .forEach(
+    button => {
 
-    button.addEventListener(
-      "click",
-      ()=>{
+      button.addEventListener(
+        "click",
+        ()=>{
 
-        document
-          .querySelectorAll(
-            ".unique-btn"
-          )
-          .forEach(btn =>
-            btn.classList.remove(
-              "active"
+          document
+            .querySelectorAll(
+              ".unique-btn"
             )
+            .forEach(
+              btn =>
+                btn.classList.remove(
+                  "active"
+                )
+            );
+
+
+          button.classList.add(
+            "active"
           );
 
 
-        button.classList.add(
-          "active"
-        );
+          uniqueState =
+            button.dataset.value;
 
 
-        uniqueState =
-          button.dataset.value;
+          filterMonsters();
 
+        }
+      );
 
-        filterMonsters();
-
-      }
-    );
-
-  });
+    }
+  );
 
 
 /* =========================================================
@@ -1804,16 +1935,20 @@ document
   "xpMax",
   "searchInput"
 ]
-.forEach(id => {
+.forEach(
+  id => {
 
-  document
-    .getElementById(id)
-    .addEventListener(
-      "input",
-      filterMonsters
-    );
+    document
+      .getElementById(
+        id
+      )
+      .addEventListener(
+        "input",
+        filterMonsters
+      );
 
-});
+  }
+);
 
 
 /* =========================================================
@@ -1832,17 +1967,21 @@ document
         "crMin"
       ).value = "";
 
+
       document.getElementById(
         "crMax"
       ).value = "";
+
 
       document.getElementById(
         "xpMin"
       ).value = "";
 
+
       document.getElementById(
         "xpMax"
       ).value = "";
+
 
       document.getElementById(
         "searchInput"
@@ -1857,10 +1996,11 @@ document
         .querySelectorAll(
           ".unique-btn"
         )
-        .forEach(btn =>
-          btn.classList.remove(
-            "active"
-          )
+        .forEach(
+          btn =>
+            btn.classList.remove(
+              "active"
+            )
         );
 
 
@@ -1892,58 +2032,61 @@ document
   .querySelectorAll(
     ".sortable"
   )
-  .forEach(header => {
+  .forEach(
+    header => {
 
-    header.addEventListener(
-      "click",
-      ()=>{
+      header.addEventListener(
+        "click",
+        ()=>{
 
-        const column =
-          header.dataset.sort;
+          const column =
+            header.dataset.sort;
 
 
-        if(
-          sortColumn === column
-        ){
+          if(
+            sortColumn === column
+          ){
 
-          sortDirection =
-            sortDirection === "asc"
-              ? "desc"
-              : "asc";
+            sortDirection =
+              sortDirection === "asc"
+                ? "desc"
+                : "asc";
 
-        }else{
+          }else{
 
-          sortColumn = column;
-          sortDirection = "asc";
+            sortColumn = column;
+            sortDirection = "asc";
+
+          }
+
+
+          document
+            .querySelectorAll(
+              ".sort-arrow"
+            )
+            .forEach(
+              arrow =>
+                arrow.textContent = ""
+            );
+
+
+          header
+            .querySelector(
+              ".sort-arrow"
+            )
+            .textContent =
+              sortDirection === "asc"
+                ? "▲"
+                : "▼";
+
+
+          filterMonsters();
 
         }
+      );
 
-
-        document
-          .querySelectorAll(
-            ".sort-arrow"
-          )
-          .forEach(arrow =>
-            arrow.textContent = ""
-          );
-
-
-        header
-          .querySelector(
-            ".sort-arrow"
-          )
-          .textContent =
-            sortDirection === "asc"
-              ? "▲"
-              : "▼";
-
-
-        filterMonsters();
-
-      }
-    );
-
-  });
+    }
+  );
 
 
 /* =========================================================
@@ -2105,10 +2248,6 @@ function formatCR(cr){
     return "0";
 
 
-  /*
-   * Kleine CR-Werte als Bruch anzeigen.
-   */
-
   const knownFractions = {
 
     0.125:"1/8",
@@ -2130,10 +2269,6 @@ function formatCR(cr){
   }
 
 
-  /*
-   * Ganze CR-Werte.
-   */
-
   if(
     Number.isInteger(cr)
   ){
@@ -2142,10 +2277,6 @@ function formatCR(cr){
 
   }
 
-
-  /*
-   * Sonstige Dezimalwerte.
-   */
 
   return String(
     Number(
