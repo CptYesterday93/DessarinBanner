@@ -218,6 +218,16 @@ tbody tr:hover{
     inset 0 0 0 1px rgba(255,255,255,0.04);
 }
 
+.monster-link{
+  color:#8ecbff;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.monster-link:hover{
+  text-decoration:underline;
+}
+
 .unique-yes{
   color:#ff9b42;
   font-weight:bold;
@@ -290,6 +300,15 @@ tbody tr:hover{
   font-size:18px;
   font-weight:bold;
   margin-bottom:12px;
+}
+
+.mobile-card-title a{
+  color:#8ecbff;
+  text-decoration:none;
+}
+
+.mobile-card-title a:hover{
+  text-decoration:underline;
 }
 
 .mobile-card-grid{
@@ -657,63 +676,103 @@ const SHEET_NAME = "Sheet1";
 
 
 /* =========================================================
+   SPALTEN
+   =========================================================
+
+   A = Monster
+   B = DDB Link
+   C = CR
+   D = XP
+   E = Einzigartig?
+   F = DDB Habitat
+   G = Wald
+   H = Grasland
+   I = Wüste
+   J = Hügel
+   K = Gebirge
+   L = Sumpf/Moor
+   M = Küste
+   N = Süßwasser
+   O = Höhle
+   P = Tunnel/Underdark
+   Q = Arktis
+   R = Vulkanisch
+   S = Urban
+
+   ========================================================= */
+
+
+/* =========================================================
    HABITATE
-   UI-NAME → GOOGLE-SHEET-SPALTENNAME
    ========================================================= */
 
 const HABITATS = [
+
   {
     label:"Wald",
-    column:"Wald"
+    columnIndex:6
   },
+
   {
     label:"Grasland",
-    column:"Grasland"
+    columnIndex:7
   },
+
   {
     label:"Wüste",
-    column:"Wüste"
+    columnIndex:8
   },
+
   {
     label:"Hügel",
-    column:"Hügel"
+    columnIndex:9
   },
+
   {
     label:"Gebirge",
-    column:"Gebirge"
+    columnIndex:10
   },
+
   {
     label:"Sumpf",
-    column:"Sumpf/Moor"
+    columnIndex:11
   },
+
   {
     label:"Küste",
-    column:"Küste"
+    columnIndex:12
   },
+
   {
     label:"Süßwasser",
-    column:"Süßwasser"
+    columnIndex:13
   },
+
   {
     label:"Höhle",
-    column:"Höhle"
+    columnIndex:14
   },
+
   {
     label:"Tunnel",
-    column:"Tunnel/Underdark"
+    columnIndex:15
   },
+
   {
     label:"Arktis",
-    column:"Arktis"
+    columnIndex:16
   },
+
   {
     label:"Vulkanisch",
-    column:"Vulkanisch"
+    columnIndex:17
   },
+
   {
     label:"Urban",
-    column:"Urban"
+    columnIndex:18
   }
+
 ];
 
 
@@ -745,6 +804,12 @@ async function loadSheet(){
     const response =
       await fetch(url);
 
+    if(!response.ok){
+      throw new Error(
+        `Google Sheets HTTP ${response.status}`
+      );
+    }
+
     const text =
       await response.text();
 
@@ -764,34 +829,38 @@ async function loadSheet(){
           const cells =
             row.c || [];
 
+
           const monster = {
 
             name:
               cells[0]?.v ?? "",
 
+            link:
+              getCellLink(cells[1]),
+
             cr:
-              parseCR(cells[1]?.v),
+              parseCR(cells[2]?.v),
 
             xp:
-              Number(cells[2]?.v ?? 0),
+              parseNumber(cells[3]?.v),
 
             unique:
-              String(cells[3]?.v ?? "")
+              String(cells[4]?.v ?? "")
                 .trim(),
 
             ddbHabitat:
-              cells[4]?.v ?? "",
+              cells[5]?.v ?? "",
 
             habitats:{}
 
           };
 
 
-          HABITATS.forEach((habitat,index)=>{
+          HABITATS.forEach(habitat => {
 
             monster.habitats[habitat.label] =
-              Number(
-                cells[5 + index]?.v ?? 0
+              parseHabitatScore(
+                cells[habitat.columnIndex]?.v
               );
 
           });
@@ -800,7 +869,9 @@ async function loadSheet(){
           return monster;
 
         })
-        .filter(m => m.name);
+        .filter(
+          monster => monster.name
+        );
 
 
     buildHabitatFilters();
@@ -809,9 +880,14 @@ async function loadSheet(){
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "Fehler beim Laden der Monsterdaten:",
+      error
+    );
 
-    document.getElementById("tableBody").innerHTML = `
+    document.getElementById(
+      "tableBody"
+    ).innerHTML = `
       <tr>
         <td colspan="6">
           Fehler beim Laden der Monsterdaten.
@@ -825,27 +901,220 @@ async function loadSheet(){
 
 
 /* =========================================================
+   LINK
+   ========================================================= */
+
+function getCellLink(cell){
+
+  if(!cell)
+    return "";
+
+  /*
+   * Falls Google Sheets die URL als Link
+   * überliefert, versuchen wir verschiedene
+   * mögliche Felder.
+   */
+
+  if(cell.u)
+    return cell.u;
+
+  if(cell.href)
+    return cell.href;
+
+  if(cell.link)
+    return cell.link;
+
+  /*
+   * Falls die Zelle einfach eine URL als Text enthält.
+   */
+
+  const value =
+    String(cell.v ?? "").trim();
+
+  if(
+    value.startsWith("http://") ||
+    value.startsWith("https://")
+  ){
+
+    return value;
+
+  }
+
+  return "";
+
+}
+
+
+/* =========================================================
+   ZAHLEN
+   ========================================================= */
+
+function parseNumber(value){
+
+  if(
+    value === undefined ||
+    value === null ||
+    value === ""
+  ){
+
+    return 0;
+
+  }
+
+  if(typeof value === "number")
+    return value;
+
+  const text =
+    String(value)
+      .trim()
+      .replace(/\./g,"")
+      .replace(",", ".");
+
+  return Number(text) || 0;
+
+}
+
+
+/* =========================================================
    CR
    ========================================================= */
 
 function parseCR(value){
 
-  if(value === undefined || value === null)
+  if(
+    value === undefined ||
+    value === null ||
+    value === ""
+  ){
+
     return 0;
 
-  const text =
-    String(value).trim();
+  }
+
+
+  /*
+   * Falls Sheets bereits eine Zahl liefert.
+   */
+
+  if(typeof value === "number"){
+
+    /*
+     * Werte wie 0.25, 0.5 etc.
+     * werden direkt übernommen.
+     */
+
+    return value;
+
+  }
+
+
+  let text =
+    String(value)
+      .trim()
+      .toLowerCase();
+
+
+  /*
+   * "CR 1/4"
+   */
+
+  text =
+    text.replace(/^cr\s*/,"");
+
+
+  /*
+   * Brüche wie 1/8, 1/4, 1/2
+   */
 
   if(text.includes("/")){
 
     const parts =
       text.split("/");
 
-    return Number(parts[0]) / Number(parts[1]);
+
+    const numerator =
+      Number(
+        parts[0]
+          .trim()
+      );
+
+
+    const denominator =
+      Number(
+        parts[1]
+          .trim()
+      );
+
+
+    if(
+      !isNaN(numerator) &&
+      !isNaN(denominator) &&
+      denominator !== 0
+    ){
+
+      return (
+        numerator /
+        denominator
+      );
+
+    }
 
   }
 
-  return Number(text) || 0;
+
+  /*
+   * Normale Zahlen
+   */
+
+  const number =
+    Number(
+      text.replace(",",".")
+    );
+
+
+  return isNaN(number)
+    ? 0
+    : number;
+
+}
+
+
+/* =========================================================
+   HABITAT SCORE
+   ========================================================= */
+
+function parseHabitatScore(value){
+
+  if(
+    value === undefined ||
+    value === null ||
+    value === ""
+  ){
+
+    return 0;
+
+  }
+
+
+  const number =
+    Number(
+      String(value)
+        .replace(",",".")
+        .trim()
+    );
+
+
+  if(isNaN(number))
+    return 0;
+
+
+  return Math.max(
+    0,
+    Math.min(
+      5,
+      number
+    )
+  );
 
 }
 
@@ -857,7 +1126,9 @@ function parseCR(value){
 function buildHabitatFilters(){
 
   const container =
-    document.getElementById("habitatFilter");
+    document.getElementById(
+      "habitatFilter"
+    );
 
   container.innerHTML = "";
 
@@ -879,37 +1150,43 @@ function buildHabitatFilters(){
       )
     ){
 
-      button.classList.add("active");
+      button.classList.add(
+        "active"
+      );
 
     }
 
 
-    button.addEventListener("click",()=>{
+    button.addEventListener(
+      "click",
+      ()=>{
 
-      if(
-        selectedHabitats.includes(
-          habitat.label
-        )
-      ){
+        if(
+          selectedHabitats.includes(
+            habitat.label
+          )
+        ){
 
-        selectedHabitats =
-          selectedHabitats.filter(
-            h => h !== habitat.label
+          selectedHabitats =
+            selectedHabitats.filter(
+              h =>
+                h !== habitat.label
+            );
+
+        }else{
+
+          selectedHabitats.push(
+            habitat.label
           );
 
-      }else{
+        }
 
-        selectedHabitats.push(
-          habitat.label
-        );
+
+        buildHabitatFilters();
+        filterMonsters();
 
       }
-
-
-      buildHabitatFilters();
-      filterMonsters();
-
-    });
+    );
 
 
     container.appendChild(button);
@@ -920,38 +1197,45 @@ function buildHabitatFilters(){
 
 
 /* =========================================================
-   HABITAT: ALLE
+   HABITAT ALLE
    ========================================================= */
 
 document
   .getElementById("habitatAll")
-  .addEventListener("click",()=>{
+  .addEventListener(
+    "click",
+    ()=>{
 
-    selectedHabitats =
-      HABITATS.map(
-        habitat => habitat.label
-      );
+      selectedHabitats =
+        HABITATS.map(
+          habitat =>
+            habitat.label
+        );
 
-    buildHabitatFilters();
-    filterMonsters();
+      buildHabitatFilters();
+      filterMonsters();
 
-  });
+    }
+  );
 
 
 /* =========================================================
-   HABITAT: KEINE
+   HABITAT KEINE
    ========================================================= */
 
 document
   .getElementById("habitatNone")
-  .addEventListener("click",()=>{
+  .addEventListener(
+    "click",
+    ()=>{
 
-    selectedHabitats = [];
+      selectedHabitats = [];
 
-    buildHabitatFilters();
-    filterMonsters();
+      buildHabitatFilters();
+      filterMonsters();
 
-  });
+    }
+  );
 
 
 /* =========================================================
@@ -961,195 +1245,224 @@ document
 function filterMonsters(){
 
   const search =
-    document.getElementById("searchInput")
-      .value
-      .toLowerCase()
-      .trim();
+    document.getElementById(
+      "searchInput"
+    )
+    .value
+    .toLowerCase()
+    .trim();
 
 
   const crMin =
     parseFloat(
-      document.getElementById("crMin").value
+      document.getElementById(
+        "crMin"
+      ).value
     );
 
 
   const crMax =
     parseFloat(
-      document.getElementById("crMax").value
+      document.getElementById(
+        "crMax"
+      ).value
     );
 
 
   const xpMin =
     parseFloat(
-      document.getElementById("xpMin").value
+      document.getElementById(
+        "xpMin"
+      ).value
     );
 
 
   const xpMax =
     parseFloat(
-      document.getElementById("xpMax").value
+      document.getElementById(
+        "xpMax"
+      ).value
     );
 
 
   let filtered =
-    monsters.filter(monster => {
+    monsters.filter(
+      monster => {
 
 
-      if(
-        !isNaN(crMin) &&
-        monster.cr < crMin
-      )
-        return false;
-
-
-      if(
-        !isNaN(crMax) &&
-        monster.cr > crMax
-      )
-        return false;
-
-
-      if(
-        !isNaN(xpMin) &&
-        monster.xp < xpMin
-      )
-        return false;
-
-
-      if(
-        !isNaN(xpMax) &&
-        monster.xp > xpMax
-      )
-        return false;
-
-
-      if(
-        uniqueState === "Ja" &&
-        monster.unique !== "Ja"
-      )
-        return false;
-
-
-      if(
-        uniqueState === "Nein" &&
-        monster.unique === "Ja"
-      )
-        return false;
-
-
-      const combined =
-        `${monster.name} ${monster.ddbHabitat}`
-          .toLowerCase();
-
-
-      if(
-        search &&
-        !combined.includes(search)
-      )
-        return false;
-
-
-      /*
-       * Mehrere Habitate:
-       * Ein Monster bleibt zunächst im Ergebnis,
-       * wenn es in mindestens einem ausgewählten
-       * Habitat einen Wert > 0 hat.
-       */
-
-      if(selectedHabitats.length){
-
-        const habitatMatch =
-          selectedHabitats.some(
-            habitat =>
-              monster.habitats[habitat] > 0
-          );
-
-        if(!habitatMatch)
+        if(
+          !isNaN(crMin) &&
+          monster.cr < crMin
+        )
           return false;
 
+
+        if(
+          !isNaN(crMax) &&
+          monster.cr > crMax
+        )
+          return false;
+
+
+        if(
+          !isNaN(xpMin) &&
+          monster.xp < xpMin
+        )
+          return false;
+
+
+        if(
+          !isNaN(xpMax) &&
+          monster.xp > xpMax
+        )
+          return false;
+
+
+        if(
+          uniqueState === "Ja" &&
+          monster.unique !== "Ja"
+        )
+          return false;
+
+
+        if(
+          uniqueState === "Nein" &&
+          monster.unique === "Ja"
+        )
+          return false;
+
+
+        const combined =
+          `${monster.name} ${monster.ddbHabitat}`
+            .toLowerCase();
+
+
+        if(
+          search &&
+          !combined.includes(search)
+        )
+          return false;
+
+
+        /*
+         * Mehrere Habitate:
+         * OR-Logik.
+         *
+         * Später können wir hier eine
+         * Ranking-/AND-Logik ergänzen.
+         */
+
+        if(
+          selectedHabitats.length
+        ){
+
+          const habitatMatch =
+            selectedHabitats.some(
+              habitat =>
+                monster.habitats[
+                  habitat
+                ] > 0
+            );
+
+
+          if(!habitatMatch)
+            return false;
+
+        }
+
+
+        return true;
+
       }
-
-
-      return true;
-
-    });
+    );
 
 
   /* =======================================================
      SORTIERUNG
      ======================================================= */
 
-  filtered.sort((a,b)=>{
+  filtered.sort(
+    (a,b)=>{
 
-    let x;
-    let y;
-
-
-    switch(sortColumn){
-
-      case "cr":
-
-        x = a.cr;
-        y = b.cr;
-
-        break;
+      let x;
+      let y;
 
 
-      case "xp":
+      switch(sortColumn){
 
-        x = a.xp;
-        y = b.xp;
+        case "cr":
 
-        break;
+          x = a.cr;
+          y = b.cr;
 
-
-      case "unique":
-
-        x = a.unique;
-        y = b.unique;
-
-        break;
+          break;
 
 
-      default:
+        case "xp":
 
-        x = a.name;
-        y = b.name;
+          x = a.xp;
+          y = b.xp;
+
+          break;
+
+
+        case "unique":
+
+          x = a.unique;
+          y = b.unique;
+
+          break;
+
+
+        default:
+
+          x = a.name;
+          y = b.name;
+
+      }
+
+
+      if(typeof x === "string"){
+
+        x = x.toLowerCase();
+        y = y.toLowerCase();
+
+      }
+
+
+      if(x < y){
+
+        return sortDirection === "asc"
+          ? -1
+          : 1;
+
+      }
+
+
+      if(x > y){
+
+        return sortDirection === "asc"
+          ? 1
+          : -1;
+
+      }
+
+
+      return 0;
 
     }
-
-
-    if(typeof x === "string"){
-
-      x = x.toLowerCase();
-      y = y.toLowerCase();
-
-    }
-
-
-    if(x < y)
-      return sortDirection === "asc"
-        ? -1
-        : 1;
-
-
-    if(x > y)
-      return sortDirection === "asc"
-        ? 1
-        : -1;
-
-
-    return 0;
-
-  });
+  );
 
 
   renderTable(filtered);
+
   renderMobileCards(filtered);
 
 
   document
-    .getElementById("resultCount")
+    .getElementById(
+      "resultCount"
+    )
     .textContent =
       filtered.length;
 
@@ -1162,14 +1475,21 @@ function filterMonsters(){
 
 function getHabitatFit(monster){
 
-  if(!selectedHabitats.length)
+  if(
+    !selectedHabitats.length
+  ){
+
     return null;
+
+  }
 
 
   const values =
     selectedHabitats.map(
       habitat =>
-        monster.habitats[habitat] ?? 0
+        monster.habitats[
+          habitat
+        ] ?? 0
     );
 
 
@@ -1179,13 +1499,15 @@ function getHabitatFit(monster){
 
   const total =
     values.reduce(
-      (sum,value)=>sum + value,
+      (sum,value)=>
+        sum + value,
       0
     );
 
 
   return (
-    total / values.length
+    total /
+    values.length
   ).toFixed(1);
 
 }
@@ -1198,7 +1520,9 @@ function getHabitatFit(monster){
 function renderTable(data){
 
   const body =
-    document.getElementById("tableBody");
+    document.getElementById(
+      "tableBody"
+    );
 
   body.innerHTML = "";
 
@@ -1206,7 +1530,9 @@ function renderTable(data){
   data.forEach(monster => {
 
     const tr =
-      document.createElement("tr");
+      document.createElement(
+        "tr"
+      );
 
 
     const uniqueClass =
@@ -1225,12 +1551,29 @@ function renderTable(data){
         : `${fit} / 5`;
 
 
+    const nameHTML =
+      monster.link
+
+        ? `
+          <a
+            class="monster-link"
+            href="${escapeAttribute(monster.link)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ${escapeHTML(monster.name)}
+          </a>
+        `
+
+        : `
+          ${escapeHTML(monster.name)}
+        `;
+
+
     tr.innerHTML = `
 
       <td>
-        <strong>
-          ${escapeHTML(monster.name)}
-        </strong>
+        ${nameHTML}
       </td>
 
       <td>
@@ -1242,11 +1585,15 @@ function renderTable(data){
       </td>
 
       <td class="${uniqueClass}">
-        ${escapeHTML(monster.unique || "-")}
+        ${escapeHTML(
+          monster.unique || "-"
+        )}
       </td>
 
       <td>
-        ${escapeHTML(monster.ddbHabitat || "-")}
+        ${escapeHTML(
+          monster.ddbHabitat || "-"
+        )}
       </td>
 
       <td class="habitat-score">
@@ -1270,7 +1617,9 @@ function renderTable(data){
 function renderMobileCards(data){
 
   const container =
-    document.getElementById("mobileCards");
+    document.getElementById(
+      "mobileCards"
+    );
 
   container.innerHTML = "";
 
@@ -1282,16 +1631,36 @@ function renderMobileCards(data){
 
 
     const card =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
     card.className =
       "mobile-card";
 
 
+    const nameHTML =
+      monster.link
+
+        ? `
+          <a
+            href="${escapeAttribute(monster.link)}"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            ${escapeHTML(monster.name)}
+          </a>
+        `
+
+        : `
+          ${escapeHTML(monster.name)}
+        `;
+
+
     card.innerHTML = `
 
       <div class="mobile-card-title">
-        ${escapeHTML(monster.name)}
+        ${nameHTML}
       </div>
 
 
@@ -1330,7 +1699,9 @@ function renderMobileCards(data){
           </div>
 
           <div class="mobile-value">
-            ${escapeHTML(monster.unique || "-")}
+            ${escapeHTML(
+              monster.unique || "-"
+            )}
           </div>
 
         </div>
@@ -1353,14 +1724,18 @@ function renderMobileCards(data){
         </div>
 
 
-        <div style="grid-column:1 / -1;">
+        <div
+          style="grid-column:1 / -1;"
+        >
 
           <div class="mobile-label">
             DDB Habitat
           </div>
 
           <div class="mobile-value">
-            ${escapeHTML(monster.ddbHabitat || "-")}
+            ${escapeHTML(
+              monster.ddbHabitat || "-"
+            )}
           </div>
 
         </div>
@@ -1382,28 +1757,39 @@ function renderMobileCards(data){
    ========================================================= */
 
 document
-  .querySelectorAll(".unique-btn")
+  .querySelectorAll(
+    ".unique-btn"
+  )
   .forEach(button => {
 
-    button.addEventListener("click",()=>{
+    button.addEventListener(
+      "click",
+      ()=>{
 
-      document
-        .querySelectorAll(".unique-btn")
-        .forEach(btn =>
-          btn.classList.remove("active")
+        document
+          .querySelectorAll(
+            ".unique-btn"
+          )
+          .forEach(btn =>
+            btn.classList.remove(
+              "active"
+            )
+          );
+
+
+        button.classList.add(
+          "active"
         );
 
 
-      button.classList.add("active");
+        uniqueState =
+          button.dataset.value;
 
 
-      uniqueState =
-        button.dataset.value;
+        filterMonsters();
 
-
-      filterMonsters();
-
-    });
+      }
+    );
 
   });
 
@@ -1436,42 +1822,67 @@ document
    ========================================================= */
 
 document
-  .getElementById("resetFilters")
-  .addEventListener("click",()=>{
+  .getElementById(
+    "resetFilters"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
 
-    document.getElementById("crMin").value = "";
-    document.getElementById("crMax").value = "";
+      document.getElementById(
+        "crMin"
+      ).value = "";
 
-    document.getElementById("xpMin").value = "";
-    document.getElementById("xpMax").value = "";
+      document.getElementById(
+        "crMax"
+      ).value = "";
 
-    document.getElementById("searchInput").value = "";
+      document.getElementById(
+        "xpMin"
+      ).value = "";
 
-    uniqueState = "Alle";
+      document.getElementById(
+        "xpMax"
+      ).value = "";
 
-
-    document
-      .querySelectorAll(".unique-btn")
-      .forEach(btn =>
-        btn.classList.remove("active")
-      );
-
-
-    document
-      .querySelector(
-        '.unique-btn[data-value="Alle"]'
-      )
-      .classList.add("active");
-
-
-    selectedHabitats = [];
+      document.getElementById(
+        "searchInput"
+      ).value = "";
 
 
-    buildHabitatFilters();
+      uniqueState =
+        "Alle";
 
-    filterMonsters();
 
-  });
+      document
+        .querySelectorAll(
+          ".unique-btn"
+        )
+        .forEach(btn =>
+          btn.classList.remove(
+            "active"
+          )
+        );
+
+
+      document
+        .querySelector(
+          '.unique-btn[data-value="Alle"]'
+        )
+        .classList.add(
+          "active"
+        );
+
+
+      selectedHabitats = [];
+
+
+      buildHabitatFilters();
+
+      filterMonsters();
+
+    }
+  );
 
 
 /* =========================================================
@@ -1479,48 +1890,59 @@ document
    ========================================================= */
 
 document
-  .querySelectorAll(".sortable")
+  .querySelectorAll(
+    ".sortable"
+  )
   .forEach(header => {
 
-    header.addEventListener("click",()=>{
+    header.addEventListener(
+      "click",
+      ()=>{
 
-      const column =
-        header.dataset.sort;
+        const column =
+          header.dataset.sort;
 
 
-      if(sortColumn === column){
+        if(
+          sortColumn === column
+        ){
 
-        sortDirection =
-          sortDirection === "asc"
-            ? "desc"
-            : "asc";
+          sortDirection =
+            sortDirection === "asc"
+              ? "desc"
+              : "asc";
 
-      }else{
+        }else{
 
-        sortColumn = column;
-        sortDirection = "asc";
+          sortColumn = column;
+          sortDirection = "asc";
+
+        }
+
+
+        document
+          .querySelectorAll(
+            ".sort-arrow"
+          )
+          .forEach(arrow =>
+            arrow.textContent = ""
+          );
+
+
+        header
+          .querySelector(
+            ".sort-arrow"
+          )
+          .textContent =
+            sortDirection === "asc"
+              ? "▲"
+              : "▼";
+
+
+        filterMonsters();
 
       }
-
-
-      document
-        .querySelectorAll(".sort-arrow")
-        .forEach(arrow =>
-          arrow.textContent = ""
-        );
-
-
-      header
-        .querySelector(".sort-arrow")
-        .textContent =
-          sortDirection === "asc"
-            ? "▲"
-            : "▼";
-
-
-      filterMonsters();
-
-    });
+    );
 
   });
 
@@ -1530,27 +1952,43 @@ document
    ========================================================= */
 
 document
-  .getElementById("toggleSidebar")
-  .addEventListener("click",()=>{
+  .getElementById(
+    "toggleSidebar"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
 
-    document
-      .querySelector(".sidebar")
-      .classList.toggle("open");
+      document
+        .querySelector(
+          ".sidebar"
+        )
+        .classList.toggle(
+          "open"
+        );
 
-  });
+    }
+  );
 
 
 document
-  .getElementById("desktopToggleSidebar")
-  .addEventListener("click",()=>{
+  .getElementById(
+    "desktopToggleSidebar"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
 
-    document
-      .querySelector(".container")
-      .classList.toggle(
-        "sidebar-collapsed"
-      );
+      document
+        .querySelector(
+          ".container"
+        )
+        .classList.toggle(
+          "sidebar-collapsed"
+        );
 
-  });
+    }
+  );
 
 
 /* =========================================================
@@ -1574,25 +2012,34 @@ function getCurrentScroll(){
 
   return isMobile()
 
-    ? document.documentElement.scrollTop ||
+    ? document.documentElement
+        .scrollTop ||
       window.pageYOffset
 
-    : document.querySelector(
-        ".table-section"
-      ).scrollTop;
+    : document
+        .querySelector(
+          ".table-section"
+        )
+        .scrollTop;
 
 }
 
 
 function toggleScrollButton(){
 
-  if(getCurrentScroll() > 300){
+  if(
+    getCurrentScroll() > 300
+  ){
 
-    scrollTopBtn.classList.add("show");
+    scrollTopBtn.classList.add(
+      "show"
+    );
 
   }else{
 
-    scrollTopBtn.classList.remove("show");
+    scrollTopBtn.classList.remove(
+      "show"
+    );
 
   }
 
@@ -1602,17 +2049,23 @@ function toggleScrollButton(){
 window.addEventListener(
   "scroll",
   toggleScrollButton,
-  { passive:true }
+  {
+    passive:true
+  }
 );
 
 
 document
-  .querySelector(".table-section")
+  .querySelector(
+    ".table-section"
+  )
   .addEventListener(
     "scroll",
     toggleScrollButton,
-    { passive:true }
-);
+    {
+      passive:true
+    }
+  );
 
 
 scrollTopBtn.addEventListener(
@@ -1629,7 +2082,9 @@ scrollTopBtn.addEventListener(
     }else{
 
       document
-        .querySelector(".table-section")
+        .querySelector(
+          ".table-section"
+        )
         .scrollTo({
           top:0,
           behavior:"smooth"
@@ -1642,7 +2097,7 @@ scrollTopBtn.addEventListener(
 
 
 /* =========================================================
-   HELPERS
+   FORMATIERUNG
    ========================================================= */
 
 function formatCR(cr){
@@ -1651,28 +2106,91 @@ function formatCR(cr){
     return "0";
 
 
-  if(cr < 1){
+  /*
+   * Kleine CR-Werte als Bruch anzeigen.
+   */
 
-    return `1/${Math.round(1/cr)}`;
+  const knownFractions = {
+
+    0.125:"1/8",
+    0.25:"1/4",
+    0.5:"1/2"
+
+  };
+
+
+  if(
+    Object.prototype.hasOwnProperty.call(
+      knownFractions,
+      cr
+    )
+  ){
+
+    return knownFractions[cr];
 
   }
 
 
-  return Number.isInteger(cr)
-    ? String(cr)
-    : String(cr);
+  /*
+   * Ganze CR-Werte.
+   */
+
+  if(
+    Number.isInteger(cr)
+  ){
+
+    return String(cr);
+
+  }
+
+
+  /*
+   * Sonstige Dezimalwerte.
+   */
+
+  return String(
+    Number(
+      cr.toFixed(3)
+    )
+  );
 
 }
 
 
+/* =========================================================
+   HTML SICHERN
+   ========================================================= */
+
 function escapeHTML(value){
 
   return String(value)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
+
+}
+
+
+function escapeAttribute(value){
+
+  return escapeHTML(value);
 
 }
 
