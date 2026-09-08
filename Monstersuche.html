@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V13</title>
+<title>DnD Monster Database – V14</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -873,7 +873,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V13</h1>
+      <h1>DnD Monster Database – V14</h1>
     </div>
 
     <table>
@@ -1324,17 +1324,6 @@ for(
 let monsters = [];
 
 
-/*
- * Beispiel:
- *
- * Wald: 5
- * Fluss/See: 2
- * Gebirge: 3
- *
- * Nur diese ausgewählten Lebensräume
- * fließen in den Lebensraum-Score ein.
- */
-
 let regionWeights = {};
 
 
@@ -1445,7 +1434,9 @@ async function loadSheet(){
   try{
 
     const url =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}`;
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
+      `?sheet=${encodeURIComponent(SHEET_NAME)}` +
+      `&tqx=out:json`;
 
 
     const response =
@@ -1467,12 +1458,73 @@ async function loadSheet(){
       await response.text();
 
 
-    const json =
-      JSON.parse(
-        text
-          .substring(47)
-          .slice(0,-2)
+    let json;
+
+
+    /*
+     * Google liefert die gviz-Antwort
+     * je nach Format als JSON oder
+     * als JavaScript-Wrapper.
+     */
+
+    try{
+
+      json =
+        JSON.parse(
+          text
+        );
+
+    }catch{
+
+      const start =
+        text.indexOf(
+          "{"
+        );
+
+
+      const end =
+        text.lastIndexOf(
+          "}"
+        );
+
+
+      if(
+        start === -1 ||
+        end === -1 ||
+        end <= start
+      ){
+
+        throw new Error(
+          "Ungültige Antwort von Google Sheets."
+        );
+
+      }
+
+
+      json =
+        JSON.parse(
+          text.slice(
+            start,
+            end + 1
+          )
+        );
+
+    }
+
+
+    if(
+      !json ||
+      !json.table ||
+      !Array.isArray(
+        json.table.rows
+      )
+    ){
+
+      throw new Error(
+        "Google Sheets enthält keine gültigen Tabellendaten."
       );
+
+    }
 
 
     const rows =
@@ -1533,16 +1585,18 @@ async function loadSheet(){
             HABITATS.forEach(
               habitat => {
 
+                const cell =
+                  cells[
+                    habitat.columnIndex
+                  ];
+
+
                 monster.habitats[
                   habitat.label
                 ] =
                   parseScore(
-                    cells[
-                      habitat.columnIndex
-                    ]?.f ??
-                    cells[
-                      habitat.columnIndex
-                    ]?.v
+                    cell?.f ??
+                    cell?.v
                   );
 
               }
@@ -1552,16 +1606,18 @@ async function loadSheet(){
             CLIMATES.forEach(
               climate => {
 
+                const cell =
+                  cells[
+                    climate.columnIndex
+                  ];
+
+
                 monster.climates[
                   climate.label
                 ] =
                   parseScore(
-                    cells[
-                      climate.columnIndex
-                    ]?.f ??
-                    cells[
-                      climate.columnIndex
-                    ]?.v
+                    cell?.f ??
+                    cell?.v
                   );
 
               }
@@ -1574,8 +1630,15 @@ async function loadSheet(){
         )
         .filter(
           monster =>
-            monster.name
+            String(
+              monster.name
+            ).trim() !== ""
         );
+
+
+    console.log(
+      `Monsterdaten geladen: ${monsters.length}`
+    );
 
 
     buildHabitatUI();
@@ -1602,7 +1665,17 @@ async function loadSheet(){
       <tr>
 
         <td colspan="7">
+
           Fehler beim Laden der Monsterdaten.
+
+          <br><br>
+
+          <small>
+            ${escapeHTML(
+              error.message
+            )}
+          </small>
+
         </td>
 
       </tr>
@@ -1774,7 +1847,9 @@ function parseCR(value){
     )
   ){
 
-    return unicodeFractions[text];
+    return unicodeFractions[
+      text
+    ];
 
   }
 
@@ -1815,7 +1890,10 @@ function parseScore(value){
   const number =
     Number(
       String(value)
-        .replace(",",".")
+        .replace(
+          ",",
+          "."
+        )
         .trim()
     );
 
@@ -1974,11 +2052,6 @@ function buildHabitatUI(){
           "click",
           ()=>{
 
-            /*
-             * Neues Habitat startet
-             * mit neutraler Bedeutung 3.
-             */
-
             regionWeights[
               habitat.label
             ] = 3;
@@ -2067,7 +2140,7 @@ function buildRegionStars(
     star.addEventListener(
       "click",
       ()=>{
-        
+
         regionWeights[
           habitat
         ] = i;
@@ -2275,28 +2348,6 @@ document
 
 /* =========================================================
    HABITAT SCORE
-=========================================================
-
-   Nur ausgewählte Lebensräume werden berücksichtigt.
-
-   Beispiel:
-
-   Region:
-   Wald 5
-   Küste 2
-
-   Monster:
-   Wald 4
-   Küste 5
-
-   Lebensraum-Score:
-
-   (4×5 + 5×2)
-   ----------------
-   (5 + 2)
-
-   = 4.29
-
 ========================================================= */
 
 function getHabitatScore(monster){
@@ -2404,11 +2455,6 @@ function getClimateScore(monster){
 
 /* =========================================================
    GESAMT
-=========================================================
-
-   2/3 Lebensraum
-   1/3 Klima
-
 ========================================================= */
 
 function getTotalScore(monster){
@@ -2644,7 +2690,6 @@ function filterMonsters(){
   let filtered =
     monsters.filter(
       monster => {
-
 
         if(
           !showUnique &&
@@ -3098,7 +3143,7 @@ function attachInfoButtons(){
         button.addEventListener(
           "click",
           ()=>{
-            
+
             const index =
               Number(
                 button.dataset
@@ -3838,11 +3883,6 @@ document
             sortColumn =
               column;
 
-
-            /*
-             * Score-Spalten starten
-             * absteigend.
-             */
 
             if(
               column === "total" ||
