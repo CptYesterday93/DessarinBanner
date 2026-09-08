@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V10</title>
+<title>DnD Monster Database – V11</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +36,7 @@ body{
   padding:20px;
   height:100vh;
   align-items:start;
-  transition:grid-template-columns 0.25s ease;
+  transition:grid-template-columns .25s ease;
 }
 
 .container.sidebar-collapsed{
@@ -61,8 +61,8 @@ body{
   border:1px solid #3a3a3a;
 
   transition:
-    transform 0.25s ease,
-    opacity 0.25s ease;
+    transform .25s ease,
+    opacity .25s ease;
 }
 
 .container.sidebar-collapsed .sidebar{
@@ -100,8 +100,6 @@ select{
   cursor:pointer;
 }
 
-/* Keine +/- Spinner bei Zahlenfeldern */
-
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button{
   -webkit-appearance:none;
@@ -117,7 +115,7 @@ input[type="number"]{
   margin-bottom:20px;
 }
 
-.filter-group label{
+.filter-group > label{
   display:block;
   margin-bottom:8px;
   font-weight:bold;
@@ -145,8 +143,6 @@ input[type="number"]{
   background:#4f46e5;
   border-color:#7c74ff;
 }
-
-/* Kleine, dezente Schnellwahl */
 
 .quick-action{
   display:inline-block;
@@ -229,7 +225,6 @@ input[type="number"]{
 .climate-select button{
   width:auto;
   flex:1;
-
   background:#333;
   padding:10px 12px;
 }
@@ -237,6 +232,59 @@ input[type="number"]{
 .climate-select button.active{
   background:#4f46e5;
   border-color:#7c74ff;
+}
+
+/* Regionsprofil */
+
+.region-profiles{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.region-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+
+  padding:7px 8px;
+
+  background:#292929;
+  border:1px solid #3b3b3b;
+  border-radius:8px;
+}
+
+.region-name{
+  flex:1;
+  font-size:14px;
+}
+
+.region-stars{
+  display:flex;
+  gap:2px;
+}
+
+.region-star{
+  width:auto;
+  padding:0;
+
+  border:none;
+  background:transparent;
+
+  color:#555;
+
+  font-size:17px;
+  line-height:1;
+
+  cursor:pointer;
+}
+
+.region-star:hover{
+  color:#aaa;
+}
+
+.region-star.active{
+  color:#f0c75e;
 }
 
 /* Tabelle */
@@ -257,10 +305,10 @@ td{
   vertical-align:top;
 
   border-bottom:1px solid #3f3f3f;
-  border-right:1px solid rgba(255,255,255,0.06);
+  border-right:1px solid rgba(255,255,255,.06);
 
   box-shadow:
-    inset -1px 0 0 rgba(255,255,255,0.03);
+    inset -1px 0 0 rgba(255,255,255,.03);
 }
 
 th:last-child,
@@ -275,7 +323,7 @@ th{
   z-index:50;
 
   box-shadow:
-    0 2px 10px rgba(0,0,0,0.35);
+    0 2px 10px rgba(0,0,0,.35);
 }
 
 .sortable{
@@ -303,8 +351,8 @@ tbody tr:nth-child(odd){
 
 tbody tr{
   transition:
-    background 0.18s ease,
-    box-shadow 0.18s ease;
+    background .18s ease,
+    box-shadow .18s ease;
 }
 
 tbody tr:hover{
@@ -312,7 +360,7 @@ tbody tr:hover{
 
   box-shadow:
     inset 3px 0 0 #6d63ff,
-    inset 0 0 0 1px rgba(255,255,255,0.04);
+    inset 0 0 0 1px rgba(255,255,255,.04);
 }
 
 .monster-link{
@@ -343,33 +391,33 @@ tbody tr:hover{
   font-size:16px;
 }
 
-.score-details{
+.score-sub{
   font-size:13px;
-  opacity:.9;
+  font-weight:bold;
 }
 
-.habitat-details{
-  margin-top:7px;
+.score-detail{
+  margin-top:6px;
   display:flex;
   flex-wrap:wrap;
   gap:5px 12px;
+
   font-size:12px;
   line-height:1.35;
   color:#d5d5d5;
 }
 
-.habitat-detail{
+.score-detail-item{
   white-space:nowrap;
 }
 
-.habitat-name{
+.score-detail-name{
   opacity:.85;
   margin-right:4px;
 }
 
-.habitat-stars{
+.score-detail-stars{
   letter-spacing:1px;
-  font-size:13px;
 }
 
 .search-row{
@@ -462,15 +510,16 @@ tbody tr:hover{
   font-weight:bold;
 }
 
-.mobile-habitat-details{
+.mobile-detail-list{
   grid-column:1 / -1;
+
   font-size:13px;
   line-height:1.5;
 }
 
-.mobile-habitat-details .habitat-detail{
+.mobile-detail-item{
   display:inline-block;
-  margin-right:10px;
+  margin-right:12px;
   margin-bottom:4px;
 }
 
@@ -499,11 +548,11 @@ tbody tr:hover{
   pointer-events:none;
 
   transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
+    opacity .2s ease,
+    transform .2s ease;
 
   box-shadow:
-    0 4px 12px rgba(0,0,0,0.35);
+    0 4px 12px rgba(0,0,0,.35);
 }
 
 #scrollTopBtn.show{
@@ -554,7 +603,7 @@ tbody tr:hover{
 
     transform:translateX(100%);
 
-    transition:transform 0.25s ease;
+    transition:transform .25s ease;
   }
 
   .sidebar.open{
@@ -611,6 +660,7 @@ tbody tr:hover{
 
 <button id="scrollTopBtn">↑</button>
 
+
 <div class="container">
 
 <div class="table-section">
@@ -618,6 +668,7 @@ tbody tr:hover{
 <div class="topbar">
 <h1>DnD Monster Database – V10</h1>
 </div>
+
 
 <table>
 
@@ -636,8 +687,8 @@ CR <span class="sort-arrow"></span>
 XP <span class="sort-arrow"></span>
 </th>
 
-<th class="sortable" data-sort="unique">
-Einzigartig? <span class="sort-arrow"></span>
+<th>
+Einzigartig?
 </th>
 
 <th class="sortable" data-sort="total">
@@ -659,7 +710,10 @@ Klima <span class="sort-arrow"></span>
 
 </table>
 
-<div id="mobileCards" class="mobile-cards"></div>
+<div
+  id="mobileCards"
+  class="mobile-cards"
+></div>
 
 </div>
 
@@ -678,7 +732,6 @@ Klima <span class="sort-arrow"></span>
 <div class="range-grid">
 
 <select id="crMin"></select>
-
 <select id="crMax"></select>
 
 </div>
@@ -736,7 +789,7 @@ Einzigartige anzeigen
 </div>
 
 
-<!-- LEBENSRÄUME -->
+<!-- LEBENSRAUM -->
 
 <div class="filter-group">
 
@@ -753,8 +806,8 @@ Alle
 </button>
 
 <div
-  id="habitatFilter"
-  class="multi-select"
+  id="regionProfiles"
+  class="region-profiles"
 ></div>
 
 </div>
@@ -774,7 +827,7 @@ Alle
 </div>
 
 
-<!-- SUCHE -->
+<!-- SUCHBEGRIFF -->
 
 <div class="filter-group">
 
@@ -816,7 +869,8 @@ Suchergebnisse:
 const SHEET_ID =
   "1v7egXu70tpq7mkPCmZq4ak7fMu3NzZYPR1Rd2mLx8_0";
 
-const SHEET_NAME = "Sheet1";
+const SHEET_NAME =
+  "Sheet1";
 
 
 /* =========================================================
@@ -941,7 +995,7 @@ const CLIMATES = [
 
 
 /* =========================================================
-   D&D CR-STUFEN
+   CR
    ========================================================= */
 
 const CR_VALUES = [
@@ -973,7 +1027,11 @@ const CR_VALUES = [
 
 ];
 
-for(let i = 1; i <= 30; i++){
+for(
+  let i = 1;
+  i <= 30;
+  i++
+){
 
   CR_VALUES.push({
     label:String(i),
@@ -989,24 +1047,43 @@ for(let i = 1; i <= 30; i++){
 
 let monsters = [];
 
-let selectedHabitats = [];
 
 /*
- * Immer genau ein Klima.
- * Standard: Gemäßigt.
+ * Jedes ausgewählte Habitat bekommt
+ * standardmäßig 3 Punkte Bedeutung.
+ *
+ * Beispiel:
+ *
+ * Wald -> 5
+ * Fluss/See -> 3
+ * Gebirge -> 2
  */
 
-let selectedClimate = "Gemäßigt";
+let regionWeights = {};
+
 
 /*
- * False = nur normale Monster.
- * True  = normale + einzigartige Monster.
+ * Klima ist immer genau eines.
  */
 
-let showUnique = false;
+let selectedClimate =
+  "Gemäßigt";
 
-let sortColumn = "name";
-let sortDirection = "asc";
+
+/*
+ * False = nur normale Monster
+ * True = normale + einzigartige Monster
+ */
+
+let showUnique =
+  false;
+
+
+let sortColumn =
+  "name";
+
+let sortDirection =
+  "asc";
 
 
 /* =========================================================
@@ -1016,10 +1093,14 @@ let sortDirection = "asc";
 function buildCRDropdowns(){
 
   const minSelect =
-    document.getElementById("crMin");
+    document.getElementById(
+      "crMin"
+    );
 
   const maxSelect =
-    document.getElementById("crMax");
+    document.getElementById(
+      "crMax"
+    );
 
 
   minSelect.innerHTML = "";
@@ -1034,12 +1115,10 @@ function buildCRDropdowns(){
           "option"
         );
 
-
       minOption.value =
         cr.value === null
           ? ""
           : cr.value;
-
 
       minOption.textContent =
         cr.label;
@@ -1055,12 +1134,10 @@ function buildCRDropdowns(){
           "option"
         );
 
-
       maxOption.value =
         cr.value === null
           ? ""
           : cr.value;
-
 
       maxOption.textContent =
         cr.label;
@@ -1081,7 +1158,7 @@ function buildCRDropdowns(){
 
 
 /* =========================================================
-   LOAD SHEET
+   GOOGLE SHEET LADEN
    ========================================================= */
 
 async function loadSheet(){
@@ -1093,7 +1170,9 @@ async function loadSheet(){
 
 
     const response =
-      await fetch(url);
+      await fetch(
+        url
+      );
 
 
     if(!response.ok){
@@ -1111,7 +1190,9 @@ async function loadSheet(){
 
     const json =
       JSON.parse(
-        text.substring(47).slice(0,-2)
+        text
+          .substring(47)
+          .slice(0,-2)
       );
 
 
@@ -1170,8 +1251,6 @@ async function loadSheet(){
             };
 
 
-            /* Lebensräume */
-
             HABITATS.forEach(
               habitat => {
 
@@ -1190,8 +1269,6 @@ async function loadSheet(){
               }
             );
 
-
-            /* Klima */
 
             CLIMATES.forEach(
               climate => {
@@ -1222,11 +1299,9 @@ async function loadSheet(){
         );
 
 
-    buildHabitatFilters();
-
-    buildClimateFilters();
-
-    updateClimateButtons();
+    buildHabitatUI();
+    buildClimateUI();
+    updateClimateUI();
 
     filterMonsters();
 
@@ -1318,8 +1393,13 @@ function parseNumber(value){
   }
 
 
-  if(typeof value === "number")
+  if(
+    typeof value === "number"
+  ){
+
     return value;
+
+  }
 
 
   const text =
@@ -1432,7 +1512,7 @@ function parseCR(value){
 
 
 /* =========================================================
-   SCORE
+   1–5 SCORE
    ========================================================= */
 
 function parseScore(value){
@@ -1456,8 +1536,13 @@ function parseScore(value){
     );
 
 
-  if(isNaN(number))
+  if(
+    isNaN(number)
+  ){
+
     return null;
+
+  }
 
 
   return Math.max(
@@ -1472,14 +1557,14 @@ function parseScore(value){
 
 
 /* =========================================================
-   HABITAT FILTER
+   HABITAT UI
    ========================================================= */
 
-function buildHabitatFilters(){
+function buildHabitatUI(){
 
   const container =
     document.getElementById(
-      "habitatFilter"
+      "regionProfiles"
     );
 
 
@@ -1489,69 +1574,175 @@ function buildHabitatFilters(){
   HABITATS.forEach(
     habitat => {
 
-      const button =
+      const row =
         document.createElement(
-          "button"
+          "div"
         );
 
 
-      button.type = "button";
+      row.className =
+        "region-row";
 
 
-      button.textContent =
+      const name =
+        document.createElement(
+          "div"
+        );
+
+
+      name.className =
+        "region-name";
+
+
+      name.textContent =
         habitat.label;
 
 
-      if(
-        selectedHabitats.includes(
-          habitat.label
-        )
-      ){
+      const stars =
+        document.createElement(
+          "div"
+        );
 
-        button.classList.add(
-          "active"
+
+      stars.className =
+        "region-stars";
+
+
+      const isSelected =
+        Object.prototype.hasOwnProperty.call(
+          regionWeights,
+          habitat.label
+        );
+
+
+      if(isSelected){
+
+        buildRegionStars(
+          stars,
+          habitat.label
+        );
+
+      }else{
+
+        const selectButton =
+          document.createElement(
+            "button"
+          );
+
+
+        selectButton.textContent =
+          "Auswählen";
+
+
+        selectButton.style.width =
+          "auto";
+
+        selectButton.style.padding =
+          "5px 8px";
+
+        selectButton.style.fontSize =
+          "12px";
+
+        selectButton.style.background =
+          "#333";
+
+
+        selectButton.addEventListener(
+          "click",
+          ()=>{
+            
+            /*
+             * Neue Region:
+             * standardmäßig 3/5.
+             */
+
+            regionWeights[
+              habitat.label
+            ] = 3;
+
+
+            buildHabitatUI();
+            updateHabitatQuickButton();
+            filterMonsters();
+
+          }
+        );
+
+
+        stars.appendChild(
+          selectButton
         );
 
       }
 
 
-      button.addEventListener(
-        "click",
-        ()=>{
+      row.appendChild(
+        name
+      );
 
-          if(
-            selectedHabitats.includes(
-              habitat.label
-            )
-          ){
-
-            selectedHabitats =
-              selectedHabitats.filter(
-                h =>
-                  h !== habitat.label
-              );
-
-          }else{
-
-            selectedHabitats.push(
-              habitat.label
-            );
-
-          }
-
-
-          buildHabitatFilters();
-
-          updateHabitatQuickButton();
-
-          filterMonsters();
-
-        }
+      row.appendChild(
+        stars
       );
 
 
+      if(isSelected){
+
+        const removeButton =
+          document.createElement(
+            "button"
+          );
+
+
+        removeButton.textContent =
+          "×";
+
+
+        removeButton.title =
+          "Aus Region entfernen";
+
+
+        removeButton.style.width =
+          "26px";
+
+        removeButton.style.padding =
+          "4px";
+
+        removeButton.style.background =
+          "transparent";
+
+        removeButton.style.border =
+          "none";
+
+        removeButton.style.color =
+          "#888";
+
+
+        removeButton.addEventListener(
+          "click",
+          ()=>{
+            
+            delete regionWeights[
+              habitat.label
+            ];
+
+
+            buildHabitatUI();
+            updateHabitatQuickButton();
+            filterMonsters();
+
+          }
+        );
+
+
+        row.appendChild(
+          removeButton
+        );
+
+      }
+
+
       container.appendChild(
-        button
+        row
       );
 
     }
@@ -1564,7 +1755,82 @@ function buildHabitatFilters(){
 
 
 /* =========================================================
-   HABITAT SCHNELLWAHL
+   STERNE FÜR REGION
+   ========================================================= */
+
+function buildRegionStars(
+  container,
+  habitat
+){
+
+  const current =
+    regionWeights[
+      habitat
+    ];
+
+
+  for(
+    let i = 1;
+    i <= 5;
+    i++
+  ){
+
+    const star =
+      document.createElement(
+        "button"
+      );
+
+
+    star.className =
+      "region-star";
+
+
+    star.textContent =
+      "★";
+
+
+    if(
+      i <= current
+    ){
+
+      star.classList.add(
+        "active"
+      );
+
+    }
+
+
+    star.title =
+      `${i}/5`;
+
+
+    star.addEventListener(
+      "click",
+      ()=>{
+        
+        regionWeights[
+          habitat
+        ] = i;
+
+
+        buildHabitatUI();
+        filterMonsters();
+
+      }
+    );
+
+
+    container.appendChild(
+      star
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SCHNELLWAHL REGION
    ========================================================= */
 
 function updateHabitatQuickButton(){
@@ -1575,8 +1841,14 @@ function updateHabitatQuickButton(){
     );
 
 
+  const selectedCount =
+    Object.keys(
+      regionWeights
+    ).length;
+
+
   button.textContent =
-    selectedHabitats.length === HABITATS.length
+    selectedCount === HABITATS.length
       ? "Keine"
       : "Alle";
 
@@ -1584,7 +1856,7 @@ function updateHabitatQuickButton(){
 
 
 /* =========================================================
-   HABITAT ALLE / KEINE
+   ALLE / KEINE REGION
    ========================================================= */
 
 document
@@ -1595,26 +1867,38 @@ document
     "click",
     ()=>{
 
+      const selectedCount =
+        Object.keys(
+          regionWeights
+        ).length;
+
+
       if(
-        selectedHabitats.length ===
+        selectedCount ===
         HABITATS.length
       ){
 
-        selectedHabitats = [];
+        regionWeights = {};
 
       }else{
 
-        selectedHabitats =
-          HABITATS.map(
-            habitat =>
+        regionWeights = {};
+
+
+        HABITATS.forEach(
+          habitat => {
+
+            regionWeights[
               habitat.label
-          );
+            ] = 3;
+
+          }
+        );
 
       }
 
 
-      buildHabitatFilters();
-
+      buildHabitatUI();
       filterMonsters();
 
     }
@@ -1622,10 +1906,10 @@ document
 
 
 /* =========================================================
-   KLIMA FILTER
+   KLIMA UI
    ========================================================= */
 
-function buildClimateFilters(){
+function buildClimateUI(){
 
   const container =
     document.getElementById(
@@ -1645,23 +1929,12 @@ function buildClimateFilters(){
         );
 
 
-      button.type = "button";
+      button.type =
+        "button";
 
 
       button.textContent =
         climate.label;
-
-
-      if(
-        selectedClimate ===
-        climate.label
-      ){
-
-        button.classList.add(
-          "active"
-        );
-
-      }
 
 
       button.addEventListener(
@@ -1672,7 +1945,7 @@ function buildClimateFilters(){
             climate.label;
 
 
-          buildClimateFilters();
+          updateClimateUI();
 
           filterMonsters();
 
@@ -1690,11 +1963,7 @@ function buildClimateFilters(){
 }
 
 
-/* =========================================================
-   KLIMA BUTTONS AKTUALISIEREN
-   ========================================================= */
-
-function updateClimateButtons(){
+function updateClimateUI(){
 
   document
     .querySelectorAll(
@@ -1703,22 +1972,11 @@ function updateClimateButtons(){
     .forEach(
       button => {
 
-        if(
+        button.classList.toggle(
+          "active",
           button.textContent ===
-          selectedClimate
-        ){
-
-          button.classList.add(
-            "active"
-          );
-
-        }else{
-
-          button.classList.remove(
-            "active"
-          );
-
-        }
+            selectedClimate
+        );
 
       }
     );
@@ -1727,7 +1985,7 @@ function updateClimateButtons(){
 
 
 /* =========================================================
-   EINZIGARTIGE ANZEIGEN
+   EINZIGARTIGE
    ========================================================= */
 
 document
@@ -1742,16 +2000,14 @@ document
         !showUnique;
 
 
-      const toggle =
-        document.getElementById(
+      document
+        .getElementById(
           "uniqueToggle"
+        )
+        .classList.toggle(
+          "active",
+          showUnique
         );
-
-
-      toggle.classList.toggle(
-        "active",
-        showUnique
-      );
 
 
       filterMonsters();
@@ -1795,13 +2051,17 @@ function filterMonsters(){
   const crMin =
     crMinValue === ""
       ? null
-      : Number(crMinValue);
+      : Number(
+          crMinValue
+        );
 
 
   const crMax =
     crMaxValue === ""
       ? null
-      : Number(crMaxValue);
+      : Number(
+          crMaxValue
+        );
 
 
   const xpMin =
@@ -1828,13 +2088,6 @@ function filterMonsters(){
     monsters.filter(
       monster => {
 
-
-        /*
-         * Einzigartige:
-         *
-         * Aus = nur normale
-         * An  = alle
-         */
 
         if(
           !showUnique &&
@@ -1899,16 +2152,21 @@ function filterMonsters(){
 
 
         /*
-         * Lebensräume:
-         * OR innerhalb der Auswahl.
+         * Wenn Regionen ausgewählt wurden:
+         * Monster müssen zumindest einen
+         * bewerteten Wert für eines davon haben.
          */
 
         if(
-          selectedHabitats.length
+          Object.keys(
+            regionWeights
+          ).length
         ){
 
-          const habitatMatch =
-            selectedHabitats.some(
+          const hasRelevantHabitat =
+            Object.keys(
+              regionWeights
+            ).some(
               habitat =>
                 monster.habitats[
                   habitat
@@ -1916,21 +2174,16 @@ function filterMonsters(){
             );
 
 
-          if(!habitatMatch)
+          if(
+            !hasRelevantHabitat
+          ){
+
             return false;
+
+          }
 
         }
 
-
-        /*
-         * Genau ein Klima ist immer aktiv.
-         *
-         * Monster ohne Bewertung für dieses
-         * Klima werden nicht ausgeschlossen,
-         * solange kein Wert vorhanden ist.
-         *
-         * Die genaue Scoring-Logik kommt später.
-         */
 
         return true;
 
@@ -1967,14 +2220,6 @@ function filterMonsters(){
           break;
 
 
-        case "unique":
-
-          x = a.unique;
-          y = b.unique;
-
-          break;
-
-
         case "total":
 
           x =
@@ -1982,13 +2227,6 @@ function filterMonsters(){
 
           y =
             getTotalScore(b);
-
-
-          if(x === null)
-            x = -1;
-
-          if(y === null)
-            y = -1;
 
           break;
 
@@ -2001,13 +2239,6 @@ function filterMonsters(){
           y =
             getHabitatScore(b);
 
-
-          if(x === null)
-            x = -1;
-
-          if(y === null)
-            y = -1;
-
           break;
 
 
@@ -2019,20 +2250,16 @@ function filterMonsters(){
           y =
             getClimateScore(b);
 
-
-          if(x === null)
-            x = -1;
-
-          if(y === null)
-            y = -1;
-
           break;
 
 
         default:
 
-          x = a.name;
-          y = b.name;
+          x =
+            a.name;
+
+          y =
+            b.name;
 
       }
 
@@ -2048,6 +2275,13 @@ function filterMonsters(){
           y.toLowerCase();
 
       }
+
+
+      if(x === null)
+        x = -1;
+
+      if(y === null)
+        y = -1;
 
 
       if(x < y){
@@ -2096,30 +2330,59 @@ function filterMonsters(){
 
 /* =========================================================
    LEBENSRAUM SCORE
+   =========================================================
+
+   Derzeit:
+   Nur ausgewählte Regionen werden bewertet.
+   Ihre Bedeutung wird durch den 1–5 Wert
+   gewichtet.
+
+   Die Monsterwerte bleiben 1–5.
+
    ========================================================= */
 
 function getHabitatScore(monster){
 
-  const scores = [];
+  const habitats =
+    Object.keys(
+      regionWeights
+    );
 
 
-  selectedHabitats.forEach(
+  if(!habitats.length)
+    return null;
+
+
+  let weightedScore = 0;
+  let totalWeight = 0;
+
+
+  habitats.forEach(
     habitat => {
 
-      const score =
+      const regionWeight =
+        regionWeights[
+          habitat
+        ];
+
+
+      const monsterScore =
         monster.habitats[
           habitat
         ];
 
 
       if(
-        score !== null &&
-        score !== undefined
+        monsterScore !== null &&
+        monsterScore !== undefined
       ){
 
-        scores.push(
-          score
-        );
+        weightedScore +=
+          monsterScore *
+          regionWeight;
+
+        totalWeight +=
+          regionWeight;
 
       }
 
@@ -2127,21 +2390,18 @@ function getHabitatScore(monster){
   );
 
 
-  if(!scores.length)
+  if(
+    totalWeight === 0
+  ){
+
     return null;
 
-
-  const total =
-    scores.reduce(
-      (sum,value)=>
-        sum + value,
-      0
-    );
+  }
 
 
   return (
-    total /
-    scores.length
+    weightedScore /
+    totalWeight
   );
 
 }
@@ -2172,7 +2432,15 @@ function getClimateScore(monster){
 
 
 /* =========================================================
-   GESAMT SCORE
+   GESAMT
+   =========================================================
+
+   Vorläufig:
+   50 % Lebensraum
+   50 % Klima
+
+   Die endgültige Gewichtung kommt später.
+
    ========================================================= */
 
 function getTotalScore(monster){
@@ -2199,20 +2467,22 @@ function getTotalScore(monster){
   }
 
 
-  /*
-   * Vorerst einfache Kombination.
-   *
-   * Die endgültige Gewichtung von
-   * Lebensraum und Klima wird später
-   * gemeinsam festgelegt.
-   */
+  if(
+    habitat === null
+  ){
 
-  if(habitat === null)
     return climate;
 
+  }
 
-  if(climate === null)
+
+  if(
+    climate === null
+  ){
+
     return habitat;
+
+  }
 
 
   return (
@@ -2250,8 +2520,12 @@ function getStars(score){
 
 
   return (
-    "★".repeat(rounded) +
-    "☆".repeat(5 - rounded)
+    "★".repeat(
+      rounded
+    ) +
+    "☆".repeat(
+      5 - rounded
+    )
   );
 
 }
@@ -2266,7 +2540,9 @@ function renderHabitatDetails(monster){
   const details = [];
 
 
-  selectedHabitats.forEach(
+  Object.keys(
+    regionWeights
+  ).forEach(
     habitat => {
 
       const score =
@@ -2282,14 +2558,18 @@ function renderHabitatDetails(monster){
 
         details.push(`
 
-          <span class="habitat-detail">
+          <span class="score-detail-item">
 
-            <span class="habitat-name">
-              ${escapeHTML(habitat)}
+            <span class="score-detail-name">
+              ${escapeHTML(
+                habitat
+              )}
             </span>
 
-            <span class="habitat-stars">
-              ${getStars(score)}
+            <span class="score-detail-stars">
+              ${getStars(
+                score
+              )}
             </span>
 
           </span>
@@ -2387,6 +2667,12 @@ function renderTable(data){
           `;
 
 
+      const totalScore =
+        getTotalScore(
+          monster
+        );
+
+
       const habitatScore =
         getHabitatScore(
           monster
@@ -2395,12 +2681,6 @@ function renderTable(data){
 
       const climateScore =
         getClimateScore(
-          monster
-        );
-
-
-      const totalScore =
-        getTotalScore(
           monster
         );
 
@@ -2446,7 +2726,7 @@ function renderTable(data){
         </td>
 
 
-        <td class="score score-details">
+        <td class="score">
 
           ${formatScore(
             habitatScore
@@ -2456,7 +2736,7 @@ function renderTable(data){
             details
               ? `
 
-                <div class="habitat-details">
+                <div class="score-detail">
                   ${details}
                 </div>
 
@@ -2556,6 +2836,12 @@ function renderMobileCards(data){
           `;
 
 
+      const totalScore =
+        getTotalScore(
+          monster
+        );
+
+
       const habitatScore =
         getHabitatScore(
           monster
@@ -2564,12 +2850,6 @@ function renderMobileCards(data){
 
       const climateScore =
         getClimateScore(
-          monster
-        );
-
-
-      const totalScore =
-        getTotalScore(
           monster
         );
 
@@ -2588,6 +2868,7 @@ function renderMobileCards(data){
 
 
         <div class="mobile-card-grid">
+
 
           <div>
 
@@ -2673,9 +2954,13 @@ function renderMobileCards(data){
             <div class="mobile-value">
               ${formatScore(
                 climateScore
-              )} – ${escapeHTML(
+              )}
+
+              –
+              ${escapeHTML(
                 selectedClimate
               )}
+
             </div>
 
           </div>
@@ -2685,7 +2970,9 @@ function renderMobileCards(data){
             details
               ? `
 
-                <div class="mobile-habitat-details">
+                <div
+                  class="mobile-detail-list"
+                >
 
                   <div class="mobile-label">
                     Ausgewählte Lebensräume
@@ -2698,6 +2985,7 @@ function renderMobileCards(data){
               `
               : ""
           }
+
 
         </div>
 
@@ -2800,14 +3088,15 @@ document
       ).value = "";
 
 
-      selectedHabitats = [];
+      regionWeights = {};
 
 
       selectedClimate =
         "Gemäßigt";
 
 
-      showUnique = false;
+      showUnique =
+        false;
 
 
       document
@@ -2819,8 +3108,12 @@ document
         );
 
 
-      sortColumn = "name";
-      sortDirection = "asc";
+      sortColumn =
+        "name";
+
+
+      sortDirection =
+        "asc";
 
 
       document
@@ -2843,9 +3136,10 @@ document
         .textContent = "▲";
 
 
-      buildHabitatFilters();
-      buildClimateFilters();
-      updateClimateButtons();
+      buildHabitatUI();
+      buildClimateUI();
+      updateClimateUI();
+      updateHabitatQuickButton();
 
       filterMonsters();
 
@@ -2883,12 +3177,12 @@ document
 
           }else{
 
-            sortColumn = column;
+            sortColumn =
+              column;
 
 
             /*
-             * Gesamt/Lebensraum/Klima
-             * starten beim ersten Klick
+             * Score-Spalten starten
              * absteigend.
              */
 
@@ -2898,11 +3192,13 @@ document
               column === "climate"
             ){
 
-              sortDirection = "desc";
+              sortDirection =
+                "desc";
 
             }else{
 
-              sortDirection = "asc";
+              sortDirection =
+                "asc";
 
             }
 
@@ -3169,7 +3465,9 @@ function escapeHTML(value){
 
 function escapeAttribute(value){
 
-  return escapeHTML(value);
+  return escapeHTML(
+    value
+  );
 
 }
 
@@ -3180,11 +3478,13 @@ function escapeAttribute(value){
 
 buildCRDropdowns();
 
-buildHabitatFilters();
+buildHabitatUI();
 
-buildClimateFilters();
+buildClimateUI();
 
-updateClimateButtons();
+updateClimateUI();
+
+updateHabitatQuickButton();
 
 loadSheet();
 
