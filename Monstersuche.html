@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V14</title>
+<title>DnD Monster Database – V15</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -867,13 +867,12 @@ tbody tr:hover{
 
 <button id="scrollTopBtn">↑</button>
 
-
 <div class="container">
 
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V14</h1>
+      <h1>DnD Monster Database – V15</h1>
     </div>
 
     <table>
@@ -942,7 +941,6 @@ tbody tr:hover{
 
     </table>
 
-
     <div
       id="mobileCards"
       class="mobile-cards"
@@ -950,13 +948,9 @@ tbody tr:hover{
 
   </div>
 
-
   <div class="sidebar">
 
     <h2>Suchfilter</h2>
-
-
-    <!-- CR -->
 
     <div class="filter-group">
 
@@ -970,9 +964,6 @@ tbody tr:hover{
       </div>
 
     </div>
-
-
-    <!-- XP -->
 
     <div class="filter-group">
 
@@ -998,9 +989,6 @@ tbody tr:hover{
 
     </div>
 
-
-    <!-- EINZIGARTIG -->
-
     <div class="filter-group">
 
       <button
@@ -1020,9 +1008,6 @@ tbody tr:hover{
       </button>
 
     </div>
-
-
-    <!-- LEBENSRÄUME -->
 
     <div class="filter-group">
 
@@ -1047,9 +1032,6 @@ tbody tr:hover{
 
     </div>
 
-
-    <!-- KLIMA -->
-
     <div class="filter-group">
 
       <label>
@@ -1062,9 +1044,6 @@ tbody tr:hover{
       ></div>
 
     </div>
-
-
-    <!-- SUCHE -->
 
     <div class="filter-group">
 
@@ -1088,7 +1067,6 @@ tbody tr:hover{
 
     </div>
 
-
     <div>
       Suchergebnisse:
       <span id="resultCount">0</span>
@@ -1097,11 +1075,6 @@ tbody tr:hover{
   </div>
 
 </div>
-
-
-<!-- =======================================================
-     INFO MODAL
-======================================================= -->
 
 <div
   id="infoModal"
@@ -1128,7 +1101,6 @@ tbody tr:hover{
 
     </div>
 
-
     <div
       id="modalBody"
       class="modal-body"
@@ -1154,31 +1126,6 @@ const SHEET_NAME =
 
 /* =========================================================
    SPALTEN
-   A = Monster
-   B = DDB Link
-   C = CR
-   D = XP
-   E = Einzigartig?
-   F = Wald
-   G = Grasland
-   H = Wüste
-   I = Sumpf
-   J = Gebirge
-   K = Küste
-   L = Fluss/See
-   M = Meer
-   N = Höhle
-   O = Untergrund
-   P = Ruinen
-   Q = Siedlung
-   R = Kalt
-   S = Gemäßigt
-   T = Heiß
-========================================================= */
-
-
-/* =========================================================
-   HABITATE
 ========================================================= */
 
 const HABITATS = [
@@ -1245,10 +1192,6 @@ const HABITATS = [
 
 ];
 
-
-/* =========================================================
-   KLIMA
-========================================================= */
 
 const CLIMATES = [
 
@@ -1323,26 +1266,13 @@ for(
 
 let monsters = [];
 
-
 let regionWeights = {};
-
-
-/*
- * Genau ein Klima.
- */
 
 let selectedClimate =
   "Gemäßigt";
 
-
-/*
- * False = nur normale Monster
- * True = normale + einzigartige Monster
- */
-
 let showUnique =
   false;
-
 
 let sortColumn =
   "name";
@@ -1367,10 +1297,8 @@ function buildCRDropdowns(){
       "crMax"
     );
 
-
   minSelect.innerHTML = "";
   maxSelect.innerHTML = "";
-
 
   CR_VALUES.forEach(
     cr => {
@@ -1387,7 +1315,6 @@ function buildCRDropdowns(){
 
       minOption.textContent =
         cr.label;
-
 
       minSelect.appendChild(
         minOption
@@ -1407,14 +1334,12 @@ function buildCRDropdowns(){
       maxOption.textContent =
         cr.label;
 
-
       maxSelect.appendChild(
         maxOption
       );
 
     }
   );
-
 
   minSelect.value =
     "";
@@ -1434,9 +1359,7 @@ async function loadSheet(){
   try{
 
     const url =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
-      `?sheet=${encodeURIComponent(SHEET_NAME)}` +
-      `&tqx=out:json`;
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}`;
 
 
     const response =
@@ -1458,73 +1381,12 @@ async function loadSheet(){
       await response.text();
 
 
-    let json;
-
-
-    /*
-     * Google liefert die gviz-Antwort
-     * je nach Format als JSON oder
-     * als JavaScript-Wrapper.
-     */
-
-    try{
-
-      json =
-        JSON.parse(
-          text
-        );
-
-    }catch{
-
-      const start =
-        text.indexOf(
-          "{"
-        );
-
-
-      const end =
-        text.lastIndexOf(
-          "}"
-        );
-
-
-      if(
-        start === -1 ||
-        end === -1 ||
-        end <= start
-      ){
-
-        throw new Error(
-          "Ungültige Antwort von Google Sheets."
-        );
-
-      }
-
-
-      json =
-        JSON.parse(
-          text.slice(
-            start,
-            end + 1
-          )
-        );
-
-    }
-
-
-    if(
-      !json ||
-      !json.table ||
-      !Array.isArray(
-        json.table.rows
-      )
-    ){
-
-      throw new Error(
-        "Google Sheets enthält keine gültigen Tabellendaten."
+    const json =
+      JSON.parse(
+        text
+          .substring(47)
+          .slice(0,-2)
       );
-
-    }
 
 
     const rows =
@@ -1585,18 +1447,16 @@ async function loadSheet(){
             HABITATS.forEach(
               habitat => {
 
-                const cell =
-                  cells[
-                    habitat.columnIndex
-                  ];
-
-
                 monster.habitats[
                   habitat.label
                 ] =
                   parseScore(
-                    cell?.f ??
-                    cell?.v
+                    cells[
+                      habitat.columnIndex
+                    ]?.f ??
+                    cells[
+                      habitat.columnIndex
+                    ]?.v
                   );
 
               }
@@ -1606,18 +1466,16 @@ async function loadSheet(){
             CLIMATES.forEach(
               climate => {
 
-                const cell =
-                  cells[
-                    climate.columnIndex
-                  ];
-
-
                 monster.climates[
                   climate.label
                 ] =
                   parseScore(
-                    cell?.f ??
-                    cell?.v
+                    cells[
+                      climate.columnIndex
+                    ]?.f ??
+                    cells[
+                      climate.columnIndex
+                    ]?.v
                   );
 
               }
@@ -1630,15 +1488,8 @@ async function loadSheet(){
         )
         .filter(
           monster =>
-            String(
-              monster.name
-            ).trim() !== ""
+            monster.name
         );
-
-
-    console.log(
-      `Monsterdaten geladen: ${monsters.length}`
-    );
 
 
     buildHabitatUI();
@@ -1665,17 +1516,7 @@ async function loadSheet(){
       <tr>
 
         <td colspan="7">
-
           Fehler beim Laden der Monsterdaten.
-
-          <br><br>
-
-          <small>
-            ${escapeHTML(
-              error.message
-            )}
-          </small>
-
         </td>
 
       </tr>
@@ -1847,9 +1688,7 @@ function parseCR(value){
     )
   ){
 
-    return unicodeFractions[
-      text
-    ];
+    return unicodeFractions[text];
 
   }
 
@@ -1866,6 +1705,56 @@ function parseCR(value){
   return isNaN(number)
     ? 0
     : number;
+
+}
+
+
+/* =========================================================
+   CR FORMAT
+========================================================= */
+
+function formatCR(value){
+
+  if(
+    value === undefined ||
+    value === null ||
+    isNaN(value)
+  ){
+
+    return "—";
+
+  }
+
+
+  if(value === 0){
+
+    return "0";
+
+  }
+
+
+  if(value === 0.125){
+
+    return "1/8";
+
+  }
+
+
+  if(value === 0.25){
+
+    return "1/4";
+
+  }
+
+
+  if(value === 0.5){
+
+    return "1/2";
+
+  }
+
+
+  return String(value);
 
 }
 
@@ -1890,10 +1779,7 @@ function parseScore(value){
   const number =
     Number(
       String(value)
-        .replace(
-          ",",
-          "."
-        )
+        .replace(",",".")
         .trim()
     );
 
@@ -2690,6 +2576,7 @@ function filterMonsters(){
   let filtered =
     monsters.filter(
       monster => {
+
 
         if(
           !showUnique &&
@@ -3841,7 +3728,9 @@ document
 
 
       buildHabitatUI();
+
       buildClimateUI();
+
       updateClimateUI();
 
       filterMonsters();
