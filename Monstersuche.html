@@ -1,0 +1,1690 @@
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>DnD Monster Database – DM</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+html,
+body{
+  height:100%;
+}
+
+body{
+  margin:0;
+  background:#181818;
+  color:white;
+  font-family:Arial,sans-serif;
+  overflow:hidden;
+}
+
+.container{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 340px;
+  gap:20px;
+  padding:20px;
+  height:100vh;
+  align-items:start;
+  transition:grid-template-columns 0.25s ease;
+}
+
+.container.sidebar-collapsed{
+  grid-template-columns:minmax(0,1fr) 0px;
+}
+
+.table-section{
+  min-width:0;
+  height:calc(100vh - 40px);
+  overflow:auto;
+  border-radius:16px;
+}
+
+.sidebar{
+  background:#242424;
+  border-radius:16px;
+  padding:22px;
+  position:sticky;
+  top:20px;
+  height:calc(100vh - 40px);
+  overflow:auto;
+  border:1px solid #3a3a3a;
+
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.container.sidebar-collapsed .sidebar{
+  opacity:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+h1,h2{
+  font-family:"Cinzel",serif;
+}
+
+.topbar{
+  margin-bottom:16px;
+}
+
+input,
+button{
+  width:100%;
+  padding:11px;
+  border-radius:10px;
+  border:1px solid #444;
+  background:#1d1d1d;
+  color:white;
+  font-size:15px;
+}
+
+button{
+  cursor:pointer;
+}
+
+.filter-group{
+  margin-bottom:20px;
+}
+
+.filter-group label{
+  display:block;
+  margin-bottom:8px;
+  font-weight:bold;
+}
+
+.range-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.multi-select{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.multi-select button{
+  width:auto;
+  background:#333;
+  padding:9px 12px;
+}
+
+.multi-select button.active{
+  background:#4f46e5;
+  border-color:#7c74ff;
+}
+
+.quick-buttons{
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.quick-buttons button{
+  flex:1;
+  background:#333;
+}
+
+.quick-buttons button:hover,
+.multi-select button:hover{
+  background:#444;
+}
+
+table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:#222;
+  border-radius:14px;
+  overflow:visible;
+}
+
+th,
+td{
+  padding:12px;
+  text-align:left;
+  white-space:nowrap;
+
+  border-bottom:1px solid #3f3f3f;
+  border-right:1px solid rgba(255,255,255,0.06);
+
+  box-shadow:
+    inset -1px 0 0 rgba(255,255,255,0.03);
+}
+
+th:last-child,
+td:last-child{
+  border-right:none;
+}
+
+th{
+  background:#303030;
+  position:sticky;
+  top:0;
+  z-index:50;
+
+  box-shadow:
+    0 2px 10px rgba(0,0,0,0.35);
+}
+
+.sortable{
+  cursor:pointer;
+  user-select:none;
+}
+
+.sortable:hover{
+  background:#3b3b3b;
+}
+
+.sort-arrow{
+  margin-left:6px;
+  font-size:12px;
+  opacity:.8;
+}
+
+tbody tr:nth-child(even){
+  background:#242424;
+}
+
+tbody tr:nth-child(odd){
+  background:#2c2c2c;
+}
+
+tbody tr{
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+tbody tr:hover{
+  background:#353535;
+
+  box-shadow:
+    inset 3px 0 0 #6d63ff,
+    inset 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.unique-yes{
+  color:#ff9b42;
+  font-weight:bold;
+}
+
+.unique-no{
+  color:#aaa;
+}
+
+.habitat-score{
+  font-weight:bold;
+}
+
+.search-row{
+  display:flex;
+  gap:8px;
+}
+
+.search-row input{
+  flex:1;
+}
+
+.search-row button{
+  width:auto;
+  padding:0 14px;
+  background:#383838;
+  border:1px solid #555;
+  font-weight:bold;
+}
+
+.toggle-sidebar{
+  display:none;
+
+  position:fixed;
+  top:16px;
+  right:16px;
+
+  z-index:10000;
+
+  width:auto;
+
+  padding:12px 16px;
+
+  border:none;
+  border-radius:12px;
+
+  background:#4f46e5;
+  color:white;
+
+  font-weight:bold;
+}
+
+.desktop-toggle{
+  display:block;
+}
+
+.mobile-cards{
+  display:none;
+}
+
+.mobile-card{
+  background:#242424;
+  border:1px solid #3f3f3f;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.mobile-card-title{
+  font-size:18px;
+  font-weight:bold;
+  margin-bottom:12px;
+}
+
+.mobile-card-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.mobile-label{
+  font-size:12px;
+  opacity:.7;
+}
+
+.mobile-value{
+  font-size:14px;
+}
+
+.mobile-score{
+  font-size:18px;
+  font-weight:bold;
+}
+
+#scrollTopBtn{
+  position:fixed;
+  bottom:20px;
+  right:20px;
+
+  width:54px;
+  height:54px;
+
+  border:none;
+  border-radius:50%;
+
+  background:#4f46e5;
+  color:white;
+
+  font-size:24px;
+  font-weight:bold;
+
+  cursor:pointer;
+
+  z-index:10001;
+
+  opacity:0;
+  pointer-events:none;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.35);
+}
+
+#scrollTopBtn.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+#scrollTopBtn:hover{
+  transform:translateY(-2px);
+}
+
+@media (max-width:700px){
+
+  body{
+    overflow:auto;
+  }
+
+  .container{
+    display:flex !important;
+    flex-direction:column !important;
+    padding:14px;
+    height:auto;
+  }
+
+  .table-section{
+    height:auto;
+    max-height:none;
+    overflow:visible;
+  }
+
+  .sidebar{
+    order:-1;
+
+    position:fixed;
+
+    left:0;
+    top:0;
+
+    width:100%;
+    max-width:100%;
+    height:100vh;
+
+    overflow-y:auto;
+
+    z-index:9999;
+
+    border-radius:0;
+
+    transform:translateX(100%);
+
+    transition:transform 0.25s ease;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .toggle-sidebar{
+    display:block;
+  }
+
+  .desktop-toggle{
+    display:none;
+  }
+
+  .table-section table{
+    display:none !important;
+  }
+
+  thead,
+  tbody{
+    display:none !important;
+  }
+
+  .mobile-cards{
+    display:block;
+  }
+
+  h1{
+    font-size:28px;
+    line-height:1.2;
+    margin-right:90px;
+  }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<button
+  class="toggle-sidebar"
+  id="toggleSidebar"
+>
+☰ Filter
+</button>
+
+<button
+  class="toggle-sidebar desktop-toggle"
+  id="desktopToggleSidebar"
+>
+⇔ Filter
+</button>
+
+<button id="scrollTopBtn">↑</button>
+
+<div class="container">
+
+<div class="table-section">
+
+<div class="topbar">
+
+<h1>DnD Monster Database – DM</h1>
+
+</div>
+
+<table>
+
+<thead>
+<tr>
+
+<th class="sortable" data-sort="name">
+Monster <span class="sort-arrow">▲</span>
+</th>
+
+<th class="sortable" data-sort="cr">
+CR <span class="sort-arrow"></span>
+</th>
+
+<th class="sortable" data-sort="xp">
+XP <span class="sort-arrow"></span>
+</th>
+
+<th class="sortable" data-sort="unique">
+Einzigartig? <span class="sort-arrow"></span>
+</th>
+
+<th>
+DDB Habitat
+</th>
+
+<th>
+Habitat-Fit
+</th>
+
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+<div id="mobileCards" class="mobile-cards"></div>
+
+</div>
+
+<div class="sidebar">
+
+<h2>Suchfilter</h2>
+
+<div class="filter-group">
+
+<label>CR</label>
+
+<div class="range-grid">
+
+<input
+  type="number"
+  id="crMin"
+  placeholder="von"
+  step="0.125"
+>
+
+<input
+  type="number"
+  id="crMax"
+  placeholder="bis"
+  step="0.125"
+>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>XP</label>
+
+<div class="range-grid">
+
+<input
+  type="number"
+  id="xpMin"
+  placeholder="von"
+>
+
+<input
+  type="number"
+  id="xpMax"
+  placeholder="bis"
+>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Einzigartig?</label>
+
+<div
+  id="uniqueFilter"
+  class="multi-select"
+>
+
+<button
+  type="button"
+  class="unique-btn active"
+  data-value="Alle"
+>
+Alle
+</button>
+
+<button
+  type="button"
+  class="unique-btn"
+  data-value="Ja"
+>
+Ja
+</button>
+
+<button
+  type="button"
+  class="unique-btn"
+  data-value="Nein"
+>
+Nein
+</button>
+
+</div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Lebensräume</label>
+
+<div class="quick-buttons">
+
+<button
+  type="button"
+  id="habitatAll"
+>
+Alle
+</button>
+
+<button
+  type="button"
+  id="habitatNone"
+>
+Keine
+</button>
+
+</div>
+
+<div
+  id="habitatFilter"
+  class="multi-select"
+></div>
+
+</div>
+
+<div class="filter-group">
+
+<label>Suchbegriff</label>
+
+<div class="search-row">
+
+<input
+  type="text"
+  id="searchInput"
+  placeholder="Monster suchen..."
+>
+
+<button id="resetFilters">
+✕
+</button>
+
+</div>
+
+</div>
+
+<div>
+Suchergebnisse:
+<span id="resultCount">0</span>
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   GOOGLE SHEET
+   ========================================================= */
+
+const SHEET_ID =
+  "1v7egXu70tpq7mkPCmZq4ak7fMu3NzZYPR1Rd2mLx8_0";
+
+const SHEET_NAME = "Sheet1";
+
+
+/* =========================================================
+   HABITATE
+   UI-NAME → GOOGLE-SHEET-SPALTENNAME
+   ========================================================= */
+
+const HABITATS = [
+  {
+    label:"Wald",
+    column:"Wald"
+  },
+  {
+    label:"Grasland",
+    column:"Grasland"
+  },
+  {
+    label:"Wüste",
+    column:"Wüste"
+  },
+  {
+    label:"Hügel",
+    column:"Hügel"
+  },
+  {
+    label:"Gebirge",
+    column:"Gebirge"
+  },
+  {
+    label:"Sumpf",
+    column:"Sumpf/Moor"
+  },
+  {
+    label:"Küste",
+    column:"Küste"
+  },
+  {
+    label:"Süßwasser",
+    column:"Süßwasser"
+  },
+  {
+    label:"Höhle",
+    column:"Höhle"
+  },
+  {
+    label:"Tunnel",
+    column:"Tunnel/Underdark"
+  },
+  {
+    label:"Arktis",
+    column:"Arktis"
+  },
+  {
+    label:"Vulkanisch",
+    column:"Vulkanisch"
+  },
+  {
+    label:"Urban",
+    column:"Urban"
+  }
+];
+
+
+/* =========================================================
+   STATE
+   ========================================================= */
+
+let monsters = [];
+
+let selectedHabitats = [];
+
+let uniqueState = "Alle";
+
+let sortColumn = "name";
+let sortDirection = "asc";
+
+
+/* =========================================================
+   LOAD SHEET
+   ========================================================= */
+
+async function loadSheet(){
+
+  try{
+
+    const url =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}`;
+
+    const response =
+      await fetch(url);
+
+    const text =
+      await response.text();
+
+    const json =
+      JSON.parse(
+        text.substring(47).slice(0,-2)
+      );
+
+    const rows =
+      json.table.rows;
+
+
+    monsters =
+      rows
+        .map(row => {
+
+          const cells =
+            row.c || [];
+
+          const monster = {
+
+            name:
+              cells[0]?.v ?? "",
+
+            cr:
+              parseCR(cells[1]?.v),
+
+            xp:
+              Number(cells[2]?.v ?? 0),
+
+            unique:
+              String(cells[3]?.v ?? "")
+                .trim(),
+
+            ddbHabitat:
+              cells[4]?.v ?? "",
+
+            habitats:{}
+
+          };
+
+
+          HABITATS.forEach((habitat,index)=>{
+
+            monster.habitats[habitat.label] =
+              Number(
+                cells[5 + index]?.v ?? 0
+              );
+
+          });
+
+
+          return monster;
+
+        })
+        .filter(m => m.name);
+
+
+    buildHabitatFilters();
+
+    filterMonsters();
+
+  }catch(error){
+
+    console.error(error);
+
+    document.getElementById("tableBody").innerHTML = `
+      <tr>
+        <td colspan="6">
+          Fehler beim Laden der Monsterdaten.
+        </td>
+      </tr>
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   CR
+   ========================================================= */
+
+function parseCR(value){
+
+  if(value === undefined || value === null)
+    return 0;
+
+  const text =
+    String(value).trim();
+
+  if(text.includes("/")){
+
+    const parts =
+      text.split("/");
+
+    return Number(parts[0]) / Number(parts[1]);
+
+  }
+
+  return Number(text) || 0;
+
+}
+
+
+/* =========================================================
+   HABITAT FILTER
+   ========================================================= */
+
+function buildHabitatFilters(){
+
+  const container =
+    document.getElementById("habitatFilter");
+
+  container.innerHTML = "";
+
+
+  HABITATS.forEach(habitat => {
+
+    const button =
+      document.createElement("button");
+
+    button.type = "button";
+
+    button.textContent =
+      habitat.label;
+
+
+    if(
+      selectedHabitats.includes(
+        habitat.label
+      )
+    ){
+
+      button.classList.add("active");
+
+    }
+
+
+    button.addEventListener("click",()=>{
+
+      if(
+        selectedHabitats.includes(
+          habitat.label
+        )
+      ){
+
+        selectedHabitats =
+          selectedHabitats.filter(
+            h => h !== habitat.label
+          );
+
+      }else{
+
+        selectedHabitats.push(
+          habitat.label
+        );
+
+      }
+
+
+      buildHabitatFilters();
+      filterMonsters();
+
+    });
+
+
+    container.appendChild(button);
+
+  });
+
+}
+
+
+/* =========================================================
+   HABITAT: ALLE
+   ========================================================= */
+
+document
+  .getElementById("habitatAll")
+  .addEventListener("click",()=>{
+
+    selectedHabitats =
+      HABITATS.map(
+        habitat => habitat.label
+      );
+
+    buildHabitatFilters();
+    filterMonsters();
+
+  });
+
+
+/* =========================================================
+   HABITAT: KEINE
+   ========================================================= */
+
+document
+  .getElementById("habitatNone")
+  .addEventListener("click",()=>{
+
+    selectedHabitats = [];
+
+    buildHabitatFilters();
+    filterMonsters();
+
+  });
+
+
+/* =========================================================
+   FILTER
+   ========================================================= */
+
+function filterMonsters(){
+
+  const search =
+    document.getElementById("searchInput")
+      .value
+      .toLowerCase()
+      .trim();
+
+
+  const crMin =
+    parseFloat(
+      document.getElementById("crMin").value
+    );
+
+
+  const crMax =
+    parseFloat(
+      document.getElementById("crMax").value
+    );
+
+
+  const xpMin =
+    parseFloat(
+      document.getElementById("xpMin").value
+    );
+
+
+  const xpMax =
+    parseFloat(
+      document.getElementById("xpMax").value
+    );
+
+
+  let filtered =
+    monsters.filter(monster => {
+
+
+      if(
+        !isNaN(crMin) &&
+        monster.cr < crMin
+      )
+        return false;
+
+
+      if(
+        !isNaN(crMax) &&
+        monster.cr > crMax
+      )
+        return false;
+
+
+      if(
+        !isNaN(xpMin) &&
+        monster.xp < xpMin
+      )
+        return false;
+
+
+      if(
+        !isNaN(xpMax) &&
+        monster.xp > xpMax
+      )
+        return false;
+
+
+      if(
+        uniqueState === "Ja" &&
+        monster.unique !== "Ja"
+      )
+        return false;
+
+
+      if(
+        uniqueState === "Nein" &&
+        monster.unique === "Ja"
+      )
+        return false;
+
+
+      const combined =
+        `${monster.name} ${monster.ddbHabitat}`
+          .toLowerCase();
+
+
+      if(
+        search &&
+        !combined.includes(search)
+      )
+        return false;
+
+
+      /*
+       * Mehrere Habitate:
+       * Ein Monster bleibt zunächst im Ergebnis,
+       * wenn es in mindestens einem ausgewählten
+       * Habitat einen Wert > 0 hat.
+       */
+
+      if(selectedHabitats.length){
+
+        const habitatMatch =
+          selectedHabitats.some(
+            habitat =>
+              monster.habitats[habitat] > 0
+          );
+
+        if(!habitatMatch)
+          return false;
+
+      }
+
+
+      return true;
+
+    });
+
+
+  /* =======================================================
+     SORTIERUNG
+     ======================================================= */
+
+  filtered.sort((a,b)=>{
+
+    let x;
+    let y;
+
+
+    switch(sortColumn){
+
+      case "cr":
+
+        x = a.cr;
+        y = b.cr;
+
+        break;
+
+
+      case "xp":
+
+        x = a.xp;
+        y = b.xp;
+
+        break;
+
+
+      case "unique":
+
+        x = a.unique;
+        y = b.unique;
+
+        break;
+
+
+      default:
+
+        x = a.name;
+        y = b.name;
+
+    }
+
+
+    if(typeof x === "string"){
+
+      x = x.toLowerCase();
+      y = y.toLowerCase();
+
+    }
+
+
+    if(x < y)
+      return sortDirection === "asc"
+        ? -1
+        : 1;
+
+
+    if(x > y)
+      return sortDirection === "asc"
+        ? 1
+        : -1;
+
+
+    return 0;
+
+  });
+
+
+  renderTable(filtered);
+  renderMobileCards(filtered);
+
+
+  document
+    .getElementById("resultCount")
+    .textContent =
+      filtered.length;
+
+}
+
+
+/* =========================================================
+   HABITAT FIT
+   ========================================================= */
+
+function getHabitatFit(monster){
+
+  if(!selectedHabitats.length)
+    return null;
+
+
+  const values =
+    selectedHabitats.map(
+      habitat =>
+        monster.habitats[habitat] ?? 0
+    );
+
+
+  if(!values.length)
+    return null;
+
+
+  const total =
+    values.reduce(
+      (sum,value)=>sum + value,
+      0
+    );
+
+
+  return (
+    total / values.length
+  ).toFixed(1);
+
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+function renderTable(data){
+
+  const body =
+    document.getElementById("tableBody");
+
+  body.innerHTML = "";
+
+
+  data.forEach(monster => {
+
+    const tr =
+      document.createElement("tr");
+
+
+    const uniqueClass =
+      monster.unique === "Ja"
+        ? "unique-yes"
+        : "unique-no";
+
+
+    const fit =
+      getHabitatFit(monster);
+
+
+    const habitatFit =
+      fit === null
+        ? "-"
+        : `${fit} / 5`;
+
+
+    tr.innerHTML = `
+
+      <td>
+        <strong>
+          ${escapeHTML(monster.name)}
+        </strong>
+      </td>
+
+      <td>
+        ${formatCR(monster.cr)}
+      </td>
+
+      <td>
+        ${monster.xp.toLocaleString("de-DE")}
+      </td>
+
+      <td class="${uniqueClass}">
+        ${escapeHTML(monster.unique || "-")}
+      </td>
+
+      <td>
+        ${escapeHTML(monster.ddbHabitat || "-")}
+      </td>
+
+      <td class="habitat-score">
+        ${habitatFit}
+      </td>
+
+    `;
+
+
+    body.appendChild(tr);
+
+  });
+
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+function renderMobileCards(data){
+
+  const container =
+    document.getElementById("mobileCards");
+
+  container.innerHTML = "";
+
+
+  data.forEach(monster => {
+
+    const fit =
+      getHabitatFit(monster);
+
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "mobile-card";
+
+
+    card.innerHTML = `
+
+      <div class="mobile-card-title">
+        ${escapeHTML(monster.name)}
+      </div>
+
+
+      <div class="mobile-card-grid">
+
+        <div>
+
+          <div class="mobile-label">
+            CR
+          </div>
+
+          <div class="mobile-value">
+            ${formatCR(monster.cr)}
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div class="mobile-label">
+            XP
+          </div>
+
+          <div class="mobile-value">
+            ${monster.xp.toLocaleString("de-DE")}
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div class="mobile-label">
+            Einzigartig
+          </div>
+
+          <div class="mobile-value">
+            ${escapeHTML(monster.unique || "-")}
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div class="mobile-label">
+            Habitat-Fit
+          </div>
+
+          <div class="mobile-score">
+            ${
+              fit === null
+                ? "-"
+                : `${fit} / 5`
+            }
+          </div>
+
+        </div>
+
+
+        <div style="grid-column:1 / -1;">
+
+          <div class="mobile-label">
+            DDB Habitat
+          </div>
+
+          <div class="mobile-value">
+            ${escapeHTML(monster.ddbHabitat || "-")}
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+
+    container.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================================================
+   UNIQUE FILTER
+   ========================================================= */
+
+document
+  .querySelectorAll(".unique-btn")
+  .forEach(button => {
+
+    button.addEventListener("click",()=>{
+
+      document
+        .querySelectorAll(".unique-btn")
+        .forEach(btn =>
+          btn.classList.remove("active")
+        );
+
+
+      button.classList.add("active");
+
+
+      uniqueState =
+        button.dataset.value;
+
+
+      filterMonsters();
+
+    });
+
+  });
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+[
+  "crMin",
+  "crMax",
+  "xpMin",
+  "xpMax",
+  "searchInput"
+]
+.forEach(id => {
+
+  document
+    .getElementById(id)
+    .addEventListener(
+      "input",
+      filterMonsters
+    );
+
+});
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+document
+  .getElementById("resetFilters")
+  .addEventListener("click",()=>{
+
+    document.getElementById("crMin").value = "";
+    document.getElementById("crMax").value = "";
+
+    document.getElementById("xpMin").value = "";
+    document.getElementById("xpMax").value = "";
+
+    document.getElementById("searchInput").value = "";
+
+    uniqueState = "Alle";
+
+
+    document
+      .querySelectorAll(".unique-btn")
+      .forEach(btn =>
+        btn.classList.remove("active")
+      );
+
+
+    document
+      .querySelector(
+        '.unique-btn[data-value="Alle"]'
+      )
+      .classList.add("active");
+
+
+    selectedHabitats = [];
+
+
+    buildHabitatFilters();
+
+    filterMonsters();
+
+  });
+
+
+/* =========================================================
+   SORTIERUNG
+   ========================================================= */
+
+document
+  .querySelectorAll(".sortable")
+  .forEach(header => {
+
+    header.addEventListener("click",()=>{
+
+      const column =
+        header.dataset.sort;
+
+
+      if(sortColumn === column){
+
+        sortDirection =
+          sortDirection === "asc"
+            ? "desc"
+            : "asc";
+
+      }else{
+
+        sortColumn = column;
+        sortDirection = "asc";
+
+      }
+
+
+      document
+        .querySelectorAll(".sort-arrow")
+        .forEach(arrow =>
+          arrow.textContent = ""
+        );
+
+
+      header
+        .querySelector(".sort-arrow")
+        .textContent =
+          sortDirection === "asc"
+            ? "▲"
+            : "▼";
+
+
+      filterMonsters();
+
+    });
+
+  });
+
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+
+document
+  .getElementById("toggleSidebar")
+  .addEventListener("click",()=>{
+
+    document
+      .querySelector(".sidebar")
+      .classList.toggle("open");
+
+  });
+
+
+document
+  .getElementById("desktopToggleSidebar")
+  .addEventListener("click",()=>{
+
+    document
+      .querySelector(".container")
+      .classList.toggle(
+        "sidebar-collapsed"
+      );
+
+  });
+
+
+/* =========================================================
+   SCROLL TOP
+   ========================================================= */
+
+const scrollTopBtn =
+  document.getElementById(
+    "scrollTopBtn"
+  );
+
+
+function isMobile(){
+
+  return window.innerWidth <= 700;
+
+}
+
+
+function getCurrentScroll(){
+
+  return isMobile()
+
+    ? document.documentElement.scrollTop ||
+      window.pageYOffset
+
+    : document.querySelector(
+        ".table-section"
+      ).scrollTop;
+
+}
+
+
+function toggleScrollButton(){
+
+  if(getCurrentScroll() > 300){
+
+    scrollTopBtn.classList.add("show");
+
+  }else{
+
+    scrollTopBtn.classList.remove("show");
+
+  }
+
+}
+
+
+window.addEventListener(
+  "scroll",
+  toggleScrollButton,
+  { passive:true }
+);
+
+
+document
+  .querySelector(".table-section")
+  .addEventListener(
+    "scroll",
+    toggleScrollButton,
+    { passive:true }
+);
+
+
+scrollTopBtn.addEventListener(
+  "click",
+  ()=>{
+
+    if(isMobile()){
+
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+    }else{
+
+      document
+        .querySelector(".table-section")
+        .scrollTo({
+          top:0,
+          behavior:"smooth"
+        });
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+
+function formatCR(cr){
+
+  if(cr === 0)
+    return "0";
+
+
+  if(cr < 1){
+
+    return `1/${Math.round(1/cr)}`;
+
+  }
+
+
+  return Number.isInteger(cr)
+    ? String(cr)
+    : String(cr);
+
+}
+
+
+function escapeHTML(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
+
+loadSheet();
+
+</script>
+
+</body>
+</html>
+```
