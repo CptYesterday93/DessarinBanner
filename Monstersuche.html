@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V26</title>
+<title>DnD Monster Database – V28</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -925,7 +925,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V26</h1>
+      <h1>DnD Monster Database – V28</h1>
     </div>
 
 
@@ -1093,7 +1093,7 @@ tbody tr:hover{
       </div>
 
       <div class="region-preset-hint">
-        Eine Region setzt Lebensräume und Temperatur vorausgefüllt. Alles bleibt danach manuell editierbar.
+        Eine Region setzt nur ausgefüllte Lebensräume und die Temperatur voraus. Alles bleibt danach manuell editierbar.
       </div>
 
 
@@ -2180,16 +2180,15 @@ function parseScore(value){
     );
 
 
-  if(isNaN(number))
+  if(
+    isNaN(number) ||
+    number < 1
+  )
     return null;
 
-
-  return Math.max(
-    1,
-    Math.min(
-      5,
-      number
-    )
+  return Math.min(
+    5,
+    number
   );
 
 }
@@ -3008,62 +3007,35 @@ document
 
 
 /* =========================================================
-   V24 HABITAT-BERECHNUNG
+   V28 HABITAT-BERECHNUNG
 ========================================================= */
 
 /*
- * Die Bedeutung ist jetzt:
+ * Ziel von V28:
  *
- * FILTERSTERN:
- * Wie stark ist dieser Lebensraum
- * in der Region vorhanden?
+ * Der wichtigste / stärkste Lebensraum der Region soll den
+ * Löwenanteil der Wertung bestimmen.
  *
- * 1 = wenig
- * 2 = eher wenig
- * 3 = merklicher Bestandteil
- * 4 = viel
- * 5 = prägend / fast überwiegend
+ * Weitere passende Lebensräume geben nur einen kleineren,
+ * abnehmenden Bonus.
  *
+ * Dadurch wird ein breit aufgestelltes Monster nicht mehr
+ * übermäßig dafür belohnt, dass es "irgendwie überall gut"
+ * ist.
  *
- * MONSTERSTERN:
- * Wie wahrscheinlich ist das Monster,
- * WENN dieser Lebensraum vorhanden ist?
+ * Region:
+ *   1 = fast kein Anteil
+ *   2 = wenig
+ *   3 = merklich
+ *   4 = viel
+ *   5 = dominant
  *
- * 1 = praktisch nie
- * 2 = selten
- * 3 = plausibel
- * 4 = häufig
- * 5 = sehr typisch
- *
- *
- * Wir bilden daraus eine Art
- * "Begegnungschance":
- *
- * Anteil des Lebensraums ×
- * Wahrscheinlichkeit des Monsters.
- *
- *
- * Mehrere Lebensräume werden nicht
- * einfach gemittelt.
- *
- * Stattdessen wird die Chance,
- * über mindestens einen der vorhandenen
- * Lebensräume auf das Monster zu stoßen,
- * kombiniert.
- *
- * Dadurch:
- *
- * Wald 1 / Gebirge 1
- *
- * ist etwas ganz anderes als:
- *
- * Wald 5 / Gebirge 5
- *
- * Außerdem:
- *
- * Wald 5 / Gebirge 1
- *
- * wird tatsächlich von Wald dominiert.
+ * Monster:
+ *   1 = praktisch nie
+ *   2 = selten
+ *   3 = plausibel
+ *   4 = häufig
+ *   5 = sehr typisch
  */
 
 function regionAmountFactor(
@@ -3074,7 +3046,6 @@ function regionAmountFactor(
 
 }
 
-
 function monsterProbabilityFactor(
   monsterScore
 ){
@@ -3083,55 +3054,54 @@ function monsterProbabilityFactor(
 
 }
 
+function habitatOpportunity(
+  regionScore,
+  monsterScore
+){
+
+  return Math.max(
+    0,
+    Math.min(
+      1,
+      regionAmountFactor(regionScore) *
+      monsterProbabilityFactor(monsterScore)
+    )
+  );
+
+}
 
 function getHabitatScore(
   monster
 ){
 
-  const habitats =
-    Object.keys(
+  const entries =
+    Object.entries(
       appliedRegionWeights
     );
 
-
   if(
-    habitats.length === 0
+    entries.length === 0
   ){
 
     return null;
 
   }
 
-
-  let probabilityOfNoEncounter =
-    1;
-
-
-  let foundRelevantHabitat =
-    false;
-
+  const relevant = [];
 
   for(
     let i=0;
-    i<habitats.length;
+    i<entries.length;
     i++
   ){
 
-    const habitat =
-      habitats[i];
-
-
-    const regionScore =
-      appliedRegionWeights[
-        habitat
-      ];
-
+    const [habitat,regionScore] =
+      entries[i];
 
     const monsterScore =
       monster.habitats[
         habitat
       ];
-
 
     if(
       monsterScore === null ||
@@ -3142,65 +3112,97 @@ function getHabitatScore(
 
     }
 
-
-    const regionAmount =
-      regionAmountFactor(
-        regionScore
-      );
-
-
-    const monsterProbability =
-      monsterProbabilityFactor(
-        monsterScore
-      );
-
-
-    const encounterOpportunity =
-      Math.max(
-        0,
-        Math.min(
-          1,
-          regionAmount *
-          monsterProbability
+    relevant.push({
+      habitat,
+      regionScore,
+      monsterScore,
+      opportunity:
+        habitatOpportunity(
+          regionScore,
+          monsterScore
         )
-      );
-
-
-    probabilityOfNoEncounter *=
-      (
-        1 -
-        encounterOpportunity
-      );
-
-
-    foundRelevantHabitat =
-      true;
+    });
 
   }
 
-
   if(
-    !foundRelevantHabitat
+    relevant.length === 0
   ){
 
     return null;
 
   }
 
+  /*
+     Zuerst nach regionaler Bedeutung sortieren.
+     Der stärkste Lebensraum ist der Haupttreiber.
+  */
 
-  const combinedProbability =
-    1 -
-    probabilityOfNoEncounter;
+  relevant.sort(
+    (a,b) =>
+      b.regionScore - a.regionScore
+  );
 
+  const primary =
+    relevant[0];
+
+  let combined =
+    primary.opportunity;
+
+  /*
+     Weitere Lebensräume ergänzen nur einen Teil.
+     Je weiter hinten sie stehen, desto geringer ihr Einfluss.
+
+     1. Zusatz = 20 %
+     2. Zusatz = 12 %
+     3. Zusatz = 8 %
+     danach = 5 %
+
+     Der Bonus wird auf den noch nicht erreichten Bereich
+     bis 1 angewendet, dadurch gibt es eine sanfte Sättigung.
+  */
+
+  const bonusFactors = [
+    0.20,
+    0.12,
+    0.08
+  ];
+
+  for(
+    let i=1;
+    i<relevant.length;
+    i++
+  ){
+
+    const factor =
+      bonusFactors[i-1] ??
+      0.05;
+
+    const contribution =
+      relevant[i].opportunity;
+
+    combined +=
+      (1 - combined) *
+      contribution *
+      factor;
+
+  }
+
+  combined =
+    Math.max(
+      0,
+      Math.min(
+        1,
+        combined
+      )
+    );
 
   return (
     1 +
-    combinedProbability *
-    4
+    combined * 4
   );
 
 }
-
 
 /* =========================================================
    KLIMA
