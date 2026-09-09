@@ -2167,6 +2167,24 @@ document
  * wird tatsächlich von Wald dominiert.
  */
 
+function regionAmountFactor(
+  regionScore
+){
+
+  return regionScore / 5;
+
+}
+
+
+function monsterProbabilityFactor(
+  monsterScore
+){
+
+  return monsterScore / 5;
+
+}
+
+
 function getHabitatScore(
   monster
 ){
@@ -2187,23 +2205,26 @@ function getHabitatScore(
 
 
   /*
-    V23:
-    Region-Sterne = Anteil/Präsenz des Lebensraums.
-    Monster-Sterne = Auftretenswahrscheinlichkeit innerhalb dieses Lebensraums.
+   * V23:
+   * Jeder Lebensraum liefert weiterhin
+   * eine Begegnungschance aus:
+   *
+   *   Regionstärke × Monsterwahrscheinlichkeit
+   *
+   * Anders als in V22 werden mehrere
+   * Lebensräume aber nicht als
+   * "mindestens einer davon" kombiniert.
+   * Das hat V22 zu schnell auf 5,00
+   * sättigen lassen.
+   *
+   * Stattdessen werden die einzelnen
+   * Chancen nach der regionalen Stärke
+   * gewichtet gemittelt. Ein zusätzlicher
+   * guter Lebensraum verbessert den Wert,
+   * aber mit deutlich mehr Nuance.
+   */
 
-    Ein einzelnes Habitat verhält sich wie V22:
-      Region 5 + Monster 5 => 5.00
-      Region 5 + Monster 4 => 4.20
-      Region 1 + Monster 5 => 1.80
-
-    Bei mehreren Habitaten wird nicht mehr die "mindestens eines"-Wahrscheinlichkeit
-    1 - Produkt(1-p) verwendet, weil diese sehr schnell gegen 100% sättigt.
-    Stattdessen verwenden wir ein gewichtetes Mittel der einzelnen
-    Begegnungschancen. Starke regionale Habitate haben dadurch mehr Einfluss,
-    zusätzliche passende Habitate erzeugen aber weiterhin Nuancen.
-  */
-
-  let weightedOpportunitySum = 0;
+  let weightedSum = 0;
   let weightSum = 0;
   let foundRelevantHabitat = false;
 
@@ -2217,12 +2238,10 @@ function getHabitatScore(
     const habitat =
       habitats[i];
 
-
     const regionScore =
       appliedRegionWeights[
         habitat
       ];
-
 
     const monsterScore =
       monster.habitats[
@@ -2245,12 +2264,10 @@ function getHabitatScore(
         regionScore
       );
 
-
     const monsterProbability =
       monsterProbabilityFactor(
         monsterScore
       );
-
 
     const encounterOpportunity =
       Math.max(
@@ -2263,14 +2280,12 @@ function getHabitatScore(
       );
 
 
-    weightedOpportunitySum +=
+    weightedSum +=
       encounterOpportunity *
       regionScore;
 
-
     weightSum +=
       regionScore;
-
 
     foundRelevantHabitat =
       true;
@@ -2288,14 +2303,19 @@ function getHabitatScore(
   }
 
 
-  const combinedOpportunity =
-    weightedOpportunitySum /
-    weightSum;
+  const combinedProbability =
+    Math.max(
+      0,
+      Math.min(
+        1,
+        weightedSum / weightSum
+      )
+    );
 
 
   return (
     1 +
-    combinedOpportunity *
+    combinedProbability *
     4
   );
 
