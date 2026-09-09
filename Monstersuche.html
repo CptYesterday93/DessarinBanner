@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V23</title>
+<title>DnD Monster Database – V24</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -812,7 +812,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V23</h1>
+      <h1>DnD Monster Database – V24</h1>
     </div>
 
 
@@ -1141,11 +1141,23 @@ const HABITATS = [
 
 const CLIMATES = [
 
-  { label:"Kalt",       columnIndex:17 },
-  { label:"Gemäßigt",  columnIndex:18 },
-  { label:"Heiß",       columnIndex:19 }
+  { label:"Kalt" },
+  { label:"Gemäßigt" },
+  { label:"Heiß" }
 
 ];
+
+/*
+   TEMPERATUR
+   Spalte R = Index 17
+
+   1 = sehr kalt
+   2 = kalt
+   3 = gemäßigt
+   4 = heiß / warm
+   5 = sehr heiß
+*/
+const TEMPERATURE_COLUMN_INDEX = 17;
 
 
 /* =========================================================
@@ -1336,7 +1348,7 @@ async function loadSheet(){
 
             habitats:{},
 
-            climates:{}
+            temperature:null
 
           };
 
@@ -1360,23 +1372,14 @@ async function loadSheet(){
           });
 
 
-          CLIMATES.forEach(climate => {
+          const temperatureCell =
+            cells[TEMPERATURE_COLUMN_INDEX];
 
-            const cell =
-              cells[
-                climate.columnIndex
-              ];
-
-
-            monster.climates[
-              climate.label
-            ] =
-              parseScore(
-                cell?.f ??
-                cell?.v
-              );
-
-          });
+          monster.temperature =
+            parseScore(
+              temperatureCell?.f ??
+              temperatureCell?.v
+            );
 
 
           return monster;
@@ -2109,7 +2112,7 @@ document
 
 
 /* =========================================================
-   V22 HABITAT-BERECHNUNG
+   V24 HABITAT-BERECHNUNG
 ========================================================= */
 
 /*
@@ -2204,29 +2207,12 @@ function getHabitatScore(
   }
 
 
-  /*
-   * V23:
-   * Jeder Lebensraum liefert weiterhin
-   * eine Begegnungschance aus:
-   *
-   *   Regionstärke × Monsterwahrscheinlichkeit
-   *
-   * Anders als in V22 werden mehrere
-   * Lebensräume aber nicht als
-   * "mindestens einer davon" kombiniert.
-   * Das hat V22 zu schnell auf 5,00
-   * sättigen lassen.
-   *
-   * Stattdessen werden die einzelnen
-   * Chancen nach der regionalen Stärke
-   * gewichtet gemittelt. Ein zusätzlicher
-   * guter Lebensraum verbessert den Wert,
-   * aber mit deutlich mehr Nuance.
-   */
+  let probabilityOfNoEncounter =
+    1;
 
-  let weightedSum = 0;
-  let weightSum = 0;
-  let foundRelevantHabitat = false;
+
+  let foundRelevantHabitat =
+    false;
 
 
   for(
@@ -2238,10 +2224,12 @@ function getHabitatScore(
     const habitat =
       habitats[i];
 
+
     const regionScore =
       appliedRegionWeights[
         habitat
       ];
+
 
     const monsterScore =
       monster.habitats[
@@ -2264,10 +2252,12 @@ function getHabitatScore(
         regionScore
       );
 
+
     const monsterProbability =
       monsterProbabilityFactor(
         monsterScore
       );
+
 
     const encounterOpportunity =
       Math.max(
@@ -2280,12 +2270,12 @@ function getHabitatScore(
       );
 
 
-    weightedSum +=
-      encounterOpportunity *
-      regionScore;
+    probabilityOfNoEncounter *=
+      (
+        1 -
+        encounterOpportunity
+      );
 
-    weightSum +=
-      regionScore;
 
     foundRelevantHabitat =
       true;
@@ -2294,8 +2284,7 @@ function getHabitatScore(
 
 
   if(
-    !foundRelevantHabitat ||
-    weightSum === 0
+    !foundRelevantHabitat
   ){
 
     return null;
@@ -2304,13 +2293,8 @@ function getHabitatScore(
 
 
   const combinedProbability =
-    Math.max(
-      0,
-      Math.min(
-        1,
-        weightedSum / weightSum
-      )
-    );
+    1 -
+    probabilityOfNoEncounter;
 
 
   return (
@@ -2330,11 +2314,106 @@ function getClimateScore(
   monster
 ){
 
-  return (
-    monster.climates[
-      appliedClimate
-    ] ?? null
-  );
+  const temperature =
+    monster.temperature;
+
+  if(
+    temperature === null ||
+    temperature === undefined
+  ){
+
+    return null;
+
+  }
+
+  /*
+     Der Klima-Filter ist ein Temperaturbereich:
+
+     Kalt      = 1–2
+     Gemäßigt  = 3
+     Heiß      = 4–5
+
+     Exakte / passende Temperatur = 5
+     Angrenzende Temperatur       = 2.5
+     Deutlich falsche Temperatur  = 1
+
+     Damit wird eine deutliche Temperaturabweichung
+     bewusst stark bestraft.
+  */
+
+  if(appliedClimate === "Kalt"){
+
+    if(
+      temperature === 1 ||
+      temperature === 2
+    ){
+
+      return 5;
+
+    }
+
+    if(
+      temperature === 3
+    ){
+
+      return 2.5;
+
+    }
+
+    return 1;
+
+  }
+
+
+  if(appliedClimate === "Gemäßigt"){
+
+    if(
+      temperature === 3
+    ){
+
+      return 5;
+
+    }
+
+    if(
+      temperature === 2 ||
+      temperature === 4
+    ){
+
+      return 2.5;
+
+    }
+
+    return 1;
+
+  }
+
+
+  if(appliedClimate === "Heiß"){
+
+    if(
+      temperature === 4 ||
+      temperature === 5
+    ){
+
+      return 5;
+
+    }
+
+    if(
+      temperature === 3
+    ){
+
+      return 2.5;
+
+    }
+
+    return 1;
+
+  }
+
+
+  return null;
 
 }
 
@@ -3041,6 +3120,7 @@ function renderTable(
             ${escapeHTML(
               appliedClimate
             )}
+            · Temperatur ${monster.temperature ?? "—"}/5
           </div>
 
         </td>
@@ -3352,36 +3432,37 @@ function openInfoModal(
   );
 
 
-  let climateHTML = "";
+  const climateHTML = `
 
+    <div class="profile-item">
 
-  CLIMATES.forEach(
-    climate => {
+      <span class="profile-item-name">
+        Temperatur
+      </span>
 
-      climateHTML += `
+      <span class="profile-item-score">
+        ${getStars(
+          monster.temperature
+        )}
+      </span>
 
-        <div class="profile-item">
+    </div>
 
-          <span class="profile-item-name">
-            ${escapeHTML(
-              climate.label
-            )}
-          </span>
+    <div
+      style="
+        margin-top:8px;
+        color:#aaa;
+        font-size:12px;
+      "
+    >
+      1 = sehr kalt ·
+      2 = kalt ·
+      3 = gemäßigt ·
+      4 = heiß ·
+      5 = sehr heiß
+    </div>
 
-          <span class="profile-item-score">
-            ${getStars(
-              monster.climates[
-                climate.label
-              ]
-            )}
-          </span>
-
-        </div>
-
-      `;
-
-    }
-  );
+  `;
 
 
   const scores =
