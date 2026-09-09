@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V30</title>
+<title>DnD Monster Database – V31</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -925,7 +925,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V30</h1>
+      <h1>DnD Monster Database – V31</h1>
     </div>
 
 
@@ -2260,9 +2260,10 @@ function buildHabitatUI(){
       "click",
       ()=>{
 
-      // Während ein Filter aktiv ist: Gesamtwertung absteigend.
-      currentSortKey = "total";
-      currentSortDirection = "desc";
+      // Nach dem Anwenden der Region-/Temperaturfilter
+      // direkt nach Gesamtwertung absteigend sortieren.
+      sortColumn = "total";
+      sortDirection = "desc";
 
 
         if(
@@ -3585,19 +3586,75 @@ function filterMonsters(){
 
   if(filteringIsActive){
 
-    currentSortKey =
+    /*
+       Filter aktiv -> automatisch Gesamtwertung
+       absteigend. Wichtig: Die Tabelle verwendet
+       sortColumn/sortDirection, nicht die früheren
+       currentSort*-Variablen.
+    */
+    sortColumn =
       "total";
 
-    currentSortDirection =
+    sortDirection =
       "desc";
+
+    document
+      .querySelectorAll(
+        ".sort-arrow"
+      )
+      .forEach(
+        arrow =>
+          arrow.textContent = ""
+      );
+
+    const totalHeader =
+      document.querySelector(
+        '[data-sort="total"]'
+      );
+
+    if(totalHeader){
+
+      totalHeader
+        .querySelector(
+          ".sort-arrow"
+        )
+        .textContent =
+          "▼";
+
+    }
 
   }else{
 
-    currentSortKey =
+    sortColumn =
       "name";
 
-    currentSortDirection =
+    sortDirection =
       "asc";
+
+    document
+      .querySelectorAll(
+        ".sort-arrow"
+      )
+      .forEach(
+        arrow =>
+          arrow.textContent = ""
+      );
+
+    const nameHeader =
+      document.querySelector(
+        '[data-sort="name"]'
+      );
+
+    if(nameHeader){
+
+      nameHeader
+        .querySelector(
+          ".sort-arrow"
+        )
+        .textContent =
+          "▲";
+
+    }
 
   }
 
