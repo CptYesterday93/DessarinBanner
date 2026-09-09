@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V31</title>
+<title>DnD Monster Database – V32</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -925,7 +925,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V31</h1>
+      <h1>DnD Monster Database – V32</h1>
     </div>
 
 
@@ -1086,14 +1086,21 @@ tbody tr:hover{
 
       <div class="region-preset-row">
 
-        <select id="regionPreset">
-          <option value="">Region wählen…</option>
+        <select id="presetRegionSelect">
+          <option value="">Preset wählen…</option>
+        </select>
+
+        <select
+          id="worldRegionSelect"
+          style="margin-top:7px"
+        >
+          <option value="">Spielwelt wählen…</option>
         </select>
 
       </div>
 
       <div class="region-preset-hint">
-        Eine Region setzt nur ausgefüllte Lebensräume und die Temperatur voraus. Alles bleibt danach manuell editierbar.
+        Eine Auswahl setzt die Region vorausgefüllt. Lebensräume und Temperatur bleiben danach manuell editierbar.
       </div>
 
 
@@ -1601,12 +1608,17 @@ function parseRegionTemperature(
 
 async function loadRegionPresets(){
 
-  const select =
+  const presetSelect =
     document.getElementById(
-      "regionPreset"
+      "presetRegionSelect"
     );
 
-  if(!select)
+  const worldSelect =
+    document.getElementById(
+      "worldRegionSelect"
+    );
+
+  if(!presetSelect || !worldSelect)
     return;
 
   try{
@@ -1664,8 +1676,21 @@ async function loadRegionPresets(){
           if(!name)
             return null;
 
+          const typeColumn =
+            headerMap["typ"];
+
+          const type =
+            typeColumn === undefined
+              ? ""
+              : String(
+                  cells[typeColumn]?.f ??
+                  cells[typeColumn]?.v ??
+                  ""
+                ).trim();
+
           const preset = {
             name,
+            type,
             habitats:{},
             temperature:null
           };
@@ -1712,12 +1737,63 @@ async function loadRegionPresets(){
         }
       ).filter(Boolean);
 
-    select.innerHTML =
-      `<option value="">Region wählen…</option>` +
-      regionPresets.map(
-        (region,index) =>
-          `<option value="${index}">${escapeHTML(region.name)}</option>`
-      ).join("");
+    const presets =
+      regionPresets
+        .filter(
+          region =>
+            String(
+              region.type || ""
+            ).trim().toLowerCase() === "preset"
+        )
+        .sort(
+          (a,b) =>
+            a.name.localeCompare(
+              b.name,
+              "de",
+              {
+                sensitivity:"base",
+                numeric:true
+              }
+            )
+        );
+
+    const worldRegions =
+      regionPresets
+        .filter(
+          region =>
+            String(
+              region.type || ""
+            ).trim().toLowerCase() === "spielwelt"
+        )
+        .sort(
+          (a,b) =>
+            a.name.localeCompare(
+              b.name,
+              "de",
+              {
+                sensitivity:"base",
+                numeric:true
+              }
+            )
+        );
+
+    presetSelect.innerHTML =
+      `<option value="">Preset wählen…</option>` +
+      presets
+        .map(
+          region =>
+            `<option value="${regionPresets.indexOf(region)}">${escapeHTML(region.name)}</option>`
+        )
+        .join("");
+
+    worldSelect.innerHTML =
+      `<option value="">Spielwelt wählen…</option>` +
+      worldRegions
+        .map(
+          region =>
+            `<option value="${regionPresets.indexOf(region)}">${escapeHTML(region.name)}</option>`
+        )
+        .join("");
 
   }catch(error){
 
@@ -2954,30 +3030,60 @@ document
    REGION VORLAGE
 ========================================================= */
 
+function handleRegionSelection(
+  event,
+  otherSelectId
+){
+
+  const value =
+    event.target.value;
+
+  if(value === "")
+    return;
+
+  const otherSelect =
+    document.getElementById(
+      otherSelectId
+    );
+
+  if(otherSelect)
+    otherSelect.value = "";
+
+  const preset =
+    regionPresets[
+      Number(value)
+    ];
+
+  applyRegionPresetToEditor(
+    preset
+  );
+
+}
+
 document
   .getElementById(
-    "regionPreset"
+    "presetRegionSelect"
   )
   .addEventListener(
     "change",
-    event => {
+    event =>
+      handleRegionSelection(
+        event,
+        "worldRegionSelect"
+      )
+  );
 
-      const value =
-        event.target.value;
-
-      if(value === "")
-        return;
-
-      const preset =
-        regionPresets[
-          Number(value)
-        ];
-
-      applyRegionPresetToEditor(
-        preset
-      );
-
-    }
+document
+  .getElementById(
+    "worldRegionSelect"
+  )
+  .addEventListener(
+    "change",
+    event =>
+      handleRegionSelection(
+        event,
+        "presetRegionSelect"
+      )
   );
 
 
@@ -4802,7 +4908,11 @@ document
       ).value = "";
 
       document.getElementById(
-        "regionPreset"
+        "presetRegionSelect"
+      ).value = "";
+
+      document.getElementById(
+        "worldRegionSelect"
       ).value = "";
 
 
