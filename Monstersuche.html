@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V25</title>
+<title>DnD Monster Database – V26</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -123,6 +123,21 @@ input[type="number"]{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px;
+}
+
+.region-preset-row{
+  margin:0 0 6px;
+}
+
+.region-preset-row select{
+  width:100%;
+}
+
+.region-preset-hint{
+  margin:0 0 9px;
+  color:#777;
+  font-size:10px;
+  line-height:1.35;
 }
 
 /* =========================================================
@@ -910,7 +925,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V25</h1>
+      <h1>DnD Monster Database – V26</h1>
     </div>
 
 
@@ -1068,6 +1083,18 @@ tbody tr:hover{
       <label>
         Lebensräume
       </label>
+
+      <div class="region-preset-row">
+
+        <select id="regionPreset">
+          <option value="">Region wählen…</option>
+        </select>
+
+      </div>
+
+      <div class="region-preset-hint">
+        Eine Region setzt Lebensräume und Temperatur vorausgefüllt. Alles bleibt danach manuell editierbar.
+      </div>
 
 
       <div class="habitat-actions">
@@ -1248,6 +1275,9 @@ const SHEET_ID =
 const SHEET_NAME =
   "Sheet1";
 
+const REGION_SHEET_NAME =
+  "Regionen";
+
 
 /* =========================================================
    HABITATE
@@ -1325,6 +1355,8 @@ for(let i=1;i<=30;i++){
 ========================================================= */
 
 let monsters = [];
+
+let regionPresets = [];
 
 let regionWeights = {};
 
@@ -1410,6 +1442,362 @@ function buildCRDropdowns(){
 
 }
 
+
+/* =========================================================
+   REGIONEN
+========================================================= */
+
+function getSheetRowsFromText(
+  text
+){
+
+  const json =
+    JSON.parse(
+      text.substring(47).slice(0,-2)
+    );
+
+  return (
+    json.table?.rows ||
+    []
+  );
+
+}
+
+function getHeaderMap(
+  cols
+){
+
+  const map = {};
+
+  cols.forEach(
+    (col,index) => {
+
+      const label =
+        String(
+          col?.label ??
+          ""
+        ).trim();
+
+      if(label)
+        map[label.toLowerCase()] =
+          index;
+
+    }
+  );
+
+  return map;
+
+}
+
+function parseRegionTemperature(
+  cells,
+  headerMap
+){
+
+  const tempColumn =
+    headerMap["temperatur"];
+
+  if(
+    tempColumn !== undefined
+  ){
+
+    return parseScore(
+      cells[tempColumn]?.f ??
+      cells[tempColumn]?.v
+    );
+
+  }
+
+  const minColumn =
+    headerMap["temperatur von"];
+
+  const maxColumn =
+    headerMap["temperatur bis"];
+
+  if(
+    minColumn !== undefined ||
+    maxColumn !== undefined
+  ){
+
+    const min =
+      parseScore(
+        cells[minColumn]?.f ??
+        cells[minColumn]?.v
+      );
+
+    const max =
+      parseScore(
+        cells[maxColumn]?.f ??
+        cells[maxColumn]?.v
+      );
+
+    return {
+      min:
+        min ?? max ?? 3,
+      max:
+        max ?? min ?? 3
+    };
+
+  }
+
+  /*
+     Kompatibilität mit dem alten Regionenblatt:
+     Kalt / Gemäßigt / Heiß.
+
+     Falls dort jeweils nur eine Kategorie markiert ist,
+     wird daraus ein Temperaturpunkt.
+     Diese Kompatibilität kann später entfallen,
+     sobald das Blatt auf "Temperatur" umgestellt ist.
+  */
+
+  const oldColumns = [
+    ["kalt",2],
+    ["gemäßigt",3],
+    ["heiß",4]
+  ];
+
+  let bestLabel = null;
+  let bestScore = -Infinity;
+
+  oldColumns.forEach(
+    ([name,temp]) => {
+
+      const column =
+        headerMap[name];
+
+      if(column === undefined)
+        return;
+
+      const value =
+        parseScore(
+          cells[column]?.f ??
+          cells[column]?.v
+        );
+
+      if(
+        value !== null &&
+        value > bestScore
+      ){
+
+        bestScore =
+          value;
+
+        bestLabel =
+          temp;
+
+      }
+
+    }
+  );
+
+  return bestLabel === null
+    ? null
+    : {
+        min:bestLabel,
+        max:bestLabel
+      };
+
+}
+
+async function loadRegionPresets(){
+
+  const select =
+    document.getElementById(
+      "regionPreset"
+    );
+
+  if(!select)
+    return;
+
+  try{
+
+    const url =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(REGION_SHEET_NAME)}`;
+
+    const response =
+      await fetch(url);
+
+    if(!response.ok)
+      throw new Error(
+        `Regionen HTTP ${response.status}`
+      );
+
+    const text =
+      await response.text();
+
+    const json =
+      JSON.parse(
+        text.substring(47).slice(0,-2)
+      );
+
+    const cols =
+      json.table?.cols ||
+      [];
+
+    const rows =
+      json.table?.rows ||
+      [];
+
+    const headerMap =
+      getHeaderMap(
+        cols
+      );
+
+    const regionColumn =
+      headerMap["region"] ??
+      0;
+
+    regionPresets =
+      rows.map(
+        (row,index) => {
+
+          const cells =
+            row.c || [];
+
+          const name =
+            String(
+              cells[regionColumn]?.f ??
+              cells[regionColumn]?.v ??
+              ""
+            ).trim();
+
+          if(!name)
+            return null;
+
+          const preset = {
+            name,
+            habitats:{},
+            temperature:null
+          };
+
+          HABITATS.forEach(
+            habitat => {
+
+              const column =
+                headerMap[
+                  habitat.label.toLowerCase()
+                ];
+
+              if(
+                column === undefined
+              ){
+
+                preset.habitats[
+                  habitat.label
+                ] = null;
+
+                return;
+
+              }
+
+              preset.habitats[
+                habitat.label
+              ] =
+                parseScore(
+                  cells[column]?.f ??
+                  cells[column]?.v
+                );
+
+            }
+          );
+
+          preset.temperature =
+            parseRegionTemperature(
+              cells,
+              headerMap
+            );
+
+          return preset;
+
+        }
+      ).filter(Boolean);
+
+    select.innerHTML =
+      `<option value="">Region wählen…</option>` +
+      regionPresets.map(
+        (region,index) =>
+          `<option value="${index}">${escapeHTML(region.name)}</option>`
+      ).join("");
+
+  }catch(error){
+
+    console.error(
+      "Fehler beim Laden der Regionen:",
+      error
+    );
+
+    select.innerHTML =
+      `<option value="">Regionen nicht geladen</option>`;
+
+  }
+
+}
+
+function applyRegionPresetToEditor(
+  preset
+){
+
+  if(!preset)
+    return;
+
+  regionWeights = {};
+
+  HABITATS.forEach(
+    habitat => {
+
+      const value =
+        preset.habitats[
+          habitat.label
+        ];
+
+      if(
+        value !== null &&
+        value !== undefined
+      ){
+
+        regionWeights[
+          habitat.label
+        ] = value;
+
+      }
+
+    }
+  );
+
+  const temperature =
+    preset.temperature;
+
+  if(
+    temperature !== null &&
+    temperature !== undefined
+  ){
+
+    if(
+      typeof temperature === "object"
+    ){
+
+      selectedTemperatureMin =
+        temperature.min;
+
+      selectedTemperatureMax =
+        temperature.max;
+
+    }else{
+
+      selectedTemperatureMin =
+        temperature;
+
+      selectedTemperatureMax =
+        temperature;
+
+    }
+
+  }
+
+  buildHabitatUI();
+  updateTemperatureUI();
+
+}
 
 /* =========================================================
    SHEET LADEN
@@ -1535,6 +1923,8 @@ async function loadSheet(){
     buildHabitatUI();
 
     updateTemperatureUI();
+
+    await loadRegionPresets();
 
     filterMonsters();
 
@@ -2550,6 +2940,37 @@ document
 
 
       filterMonsters();
+
+    }
+  );
+
+
+/* =========================================================
+   REGION VORLAGE
+========================================================= */
+
+document
+  .getElementById(
+    "regionPreset"
+  )
+  .addEventListener(
+    "change",
+    event => {
+
+      const value =
+        event.target.value;
+
+      if(value === "")
+        return;
+
+      const preset =
+        regionPresets[
+          Number(value)
+        ];
+
+      applyRegionPresetToEditor(
+        preset
+      );
 
     }
   );
@@ -4194,6 +4615,10 @@ document
 
       document.getElementById(
         "searchInput"
+      ).value = "";
+
+      document.getElementById(
+        "regionPreset"
       ).value = "";
 
 
