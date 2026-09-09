@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V35</title>
+<title>DnD Monster Database – V37</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -245,26 +245,27 @@ input[type="number"]{
 
 .region-row{
   min-width:0;
-  display:flex;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
   align-items:center;
-  gap:5px;
-  min-height:36px;
-  padding:5px 6px;
+  gap:2px;
+  min-height:32px;
+  padding:4px 5px;
   background:#292929;
   border:1px solid #3b3b3b;
   border-radius:8px;
+  overflow:hidden;
 }
 
 .region-name-button{
-  flex:1;
   min-width:0;
-  width:auto;
-  padding:5px 3px;
+  width:100%;
+  padding:4px 2px;
   border:none;
   background:transparent;
   color:#ddd;
   text-align:left;
-  font-size:12px;
+  font-size:11px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -283,15 +284,16 @@ input[type="number"]{
   display:flex;
   gap:0;
   flex-shrink:0;
+  min-width:0;
 }
 
 .region-star{
   width:auto;
-  padding:0 1px;
+  padding:0;
   border:none;
   background:transparent;
   color:#555;
-  font-size:14px;
+  font-size:11px;
   line-height:1;
   cursor:pointer;
 }
@@ -305,8 +307,8 @@ input[type="number"]{
 }
 
 .region-remove{
-  flex:0 0 20px;
-  width:20px;
+  flex:0 0 16px;
+  width:16px;
   padding:2px 0;
   background:transparent;
   border:none;
@@ -812,6 +814,28 @@ tbody tr:hover{
    KOMPAKTER FILTERBEREICH
 ========================================================= */
 
+.filter-meta-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.result-summary{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#8f8f8f;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.result-summary b{
+  color:#eee;
+}
+
+
+
 @media(min-width:701px){
 
   .sidebar{
@@ -938,7 +962,7 @@ tbody tr:hover{
   }
 
   .region-row{
-    min-height:38px;
+    min-height:32px;
   }
 
   .region-name-button{
@@ -946,7 +970,7 @@ tbody tr:hover{
   }
 
   .region-star{
-    font-size:13px;
+    font-size:11px;
   }
 
   h1{
@@ -988,7 +1012,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V35</h1>
+      <h1>DnD Monster Database – V37</h1>
     </div>
 
 
@@ -1115,30 +1139,66 @@ tbody tr:hover{
     </div>
 
 
-    <!-- EINZIGARTIG -->
+    <!-- EINZIGARTIG + ERGEBNISSE -->
 
     <div class="filter-group">
 
-      <button
-        type="button"
-        id="uniqueToggle"
-        class="unique-toggle"
-      >
+      <div class="filter-meta-row">
 
-        <span
-          class="unique-toggle-indicator"
-        ></span>
+        <button
+          type="button"
+          id="uniqueToggle"
+          class="unique-toggle"
+        >
 
-        <span>
-          Einzigartige anzeigen
+          <span
+            class="unique-toggle-indicator"
+          ></span>
+
+          <span>
+            Einzigartige
+          </span>
+
+        </button>
+
+        <span class="result-summary">
+          <span>Ergebnisse:</span>
+          <b id="resultCount">0</b>
         </span>
 
-      </button>
+      </div>
 
     </div>
 
 
     <!-- LEBENSRÄUME -->
+
+
+    <!-- SUCHE -->
+
+    <div class="filter-group">
+
+      <label>
+        Suchbegriff
+      </label>
+
+      <div class="search-row">
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Monster suchen..."
+        >
+
+        <button id="resetSearch">
+          ✕
+        </button>
+
+      </div>
+
+    </div>
+
+
 
     <div class="filter-group">
 
@@ -1259,35 +1319,6 @@ tbody tr:hover{
     </div>
 
 
-    <!-- SUCHE -->
-
-    <div class="filter-group">
-
-      <label>
-        Suchbegriff
-      </label>
-
-      <div class="search-row">
-
-        <input
-          type="text"
-          id="searchInput"
-          placeholder="Monster suchen..."
-        >
-
-        <button id="resetSearch">
-          ✕
-        </button>
-
-      </div>
-
-    </div>
-
-
-    <div>
-      Suchergebnisse:
-      <span id="resultCount">0</span>
-    </div>
 
   </div>
 
