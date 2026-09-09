@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V28</title>
+<title>DnD Monster Database – V30</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -925,7 +925,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V28</h1>
+      <h1>DnD Monster Database – V30</h1>
     </div>
 
 
@@ -2260,6 +2260,11 @@ function buildHabitatUI(){
       "click",
       ()=>{
 
+      // Während ein Filter aktiv ist: Gesamtwertung absteigend.
+      currentSortKey = "total";
+      currentSortDirection = "desc";
+
+
         if(
           Object.prototype.hasOwnProperty.call(
             regionWeights,
@@ -3475,7 +3480,127 @@ function renderHabitatDetails(
    FILTER
 ========================================================= */
 
+function setDefaultSortAfterFilter(
+  filtered
+){
+
+  currentSortKey =
+    "total";
+
+  currentSortDirection =
+    "desc";
+
+  return filtered.sort(
+    (a,b) =>
+      (b.total ?? -Infinity) -
+      (a.total ?? -Infinity)
+  );
+
+}
+
+function setAlphabeticalSort(
+  filtered
+){
+
+  currentSortKey =
+    "name";
+
+  currentSortDirection =
+    "asc";
+
+  return filtered.sort(
+    (a,b) =>
+      String(a.name || "").localeCompare(
+        String(b.name || ""),
+        "de",
+        {
+          sensitivity:"base",
+          numeric:true
+        }
+      )
+  );
+
+}
+
+function hasActiveFilters(){
+
+  const searchValue =
+    String(
+      document.getElementById(
+        "searchInput"
+      )?.value || ""
+    ).trim();
+
+  const crMin =
+    document.getElementById(
+      "crMin"
+    )?.value || "";
+
+  const crMax =
+    document.getElementById(
+      "crMax"
+    )?.value || "";
+
+  const xpMin =
+    document.getElementById(
+      "xpMin"
+    )?.value || "";
+
+  const xpMax =
+    document.getElementById(
+      "xpMax"
+    )?.value || "";
+
+  const unique =
+    document.getElementById(
+      "uniqueToggle"
+    )?.checked || false;
+
+  const hasHabitats =
+    Object.keys(
+      appliedRegionWeights
+    ).length > 0;
+
+  const tempChanged =
+    appliedTemperatureMin !== 3 ||
+    appliedTemperatureMax !== 3;
+
+  return Boolean(
+    searchValue ||
+    crMin ||
+    crMax ||
+    xpMin ||
+    xpMax ||
+    unique ||
+    hasHabitats ||
+    tempChanged
+  );
+
+}
+
 function filterMonsters(){
+
+  const filteringIsActive =
+    hasActiveFilters();
+
+  if(filteringIsActive){
+
+    currentSortKey =
+      "total";
+
+    currentSortDirection =
+      "desc";
+
+  }else{
+
+    currentSortKey =
+      "name";
+
+    currentSortDirection =
+      "asc";
+
+  }
+
 
   const search =
     document
@@ -4627,6 +4752,12 @@ document
       regionWeights = {};
 
       appliedRegionWeights = {};
+
+      currentSortKey =
+        "name";
+
+      currentSortDirection =
+        "asc";
 
 
       selectedTemperatureMin =
