@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V21</title>
+<title>DnD Monster Database – V22</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,7 +40,7 @@ body{
 }
 
 .container.sidebar-collapsed{
-  grid-template-columns:minmax(0,1fr) 0px;
+  grid-template-columns:minmax(0,1fr) 0;
 }
 
 .table-section{
@@ -59,10 +59,7 @@ body{
   height:calc(100vh - 40px);
   overflow:auto;
   border:1px solid #3a3a3a;
-
-  transition:
-    transform .25s ease,
-    opacity .25s ease;
+  transition:transform .25s ease,opacity .25s ease;
 }
 
 .container.sidebar-collapsed .sidebar{
@@ -169,17 +166,12 @@ input[type="number"]{
   display:flex;
   align-items:center;
   gap:9px;
-
   width:max-content;
-
   padding:7px 10px;
-
   border:1px solid #444;
   border-radius:8px;
-
   background:#292929;
   color:#aaa;
-
   font-size:13px;
 }
 
@@ -191,23 +183,16 @@ input[type="number"]{
 .unique-toggle-indicator{
   width:14px;
   height:14px;
-
   border:1px solid #666;
   border-radius:4px;
-
   background:#1d1d1d;
-
-  transition:
-    background .15s ease,
-    border-color .15s ease;
 }
 
 .unique-toggle.active{
   color:white;
 }
 
-.unique-toggle.active
-.unique-toggle-indicator{
+.unique-toggle.active .unique-toggle-indicator{
   background:#4f46e5;
   border-color:#7c74ff;
 }
@@ -224,7 +209,6 @@ input[type="number"]{
 .climate-select button{
   width:auto;
   flex:1;
-
   background:#333;
   padding:10px 12px;
 }
@@ -246,15 +230,11 @@ input[type="number"]{
 
 .region-row{
   min-width:0;
-
   display:flex;
   align-items:center;
   gap:5px;
-
   min-height:36px;
-
   padding:5px 6px;
-
   background:#292929;
   border:1px solid #3b3b3b;
   border-radius:8px;
@@ -263,19 +243,13 @@ input[type="number"]{
 .region-name-button{
   flex:1;
   min-width:0;
-
   width:auto;
-
   padding:5px 3px;
-
   border:none;
   background:transparent;
-
   color:#ddd;
-
   text-align:left;
   font-size:12px;
-
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -285,8 +259,7 @@ input[type="number"]{
   color:white;
 }
 
-.region-row.active
-.region-name-button{
+.region-row.active .region-name-button{
   color:white;
   font-weight:bold;
 }
@@ -300,15 +273,11 @@ input[type="number"]{
 .region-star{
   width:auto;
   padding:0 1px;
-
   border:none;
   background:transparent;
-
   color:#555;
-
   font-size:14px;
   line-height:1;
-
   cursor:pointer;
 }
 
@@ -322,17 +291,11 @@ input[type="number"]{
 
 .region-remove{
   flex:0 0 20px;
-
   width:20px;
-
   padding:2px 0;
-
   background:transparent;
-
   border:none;
-
   color:#888;
-
   font-size:15px;
   line-height:1;
 }
@@ -351,7 +314,6 @@ table{
   border-spacing:0;
   background:#222;
   border-radius:14px;
-  overflow:visible;
 }
 
 th,
@@ -359,12 +321,9 @@ td{
   padding:12px;
   text-align:left;
   vertical-align:top;
-
   border-bottom:1px solid #3f3f3f;
   border-right:1px solid rgba(255,255,255,.06);
-
-  box-shadow:
-    inset -1px 0 0 rgba(255,255,255,.03);
+  box-shadow:inset -1px 0 0 rgba(255,255,255,.03);
 }
 
 th:last-child,
@@ -377,9 +336,7 @@ th{
   position:sticky;
   top:0;
   z-index:50;
-
-  box-shadow:
-    0 2px 10px rgba(0,0,0,.35);
+  box-shadow:0 2px 10px rgba(0,0,0,.35);
 }
 
 .sortable{
@@ -406,21 +363,18 @@ tbody tr:nth-child(odd){
 }
 
 tbody tr{
-  transition:
-    background .18s ease,
-    box-shadow .18s ease;
+  transition:background .18s ease,box-shadow .18s ease;
 }
 
 tbody tr:hover{
   background:#353535;
-
   box-shadow:
     inset 3px 0 0 #6d63ff,
     inset 0 0 0 1px rgba(255,255,255,.04);
 }
 
 /* =========================================================
-   MONSTERNAME
+   MONSTER
 ========================================================= */
 
 .monster-cell{
@@ -442,16 +396,11 @@ tbody tr:hover{
 
 .info-button{
   width:auto;
-
   padding:4px 7px;
-
   background:#333;
   border:1px solid #4a4a4a;
-
   border-radius:6px;
-
   color:#aaa;
-
   font-size:11px;
   line-height:1;
 }
@@ -485,14 +434,11 @@ tbody tr:hover{
 
 .score-detail{
   margin-top:6px;
-
   display:flex;
   flex-wrap:wrap;
   gap:5px 12px;
-
   font-size:12px;
   line-height:1.35;
-
   color:#d5d5d5;
 }
 
@@ -525,10 +471,8 @@ tbody tr:hover{
 .search-row button{
   width:auto;
   padding:0 14px;
-
   background:#383838;
   border:1px solid #555;
-
   font-weight:bold;
 }
 
@@ -538,23 +482,16 @@ tbody tr:hover{
 
 .toggle-sidebar{
   display:none;
-
   position:fixed;
   top:16px;
   right:16px;
-
   z-index:10000;
-
   width:auto;
-
   padding:12px 16px;
-
   border:none;
   border-radius:12px;
-
   background:#4f46e5;
   color:white;
-
   font-weight:bold;
 }
 
@@ -582,7 +519,6 @@ tbody tr:hover{
   font-size:18px;
   font-weight:bold;
   margin-bottom:12px;
-
   display:flex;
   align-items:center;
   gap:8px;
@@ -620,15 +556,11 @@ tbody tr:hover{
 .modal-backdrop{
   position:fixed;
   inset:0;
-
   background:rgba(0,0,0,.7);
-
   display:none;
   align-items:center;
   justify-content:center;
-
   z-index:20000;
-
   padding:20px;
 }
 
@@ -638,17 +570,12 @@ tbody tr:hover{
 
 .modal{
   width:min(760px,100%);
-
   max-height:90vh;
   overflow:auto;
-
   background:#242424;
-
   border:1px solid #444;
   border-radius:16px;
-
-  box-shadow:
-    0 12px 40px rgba(0,0,0,.5);
+  box-shadow:0 12px 40px rgba(0,0,0,.5);
 }
 
 .modal-header{
@@ -656,9 +583,7 @@ tbody tr:hover{
   align-items:flex-start;
   justify-content:space-between;
   gap:20px;
-
   padding:20px 22px;
-
   border-bottom:1px solid #3f3f3f;
 }
 
@@ -669,12 +594,9 @@ tbody tr:hover{
 
 .modal-close{
   width:auto;
-
   padding:6px 10px;
-
   background:#333;
   border:1px solid #4a4a4a;
-
   font-size:18px;
 }
 
@@ -686,9 +608,7 @@ tbody tr:hover{
   display:flex;
   flex-wrap:wrap;
   gap:10px 20px;
-
   margin-bottom:22px;
-
   color:#ccc;
 }
 
@@ -708,12 +628,9 @@ tbody tr:hover{
 
 .profile-item{
   padding:9px 10px;
-
   background:#2c2c2c;
-
   border:1px solid #3d3d3d;
   border-radius:8px;
-
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -732,13 +649,9 @@ tbody tr:hover{
 
 .modal-link{
   display:inline-block;
-
   padding:9px 12px;
-
   background:#4f46e5;
-
   border-radius:8px;
-
   color:white;
   text-decoration:none;
   font-weight:bold;
@@ -756,32 +669,20 @@ tbody tr:hover{
   position:fixed;
   bottom:20px;
   right:20px;
-
   width:54px;
   height:54px;
-
   border:none;
   border-radius:50%;
-
   background:#4f46e5;
   color:white;
-
   font-size:24px;
   font-weight:bold;
-
   cursor:pointer;
-
   z-index:10001;
-
   opacity:0;
   pointer-events:none;
-
-  transition:
-    opacity .2s ease,
-    transform .2s ease;
-
-  box-shadow:
-    0 4px 12px rgba(0,0,0,.35);
+  transition:opacity .2s ease,transform .2s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,.35);
 }
 
 #scrollTopBtn.show{
@@ -797,7 +698,7 @@ tbody tr:hover{
    MOBILE MEDIA
 ========================================================= */
 
-@media (max-width:700px){
+@media(max-width:700px){
 
   body{
     overflow:auto;
@@ -818,24 +719,16 @@ tbody tr:hover{
 
   .sidebar{
     order:-1;
-
     position:fixed;
-
     left:0;
     top:0;
-
     width:100%;
     max-width:100%;
     height:100vh;
-
     overflow-y:auto;
-
     z-index:9999;
-
     border-radius:0;
-
     transform:translateX(100%);
-
     transition:transform .25s ease;
   }
 
@@ -919,8 +812,9 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V21</h1>
+      <h1>DnD Monster Database – V22</h1>
     </div>
+
 
     <table>
 
@@ -1002,6 +896,8 @@ tbody tr:hover{
     <h2>Suchfilter</h2>
 
 
+    <!-- CR -->
+
     <div class="filter-group">
 
       <label>CR</label>
@@ -1016,6 +912,8 @@ tbody tr:hover{
 
     </div>
 
+
+    <!-- XP -->
 
     <div class="filter-group">
 
@@ -1042,6 +940,8 @@ tbody tr:hover{
     </div>
 
 
+    <!-- EINZIGARTIG -->
+
     <div class="filter-group">
 
       <button
@@ -1062,6 +962,8 @@ tbody tr:hover{
 
     </div>
 
+
+    <!-- LEBENSRÄUME -->
 
     <div class="filter-group">
 
@@ -1109,6 +1011,8 @@ tbody tr:hover{
     </div>
 
 
+    <!-- KLIMA -->
+
     <div class="filter-group">
 
       <label>
@@ -1122,6 +1026,8 @@ tbody tr:hover{
 
     </div>
 
+
+    <!-- SUCHE -->
 
     <div class="filter-group">
 
@@ -1147,16 +1053,16 @@ tbody tr:hover{
 
 
     <div>
-
       Suchergebnisse:
       <span id="resultCount">0</span>
-
     </div>
 
   </div>
 
 </div>
 
+
+<!-- INFO MODAL -->
 
 <div
   id="infoModal"
@@ -1213,65 +1119,18 @@ const SHEET_NAME =
 
 const HABITATS = [
 
-  {
-    label:"Wald",
-    columnIndex:5
-  },
-
-  {
-    label:"Grasland",
-    columnIndex:6
-  },
-
-  {
-    label:"Wüste",
-    columnIndex:7
-  },
-
-  {
-    label:"Sumpf",
-    columnIndex:8
-  },
-
-  {
-    label:"Gebirge",
-    columnIndex:9
-  },
-
-  {
-    label:"Küste",
-    columnIndex:10
-  },
-
-  {
-    label:"Fluss/See",
-    columnIndex:11
-  },
-
-  {
-    label:"Meer",
-    columnIndex:12
-  },
-
-  {
-    label:"Höhle",
-    columnIndex:13
-  },
-
-  {
-    label:"Untergrund",
-    columnIndex:14
-  },
-
-  {
-    label:"Ruinen",
-    columnIndex:15
-  },
-
-  {
-    label:"Siedlung",
-    columnIndex:16
-  }
+  { label:"Wald",       columnIndex:5  },
+  { label:"Grasland",   columnIndex:6  },
+  { label:"Wüste",      columnIndex:7  },
+  { label:"Sumpf",      columnIndex:8  },
+  { label:"Gebirge",    columnIndex:9  },
+  { label:"Küste",      columnIndex:10 },
+  { label:"Fluss/See",  columnIndex:11 },
+  { label:"Meer",       columnIndex:12 },
+  { label:"Höhle",      columnIndex:13 },
+  { label:"Untergrund", columnIndex:14 },
+  { label:"Ruinen",     columnIndex:15 },
+  { label:"Siedlung",   columnIndex:16 }
 
 ];
 
@@ -1282,20 +1141,9 @@ const HABITATS = [
 
 const CLIMATES = [
 
-  {
-    label:"Kalt",
-    columnIndex:17
-  },
-
-  {
-    label:"Gemäßigt",
-    columnIndex:18
-  },
-
-  {
-    label:"Heiß",
-    columnIndex:19
-  }
+  { label:"Kalt",       columnIndex:17 },
+  { label:"Gemäßigt",  columnIndex:18 },
+  { label:"Heiß",       columnIndex:19 }
 
 ];
 
@@ -1306,38 +1154,15 @@ const CLIMATES = [
 
 const CR_VALUES = [
 
-  {
-    label:"Alle",
-    value:null
-  },
-
-  {
-    label:"0",
-    value:0
-  },
-
-  {
-    label:"1/8",
-    value:0.125
-  },
-
-  {
-    label:"1/4",
-    value:0.25
-  },
-
-  {
-    label:"1/2",
-    value:0.5
-  }
+  { label:"Alle", value:null },
+  { label:"0",    value:0 },
+  { label:"1/8",  value:0.125 },
+  { label:"1/4",  value:0.25 },
+  { label:"1/2",  value:0.5 }
 
 ];
 
-for(
-  let i = 1;
-  i <= 30;
-  i++
-){
+for(let i=1;i<=30;i++){
 
   CR_VALUES.push({
     label:String(i),
@@ -1380,69 +1205,54 @@ let sortDirection =
 function buildCRDropdowns(){
 
   const minSelect =
-    document.getElementById(
-      "crMin"
-    );
+    document.getElementById("crMin");
 
   const maxSelect =
-    document.getElementById(
-      "crMax"
-    );
+    document.getElementById("crMax");
 
 
   minSelect.innerHTML = "";
   maxSelect.innerHTML = "";
 
 
-  CR_VALUES.forEach(
-    cr => {
+  CR_VALUES.forEach(cr => {
 
-      const minOption =
-        document.createElement(
-          "option"
-        );
+    const minOption =
+      document.createElement("option");
 
-      minOption.value =
-        cr.value === null
-          ? ""
-          : cr.value;
+    minOption.value =
+      cr.value === null
+        ? ""
+        : cr.value;
 
-      minOption.textContent =
-        cr.label;
+    minOption.textContent =
+      cr.label;
 
-
-      minSelect.appendChild(
-        minOption
-      );
+    minSelect.appendChild(
+      minOption
+    );
 
 
-      const maxOption =
-        document.createElement(
-          "option"
-        );
+    const maxOption =
+      document.createElement("option");
 
-      maxOption.value =
-        cr.value === null
-          ? ""
-          : cr.value;
+    maxOption.value =
+      cr.value === null
+        ? ""
+        : cr.value;
 
-      maxOption.textContent =
-        cr.label;
+    maxOption.textContent =
+      cr.label;
 
+    maxSelect.appendChild(
+      maxOption
+    );
 
-      maxSelect.appendChild(
-        maxOption
-      );
-
-    }
-  );
+  });
 
 
-  minSelect.value =
-    "";
-
-  maxSelect.value =
-    "";
+  minSelect.value = "";
+  maxSelect.value = "";
 
 }
 
@@ -1460,9 +1270,7 @@ async function loadSheet(){
 
 
     const response =
-      await fetch(
-        url
-      );
+      await fetch(url);
 
 
     if(!response.ok){
@@ -1480,116 +1288,102 @@ async function loadSheet(){
 
     const json =
       JSON.parse(
-        text
-          .substring(47)
-          .slice(0,-2)
+        text.substring(47).slice(0,-2)
       );
 
 
-    const rows =
-      json.table.rows;
-
-
     monsters =
-      rows
-        .map(
-          row => {
+      (json.table.rows || [])
+        .map(row => {
 
-            const cells =
-              row.c || [];
-
-
-            const monster = {
-
-              name:
-                cells[0]?.v ?? "",
+          const cells =
+            row.c || [];
 
 
-              link:
-                getCellLink(
-                  cells[1]
-                ),
+          const monster = {
+
+            name:
+              cells[0]?.v ?? "",
 
 
-              cr:
-                parseCR(
-                  cells[2]?.f ??
-                  cells[2]?.v
-                ),
+            link:
+              getCellLink(
+                cells[1]
+              ),
 
 
-              xp:
-                parseNumber(
-                  cells[3]?.f ??
-                  cells[3]?.v
-                ),
+            cr:
+              parseCR(
+                cells[2]?.f ??
+                cells[2]?.v
+              ),
 
 
-              unique:
-                String(
-                  cells[4]?.f ??
-                  cells[4]?.v ??
-                  ""
-                ).trim(),
+            xp:
+              parseNumber(
+                cells[3]?.f ??
+                cells[3]?.v
+              ),
 
 
-              habitats:{},
+            unique:
+              String(
+                cells[4]?.f ??
+                cells[4]?.v ??
+                ""
+              ).trim(),
 
 
-              climates:{}
+            habitats:{},
 
-            };
+            climates:{}
 
-
-            HABITATS.forEach(
-              habitat => {
-
-                const cell =
-                  cells[
-                    habitat.columnIndex
-                  ];
+          };
 
 
-                monster.habitats[
-                  habitat.label
-                ] =
-                  parseScore(
-                    cell?.f ??
-                    cell?.v
-                  );
+          HABITATS.forEach(habitat => {
 
-              }
-            );
+            const cell =
+              cells[
+                habitat.columnIndex
+              ];
 
 
-            CLIMATES.forEach(
-              climate => {
+            monster.habitats[
+              habitat.label
+            ] =
+              parseScore(
+                cell?.f ??
+                cell?.v
+              );
 
-                const cell =
-                  cells[
-                    climate.columnIndex
-                  ];
-
-
-                monster.climates[
-                  climate.label
-                ] =
-                  parseScore(
-                    cell?.f ??
-                    cell?.v
-                  );
-
-              }
-            );
+          });
 
 
-            return monster;
+          CLIMATES.forEach(climate => {
 
-          }
-        )
+            const cell =
+              cells[
+                climate.columnIndex
+              ];
+
+
+            monster.climates[
+              climate.label
+            ] =
+              parseScore(
+                cell?.f ??
+                cell?.v
+              );
+
+          });
+
+
+          return monster;
+
+        })
         .filter(
-          monster =>
-            monster.name
+          monster => monster.name
         );
 
 
@@ -1613,15 +1407,11 @@ async function loadSheet(){
     document.getElementById(
       "tableBody"
     ).innerHTML = `
-
       <tr>
-
         <td colspan="7">
           Fehler beim Laden der Monsterdaten.
         </td>
-
       </tr>
-
     `;
 
   }
@@ -1642,10 +1432,8 @@ function getCellLink(cell){
   if(cell.u)
     return cell.u;
 
-
   if(cell.href)
     return cell.href;
-
 
   if(cell.link)
     return cell.link;
@@ -1731,10 +1519,7 @@ function parseCR(value){
     String(value)
       .trim()
       .toLowerCase()
-      .replace(
-        /^cr\s*/,
-        ""
-      );
+      .replace(/^cr\s*/,"");
 
 
   if(
@@ -1763,45 +1548,35 @@ function parseCR(value){
       denominator !== 0
     ){
 
-      return (
-        numerator /
-        denominator
-      );
+      return numerator / denominator;
 
     }
 
   }
 
 
-  const unicodeFractions = {
-
+  const fractions = {
     "⅛":0.125,
     "¼":0.25,
     "½":0.5
-
   };
 
 
   if(
     Object.prototype.hasOwnProperty.call(
-      unicodeFractions,
+      fractions,
       text
     )
   ){
 
-    return unicodeFractions[
-      text
-    ];
+    return fractions[text];
 
   }
 
 
   const number =
     Number(
-      text.replace(
-        ",",
-        "."
-      )
+      text.replace(",",".")
     );
 
 
@@ -1829,24 +1604,17 @@ function formatCR(value){
   }
 
 
-  if(value === 0){
+  if(value === 0)
     return "0";
-  }
 
-
-  if(value === 0.125){
+  if(value === 0.125)
     return "1/8";
-  }
 
-
-  if(value === 0.25){
+  if(value === 0.25)
     return "1/4";
-  }
 
-
-  if(value === 0.5){
+  if(value === 0.5)
     return "1/2";
-  }
 
 
   return String(value);
@@ -1874,18 +1642,13 @@ function parseScore(value){
   const number =
     Number(
       String(value)
-        .replace(",","." )
+        .replace(",",".")
         .trim()
     );
 
 
-  if(
-    isNaN(number)
-  ){
-
+  if(isNaN(number))
     return null;
-
-  }
 
 
   return Math.max(
@@ -1914,65 +1677,132 @@ function buildHabitatUI(){
   container.innerHTML = "";
 
 
-  HABITATS.forEach(
-    habitat => {
+  HABITATS.forEach(habitat => {
 
-      const row =
+    const row =
+      document.createElement(
+        "div"
+      );
+
+
+    row.className =
+      "region-row";
+
+
+    const nameButton =
+      document.createElement(
+        "button"
+      );
+
+
+    nameButton.type = "button";
+    nameButton.className =
+      "region-name-button";
+    nameButton.textContent =
+      habitat.label;
+
+
+    const active =
+      Object.prototype.hasOwnProperty.call(
+        regionWeights,
+        habitat.label
+      );
+
+
+    if(active){
+
+      row.classList.add(
+        "active"
+      );
+
+    }
+
+
+    nameButton.title =
+      active
+        ? "Lebensraum ausgewählt"
+        : "Lebensraum auswählen";
+
+
+    nameButton.addEventListener(
+      "click",
+      ()=>{
+
+        if(
+          Object.prototype.hasOwnProperty.call(
+            regionWeights,
+            habitat.label
+          )
+        ){
+
+          return;
+
+        }
+
+
+        regionWeights[
+          habitat.label
+        ] = 3;
+
+
+        buildHabitatUI();
+
+      }
+    );
+
+
+    row.appendChild(
+      nameButton
+    );
+
+
+    if(active){
+
+      const stars =
         document.createElement(
           "div"
         );
 
 
-      row.className =
-        "region-row";
+      stars.className =
+        "region-stars";
 
 
-      const nameButton =
+      buildRegionStars(
+        stars,
+        habitat.label
+      );
+
+
+      row.appendChild(
+        stars
+      );
+
+
+      const remove =
         document.createElement(
           "button"
         );
 
 
-      nameButton.type =
-        "button";
+      remove.type = "button";
+      remove.className =
+        "region-remove";
+      remove.textContent = "×";
+      remove.title =
+        "Lebensraum entfernen";
 
 
-      nameButton.className =
-        "region-name-button";
-
-
-      nameButton.textContent =
-        habitat.label;
-
-
-      nameButton.title =
-        Object.prototype.hasOwnProperty.call(
-          regionWeights,
-          habitat.label
-        )
-          ? "Lebensraum ausgewählt"
-          : "Lebensraum auswählen";
-
-
-      nameButton.addEventListener(
+      remove.addEventListener(
         "click",
-        ()=>{
+        event => {
 
-          if(
-            Object.prototype.hasOwnProperty.call(
-              regionWeights,
-              habitat.label
-            )
-          ){
-
-            return;
-
-          }
+          event.stopPropagation();
 
 
-          regionWeights[
+          delete regionWeights[
             habitat.label
-          ] = 3;
+          ];
 
 
           buildHabitatUI();
@@ -1982,96 +1812,17 @@ function buildHabitatUI(){
 
 
       row.appendChild(
-        nameButton
-      );
-
-
-      if(
-        Object.prototype.hasOwnProperty.call(
-          regionWeights,
-          habitat.label
-        )
-      ){
-
-        row.classList.add(
-          "active"
-        );
-
-
-        const stars =
-          document.createElement(
-            "div"
-          );
-
-
-        stars.className =
-          "region-stars";
-
-
-        buildRegionStars(
-          stars,
-          habitat.label
-        );
-
-
-        row.appendChild(
-          stars
-        );
-
-
-        const remove =
-          document.createElement(
-            "button"
-          );
-
-
-        remove.type =
-          "button";
-
-
-        remove.className =
-          "region-remove";
-
-
-        remove.textContent =
-          "×";
-
-
-        remove.title =
-          "Lebensraum entfernen";
-
-
-        remove.addEventListener(
-          "click",
-          event => {
-
-            event.stopPropagation();
-
-
-            delete regionWeights[
-              habitat.label
-            ];
-
-
-            buildHabitatUI();
-
-          }
-        );
-
-
-        row.appendChild(
-          remove
-        );
-
-      }
-
-
-      container.appendChild(
-        row
+        remove
       );
 
     }
-  );
+
+
+    container.appendChild(
+      row
+    );
+
+  });
 
 
   updateHabitatQuickButton();
@@ -2094,11 +1845,7 @@ function buildRegionStars(
     ];
 
 
-  for(
-    let i = 1;
-    i <= 5;
-    i++
-  ){
+  for(let i=1;i<=5;i++){
 
     const star =
       document.createElement(
@@ -2106,10 +1853,7 @@ function buildRegionStars(
       );
 
 
-    star.type =
-      "button";
-
-
+    star.type = "button";
     star.className =
       "region-star";
 
@@ -2120,9 +1864,7 @@ function buildRegionStars(
         : "☆";
 
 
-    if(
-      i <= current
-    ){
+    if(i <= current){
 
       star.classList.add(
         "active"
@@ -2163,7 +1905,7 @@ function buildRegionStars(
 
 
 /* =========================================================
-   HABITAT SCHNELLWAHL
+   ALLE
 ========================================================= */
 
 function updateHabitatQuickButton(){
@@ -2256,10 +1998,7 @@ function buildClimateUI(){
         );
 
 
-      button.type =
-        "button";
-
-
+      button.type = "button";
       button.textContent =
         climate.label;
 
@@ -2310,35 +2049,7 @@ function updateClimateUI(){
 
 
 /* =========================================================
-   FILTER ANWENDEN
-========================================================= */
-
-document
-  .getElementById(
-    "applyFilters"
-  )
-  .addEventListener(
-    "click",
-    ()=>{
-
-      appliedRegionWeights =
-        {
-          ...regionWeights
-        };
-
-
-      appliedClimate =
-        selectedClimate;
-
-
-      filterMonsters();
-
-    }
-  );
-
-
-/* =========================================================
-   EINZIGARTIGE
+   EINZIGARTIG
 ========================================================= */
 
 document
@@ -2370,22 +2081,54 @@ document
 
 
 /* =========================================================
-   GEWICHTETES GEOMETRISCHES MITTEL
+   FILTER ANWENDEN
+========================================================= */
+
+document
+  .getElementById(
+    "applyFilters"
+  )
+  .addEventListener(
+    "click",
+    ()=>{
+
+      appliedRegionWeights =
+        {
+          ...regionWeights
+        };
+
+
+      appliedClimate =
+        selectedClimate;
+
+
+      filterMonsters();
+
+    }
+  );
+
+
+/* =========================================================
+   V22 HABITAT-BERECHNUNG
 ========================================================= */
 
 /*
- * Filtersterne:
+ * Die Bedeutung ist jetzt:
  *
- * 1 = kleiner Bestandteil der Region
- * 2 = wenig
+ * FILTERSTERN:
+ * Wie stark ist dieser Lebensraum
+ * in der Region vorhanden?
+ *
+ * 1 = wenig
+ * 2 = eher wenig
  * 3 = merklicher Bestandteil
  * 4 = viel
- * 5 = prägender / fast überwiegender Bestandteil
- *
- * Sie sind KEINE Zielwerte.
+ * 5 = prägend / fast überwiegend
  *
  *
- * Monsterwerte:
+ * MONSTERSTERN:
+ * Wie wahrscheinlich ist das Monster,
+ * WENN dieser Lebensraum vorhanden ist?
  *
  * 1 = praktisch nie
  * 2 = selten
@@ -2394,24 +2137,53 @@ document
  * 5 = sehr typisch
  *
  *
- * Formel:
+ * Wir bilden daraus eine Art
+ * "Begegnungschance":
  *
- *     exp(
- *       Summe(
- *         Regionsgewicht × ln(Monsterwert)
- *       )
- *       /
- *       Summe(Regionsgewicht)
- *     )
+ * Anteil des Lebensraums ×
+ * Wahrscheinlichkeit des Monsters.
  *
  *
- * Vorteil:
+ * Mehrere Lebensräume werden nicht
+ * einfach gemittelt.
  *
- * Ein sehr schlechter Wert in einem
- * wichtigen Lebensraum kann nicht mehr
- * einfach durch einen 5er-Wert in einem
- * anderen Lebensraum ausgeglichen werden.
+ * Stattdessen wird die Chance,
+ * über mindestens einen der vorhandenen
+ * Lebensräume auf das Monster zu stoßen,
+ * kombiniert.
+ *
+ * Dadurch:
+ *
+ * Wald 1 / Gebirge 1
+ *
+ * ist etwas ganz anderes als:
+ *
+ * Wald 5 / Gebirge 5
+ *
+ * Außerdem:
+ *
+ * Wald 5 / Gebirge 1
+ *
+ * wird tatsächlich von Wald dominiert.
  */
+
+function regionAmountFactor(
+  regionScore
+){
+
+  return regionScore / 5;
+
+}
+
+
+function monsterProbabilityFactor(
+  monsterScore
+){
+
+  return monsterScore / 5;
+
+}
+
 
 function getHabitatScore(
   monster
@@ -2432,22 +2204,28 @@ function getHabitatScore(
   }
 
 
-  let weightedLogSum =
-    0;
+  let probabilityOfNoEncounter =
+    1;
 
 
-  let totalWeight =
-    0;
+  let foundRelevantHabitat =
+    false;
 
 
   for(
-    let i = 0;
-    i < habitats.length;
+    let i=0;
+    i<habitats.length;
     i++
   ){
 
     const habitat =
       habitats[i];
+
+
+    const regionScore =
+      appliedRegionWeights[
+        habitat
+      ];
 
 
     const monsterScore =
@@ -2458,8 +2236,7 @@ function getHabitatScore(
 
     if(
       monsterScore === null ||
-      monsterScore === undefined ||
-      monsterScore <= 0
+      monsterScore === undefined
     ){
 
       continue;
@@ -2467,27 +2244,44 @@ function getHabitatScore(
     }
 
 
-    const regionWeight =
-      appliedRegionWeights[
-        habitat
-      ];
+    const regionAmount =
+      regionAmountFactor(
+        regionScore
+      );
 
 
-    weightedLogSum +=
-      Math.log(
+    const monsterProbability =
+      monsterProbabilityFactor(
         monsterScore
-      ) *
-      regionWeight;
+      );
 
 
-    totalWeight +=
-      regionWeight;
+    const encounterOpportunity =
+      Math.max(
+        0,
+        Math.min(
+          1,
+          regionAmount *
+          monsterProbability
+        )
+      );
+
+
+    probabilityOfNoEncounter *=
+      (
+        1 -
+        encounterOpportunity
+      );
+
+
+    foundRelevantHabitat =
+      true;
 
   }
 
 
   if(
-    totalWeight === 0
+    !foundRelevantHabitat
   ){
 
     return null;
@@ -2495,9 +2289,15 @@ function getHabitatScore(
   }
 
 
-  return Math.exp(
-    weightedLogSum /
-    totalWeight
+  const combinedProbability =
+    1 -
+    probabilityOfNoEncounter;
+
+
+  return (
+    1 +
+    combinedProbability *
+    4
   );
 
 }
@@ -2510,15 +2310,6 @@ function getHabitatScore(
 function getClimateScore(
   monster
 ){
-
-  if(
-    !appliedClimate
-  ){
-
-    return null;
-
-  }
-
 
   return (
     monster.climates[
@@ -2533,7 +2324,7 @@ function getClimateScore(
    GESAMT
 ========================================================= */
 
-function getTotalScore(
+function calculateScores(
   monster
 ){
 
@@ -2549,38 +2340,43 @@ function getTotalScore(
     );
 
 
+  let total =
+    null;
+
+
   if(
     habitat === null &&
     climate === null
   ){
 
-    return null;
+    total = null;
 
-  }
-
-
-  if(
+  }else if(
     habitat === null
   ){
 
-    return climate;
+    total = climate;
 
-  }
-
-
-  if(
+  }else if(
     climate === null
   ){
 
-    return habitat;
+    total = habitat;
+
+  }else{
+
+    total =
+      habitat * (2 / 3) +
+      climate * (1 / 3);
 
   }
 
 
-  return (
-    habitat * (2 / 3) +
-    climate * (1 / 3)
-  );
+  return {
+    habitat,
+    climate,
+    total
+  };
 
 }
 
@@ -2603,9 +2399,7 @@ function formatScore(
   }
 
 
-  return score.toFixed(
-    2
-  );
+  return score.toFixed(2);
 
 }
 
@@ -2643,7 +2437,7 @@ function getStars(
       rounded
     ) +
     "☆".repeat(
-      5 - rounded
+      5-rounded
     )
   );
 
@@ -2651,7 +2445,7 @@ function getStars(
 
 
 /* =========================================================
-   DETAILWERTE
+   DETAILS
 ========================================================= */
 
 function renderHabitatDetails(
@@ -2682,7 +2476,7 @@ function renderHabitatDetails(
       }
 
 
-      const regionWeight =
+      const regionScore =
         appliedRegionWeights[
           habitat
         ];
@@ -2710,7 +2504,7 @@ function renderHabitatDetails(
               margin-left:3px;
             "
           >
-            Region ${regionWeight}/5
+            Region ${regionScore}/5
           </span>
 
         </span>
@@ -2743,15 +2537,19 @@ function filterMonsters(){
 
 
   const crMinValue =
-    document.getElementById(
-      "crMin"
-    ).value;
+    document
+      .getElementById(
+        "crMin"
+      )
+      .value;
 
 
   const crMaxValue =
-    document.getElementById(
-      "crMax"
-    ).value;
+    document
+      .getElementById(
+        "crMax"
+      )
+      .value;
 
 
   const crMin =
@@ -2772,30 +2570,30 @@ function filterMonsters(){
 
   const xpMin =
     parseFloat(
-      document.getElementById(
-        "xpMin"
-      ).value
+      document
+        .getElementById(
+          "xpMin"
+        )
+        .value
     );
 
 
   const xpMax =
     parseFloat(
-      document.getElementById(
-        "xpMax"
-      ).value
+      document
+        .getElementById(
+          "xpMax"
+        )
+        .value
     );
-
-
-  const isMobileView =
-    window.innerWidth <= 700;
 
 
   const filtered = [];
 
 
   for(
-    let i = 0;
-    i < monsters.length;
+    let i=0;
+    i<monsters.length;
     i++
   ){
 
@@ -2867,20 +2665,8 @@ function filterMonsters(){
     }
 
 
-    const total =
-      getTotalScore(
-        monster
-      );
-
-
-    const habitat =
-      getHabitatScore(
-        monster
-      );
-
-
-    const climate =
-      getClimateScore(
+    const scores =
+      calculateScores(
         monster
       );
 
@@ -2891,11 +2677,14 @@ function filterMonsters(){
 
       index:i,
 
-      total,
+      total:
+        scores.total,
 
-      habitat,
+      habitat:
+        scores.habitat,
 
-      climate
+      climate:
+        scores.climate
 
     });
 
@@ -3012,9 +2801,7 @@ function filterMonsters(){
       }
 
 
-      if(
-        x < y
-      ){
+      if(x < y){
 
         return sortDirection === "asc"
           ? -1
@@ -3023,9 +2810,7 @@ function filterMonsters(){
       }
 
 
-      if(
-        x > y
-      ){
+      if(x > y){
 
         return sortDirection === "asc"
           ? 1
@@ -3041,7 +2826,7 @@ function filterMonsters(){
 
 
   if(
-    isMobileView
+    window.innerWidth <= 700
   ){
 
     renderMobileCards(
@@ -3081,13 +2866,12 @@ function renderTable(
     );
 
 
-  let html =
-    "";
+  let html = "";
 
 
   for(
-    let i = 0;
-    i < data.length;
+    let i=0;
+    i<data.length;
     i++
   ){
 
@@ -3103,6 +2887,12 @@ function renderTable(
       monster.unique === "Ja"
         ? "unique-yes"
         : "unique-no";
+
+
+    const details =
+      renderHabitatDetails(
+        monster
+      );
 
 
     const nameHTML =
@@ -3160,12 +2950,6 @@ function renderTable(
         `;
 
 
-    const details =
-      renderHabitatDetails(
-        monster
-      );
-
-
     html += `
 
       <tr>
@@ -3212,11 +2996,9 @@ function renderTable(
           ${
             details
               ? `
-
                 <div class="score-detail">
                   ${details}
                 </div>
-
               `
               : ""
           }
@@ -3258,7 +3040,7 @@ function renderTable(
 
 
 /* =========================================================
-   MOBILE CARDS
+   MOBILE
 ========================================================= */
 
 function renderMobileCards(
@@ -3271,13 +3053,12 @@ function renderMobileCards(
     );
 
 
-  let html =
-    "";
+  let html = "";
 
 
   for(
-    let i = 0;
-    i < data.length;
+    let i=0;
+    i<data.length;
     i++
   ){
 
@@ -3446,36 +3227,41 @@ function renderMobileCards(
    INFO BUTTONS
 ========================================================= */
 
+function handleInfoClick(
+  event
+){
+
+  const button =
+    event.target.closest(
+      ".info-button"
+    );
+
+
+  if(!button)
+    return;
+
+
+  const index =
+    Number(
+      button.dataset
+        .monsterIndex
+    );
+
+
+  openInfoModal(
+    monsters[index]
+  );
+
+}
+
+
 document
   .getElementById(
     "tableBody"
   )
   .addEventListener(
     "click",
-    event => {
-
-      const button =
-        event.target.closest(
-          ".info-button"
-        );
-
-
-      if(!button)
-        return;
-
-
-      const index =
-        Number(
-          button.dataset
-            .monsterIndex
-        );
-
-
-      openInfoModal(
-        monsters[index]
-      );
-
-    }
+    handleInfoClick
   );
 
 
@@ -3485,30 +3271,7 @@ document
   )
   .addEventListener(
     "click",
-    event => {
-
-      const button =
-        event.target.closest(
-          ".info-button"
-        );
-
-
-      if(!button)
-        return;
-
-
-      const index =
-        Number(
-          button.dataset
-            .monsterIndex
-        );
-
-
-      openInfoModal(
-        monsters[index]
-      );
-
-    }
+    handleInfoClick
   );
 
 
@@ -3530,34 +3293,19 @@ function openInfoModal(
     );
 
 
-  const title =
-    document.getElementById(
+  document
+    .getElementById(
       "modalTitle"
-    );
+    )
+    .textContent =
+      monster.name;
 
 
-  const body =
-    document.getElementById(
-      "modalBody"
-    );
-
-
-  title.textContent =
-    monster.name;
-
-
-  let habitatHTML =
-    "";
+  let habitatHTML = "";
 
 
   HABITATS.forEach(
     habitat => {
-
-      const score =
-        monster.habitats[
-          habitat.label
-        ];
-
 
       habitatHTML += `
 
@@ -3571,7 +3319,9 @@ function openInfoModal(
 
           <span class="profile-item-score">
             ${getStars(
-              score
+              monster.habitats[
+                habitat.label
+              ]
             )}
           </span>
 
@@ -3583,18 +3333,11 @@ function openInfoModal(
   );
 
 
-  let climateHTML =
-    "";
+  let climateHTML = "";
 
 
   CLIMATES.forEach(
     climate => {
-
-      const score =
-        monster.climates[
-          climate.label
-        ];
-
 
       climateHTML += `
 
@@ -3608,7 +3351,9 @@ function openInfoModal(
 
           <span class="profile-item-score">
             ${getStars(
-              score
+              monster.climates[
+                climate.label
+              ]
             )}
           </span>
 
@@ -3620,166 +3365,154 @@ function openInfoModal(
   );
 
 
-  const total =
-    getTotalScore(
+  const scores =
+    calculateScores(
       monster
     );
 
 
-  const habitat =
-    getHabitatScore(
-      monster
-    );
+  document
+    .getElementById(
+      "modalBody"
+    )
+    .innerHTML = `
+
+      <div class="modal-meta">
+
+        <span>
+          <strong>CR:</strong>
+          ${formatCR(
+            monster.cr
+          )}
+        </span>
+
+        <span>
+          <strong>XP:</strong>
+          ${monster.xp.toLocaleString(
+            "de-DE"
+          )}
+        </span>
+
+        <span>
+          <strong>Einzigartig:</strong>
+          ${escapeHTML(
+            monster.unique || "-"
+          )}
+        </span>
+
+      </div>
 
 
-  const climate =
-    getClimateScore(
-      monster
-    );
+      <div class="modal-section">
+
+        <h3>
+          Aktuelle Bewertung
+        </h3>
 
 
-  body.innerHTML = `
+        <div class="profile-grid">
 
-    <div class="modal-meta">
+          <div class="profile-item">
 
-      <span>
-        <strong>CR:</strong>
-        ${formatCR(
-          monster.cr
-        )}
-      </span>
+            <span class="profile-item-name">
+              Gesamt
+            </span>
 
+            <span class="profile-item-score">
+              ${formatScore(
+                scores.total
+              )}
+            </span>
 
-      <span>
-        <strong>XP:</strong>
-        ${monster.xp.toLocaleString(
-          "de-DE"
-        )}
-      </span>
+          </div>
 
 
-      <span>
-        <strong>Einzigartig:</strong>
-        ${escapeHTML(
-          monster.unique || "-"
-        )}
-      </span>
+          <div class="profile-item">
 
-    </div>
+            <span class="profile-item-name">
+              Lebensraum
+            </span>
 
+            <span class="profile-item-score">
+              ${formatScore(
+                scores.habitat
+              )}
+            </span>
 
-    <div class="modal-section">
-
-      <h3>
-        Aktuelle Bewertung
-      </h3>
+          </div>
 
 
-      <div class="profile-grid">
+          <div class="profile-item">
 
-        <div class="profile-item">
+            <span class="profile-item-name">
+              Klima (${escapeHTML(
+                appliedClimate
+              )})
+            </span>
 
-          <span class="profile-item-name">
-            Gesamt
-          </span>
+            <span class="profile-item-score">
+              ${formatScore(
+                scores.climate
+              )}
+            </span>
 
-          <span class="profile-item-score">
-            ${formatScore(
-              total
-            )}
-          </span>
-
-        </div>
-
-
-        <div class="profile-item">
-
-          <span class="profile-item-name">
-            Lebensraum
-          </span>
-
-          <span class="profile-item-score">
-            ${formatScore(
-              habitat
-            )}
-          </span>
-
-        </div>
-
-
-        <div class="profile-item">
-
-          <span class="profile-item-name">
-            Klima (${escapeHTML(
-              appliedClimate
-            )})
-          </span>
-
-          <span class="profile-item-score">
-            ${formatScore(
-              climate
-            )}
-          </span>
+          </div>
 
         </div>
 
       </div>
 
-    </div>
 
+      <div class="modal-section">
 
-    <div class="modal-section">
+        <h3>
+          Lebensräume
+        </h3>
 
-      <h3>
-        Lebensräume
-      </h3>
+        <div class="profile-grid">
 
+          ${habitatHTML}
 
-      <div class="profile-grid">
-
-        ${habitatHTML}
-
-      </div>
-
-    </div>
-
-
-    <div class="modal-section">
-
-      <h3>
-        Klima
-      </h3>
-
-
-      <div class="profile-grid">
-
-        ${climateHTML}
+        </div>
 
       </div>
 
-    </div>
+
+      <div class="modal-section">
+
+        <h3>
+          Klima
+        </h3>
+
+        <div class="profile-grid">
+
+          ${climateHTML}
+
+        </div>
+
+      </div>
 
 
-    ${
-      monster.link
-        ? `
+      ${
+        monster.link
+          ? `
 
-          <a
-            class="modal-link"
-            href="${escapeAttribute(
-              monster.link
-            )}"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Auf D&D Beyond öffnen
-          </a>
+            <a
+              class="modal-link"
+              href="${escapeAttribute(
+                monster.link
+              )}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Auf D&D Beyond öffnen
+            </a>
 
-        `
-        : ""
-    }
+          `
+          : ""
+      }
 
-  `;
+    `;
 
 
   modal.classList.add(
@@ -3878,10 +3611,6 @@ document.addEventListener(
 );
 
 
-/* =========================================================
-   CR
-========================================================= */
-
 document
   .getElementById(
     "crMin"
@@ -3930,7 +3659,6 @@ document
         "xpMax"
       ).value = "";
 
-
       document.getElementById(
         "searchInput"
       ).value = "";
@@ -3963,7 +3691,6 @@ document
 
       sortColumn =
         "name";
-
 
       sortDirection =
         "asc";
@@ -4059,21 +3786,14 @@ document
               column;
 
 
-            if(
-              column === "total" ||
-              column === "habitat" ||
-              column === "climate"
-            ){
-
-              sortDirection =
-                "desc";
-
-            }else{
-
-              sortDirection =
-                "asc";
-
-            }
+            sortDirection =
+              (
+                column === "total" ||
+                column === "habitat" ||
+                column === "climate"
+              )
+                ? "desc"
+                : "asc";
 
           }
 
@@ -4172,8 +3892,7 @@ function getCurrentScroll(){
 
   return isMobile()
 
-    ? document.documentElement
-        .scrollTop ||
+    ? document.documentElement.scrollTop ||
       window.pageYOffset
 
     : document
@@ -4232,9 +3951,7 @@ scrollTopBtn.addEventListener(
   "click",
   ()=>{
 
-    if(
-      isMobile()
-    ){
+    if(isMobile()){
 
       window.scrollTo({
         top:0,
@@ -4267,26 +3984,11 @@ function escapeHTML(
 ){
 
   return String(value)
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 
 }
 
@@ -4295,9 +3997,7 @@ function escapeAttribute(
   value
 ){
 
-  return escapeHTML(
-    value
-  );
+  return escapeHTML(value);
 
 }
 
