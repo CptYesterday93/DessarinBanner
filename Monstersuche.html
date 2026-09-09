@@ -456,6 +456,57 @@ tbody tr:hover{
 }
 
 /* =========================================================
+   TEMPERATUR SLIDER
+========================================================= */
+
+.temperature-filter{
+  background:#292929;
+  border:1px solid #3b3b3b;
+  border-radius:8px;
+  padding:12px 10px 10px;
+}
+
+#temperatureSlider{
+  width:100%;
+  padding:0;
+  margin:2px 0 8px;
+  accent-color:#4f46e5;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+}
+
+.temperature-scale{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:2px;
+  color:#aaa;
+  font-size:9px;
+  text-align:center;
+}
+
+.temperature-scale span:nth-child(3){
+  color:#fff;
+  font-weight:bold;
+}
+
+.temperature-current{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:9px;
+  padding-top:8px;
+  border-top:1px solid #3a3a3a;
+  color:#888;
+  font-size:12px;
+}
+
+.temperature-current b{
+  color:#eee;
+}
+
+/* =========================================================
    SUCHE
 ========================================================= */
 
@@ -1011,18 +1062,39 @@ tbody tr:hover{
     </div>
 
 
-    <!-- KLIMA -->
+    <!-- TEMPERATUR / KLIMA -->
 
     <div class="filter-group">
 
       <label>
-        Klima
+        Temperatur / Klima
       </label>
 
-      <div
-        id="climateFilter"
-        class="climate-select"
-      ></div>
+      <div class="temperature-filter">
+
+        <input
+          type="range"
+          id="temperatureSlider"
+          min="1"
+          max="5"
+          step="1"
+          value="3"
+        >
+
+        <div class="temperature-scale">
+          <span>Arktisch</span>
+          <span>Kalt</span>
+          <span>Gemäßigt</span>
+          <span>Heiß</span>
+          <span>Vulkanisch</span>
+        </div>
+
+        <div class="temperature-current">
+          <span>Gebiet</span>
+          <b id="temperatureCurrentValue">3 · Gemäßigt</b>
+        </div>
+
+      </div>
 
     </div>
 
@@ -1194,11 +1266,11 @@ let regionWeights = {};
 
 let appliedRegionWeights = {};
 
-let selectedClimate =
-  "Gemäßigt";
+let selectedTemperature =
+  3;
 
-let appliedClimate =
-  "Gemäßigt";
+let appliedTemperature =
+  3;
 
 let showUnique =
   false;
@@ -1392,9 +1464,7 @@ async function loadSheet(){
 
     buildHabitatUI();
 
-    buildClimateUI();
-
-    updateClimateUI();
+    updateTemperatureUI();
 
     filterMonsters();
 
@@ -1978,77 +2048,58 @@ document
 
 
 /* =========================================================
-   KLIMA
+   TEMPERATUR UI
 ========================================================= */
 
-function buildClimateUI(){
+const TEMPERATURE_LABELS = {
+  1:"Arktisch",
+  2:"Kalt",
+  3:"Gemäßigt",
+  4:"Heiß",
+  5:"Vulkanisch"
+};
 
-  const container =
+function getTemperatureLabel(value){
+  return TEMPERATURE_LABELS[value] || "Unbekannt";
+}
+
+function updateTemperatureUI(){
+
+  const slider =
     document.getElementById(
-      "climateFilter"
+      "temperatureSlider"
     );
 
+  if(!slider)
+    return;
 
-  container.innerHTML = "";
+  slider.value =
+    selectedTemperature;
 
+  document.getElementById(
+    "temperatureCurrentValue"
+  ).textContent =
+    `${selectedTemperature} · ${getTemperatureLabel(selectedTemperature)}`;
 
-  CLIMATES.forEach(
-    climate => {
+}
 
-      const button =
-        document.createElement(
-          "button"
+document
+  .getElementById(
+    "temperatureSlider"
+  )
+  .addEventListener(
+    "input",
+    event => {
+
+      selectedTemperature =
+        Number(
+          event.target.value
         );
 
-
-      button.type = "button";
-      button.textContent =
-        climate.label;
-
-
-      button.addEventListener(
-        "click",
-        ()=>{
-
-          selectedClimate =
-            climate.label;
-
-
-          updateClimateUI();
-
-        }
-      );
-
-
-      container.appendChild(
-        button
-      );
+      updateTemperatureUI();
 
     }
   );
-
-}
-
-
-function updateClimateUI(){
-
-  document
-    .querySelectorAll(
-      "#climateFilter button"
-    )
-    .forEach(
-      button => {
-
-        button.classList.toggle(
-          "active",
-          button.textContent ===
-            selectedClimate
-        );
-
-      }
-    );
-
-}
 
 
 /* =========================================================
@@ -2101,8 +2152,8 @@ document
         };
 
 
-      appliedClimate =
-        selectedClimate;
+      appliedTemperature =
+        selectedTemperature;
 
 
       filterMonsters();
@@ -2314,109 +2365,43 @@ function getClimateScore(
   monster
 ){
 
-  const temperature =
+  const monsterTemperature =
     monster.temperature;
 
   if(
-    temperature === null ||
-    temperature === undefined
+    monsterTemperature === null ||
+    monsterTemperature === undefined ||
+    appliedTemperature === null ||
+    appliedTemperature === undefined
   ){
 
     return null;
 
   }
 
+  const distance =
+    Math.abs(
+      monsterTemperature -
+      appliedTemperature
+    );
+
   /*
-     Der Klima-Filter ist ein Temperaturbereich:
+     Direkte Temperatur-Übereinstimmung:
 
-     Kalt      = 1–2
-     Gemäßigt  = 3
-     Heiß      = 4–5
-
-     Exakte / passende Temperatur = 5
-     Angrenzende Temperatur       = 2.5
-     Deutlich falsche Temperatur  = 1
-
-     Damit wird eine deutliche Temperaturabweichung
-     bewusst stark bestraft.
+     0 Schritte = perfekt
+     1 Schritt  = deutlich schlechter
+     2+         = sehr unpassend
   */
 
-  if(appliedClimate === "Kalt"){
+  if(distance === 0)
+    return 5;
 
-    if(
-      temperature === 1 ||
-      temperature === 2
-    ){
+  if(distance === 1)
+    return 2.5;
 
-      return 5;
-
-    }
-
-    if(
-      temperature === 3
-    ){
-
-      return 2.5;
-
-    }
-
-    return 1;
-
-  }
-
-
-  if(appliedClimate === "Gemäßigt"){
-
-    if(
-      temperature === 3
-    ){
-
-      return 5;
-
-    }
-
-    if(
-      temperature === 2 ||
-      temperature === 4
-    ){
-
-      return 2.5;
-
-    }
-
-    return 1;
-
-  }
-
-
-  if(appliedClimate === "Heiß"){
-
-    if(
-      temperature === 4 ||
-      temperature === 5
-    ){
-
-      return 5;
-
-    }
-
-    if(
-      temperature === 3
-    ){
-
-      return 2.5;
-
-    }
-
-    return 1;
-
-  }
-
-
-  return null;
+  return 1;
 
 }
-
 
 /* =========================================================
    GESAMT
@@ -3117,10 +3102,11 @@ function renderTable(
               font-weight:normal;
             "
           >
-            ${escapeHTML(
-              appliedClimate
+            ${getTemperatureLabel(
+              appliedTemperature
             )}
-            · Temperatur ${monster.temperature ?? "—"}/5
+            · Region ${appliedTemperature}/5
+            · Monster ${monster.temperature ?? "—"}/5
           </div>
 
         </td>
@@ -3300,8 +3286,8 @@ function renderMobileCards(
                 item.climate
               )}
               –
-              ${escapeHTML(
-                appliedClimate
+              ${getTemperatureLabel(
+                appliedTemperature
               )}
             </div>
 
@@ -3545,8 +3531,8 @@ function openInfoModal(
           <div class="profile-item">
 
             <span class="profile-item-name">
-              Klima (${escapeHTML(
-                appliedClimate
+              Temperatur Region (${getTemperatureLabel(
+                appliedTemperature
               )})
             </span>
 
@@ -3769,11 +3755,11 @@ document
       appliedRegionWeights = {};
 
 
-      selectedClimate =
-        "Gemäßigt";
+      selectedTemperature =
+        3;
 
-      appliedClimate =
-        "Gemäßigt";
+      appliedTemperature =
+        3;
 
 
       showUnique =
@@ -3819,9 +3805,9 @@ document
 
       buildHabitatUI();
 
-      buildClimateUI();
+      updateTemperatureUI();
 
-      updateClimateUI();
+      updateTemperatureUI();
 
       filterMonsters();
 
@@ -4110,9 +4096,9 @@ buildCRDropdowns();
 
 buildHabitatUI();
 
-buildClimateUI();
+updateTemperatureUI();
 
-updateClimateUI();
+updateTemperatureUI();
 
 loadSheet();
 
