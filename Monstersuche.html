@@ -456,20 +456,15 @@ tbody tr:hover{
 }
 
 /* =========================================================
-   TEMPERATUR SLIDER
+   TEMPERATUR RANGE
 ========================================================= */
-
-.temperature-filter{
-  background:#292929;
-  border:1px solid #3b3b3b;
-  border-radius:8px;
-  padding:12px 10px 10px;
-}
 
 .temperature-range-wrap{
   position:relative;
   height:34px;
   margin:1px 5px 5px;
+  touch-action:none;
+  user-select:none;
 }
 
 .temperature-track,
@@ -491,75 +486,39 @@ tbody tr:hover{
   z-index:1;
 }
 
-.temperature-range-wrap input[type="range"]{
-  position:absolute;
-  left:0;
-  top:2px;
-  width:100%;
-  height:26px;
-  margin:0;
-  padding:0;
-  background:transparent;
-  border:none;
-  outline:none;
-  pointer-events:none;
-  -webkit-appearance:none;
-  appearance:none;
-}
-
-.temperature-range-wrap input[type="range"]::-webkit-slider-runnable-track{
-  background:transparent;
-  border:none;
-  height:26px;
-}
-
-.temperature-range-wrap input[type="range"]::-moz-range-track{
-  background:transparent;
-  border:none;
-  height:26px;
-}
-
-.temperature-range-wrap input[type="range"]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  appearance:none;
-  width:18px;
-  height:18px;
-  margin-top:2px;
-  border-radius:50%;
-  border:2px solid #ddd;
-  background:#4f46e5;
-  pointer-events:auto;
-  cursor:pointer;
-  position:relative;
-  z-index:3;
-}
-
-.temperature-range-wrap input[type="range"]::-moz-range-thumb{
-  width:18px;
-  height:18px;
-  border-radius:50%;
-  border:2px solid #ddd;
-  background:#4f46e5;
-  pointer-events:auto;
-  cursor:pointer;
-  position:relative;
-  z-index:3;
-}
-
-/* Zwei halbkreisartige Griffe. Wenn sie aufeinanderliegen,
-   verschmelzen sie optisch zu einem einzigen Kreis. */
-.temperature-range-wrap::before,
-.temperature-range-wrap::after{
-  content:"";
+.temperature-handle{
   position:absolute;
   top:7px;
   width:18px;
   height:18px;
   border:2px solid #ddd;
   background:#4f46e5;
-  z-index:2;
-  pointer-events:none;
-  display:none;
+  z-index:4;
+  cursor:grab;
+  box-sizing:border-box;
+}
+
+.temperature-handle:active{
+  cursor:grabbing;
+}
+
+.temperature-handle:focus-visible{
+  outline:2px solid #fff;
+  outline-offset:2px;
+}
+
+/* Wenn beide Werte gleich sind, liegen beide Halbgriffe exakt
+   übereinander und ergeben optisch einen Kreis. Sie bleiben
+   trotzdem separat greifbar: linke Hälfte = Minimum,
+   rechte Hälfte = Maximum. */
+.temperature-handle-left{
+  border-radius:50% 0 0 50%;
+  border-right:none;
+}
+
+.temperature-handle-right{
+  border-radius:0 50% 50% 0;
+  border-left:none;
 }
 
 .temperature-scale{
@@ -1159,7 +1118,7 @@ tbody tr:hover{
 
       <div class="temperature-filter">
 
-        <div class="temperature-range-wrap">
+        <div class="temperature-range-wrap" id="temperatureRange">
 
           <div class="temperature-track"></div>
           <div
@@ -1167,25 +1126,21 @@ tbody tr:hover{
             id="temperatureTrackActive"
           ></div>
 
-          <input
-            type="range"
-            id="temperatureMin"
-            min="1"
-            max="5"
-            step="1"
-            value="3"
-            aria-label="Minimale Temperatur"
-          >
+          <div
+            class="temperature-handle temperature-handle-left"
+            id="temperatureHandleLeft"
+            role="slider"
+            aria-label="Untere Temperaturgrenze"
+            tabindex="0"
+          ></div>
 
-          <input
-            type="range"
-            id="temperatureMax"
-            min="1"
-            max="5"
-            step="1"
-            value="3"
-            aria-label="Maximale Temperatur"
-          >
+          <div
+            class="temperature-handle temperature-handle-right"
+            id="temperatureHandleRight"
+            role="slider"
+            aria-label="Obere Temperaturgrenze"
+            tabindex="0"
+          ></div>
 
         </div>
 
@@ -2200,247 +2155,57 @@ function formatTemperatureRange(
 
 }
 
-function updateTemperatureHandles(){
+function temperaturePercent(
+  value
+){
+
+  return (
+    ((value - 1) / 4) * 100
+  );
+
+}
+
+function temperatureFromPointer(
+  event
+){
 
   const wrap =
-    document.querySelector(
-      ".temperature-range-wrap"
-    );
-
-  const minSlider =
     document.getElementById(
-      "temperatureMin"
+      "temperatureRange"
     );
 
-  const maxSlider =
-    document.getElementById(
-      "temperatureMax"
+  const rect =
+    wrap.getBoundingClientRect();
+
+  const x =
+    Math.max(
+      0,
+      Math.min(
+        rect.width,
+        event.clientX - rect.left
+      )
     );
 
-  if(!wrap || !minSlider || !maxSlider)
-    return;
+  const percent =
+    x / rect.width;
 
-  let visual =
-    document.getElementById(
-      "temperatureHandles"
-    );
-
-  if(!visual){
-
-    visual =
-      document.createElement(
-        "div"
-      );
-
-    visual.id =
-      "temperatureHandles";
-
-    visual.style.position =
-      "absolute";
-
-    visual.style.inset =
-      "0";
-
-    visual.style.pointerEvents =
-      "none";
-
-    visual.style.zIndex =
-      "4";
-
-    wrap.appendChild(
-      visual
-    );
-
-  }
-
-  visual.innerHTML = "";
-
-  const minPercent =
-    ((selectedTemperatureMin - 1) / 4) * 100;
-
-  const maxPercent =
-    ((selectedTemperatureMax - 1) / 4) * 100;
-
-  const leftPos =
-    `calc(${minPercent}% - 9px)`;
-
-  const rightPos =
-    `calc(${maxPercent}% - 9px)`;
-
-  if(
-    selectedTemperatureMin ===
-    selectedTemperatureMax
-  ){
-
-    const circle =
-      document.createElement(
-        "div"
-      );
-
-    circle.style.position =
-      "absolute";
-
-    circle.style.left =
-      leftPos;
-
-    circle.style.top =
-      "7px";
-
-    circle.style.width =
-      "18px";
-
-    circle.style.height =
-      "18px";
-
-    circle.style.border =
-      "2px solid #ddd";
-
-    circle.style.borderRadius =
-      "50%";
-
-    circle.style.background =
-      "#4f46e5";
-
-    visual.appendChild(
-      circle
-    );
-
-    return;
-
-  }
-
-  const makeHalf =
-    side => {
-
-      const half =
-        document.createElement(
-          "div"
-        );
-
-      half.style.position =
-        "absolute";
-
-      half.style.left =
-        side === "left"
-          ? leftPos
-          : rightPos;
-
-      half.style.top =
-        "7px";
-
-      half.style.width =
-        "18px";
-
-      half.style.height =
-        "18px";
-
-      half.style.border =
-        "2px solid #ddd";
-
-      half.style.background =
-        "#4f46e5";
-
-      half.style.pointerEvents =
-        "none";
-
-      if(side === "left"){
-
-        half.style.borderRadius =
-          "50% 0 0 50%";
-
-        half.style.borderRight =
-          "none";
-
-      }else{
-
-        half.style.borderRadius =
-          "0 50% 50% 0";
-
-        half.style.borderLeft =
-          "none";
-
-      }
-
-      visual.appendChild(
-        half
-      );
-
-    };
-
-  makeHalf("left");
-  makeHalf("right");
+  return Math.round(
+    1 + percent * 4
+  );
 
 }
 
-function updateTemperatureUI(){
-
-  const minSlider =
-    document.getElementById(
-      "temperatureMin"
-    );
-
-  const maxSlider =
-    document.getElementById(
-      "temperatureMax"
-    );
-
-  if(!minSlider || !maxSlider)
-    return;
-
-  if(
-    selectedTemperatureMin >
-    selectedTemperatureMax
-  ){
-
-    selectedTemperatureMax =
-      selectedTemperatureMin;
-
-  }
-
-  minSlider.value =
-    selectedTemperatureMin;
-
-  maxSlider.value =
-    selectedTemperatureMax;
-
-  const left =
-    ((selectedTemperatureMin - 1) / 4) * 100;
-
-  const right =
-    ((selectedTemperatureMax - 1) / 4) * 100;
-
-  const activeTrack =
-    document.getElementById(
-      "temperatureTrackActive"
-    );
-
-  activeTrack.style.left =
-    `${left}%`;
-
-  activeTrack.style.right =
-    `${100 - right}%`;
-
-  document.getElementById(
-    "temperatureCurrentValue"
-  ).textContent =
-    formatTemperatureRange(
-      selectedTemperatureMin,
-      selectedTemperatureMax
-    );
-
-  updateTemperatureHandles();
-
-}
-
-function handleTemperatureChange(
-  type,
-  rawValue
+function setTemperatureFromPointer(
+  side,
+  event
 ){
 
   const value =
-    Number(rawValue);
+    temperatureFromPointer(
+      event
+    );
 
-  if(type === "min"){
+  if(side === "min"){
 
     selectedTemperatureMin =
       Math.min(
@@ -2462,37 +2227,253 @@ function handleTemperatureChange(
 
 }
 
+function startTemperatureDrag(
+  side,
+  event
+){
+
+  event.preventDefault();
+  event.stopPropagation();
+
+  const onMove =
+    moveEvent => {
+
+      setTemperatureFromPointer(
+        side,
+        moveEvent
+      );
+
+    };
+
+  const onUp =
+    () => {
+
+      window.removeEventListener(
+        "pointermove",
+        onMove
+      );
+
+      window.removeEventListener(
+        "pointerup",
+        onUp
+      );
+
+    };
+
+  window.addEventListener(
+    "pointermove",
+    onMove
+  );
+
+  window.addEventListener(
+    "pointerup",
+    onUp
+  );
+
+  setTemperatureFromPointer(
+    side,
+    event
+  );
+
+}
+
+function updateTemperatureUI(){
+
+  const leftHandle =
+    document.getElementById(
+      "temperatureHandleLeft"
+    );
+
+  const rightHandle =
+    document.getElementById(
+      "temperatureHandleRight"
+    );
+
+  const activeTrack =
+    document.getElementById(
+      "temperatureTrackActive"
+    );
+
+  if(
+    !leftHandle ||
+    !rightHandle ||
+    !activeTrack
+  ){
+
+    return;
+
+  }
+
+  if(
+    selectedTemperatureMin >
+    selectedTemperatureMax
+  ){
+
+    selectedTemperatureMax =
+      selectedTemperatureMin;
+
+  }
+
+  const minPercent =
+    temperaturePercent(
+      selectedTemperatureMin
+    );
+
+  const maxPercent =
+    temperaturePercent(
+      selectedTemperatureMax
+    );
+
+  /*
+     Die beiden Halbgriffe teilen sich bei gleichem Wert
+     exakt dieselbe Position. Dadurch entsteht ein Kreis,
+     aber die linke/rechte Hälfte bleibt separat greifbar.
+  */
+
+  leftHandle.style.left =
+    `calc(${minPercent}% - 9px)`;
+
+  rightHandle.style.left =
+    `calc(${maxPercent}% - 9px)`;
+
+  activeTrack.style.left =
+    `${minPercent}%`;
+
+  activeTrack.style.right =
+    `${100 - maxPercent}%`;
+
+  leftHandle.setAttribute(
+    "aria-valuenow",
+    selectedTemperatureMin
+  );
+
+  rightHandle.setAttribute(
+    "aria-valuenow",
+    selectedTemperatureMax
+  );
+
+  document.getElementById(
+    "temperatureCurrentValue"
+  ).textContent =
+    formatTemperatureRange(
+      selectedTemperatureMin,
+      selectedTemperatureMax
+    );
+
+}
+
 document
   .getElementById(
-    "temperatureMin"
+    "temperatureHandleLeft"
   )
   .addEventListener(
-    "input",
-    event => {
-
-      handleTemperatureChange(
+    "pointerdown",
+    event =>
+      startTemperatureDrag(
         "min",
-        event.target.value
-      );
+        event
+      )
+  );
+
+document
+  .getElementById(
+    "temperatureHandleRight"
+  )
+  .addEventListener(
+    "pointerdown",
+    event =>
+      startTemperatureDrag(
+        "max",
+        event
+      )
+  );
+
+/*
+   Tastatur:
+   Pfeile verschieben den jeweiligen Griff um eine Temperaturstufe.
+*/
+document
+  .getElementById(
+    "temperatureHandleLeft"
+  )
+  .addEventListener(
+    "keydown",
+    event => {
+
+      if(
+        event.key === "ArrowRight"
+      ){
+
+        selectedTemperatureMin =
+          Math.min(
+            selectedTemperatureMin + 1,
+            selectedTemperatureMax
+          );
+
+        updateTemperatureUI();
+        event.preventDefault();
+
+      }
+
+      if(
+        event.key === "ArrowLeft"
+      ){
+
+        selectedTemperatureMin =
+          Math.max(
+            1,
+            selectedTemperatureMin - 1
+          );
+
+        updateTemperatureUI();
+        event.preventDefault();
+
+      }
 
     }
   );
 
 document
   .getElementById(
-    "temperatureMax"
+    "temperatureHandleRight"
   )
   .addEventListener(
-    "input",
+    "keydown",
     event => {
 
-      handleTemperatureChange(
-        "max",
-        event.target.value
-      );
+      if(
+        event.key === "ArrowRight"
+      ){
+
+        selectedTemperatureMax =
+          Math.min(
+            5,
+            selectedTemperatureMax + 1
+          );
+
+        updateTemperatureUI();
+        event.preventDefault();
+
+      }
+
+      if(
+        event.key === "ArrowLeft"
+      ){
+
+        selectedTemperatureMax =
+          Math.max(
+            selectedTemperatureMin,
+            selectedTemperatureMax - 1
+          );
+
+        updateTemperatureUI();
+        event.preventDefault();
+
+      }
 
     }
   );
+
 
 /* =========================================================
    EINZIGARTIG
