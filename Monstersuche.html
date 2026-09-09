@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V24</title>
+<title>DnD Monster Database – V25</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -466,13 +466,78 @@ tbody tr:hover{
   padding:12px 10px 10px;
 }
 
-#temperatureSlider{
+.temperature-range-wrap{
+  position:relative;
+  height:28px;
+  margin:1px 5px 5px;
+}
+
+.temperature-track,
+.temperature-track-active{
+  position:absolute;
+  left:0;
+  right:0;
+  top:11px;
+  height:4px;
+  border-radius:4px;
+}
+
+.temperature-track{
+  background:#555;
+}
+
+.temperature-track-active{
+  background:#4f46e5;
+}
+
+.temperature-range-wrap input[type="range"]{
+  position:absolute;
+  left:0;
+  top:0;
   width:100%;
+  height:26px;
+  margin:0;
   padding:0;
-  margin:2px 0 8px;
-  accent-color:#4f46e5;
   background:transparent;
   border:none;
+  outline:none;
+  pointer-events:none;
+  -webkit-appearance:none;
+  appearance:none;
+}
+
+.temperature-range-wrap input[type="range"]::-webkit-slider-runnable-track{
+  background:transparent;
+  border:none;
+  height:26px;
+}
+
+.temperature-range-wrap input[type="range"]::-moz-range-track{
+  background:transparent;
+  border:none;
+  height:26px;
+}
+
+.temperature-range-wrap input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:18px;
+  height:18px;
+  margin-top:4px;
+  border-radius:50%;
+  border:2px solid #ddd;
+  background:#4f46e5;
+  pointer-events:auto;
+  cursor:pointer;
+}
+
+.temperature-range-wrap input[type="range"]::-moz-range-thumb{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:2px solid #ddd;
+  background:#4f46e5;
+  pointer-events:auto;
   cursor:pointer;
 }
 
@@ -481,8 +546,9 @@ tbody tr:hover{
   grid-template-columns:repeat(5,1fr);
   gap:2px;
   color:#aaa;
-  font-size:9px;
+  font-size:8px;
   text-align:center;
+  line-height:1.2;
 }
 
 .temperature-scale span:nth-child(3){
@@ -863,7 +929,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V24</h1>
+      <h1>DnD Monster Database – V25</h1>
     </div>
 
 
@@ -1072,21 +1138,42 @@ tbody tr:hover{
 
       <div class="temperature-filter">
 
-        <input
-          type="range"
-          id="temperatureSlider"
-          min="1"
-          max="5"
-          step="1"
-          value="3"
-        >
+        <div class="temperature-range-wrap">
+
+          <div class="temperature-track"></div>
+          <div
+            class="temperature-track-active"
+            id="temperatureTrackActive"
+          ></div>
+
+          <input
+            type="range"
+            id="temperatureMin"
+            min="1"
+            max="5"
+            step="1"
+            value="3"
+            aria-label="Minimale Temperatur"
+          >
+
+          <input
+            type="range"
+            id="temperatureMax"
+            min="1"
+            max="5"
+            step="1"
+            value="3"
+            aria-label="Maximale Temperatur"
+          >
+
+        </div>
 
         <div class="temperature-scale">
-          <span>Arktisch</span>
-          <span>Kalt</span>
-          <span>Gemäßigt</span>
-          <span>Heiß</span>
-          <span>Vulkanisch</span>
+          <span>1 · Arktisch</span>
+          <span>2 · Kalt</span>
+          <span>3 · Gemäßigt</span>
+          <span>4 · Heiß</span>
+          <span>5 · Vulkanisch</span>
         </div>
 
         <div class="temperature-current">
@@ -1266,10 +1353,16 @@ let regionWeights = {};
 
 let appliedRegionWeights = {};
 
-let selectedTemperature =
+let selectedTemperatureMin =
   3;
 
-let appliedTemperature =
+let selectedTemperatureMax =
+  3;
+
+let appliedTemperatureMin =
+  3;
+
+let appliedTemperatureMax =
   3;
 
 let showUnique =
@@ -2048,7 +2141,7 @@ document
 
 
 /* =========================================================
-   TEMPERATUR UI
+   TEMPERATUR / KLIMA UI
 ========================================================= */
 
 const TEMPERATURE_LABELS = {
@@ -2060,47 +2153,151 @@ const TEMPERATURE_LABELS = {
 };
 
 function getTemperatureLabel(value){
-  return TEMPERATURE_LABELS[value] || "Unbekannt";
+
+  return (
+    TEMPERATURE_LABELS[value] ||
+    "Unbekannt"
+  );
+
+}
+
+function formatTemperatureRange(
+  min,
+  max
+){
+
+  if(min === max){
+
+    return `${min} · ${getTemperatureLabel(min)}`;
+
+  }
+
+  return (
+    `${min}–${max} · ` +
+    `${getTemperatureLabel(min)}–${getTemperatureLabel(max)}`
+  );
+
 }
 
 function updateTemperatureUI(){
 
-  const slider =
+  const minSlider =
     document.getElementById(
-      "temperatureSlider"
+      "temperatureMin"
     );
 
-  if(!slider)
+  const maxSlider =
+    document.getElementById(
+      "temperatureMax"
+    );
+
+  if(!minSlider || !maxSlider)
     return;
 
-  slider.value =
-    selectedTemperature;
+  if(
+    selectedTemperatureMin >
+    selectedTemperatureMax
+  ){
+
+    selectedTemperatureMax =
+      selectedTemperatureMin;
+
+  }
+
+  minSlider.value =
+    selectedTemperatureMin;
+
+  maxSlider.value =
+    selectedTemperatureMax;
+
+  const left =
+    ((selectedTemperatureMin - 1) / 4) * 100;
+
+  const right =
+    ((selectedTemperatureMax - 1) / 4) * 100;
+
+  const activeTrack =
+    document.getElementById(
+      "temperatureTrackActive"
+    );
+
+  activeTrack.style.left =
+    `${left}%`;
+
+  activeTrack.style.right =
+    `${100 - right}%`;
 
   document.getElementById(
     "temperatureCurrentValue"
   ).textContent =
-    `${selectedTemperature} · ${getTemperatureLabel(selectedTemperature)}`;
+    formatTemperatureRange(
+      selectedTemperatureMin,
+      selectedTemperatureMax
+    );
+
+}
+
+function handleTemperatureChange(
+  type,
+  rawValue
+){
+
+  const value =
+    Number(rawValue);
+
+  if(type === "min"){
+
+    selectedTemperatureMin =
+      Math.min(
+        value,
+        selectedTemperatureMax
+      );
+
+  }else{
+
+    selectedTemperatureMax =
+      Math.max(
+        value,
+        selectedTemperatureMin
+      );
+
+  }
+
+  updateTemperatureUI();
 
 }
 
 document
   .getElementById(
-    "temperatureSlider"
+    "temperatureMin"
   )
   .addEventListener(
     "input",
     event => {
 
-      selectedTemperature =
-        Number(
-          event.target.value
-        );
-
-      updateTemperatureUI();
+      handleTemperatureChange(
+        "min",
+        event.target.value
+      );
 
     }
   );
 
+document
+  .getElementById(
+    "temperatureMax"
+  )
+  .addEventListener(
+    "input",
+    event => {
+
+      handleTemperatureChange(
+        "max",
+        event.target.value
+      );
+
+    }
+  );
 
 /* =========================================================
    EINZIGARTIG
@@ -2152,8 +2349,11 @@ document
         };
 
 
-      appliedTemperature =
-        selectedTemperature;
+      appliedTemperatureMin =
+        selectedTemperatureMin;
+
+      appliedTemperatureMax =
+        selectedTemperatureMax;
 
 
       filterMonsters();
@@ -2370,34 +2570,55 @@ function getClimateScore(
 
   if(
     monsterTemperature === null ||
-    monsterTemperature === undefined ||
-    appliedTemperature === null ||
-    appliedTemperature === undefined
+    monsterTemperature === undefined
   ){
 
     return null;
 
   }
 
-  const distance =
-    Math.abs(
+  let distance = 0;
+
+  if(
+    monsterTemperature <
+    appliedTemperatureMin
+  ){
+
+    distance =
+      appliedTemperatureMin -
+      monsterTemperature;
+
+  }else if(
+    monsterTemperature >
+    appliedTemperatureMax
+  ){
+
+    distance =
       monsterTemperature -
-      appliedTemperature
-    );
+      appliedTemperatureMax;
+
+  }
 
   /*
-     Direkte Temperatur-Übereinstimmung:
+     Temperaturbereich:
 
-     0 Schritte = perfekt
-     1 Schritt  = deutlich schlechter
-     2+         = sehr unpassend
+     innerhalb des gewünschten Bereichs = 5.00
+     1 Stufe außerhalb                  = 3.50
+     2 Stufen außerhalb                 = 1.50
+     3+ Stufen außerhalb                = 1.00
+
+     Ein Bereich wie 3–3 verhält sich
+     wie ein einzelner Temperaturpunkt.
   */
 
   if(distance === 0)
     return 5;
 
   if(distance === 1)
-    return 2.5;
+    return 3.5;
+
+  if(distance === 2)
+    return 1.5;
 
   return 1;
 
@@ -3102,10 +3323,10 @@ function renderTable(
               font-weight:normal;
             "
           >
-            ${getTemperatureLabel(
-              appliedTemperature
+            ${formatTemperatureRange(
+              appliedTemperatureMin,
+              appliedTemperatureMax
             )}
-            · Region ${appliedTemperature}/5
             · Monster ${monster.temperature ?? "—"}/5
           </div>
 
@@ -3286,8 +3507,9 @@ function renderMobileCards(
                 item.climate
               )}
               –
-              ${getTemperatureLabel(
-                appliedTemperature
+              ${formatTemperatureRange(
+                appliedTemperatureMin,
+                appliedTemperatureMax
               )}
             </div>
 
@@ -3531,8 +3753,9 @@ function openInfoModal(
           <div class="profile-item">
 
             <span class="profile-item-name">
-              Temperatur Region (${getTemperatureLabel(
-                appliedTemperature
+              Temperatur Region (${formatTemperatureRange(
+                appliedTemperatureMin,
+                appliedTemperatureMax
               )})
             </span>
 
@@ -3755,10 +3978,16 @@ document
       appliedRegionWeights = {};
 
 
-      selectedTemperature =
+      selectedTemperatureMin =
         3;
 
-      appliedTemperature =
+      selectedTemperatureMax =
+        3;
+
+      appliedTemperatureMin =
+        3;
+
+      appliedTemperatureMax =
         3;
 
 
