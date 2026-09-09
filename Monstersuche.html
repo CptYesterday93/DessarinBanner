@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>DnD Monster Database – V20</title>
+<title>DnD Monster Database – V21</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -794,7 +794,7 @@ tbody tr:hover{
 }
 
 /* =========================================================
-   MOBILE
+   MOBILE MEDIA
 ========================================================= */
 
 @media (max-width:700px){
@@ -919,7 +919,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V20</h1>
+      <h1>DnD Monster Database – V21</h1>
     </div>
 
     <table>
@@ -1009,6 +1009,7 @@ tbody tr:hover{
       <div class="range-grid">
 
         <select id="crMin"></select>
+
         <select id="crMax"></select>
 
       </div>
@@ -1352,48 +1353,21 @@ for(
 
 let monsters = [];
 
-
-/*
- * Aktuell eingestellte Lebensräume.
- *
- * Die Sterne bedeuten:
- * Wie stark ist dieser Lebensraum
- * Bestandteil / Charakter der Region?
- */
-
 let regionWeights = {};
 
-
-/*
- * Tatsächlich angewendete Region.
- */
-
 let appliedRegionWeights = {};
-
-
-/*
- * Aktuell ausgewähltes Klima.
- */
 
 let selectedClimate =
   "Gemäßigt";
 
-
-/*
- * Tatsächlich angewendetes Klima.
- */
-
 let appliedClimate =
   "Gemäßigt";
-
 
 let showUnique =
   false;
 
-
 let sortColumn =
   "name";
-
 
 let sortDirection =
   "asc";
@@ -1570,16 +1544,18 @@ async function loadSheet(){
             HABITATS.forEach(
               habitat => {
 
+                const cell =
+                  cells[
+                    habitat.columnIndex
+                  ];
+
+
                 monster.habitats[
                   habitat.label
                 ] =
                   parseScore(
-                    cells[
-                      habitat.columnIndex
-                    ]?.f ??
-                    cells[
-                      habitat.columnIndex
-                    ]?.v
+                    cell?.f ??
+                    cell?.v
                   );
 
               }
@@ -1589,16 +1565,18 @@ async function loadSheet(){
             CLIMATES.forEach(
               climate => {
 
+                const cell =
+                  cells[
+                    climate.columnIndex
+                  ];
+
+
                 monster.climates[
                   climate.label
                 ] =
                   parseScore(
-                    cells[
-                      climate.columnIndex
-                    ]?.f ??
-                    cells[
-                      climate.columnIndex
-                    ]?.v
+                    cell?.f ??
+                    cell?.v
                   );
 
               }
@@ -1896,7 +1874,7 @@ function parseScore(value){
   const number =
     Number(
       String(value)
-        .replace(",",".")
+        .replace(",","." )
         .trim()
     );
 
@@ -2392,26 +2370,22 @@ document
 
 
 /* =========================================================
-   NEUE REGIONSAUSWERTUNG
+   GEWICHTETES GEOMETRISCHES MITTEL
 ========================================================= */
 
 /*
- * Die Filtersterne sind NICHT Zielwerte.
+ * Filtersterne:
  *
- * Beispiel:
+ * 1 = kleiner Bestandteil der Region
+ * 2 = wenig
+ * 3 = merklicher Bestandteil
+ * 4 = viel
+ * 5 = prägender / fast überwiegender Bestandteil
  *
- * Wald     ★★★★★
- * Küste    ★★☆☆☆
- *
- * bedeutet:
- *
- * Wald ist ein sehr wichtiger
- * Bestandteil der Region.
- *
- * Küste ist ein kleinerer Bestandteil.
+ * Sie sind KEINE Zielwerte.
  *
  *
- * Die Monsterwerte bleiben:
+ * Monsterwerte:
  *
  * 1 = praktisch nie
  * 2 = selten
@@ -2420,9 +2394,23 @@ document
  * 5 = sehr typisch
  *
  *
- * Daraus entsteht ein gewichteter
- * Durchschnitt der tatsächlichen
- * Monsterwahrscheinlichkeiten.
+ * Formel:
+ *
+ *     exp(
+ *       Summe(
+ *         Regionsgewicht × ln(Monsterwert)
+ *       )
+ *       /
+ *       Summe(Regionsgewicht)
+ *     )
+ *
+ *
+ * Vorteil:
+ *
+ * Ein sehr schlechter Wert in einem
+ * wichtigen Lebensraum kann nicht mehr
+ * einfach durch einen 5er-Wert in einem
+ * anderen Lebensraum ausgeglichen werden.
  */
 
 function getHabitatScore(
@@ -2444,7 +2432,7 @@ function getHabitatScore(
   }
 
 
-  let weightedScore =
+  let weightedLogSum =
     0;
 
 
@@ -2470,7 +2458,8 @@ function getHabitatScore(
 
     if(
       monsterScore === null ||
-      monsterScore === undefined
+      monsterScore === undefined ||
+      monsterScore <= 0
     ){
 
       continue;
@@ -2484,8 +2473,10 @@ function getHabitatScore(
       ];
 
 
-    weightedScore +=
-      monsterScore *
+    weightedLogSum +=
+      Math.log(
+        monsterScore
+      ) *
       regionWeight;
 
 
@@ -2504,8 +2495,8 @@ function getHabitatScore(
   }
 
 
-  return (
-    weightedScore /
+  return Math.exp(
+    weightedLogSum /
     totalWeight
   );
 
@@ -3658,12 +3649,14 @@ function openInfoModal(
         )}
       </span>
 
+
       <span>
         <strong>XP:</strong>
         ${monster.xp.toLocaleString(
           "de-DE"
         )}
       </span>
+
 
       <span>
         <strong>Einzigartig:</strong>
@@ -3680,6 +3673,7 @@ function openInfoModal(
       <h3>
         Aktuelle Bewertung
       </h3>
+
 
       <div class="profile-grid">
 
@@ -3740,6 +3734,7 @@ function openInfoModal(
         Lebensräume
       </h3>
 
+
       <div class="profile-grid">
 
         ${habitatHTML}
@@ -3754,6 +3749,7 @@ function openInfoModal(
       <h3>
         Klima
       </h3>
+
 
       <div class="profile-grid">
 
