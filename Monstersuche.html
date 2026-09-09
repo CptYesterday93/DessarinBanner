@@ -494,6 +494,7 @@ tbody tr:hover{
   border:2px solid #ddd;
   background:#4f46e5;
   z-index:4;
+  box-shadow:0 0 0 0 transparent;
   cursor:grab;
   box-sizing:border-box;
 }
@@ -2330,11 +2331,58 @@ function updateTemperatureUI(){
      aber die linke/rechte Hälfte bleibt separat greifbar.
   */
 
-  leftHandle.style.left =
-    `calc(${minPercent}% - 9px)`;
+  const collapsed =
+    selectedTemperatureMin ===
+    selectedTemperatureMax;
 
-  rightHandle.style.left =
-    `calc(${maxPercent}% - 9px)`;
+  if(collapsed){
+
+    /*
+       Beide Griffe teilen sich genau einen Kreis:
+       linke Hälfte = Minimum, rechte Hälfte = Maximum.
+       Dadurch sind sie unabhängig greifbar, obwohl sie
+       optisch wie ein einziger Punkt aussehen.
+    */
+
+    leftHandle.style.width =
+      "9px";
+
+    leftHandle.style.left =
+      `calc(${minPercent}% - 9px)`;
+
+    leftHandle.style.borderRight =
+      "none";
+
+    rightHandle.style.width =
+      "9px";
+
+    rightHandle.style.left =
+      `${maxPercent}%`;
+
+    rightHandle.style.borderLeft =
+      "none";
+
+  }else{
+
+    leftHandle.style.width =
+      "18px";
+
+    leftHandle.style.left =
+      `calc(${minPercent}% - 9px)`;
+
+    leftHandle.style.borderRight =
+      "2px solid #ddd";
+
+    rightHandle.style.width =
+      "18px";
+
+    rightHandle.style.left =
+      `calc(${maxPercent}% - 9px)`;
+
+    rightHandle.style.borderLeft =
+      "2px solid #ddd";
+
+  }
 
   activeTrack.style.left =
     `${minPercent}%`;
