@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V10</title>
+<title>DnD Monster Database – V11</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V10</h1>
+      <h1>DnD Monster Database – V11</h1>
     </div>
 
 
@@ -3659,6 +3659,24 @@ function renderHabitatDetails(
   ).forEach(
     habitat => {
 
+      const regionScore =
+        Number(
+          appliedRegionWeights[
+            habitat
+          ]
+        );
+
+      // In der Tabelle nur Habitate anzeigen, die tatsächlich
+      // als Filter aktiv sind. Region 0 bedeutet: nicht vorhanden.
+      if(
+        !Number.isFinite(regionScore) ||
+        regionScore <= 0
+      ){
+
+        return;
+
+      }
+
       const score =
         monster.habitats[
           habitat
@@ -3673,12 +3691,6 @@ function renderHabitatDetails(
         return;
 
       }
-
-
-      const regionScore =
-        appliedRegionWeights[
-          habitat
-        ];
 
 
       details.push(`
@@ -3800,9 +3812,11 @@ function hasActiveFilters(){
     )?.checked || false;
 
   const hasHabitats =
-    Object.keys(
+    Object.values(
       appliedRegionWeights
-    ).length > 0;
+    ).some(
+      value => Number(value) > 0
+    );
 
   const tempChanged =
     appliedTemperatureMin !== 3 ||
@@ -5026,9 +5040,8 @@ document
     "click",
     ()=>{
 
-      // Reset betrifft bewusst NUR die Landschaftsauswahl.
-      // CR, XP, Freitextsuche, Einzigartige und Temperatur
-      // bleiben unverändert.
+      // Reset setzt Landschaft und Klima auf die Grundwerte zurück.
+      // CR, XP, Freitextsuche und Einzigartige bleiben unverändert.
 
       document.getElementById(
         "presetRegionSelect"
@@ -5042,6 +5055,12 @@ document
 
       appliedRegionWeights = {};
 
+      selectedTemperatureMin = 3;
+      selectedTemperatureMax = 3;
+      appliedTemperatureMin = 3;
+      appliedTemperatureMax = 3;
+
+      updateTemperatureUI();
       buildHabitatUI();
 
       filterMonsters();
