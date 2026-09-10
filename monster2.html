@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V2</title>
+<title>DnD Monster Database – V3</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V2</h1>
+      <h1>DnD Monster Database – V3</h1>
     </div>
 
 
@@ -3431,103 +3431,117 @@ function getHabitatScore(
   monster
 ){
 
-  const regionVector = [];
-  const monsterVector = [];
+  /*
+     V3:
+     Nur Habitate mit Regionswert > 0 werden miteinander verglichen.
+     Ein Habitat, das in der Region gar nicht vorhanden ist, kann das
+     Monster also nicht negativ beeinflussen.
 
-  HABITATS.forEach(
-    habitat => {
+     Hauptwertung: Profilvergleich der relevanten Habitate.
+     Zusatz: kleiner Bonus für stärker spezialisierte Monsterprofile.
+  */
 
-      const regionScore = Number(
-        appliedRegionWeights[habitat.label] ?? 0
-      );
+  const relevant = [];
 
-      const rawMonsterScore =
-        monster.habitats[habitat.label];
+  HABITATS.forEach(habitat => {
 
-      const monsterScore =
-        rawMonsterScore === null ||
-        rawMonsterScore === undefined ||
-        rawMonsterScore === ""
-          ? 0
-          : Math.max(
-              0,
-              Math.min(5, Number(rawMonsterScore))
-            );
+    const regionScore = Number(
+      appliedRegionWeights[habitat.label] ?? 0
+    );
 
-      regionVector.push(
-        Math.max(0, Math.min(5, regionScore))
-      );
+    if(!Number.isFinite(regionScore) || regionScore <= 0)
+      return;
 
-      monsterVector.push(
-        monsterScore
-      );
+    const rawMonsterScore =
+      monster.habitats[habitat.label];
 
-    }
-  );
+    const monsterScore =
+      rawMonsterScore === null ||
+      rawMonsterScore === undefined ||
+      rawMonsterScore === ""
+        ? 0
+        : Math.max(
+            0,
+            Math.min(5, Number(rawMonsterScore))
+          );
+
+    relevant.push({
+      region: Math.max(0, Math.min(5, regionScore)),
+      monster: Number.isFinite(monsterScore) ? monsterScore : 0
+    });
+
+  });
+
+  if(relevant.length === 0)
+    return null;
+
+  /* Profilvergleich nur über die vorhandenen Regionshabitate. */
 
   const regionMagnitude = Math.sqrt(
-    regionVector.reduce(
-      (sum, value) => sum + value * value,
+    relevant.reduce(
+      (sum, item) => sum + item.region * item.region,
       0
     )
   );
 
   const monsterMagnitude = Math.sqrt(
-    monsterVector.reduce(
-      (sum, value) => sum + value * value,
+    relevant.reduce(
+      (sum, item) => sum + item.monster * item.monster,
       0
     )
   );
 
-  if(
-    regionMagnitude === 0 ||
-    monsterMagnitude === 0
-  ){
-
+  if(regionMagnitude === 0)
     return null;
 
-  }
+  if(monsterMagnitude === 0)
+    return 0;
 
-  let dot = 0;
-
-  for(let i=0; i<regionVector.length; i++){
-
-    dot +=
-      regionVector[i] *
-      monsterVector[i];
-
-  }
+  const dot = relevant.reduce(
+    (sum, item) => sum + item.region * item.monster,
+    0
+  );
 
   const similarity = Math.max(
     0,
     Math.min(
       1,
-      dot / (
-        regionMagnitude *
-        monsterMagnitude
-      )
+      dot / (regionMagnitude * monsterMagnitude)
     )
   );
 
   /*
-     Spezialisierung:
-     Wie konzentriert ist das Monsterprofil insgesamt?
-     0 = sehr breiter Generalist, 1 = nahezu reiner Spezialist.
-     Die Normierung berücksichtigt, dass es 12 Habitate gibt.
+     Spezialisierung des vollständigen Monsterprofils.
+     Je stärker sich die Werte auf wenige Habitate konzentrieren,
+     desto höher der kleine Bonus.
   */
 
-  const monsterSum =
-    monsterVector.reduce(
-      (sum, value) => sum + value,
-      0
-    );
+  const allMonsterValues = HABITATS.map(habitat => {
+
+    const raw = monster.habitats[habitat.label];
+
+    const value =
+      raw === null || raw === undefined || raw === ""
+        ? 0
+        : Number(raw);
+
+    return Number.isFinite(value)
+      ? Math.max(0, Math.min(5, value))
+      : 0;
+
+  });
+
+  const monsterSum = allMonsterValues.reduce(
+    (sum, value) => sum + value,
+    0
+  );
 
   let specialization = 0;
 
   if(monsterSum > 0){
 
     const concentration =
-      monsterVector.reduce(
+      allMonsterValues.reduce(
         (sum, value) => {
           const share = value / monsterSum;
           return sum + share * share;
@@ -3538,39 +3552,26 @@ function getHabitatScore(
     const minimumConcentration =
       1 / HABITATS.length;
 
-    specialization =
-      Math.max(
-        0,
-        Math.min(
-          1,
-          (concentration - minimumConcentration) /
-          (1 - minimumConcentration)
-        )
-      );
+    specialization = Math.max(
+      0,
+      Math.min(
+        1,
+        (concentration - minimumConcentration) /
+        (1 - minimumConcentration)
+      )
+    );
 
   }
 
-  /*
-     90 % Profilvergleich, 10 % Spezialisierung.
-     Spezialisierung zählt nur dort, wo das Monsterprofil bereits
-     zur Region passt. Ein Spezialist in einem falschen Habitat
-     kann dadurch nicht künstlich nach oben geschoben werden.
-  */
+  /* 90 % Profilvergleich + 10 % Spezialisierung. */
 
   const combinedFit =
-    similarity * (
-      0.90 +
-      0.10 * specialization
-    );
+    similarity * (0.90 + 0.10 * specialization);
 
   return Math.max(
     0,
-    Math.min(
-      5,
-      combinedFit * 5
-    )
+    Math.min(5, combinedFit * 5)
   );
-
 }
 
 /* =========================================================
