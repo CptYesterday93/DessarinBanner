@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V40</title>
+<title>DnD Monster Database – V41</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V40</h1>
+      <h1>DnD Monster Database – V41</h1>
     </div>
 
 
@@ -2143,7 +2143,7 @@ async function loadSheet(){
             cells[TEMPERATURE_COLUMN_INDEX];
 
           monster.temperature =
-            parseScore(
+            parseTemperatureValues(
               temperatureCell?.f ??
               temperatureCell?.v
             );
@@ -2430,6 +2430,74 @@ function parseScore(value){
 
 }
 
+
+function parseTemperatureValues(
+  value
+){
+
+  if(
+    value === undefined ||
+    value === null ||
+    value === ""
+  ){
+
+    return null;
+
+  }
+
+  const raw =
+    String(value)
+      .trim();
+
+  if(!raw)
+    return null;
+
+  /*
+     Temperatur kann jetzt eine oder mehrere
+     Stufen enthalten:
+       1
+       2,3
+       1,2,3,4,5
+
+     Trennzeichen Komma oder Semikolon werden
+     akzeptiert. Die Werte werden dedupliziert
+     und auf 1–5 begrenzt.
+  */
+
+  const values =
+    raw
+      .split(/[;,]/)
+      .map(
+        item =>
+          Number(
+            item
+              .trim()
+              .replace(",", ".")
+          )
+      )
+      .filter(
+        value =>
+          Number.isFinite(value) &&
+          value >= 1 &&
+          value <= 5
+      )
+      .map(
+        value => Math.round(value)
+      )
+      .filter(
+        (value,index,array) =>
+          array.indexOf(value) === index
+      )
+      .sort(
+        (a,b) => a - b
+      );
+
+  if(values.length === 0)
+    return null;
+
+  return values;
+
+}
 
 /* =========================================================
    HABITAT UI
@@ -2767,6 +2835,23 @@ function getTemperatureLabel(value){
     TEMPERATURE_LABELS[value] ||
     "Unbekannt"
   );
+
+}
+
+function formatMonsterTemperatures(
+  temperatures
+){
+
+  if(
+    !Array.isArray(temperatures) ||
+    temperatures.length === 0
+  ){
+
+    return "—";
+
+  }
+
+  return temperatures.join(",");
 
 }
 
@@ -3485,51 +3570,70 @@ function getClimateScore(
   monster
 ){
 
-  const monsterTemperature =
+  const monsterTemperatures =
     monster.temperature;
 
   if(
-    monsterTemperature === null ||
-    monsterTemperature === undefined
+    !Array.isArray(
+      monsterTemperatures
+    ) ||
+    monsterTemperatures.length === 0
   ){
 
     return null;
 
   }
 
-  let distance = 0;
-
-  if(
-    monsterTemperature <
-    appliedTemperatureMin
-  ){
-
-    distance =
-      appliedTemperatureMin -
-      monsterTemperature;
-
-  }else if(
-    monsterTemperature >
-    appliedTemperatureMax
-  ){
-
-    distance =
-      monsterTemperature -
-      appliedTemperatureMax;
-
-  }
-
   /*
-     Temperaturbereich:
+     Das Monster kann mehrere passende
+     Temperaturstufen haben.
 
-     innerhalb des gewünschten Bereichs = 5.00
-     1 Stufe außerhalb                  = 3.50
-     2 Stufen außerhalb                 = 1.50
-     3+ Stufen außerhalb                = 1.00
+     Entscheidend ist die kleinste Distanz
+     zwischen irgendeiner dieser Stufen und
+     dem gewählten Temperaturbereich.
 
-     Ein Bereich wie 3–3 verhält sich
-     wie ein einzelner Temperaturpunkt.
+     Beispiele:
+       Monster 2,3 + Bereich 2–3 -> 5.00
+       Monster 2,3 + Bereich 3–4 -> 3.50
+       Monster 1,2,3,4,5 + jeder Bereich -> 5.00
   */
+
+  let distance =
+    Infinity;
+
+  monsterTemperatures.forEach(
+    temperature => {
+
+      let currentDistance = 0;
+
+      if(
+        temperature <
+        appliedTemperatureMin
+      ){
+
+        currentDistance =
+          appliedTemperatureMin -
+          temperature;
+
+      }else if(
+        temperature >
+        appliedTemperatureMax
+      ){
+
+        currentDistance =
+          temperature -
+          appliedTemperatureMax;
+
+      }
+
+      distance =
+        Math.min(
+          distance,
+          currentDistance
+        );
+
+    }
+  );
 
   if(distance === 0)
     return 5;
@@ -4423,7 +4527,9 @@ function renderTable(
               appliedTemperatureMin,
               appliedTemperatureMax
             )}
-            · Monster ${monster.temperature ?? "—"}/5
+            · Monster ${formatMonsterTemperatures(
+              monster.temperature
+            )}/5
           </div>
 
         </td>
@@ -4745,7 +4851,7 @@ function openInfoModal(
       </span>
 
       <span class="profile-item-score">
-        ${getStars(
+        ${formatMonsterTemperatures(
           monster.temperature
         )}
       </span>
@@ -4759,6 +4865,7 @@ function openInfoModal(
         font-size:12px;
       "
     >
+      Mehrere Werte möglich, z. B. 2,3 oder 1,2,3,4,5.
       1 = sehr kalt ·
       2 = kalt ·
       3 = gemäßigt ·
