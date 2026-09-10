@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V1</title>
+<title>DnD Monster Database – V2</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V1</h1>
+      <h1>DnD Monster Database – V2</h1>
     </div>
 
 
@@ -3397,19 +3397,20 @@ document
 
 
 /* =========================================================
-   V1 HABITAT-PROFIL
+   V2 HABITAT-PROFIL
 ========================================================= */
 
 /*
    Monstersterne beschreiben das typische Habitat-Profil:
 
-   1 = kaum typisch
-   2 = wenig typisch
-   3 = passend / normal
+   0 = kommt dort praktisch nicht vor
+   1 = sehr untypisch
+   2 = eher untypisch
+   3 = typisch
    4 = sehr typisch
-   5 = Kernhabitat
+   5 = Kernhabitat / extrem typisch
 
-   Regionssterne beschreiben die Landschaftsverteilung:
+   Regionssterne beschreiben das Landschaftsprofil:
 
    0 = nicht vorhanden
    1 = fast keines
@@ -3418,9 +3419,12 @@ document
    4 = viel
    5 = dominant
 
-   V1 vergleicht die Profile als Verteilung.
-   Dadurch zählen die Schwerpunkte des Monsters stärker als
-   eine reine Summe einzelner Habitatwerte.
+   V2 vergleicht beide Profile per Cosine-Similarity.
+   Zusätzlich gibt es einen kleinen Spezialisierungsbonus: Ein
+   Monster, dessen Habitatprofil stark fokussiert ist, wird leicht
+   gegenüber einem gleich guten Generalisten bevorzugt. Der Bonus
+   kann nur wirken, wenn das Monsterprofil auch tatsächlich zur
+   ausgewählten Region passt.
 */
 
 function getHabitatScore(
@@ -3437,18 +3441,25 @@ function getHabitatScore(
         appliedRegionWeights[habitat.label] ?? 0
       );
 
-      const monsterScore = monster.habitats[
-        habitat.label
-      ];
+      const rawMonsterScore =
+        monster.habitats[habitat.label];
+
+      const monsterScore =
+        rawMonsterScore === null ||
+        rawMonsterScore === undefined ||
+        rawMonsterScore === ""
+          ? 0
+          : Math.max(
+              0,
+              Math.min(5, Number(rawMonsterScore))
+            );
 
       regionVector.push(
-        Math.max(0, regionScore)
+        Math.max(0, Math.min(5, regionScore))
       );
 
       monsterVector.push(
-        monsterScore === null || monsterScore === undefined
-          ? 0
-          : Math.max(0, Number(monsterScore))
+        monsterScore
       );
 
     }
@@ -3498,7 +3509,67 @@ function getHabitatScore(
     )
   );
 
-  return 1 + similarity * 4;
+  /*
+     Spezialisierung:
+     Wie konzentriert ist das Monsterprofil insgesamt?
+     0 = sehr breiter Generalist, 1 = nahezu reiner Spezialist.
+     Die Normierung berücksichtigt, dass es 12 Habitate gibt.
+  */
+
+  const monsterSum =
+    monsterVector.reduce(
+      (sum, value) => sum + value,
+      0
+    );
+
+  let specialization = 0;
+
+  if(monsterSum > 0){
+
+    const concentration =
+      monsterVector.reduce(
+        (sum, value) => {
+          const share = value / monsterSum;
+          return sum + share * share;
+        },
+        0
+      );
+
+    const minimumConcentration =
+      1 / HABITATS.length;
+
+    specialization =
+      Math.max(
+        0,
+        Math.min(
+          1,
+          (concentration - minimumConcentration) /
+          (1 - minimumConcentration)
+        )
+      );
+
+  }
+
+  /*
+     90 % Profilvergleich, 10 % Spezialisierung.
+     Spezialisierung zählt nur dort, wo das Monsterprofil bereits
+     zur Region passt. Ein Spezialist in einem falschen Habitat
+     kann dadurch nicht künstlich nach oben geschoben werden.
+  */
+
+  const combinedFit =
+    similarity * (
+      0.90 +
+      0.10 * specialization
+    );
+
+  return Math.max(
+    0,
+    Math.min(
+      5,
+      combinedFit * 5
+    )
+  );
 
 }
 
