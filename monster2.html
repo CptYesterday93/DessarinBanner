@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V5</title>
+<title>DnD Monster Database – V6</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V5</h1>
+      <h1>DnD Monster Database – V6</h1>
     </div>
 
 
@@ -3430,25 +3430,40 @@ function getHabitatScore(
 ){
 
   /*
-     V5 – echter Profilvergleich als "Bedarfsdeckung":
+     V6 – gewichteter Profilvergleich
 
-     Monstersterne beschreiben, wie typisch ein Habitat für das Monster ist.
-     Regionssterne beschreiben, wie stark dieses Habitat in der Region vertreten ist.
+     Monstersterne = Qualität / Typizität des Habitats für die Kreatur.
+       0 = praktisch ausgeschlossen
+       1 = sehr untypisch
+       2 = eher untypisch
+       3 = typisch
+       4 = sehr typisch
+       5 = Kernhabitat
 
-     Für jedes in der Region vorhandene Habitat prüfen wir:
-       Wie gut deckt das Monster die Bedeutung dieses Habitats ab?
+     Regionssterne = Bedeutung dieses Habitats in der Region.
+       0 = nicht vorhanden
+       1..5 = von kaum vorhanden bis prägend
 
-     Wichtig:
-       - Monster > Region ist kein Malus. Ein Monster mit Habitat 5 kann
-         selbstverständlich auch in einem Habitat 2 der Region hervorragend passen.
-       - Monster 0 bei Region > 0 ist ein echter Nulltreffer.
-       - Regionswert 0 wird ignoriert.
+     Die beiden Skalen haben bewusst unterschiedliche Rollen:
+       - Der Monsterwert ist der Trefferwert.
+       - Der Regionswert ist nur das Gewicht dieses Treffers.
 
-     Dadurch wird ein Monster nicht bestraft, weil es zusätzlich andere,
-     für die Region irrelevante Habitate besitzt.
+     Daher gilt z.B.:
+       Region 2 + Monster 5 = voller Habitat-Treffer, aber mit kleinem Gewicht.
+       Region 5 + Monster 5 = voller Habitat-Treffer mit sehr hohem Gewicht.
+       Region > 0 + Monster 0 = kein Treffer.
+       Region 0 = wird vollständig ignoriert.
   */
 
   const relevant = [];
+
+  const REGION_WEIGHTS = {
+    1: 1,
+    2: 2,
+    3: 4,
+    4: 7,
+    5: 10
+  };
 
   HABITATS.forEach(habitat => {
 
@@ -3471,24 +3486,12 @@ function getHabitatScore(
       ? Math.max(0, Math.min(5, parsedMonsterScore))
       : 0;
 
-    const safeRegionScore = Math.max(0, Math.min(5, regionScore));
-
-    /*
-       Bedarfserfüllung:
-       - 0/5  -> 0 %
-       - 2/5  -> 40 %
-       - 4/5  -> 80 %
-       - 5/5  -> 100 %
-       Wenn das Monster höher liegt als die Regionsstärke, bleibt der
-       Treffer bei 100 % statt einen künstlichen Malus zu erzeugen.
-    */
-    const fit =
-      Math.min(monsterScore, safeRegionScore) / 5;
+    const safeRegionScore = Math.max(1, Math.min(5, regionScore));
+    const weight = REGION_WEIGHTS[safeRegionScore] || safeRegionScore;
 
     relevant.push({
-      region: safeRegionScore,
       monster: monsterScore,
-      fit
+      weight
     });
 
   });
@@ -3496,74 +3499,27 @@ function getHabitatScore(
   if(relevant.length === 0)
     return null;
 
-  /*
-     Die Regionsstärke entscheidet, wie wichtig ein Habitat für die
-     Gesamtwertung ist. Die Treffer selbst sind auf 0..1 normiert.
-  */
-  const regionWeightSum = relevant.reduce(
-    (sum, item) => sum + item.region,
+  const weightSum = relevant.reduce(
+    (sum, item) => sum + item.weight,
     0
   );
 
-  const weightedFit = relevant.reduce(
-    (sum, item) => sum + item.fit * item.region,
+  const weightedMonsterSum = relevant.reduce(
+    (sum, item) => sum + (item.monster / 5) * item.weight,
     0
   );
 
   const baseScore =
-    regionWeightSum > 0
-      ? (weightedFit / regionWeightSum) * 5
+    weightSum > 0
+      ? (weightedMonsterSum / weightSum) * 5
       : 0;
-
-  /*
-     Kleiner Spezialisierungsbonus:
-     Wie stark konzentriert das Monster sein gesamtes Habitatprofil auf
-     die aktuell relevanten Habitate?
-
-     Ein Waldspezialist erhält damit einen kleinen Vorteil gegenüber einem
-     Generalisten, wenn beide im Wald gleich gut passen. Der Bonus kann
-     maximal 0.5 Punkte auf der 0..5-Skala ausmachen.
-  */
-  let allMonsterSum = 0;
-  let relevantMonsterSum = 0;
-
-  HABITATS.forEach(habitat => {
-
-    const raw = monster.habitats[habitat.label];
-    const parsed =
-      raw === null || raw === undefined || raw === ''
-        ? 0
-        : Number(raw);
-
-    const value = Number.isFinite(parsed)
-      ? Math.max(0, Math.min(5, parsed))
-      : 0;
-
-    allMonsterSum += value;
-
-    const regionScore = Number(
-      appliedRegionWeights[habitat.label] ?? 0
-    );
-
-    if(Number.isFinite(regionScore) && regionScore > 0){
-      relevantMonsterSum += value;
-    }
-
-  });
-
-  const specialization =
-    allMonsterSum > 0
-      ? Math.max(0, Math.min(1, relevantMonsterSum / allMonsterSum))
-      : 0;
-
-  const specializationBonus =
-    specialization * 0.5;
 
   return Math.max(
     0,
-    Math.min(5, baseScore + specializationBonus)
+    Math.min(5, baseScore)
   );
 }
+
 /* =========================================================
    KLIMA
 ========================================================= */
