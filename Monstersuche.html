@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V42</title>
+<title>DnD Monster Database – V44</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V42</h1>
+      <h1>DnD Monster Database – V44</h1>
     </div>
 
 
@@ -3445,166 +3445,128 @@ function getHabitatScore(
 
   }
 
-  const relevant = [];
-
-  for(
-    let i=0;
-    i<entries.length;
-    i++
-  ){
-
-    const [habitat,regionScore] =
-      entries[i];
-
-    const monsterScore =
-      monster.habitats[
-        habitat
-      ];
-
-    if(
-      monsterScore === null ||
-      monsterScore === undefined
-    ){
-
-      continue;
-
-    }
-
-    relevant.push({
-      habitat,
-      regionScore,
-      monsterScore
-    });
-
-  }
-
-  if(
-    relevant.length === 0
-  ){
-
-    return null;
-
-  }
-
-  /*
-     V42
-
-     Alle vorhandenen Regionslebensräume zählen.
-     Höhere Regionswerte haben mehr Gewicht.
-
-     Wichtig:
-     Ein schlechter Monsterwert in einem stark
-     vertretenen Lebensraum zieht die Wertung herunter.
-     Ein guter Wert in einem schwachen Lebensraum
-     kann diesen Malus nicht vollständig ausgleichen.
-
-     Die Regionsstärke wird dafür leicht nichtlinear
-     gewichtet (square), damit 5 deutlich mehr zählt
-     als 1, ohne dass 1 komplett bedeutungslos wird.
-  */
-
-  let weightedSum = 0;
+  let weightedBase = 0;
   let totalWeight = 0;
 
-  relevant.forEach(
-    item => {
+  let strongHits = 0;
+  let strongHitWeight = 0;
+
+  entries.forEach(
+    ([habitat, regionScore]) => {
+
+      if(
+        regionScore <= 0
+      ){
+
+        return;
+
+      }
+
+      const monsterScore =
+        monster.habitats[
+          habitat
+        ];
+
+      /*
+         Kein Eintrag = keine Information.
+         Das soll nicht automatisch als schlechter
+         Treffer interpretiert werden.
+      */
+
+      if(
+        monsterScore === null ||
+        monsterScore === undefined
+      ){
+
+        return;
+
+      }
+
+      /*
+         Regionsstärke ist das Gewicht, nicht ein Zielwert.
+
+         1 -> kleiner Einfluss
+         5 -> sehr großer Einfluss
+      */
 
       const weight =
         Math.pow(
-          item.regionScore / 5,
-          2
+          regionScore / 5,
+          1.35
         );
 
-      const monsterFit =
-        item.monsterScore / 5;
+      const fit =
+        monsterScore / 5;
 
-      weightedSum +=
+      weightedBase +=
         weight *
-        monsterFit;
+        fit;
 
       totalWeight +=
         weight;
 
-    }
-  );
+      /*
+         Besonders gute Treffer bekommen nur einen
+         kleinen Bonus. Dadurch bleibt ein 5er wertvoll,
+         aber ein einzelner 5er entscheidet nicht allein
+         über die Rangliste.
+      */
 
-  if(totalWeight <= 0)
-    return null;
+      if(
+        monsterScore >= 4
+      ){
 
-  let fit =
-    weightedSum /
-    totalWeight;
+        const hitStrength =
+          (
+            monsterScore - 3
+          ) / 2;
 
-  /*
-     Leichter globaler Strafterm:
-     Wenn mehrere stark vertretene Lebensräume
-     vorhanden sind und das Monster dort überwiegend
-     schlecht passt, wird die Gesamtwertung etwas stärker
-     gedrückt.
+        strongHits +=
+          hitStrength *
+          weight;
 
-     Der Strafterm bleibt bewusst moderat, damit
-     ein einzelner schwacher Nebenlebensraum nicht
-     alles zerstört.
-  */
-
-  const strongRelevant =
-    relevant.filter(
-      item =>
-        item.regionScore >= 3
-    );
-
-  if(
-    strongRelevant.length >= 2
-  ){
-
-    let deficitSum = 0;
-    let deficitWeight = 0;
-
-    strongRelevant.forEach(
-      item => {
-
-        const weight =
-          Math.pow(
-            item.regionScore / 5,
-            2
-          );
-
-        const deficit =
-          1 -
-          item.monsterScore / 5;
-
-        deficitSum +=
-          weight *
-          deficit;
-
-        deficitWeight +=
+        strongHitWeight +=
           weight;
 
       }
-    );
-
-    if(deficitWeight > 0){
-
-      const deficit =
-        deficitSum /
-        deficitWeight;
-
-      /*
-         Maximal ca. 15 % zusätzliche relative
-         Abwertung.  Dadurch bleiben gute Spezialisten
-         stark, aber ein Monster mit einem deutlichen
-         Loch in einem wichtigen Regionslebensraum
-         bekommt keinen freien Pass.
-      */
-
-      fit *=
-        1 -
-        Math.min(
-          0.15,
-          deficit * 0.15
-        );
 
     }
+  );
+
+  if(
+    totalWeight <= 0
+  ){
+
+    return null;
+
+  }
+
+  let fit =
+    weightedBase /
+    totalWeight;
+
+  /*
+     Spitzenbonus:
+     maximal rund +10 % auf die verbleibende Strecke
+     bis zum Maximum.
+
+     Der Bonus ist bewusst klein.
+  */
+
+  if(
+    strongHitWeight > 0
+  ){
+
+    const strongHitRatio =
+      strongHits /
+      strongHitWeight;
+
+    fit +=
+      (
+        1 - fit
+      ) *
+      strongHitRatio *
+      0.10;
 
   }
 
