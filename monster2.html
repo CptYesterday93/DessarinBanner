@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V8</title>
+<title>DnD Monster Database – V9</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V8</h1>
+      <h1>DnD Monster Database – V9</h1>
     </div>
 
 
@@ -3412,6 +3412,28 @@ document
 
 function getHabitatScore(monster){
 
+  /*
+     MONSTER 2 – V9
+
+     Profilvergleich über die tatsächlich vorhandenen Regionshabitate.
+
+     Monstersterne = typisches Habitat der Kreatur
+     Regionssterne = Stärke/Bedeutung des Habitats in der Region
+
+     Die Übereinstimmung wird über die ABSOLUTE ABWEICHUNG berechnet.
+     Die Abweichung wird progressiv stärker bestraft und zwar symmetrisch:
+
+       Abweichung 0 -> 5.0
+       Abweichung 1 -> 4.5
+       Abweichung 2 -> 3.5
+       Abweichung 3 -> 2.0
+       Abweichung 4 -> 0.5
+       Abweichung 5 -> 0.0
+
+     Die Regionsstärke bestimmt nur das Gewicht des Habitats.
+     Ein Regionswert 0 wird nicht berücksichtigt.
+  */
+
   const REGION_WEIGHTS = {
     1: 1,
     2: 2,
@@ -3420,10 +3442,17 @@ function getHabitatScore(monster){
     5: 10
   };
 
+  const DEVIATION_SCORE = {
+    0: 5,
+    1: 4.5,
+    2: 3.5,
+    3: 2,
+    4: 0.5,
+    5: 0
+  };
+
   let totalRegionWeight = 0;
   let weightedMatch = 0;
-  let strongCoverageWeight = 0;
-  let bestMatch = 0;
 
   for(const habitat of HABITATS){
 
@@ -3443,52 +3472,28 @@ function getHabitatScore(monster){
       ? Math.max(0, Math.min(5, monsterValue))
       : 0;
 
-    const safeRegionValue = Math.max(1, Math.min(5, regionValue));
+    const safeRegionValue = Math.max(1, Math.min(5, Math.round(regionValue)));
     const weight = REGION_WEIGHTS[safeRegionValue] || 0;
-    const match = safeMonsterValue / 5;
+
+    if(weight <= 0){
+      continue;
+    }
+
+    const difference = Math.abs(
+      safeMonsterValue - safeRegionValue
+    );
+
+    const match = DEVIATION_SCORE[difference] ?? 0;
 
     totalRegionWeight += weight;
     weightedMatch += match * weight;
-
-    /*
-       COVERAGE:
-       Ein wichtiges Habitat gilt als "abgedeckt", wenn die Kreatur
-       dort mindestens typisch (3/5) ist. Das verhindert, dass ein
-       einzelner 5er automatisch alles entscheidet.
-    */
-    if(safeMonsterValue >= 3){
-      strongCoverageWeight += weight;
-    }
-
-    bestMatch = Math.max(bestMatch, match);
   }
 
   if(totalRegionWeight <= 0){
     return null;
   }
 
-  const profileMatch = weightedMatch / totalRegionWeight;
-  const coverage = strongCoverageWeight / totalRegionWeight;
-
-  /*
-     Hauptwertung:
-     - 75% tatsächliche Profilpassung
-     - 25% Abdeckung der wichtigen Regionshabitate
-
-     Der beste Einzel-Hit bleibt vollständig wirksam, aber eine
-     Kreatur mit nur einem starken 5er wird etwas weniger bevorzugt
-     als eine Kreatur, die mehrere wichtige Bereiche gut abdeckt.
-  */
-  let normalized = profileMatch * 0.75 + coverage * 0.25;
-
-  /* Kleiner Bonus für einen wirklich perfekten Treffer. */
-  if(bestMatch >= 1){
-    normalized += (1 - normalized) * 0.04;
-  }
-
-  normalized = Math.max(0, Math.min(1, normalized));
-
-  return normalized * 5;
+  return weightedMatch / totalRegionWeight;
 }
 
 /* =========================================================
