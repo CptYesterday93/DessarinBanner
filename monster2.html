@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V9</title>
+<title>DnD Monster Database – V10</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V9</h1>
+      <h1>DnD Monster Database – V10</h1>
     </div>
 
 
@@ -3413,25 +3413,29 @@ document
 function getHabitatScore(monster){
 
   /*
-     MONSTER 2 – V9
+     MONSTER 2 – V10
 
-     Profilvergleich über die tatsächlich vorhandenen Regionshabitate.
+     Hauptwertung:
+       Vergleich des Monsterprofils mit den relevanten Regionshabitaten.
+
+     Zusatz:
+       Kleiner Spezialisierungsbonus, wenn die für die Region passenden
+       Habitate für dieses Monster deutlich typischer sind als sein übriges
+       Habitatprofil.
 
      Monstersterne = typisches Habitat der Kreatur
      Regionssterne = Stärke/Bedeutung des Habitats in der Region
 
-     Die Übereinstimmung wird über die ABSOLUTE ABWEICHUNG berechnet.
-     Die Abweichung wird progressiv stärker bestraft und zwar symmetrisch:
+     Die Übereinstimmung basiert auf der progressiven, symmetrischen
+     Abweichung aus V9:
+       0 -> 5.0
+       1 -> 4.5
+       2 -> 3.5
+       3 -> 2.0
+       4 -> 0.5
+       5 -> 0.0
 
-       Abweichung 0 -> 5.0
-       Abweichung 1 -> 4.5
-       Abweichung 2 -> 3.5
-       Abweichung 3 -> 2.0
-       Abweichung 4 -> 0.5
-       Abweichung 5 -> 0.0
-
-     Die Regionsstärke bestimmt nur das Gewicht des Habitats.
-     Ein Regionswert 0 wird nicht berücksichtigt.
+     Regionswert 0 wird nicht berücksichtigt.
   */
 
   const REGION_WEIGHTS = {
@@ -3453,6 +3457,7 @@ function getHabitatScore(monster){
 
   let totalRegionWeight = 0;
   let weightedMatch = 0;
+  let weightedRelevantMonster = 0;
 
   for(const habitat of HABITATS){
 
@@ -3487,13 +3492,58 @@ function getHabitatScore(monster){
 
     totalRegionWeight += weight;
     weightedMatch += match * weight;
+    weightedRelevantMonster += safeMonsterValue * weight;
   }
 
   if(totalRegionWeight <= 0){
     return null;
   }
 
-  return weightedMatch / totalRegionWeight;
+  const baseScore = weightedMatch / totalRegionWeight;
+
+  /*
+     SPEZIALISIERUNG
+
+     Vergleicht die typische Stärke der für die Region relevanten Habitate
+     mit dem durchschnittlichen Stärkeprofil des Monsters über alle Habitate.
+
+     Ist das relevante Profil deutlich stärker, bekommt das Monster einen
+     kleinen Bonus. Der Bonus ist absichtlich klein (max. +0.25), damit die
+     Spezialisierung nur Nuancen erzeugt und die eigentliche Profilpassung
+     nicht überstimmt.
+  */
+
+  const relevantAverage =
+    (weightedRelevantMonster / totalRegionWeight) / 5;
+
+  let allHabitatSum = 0;
+  let allHabitatCount = 0;
+
+  for(const habitat of HABITATS){
+    const value = Number(monster.habitats[habitat.label]);
+    const safeValue = Number.isFinite(value)
+      ? Math.max(0, Math.min(5, value))
+      : 0;
+
+    allHabitatSum += safeValue;
+    allHabitatCount += 1;
+  }
+
+  const overallAverage = allHabitatCount > 0
+    ? (allHabitatSum / allHabitatCount) / 5
+    : 0;
+
+  const specialization = Math.max(
+    0,
+    Math.min(1, relevantAverage - overallAverage)
+  );
+
+  const specializationBonus = specialization * 0.25;
+
+  return Math.min(
+    5,
+    baseScore + specializationBonus
+  );
 }
 
 /* =========================================================
