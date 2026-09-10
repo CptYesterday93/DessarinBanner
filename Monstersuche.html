@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V41</title>
+<title>DnD Monster Database – V42</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1100,7 +1100,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V41</h1>
+      <h1>DnD Monster Database – V42</h1>
     </div>
 
 
@@ -3473,12 +3473,7 @@ function getHabitatScore(
     relevant.push({
       habitat,
       regionScore,
-      monsterScore,
-      opportunity:
-        habitatOpportunity(
-          regionScore,
-          monsterScore
-        )
+      monsterScore
     });
 
   }
@@ -3492,72 +3487,139 @@ function getHabitatScore(
   }
 
   /*
-     Zuerst nach regionaler Bedeutung sortieren.
-     Der stärkste Lebensraum ist der Haupttreiber.
+     V42
+
+     Alle vorhandenen Regionslebensräume zählen.
+     Höhere Regionswerte haben mehr Gewicht.
+
+     Wichtig:
+     Ein schlechter Monsterwert in einem stark
+     vertretenen Lebensraum zieht die Wertung herunter.
+     Ein guter Wert in einem schwachen Lebensraum
+     kann diesen Malus nicht vollständig ausgleichen.
+
+     Die Regionsstärke wird dafür leicht nichtlinear
+     gewichtet (square), damit 5 deutlich mehr zählt
+     als 1, ohne dass 1 komplett bedeutungslos wird.
   */
 
-  relevant.sort(
-    (a,b) =>
-      b.regionScore - a.regionScore
+  let weightedSum = 0;
+  let totalWeight = 0;
+
+  relevant.forEach(
+    item => {
+
+      const weight =
+        Math.pow(
+          item.regionScore / 5,
+          2
+        );
+
+      const monsterFit =
+        item.monsterScore / 5;
+
+      weightedSum +=
+        weight *
+        monsterFit;
+
+      totalWeight +=
+        weight;
+
+    }
   );
 
-  const primary =
-    relevant[0];
+  if(totalWeight <= 0)
+    return null;
 
-  let combined =
-    primary.opportunity;
+  let fit =
+    weightedSum /
+    totalWeight;
 
   /*
-     Weitere Lebensräume ergänzen nur einen Teil.
-     Je weiter hinten sie stehen, desto geringer ihr Einfluss.
+     Leichter globaler Strafterm:
+     Wenn mehrere stark vertretene Lebensräume
+     vorhanden sind und das Monster dort überwiegend
+     schlecht passt, wird die Gesamtwertung etwas stärker
+     gedrückt.
 
-     1. Zusatz = 20 %
-     2. Zusatz = 12 %
-     3. Zusatz = 8 %
-     danach = 5 %
-
-     Der Bonus wird auf den noch nicht erreichten Bereich
-     bis 1 angewendet, dadurch gibt es eine sanfte Sättigung.
+     Der Strafterm bleibt bewusst moderat, damit
+     ein einzelner schwacher Nebenlebensraum nicht
+     alles zerstört.
   */
 
-  const bonusFactors = [
-    0.20,
-    0.12,
-    0.08
-  ];
+  const strongRelevant =
+    relevant.filter(
+      item =>
+        item.regionScore >= 3
+    );
 
-  for(
-    let i=1;
-    i<relevant.length;
-    i++
+  if(
+    strongRelevant.length >= 2
   ){
 
-    const factor =
-      bonusFactors[i-1] ??
-      0.05;
+    let deficitSum = 0;
+    let deficitWeight = 0;
 
-    const contribution =
-      relevant[i].opportunity;
+    strongRelevant.forEach(
+      item => {
 
-    combined +=
-      (1 - combined) *
-      contribution *
-      factor;
+        const weight =
+          Math.pow(
+            item.regionScore / 5,
+            2
+          );
+
+        const deficit =
+          1 -
+          item.monsterScore / 5;
+
+        deficitSum +=
+          weight *
+          deficit;
+
+        deficitWeight +=
+          weight;
+
+      }
+    );
+
+    if(deficitWeight > 0){
+
+      const deficit =
+        deficitSum /
+        deficitWeight;
+
+      /*
+         Maximal ca. 15 % zusätzliche relative
+         Abwertung.  Dadurch bleiben gute Spezialisten
+         stark, aber ein Monster mit einem deutlichen
+         Loch in einem wichtigen Regionslebensraum
+         bekommt keinen freien Pass.
+      */
+
+      fit *=
+        1 -
+        Math.min(
+          0.15,
+          deficit * 0.15
+        );
+
+    }
 
   }
 
-  combined =
+  fit =
     Math.max(
       0,
       Math.min(
         1,
-        combined
+        fit
       )
     );
 
   return (
     1 +
-    combined * 4
+    fit * 4
   );
 
 }
