@@ -1572,7 +1572,7 @@ const CLIMATES = [
    TEMPERATUR
    Spalte R = Index 17
 
-   Wertebereich: 0.00–1.00
+   Wertebereich: 1–5
 */
 const TEMPERATURE_COLUMN_INDEX = 17;
 
@@ -5449,19 +5449,17 @@ function applyEditedValuesToMonster(){
   return edited;
 }
 
-async function writeMonsterToSheet(){
+function writeMonsterToSheet(){
   const status = document.getElementById("editStatus");
   if(editMonsterIndex === null) return;
   const monster = monsters[editMonsterIndex];
   if(!monster) return;
   if(!SHEET_WRITE_URL){
-    status.textContent = "Noch keine Schreib-URL hinterlegt. Bitte SHEET_WRITE_URL im Script setzen.";
+    status.textContent = "Noch keine Schreib-URL hinterlegt.";
     return;
   }
 
   const edited = getEditedValues();
-  status.textContent = "Speichere…";
-
   const payload = {
     action: "updateMonster",
     sheetId: SHEET_ID,
@@ -5471,19 +5469,32 @@ async function writeMonsterToSheet(){
     temperature: edited.temperature
   };
 
-  try{
-    await fetch(SHEET_WRITE_URL, {
-      method: "POST",
-      mode: "no-cors",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    applyEditedValuesToMonster();
-    status.textContent = "Änderung gesendet. Das Sheet wird aktualisiert.";
-  }catch(error){
-    console.error(error);
-    status.textContent = "Speichern fehlgeschlagen.";
+  // GET über ein unsichtbares iframe: funktioniert auch bei lokal
+  // geöffneter HTML-Datei ohne CORS-/fetch-Probleme.
+  let frame = document.getElementById("sheetWriteFrame");
+  if(!frame){
+    frame = document.createElement("iframe");
+    frame.id = "sheetWriteFrame";
+    frame.name = "sheetWriteFrame";
+    frame.style.display = "none";
+    document.body.appendChild(frame);
   }
+
+  const params = new URLSearchParams({
+    action: payload.action,
+    sheetId: payload.sheetId,
+    sheetName: payload.sheetName,
+    monsterName: payload.monsterName,
+    habitats: JSON.stringify(payload.habitats),
+    temperature: String(payload.temperature)
+  });
+
+  status.textContent = "Speichere ins Google Sheet…";
+  frame.src = `${SHEET_WRITE_URL}?${params.toString()}`;
+
+  // Lokale Ansicht sofort aktualisieren; der Web-App-Aufruf schreibt parallel ins Sheet.
+  applyEditedValuesToMonster();
+  status.textContent = "An Google Sheet gesendet.";
 }
 
 buildEditGrid();
