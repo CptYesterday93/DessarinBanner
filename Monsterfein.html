@@ -2464,32 +2464,16 @@ function parseRegionScore(value){
       .trim()
   );
 
-  if(!Number.isFinite(number) || number < 0){
+  /*
+     Regionenblatt / Biome sind jetzt dauerhaft 0–1.
+     Es findet KEINE automatische 0–5 -> 0–1 Umrechnung mehr statt.
+     Werte außerhalb 0–1 werden als ungültig behandelt.
+  */
+  if(!Number.isFinite(number) || number < 0 || number > 1){
     return null;
   }
 
-  /*
-     Regionenblatt / Biome: historisch 0–5, intern jetzt 0–1.
-
-     0 -> 0.0
-     1 -> 0.2
-     2 -> 0.4
-     3 -> 0.6
-     4 -> 0.8
-     5 -> 1.0
-
-     Falls das Regionenblatt bereits 0–1 enthält, bleibt der Wert
-     unverändert. So funktioniert das Tool mit beiden Varianten.
-  */
-  if(number <= 1){
-    return number;
-  }
-
-  if(number <= 5){
-    return number / 5;
-  }
-
-  return null;
+  return number;
 }
 
 
