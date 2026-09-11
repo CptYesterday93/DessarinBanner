@@ -1769,6 +1769,53 @@ function parseGoogleVisualizationResponse(text){
   );
 }
 
+function loadGoogleSheetJsonp(sheetName){
+
+  return new Promise((resolve, reject) => {
+
+    const callbackName =
+      `__sheetCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+    const script = document.createElement("script");
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      reject(new Error(`Google Sheets Timeout: ${sheetName}`));
+    }, 15000);
+
+    function cleanup(){
+      clearTimeout(timeoutId);
+      if(script.parentNode)
+        script.parentNode.removeChild(script);
+      try{
+        delete window[callbackName];
+      }catch(_error){
+        window[callbackName] = undefined;
+      }
+    }
+
+    window[callbackName] = data => {
+      cleanup();
+      if(!data || !data.table){
+        reject(new Error(`Ungültige Google-Sheets-Antwort für ${sheetName}`));
+        return;
+      }
+      resolve(data);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(new Error(`Google Sheets konnte nicht geladen werden: ${sheetName}`));
+    };
+
+    const url =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(sheetName)}&tqx=${encodeURIComponent(`responseHandler:${callbackName}`)}`;
+
+    script.src = url;
+    document.head.appendChild(script);
+  });
+
+}
+
 async function loadRegionPresets(){
 
   const presetSelect =
@@ -1786,21 +1833,8 @@ async function loadRegionPresets(){
 
   try{
 
-    const url =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(REGION_SHEET_NAME)}`;
-
-    const response =
-      await fetch(url);
-
-    if(!response.ok)
-      throw new Error(
-        `Regionen HTTP ${response.status}`
-      );
-
-    const text =
-      await response.text();
-
-    const json = parseGoogleVisualizationResponse(text);
+    const json =
+      await loadGoogleSheetJsonp(REGION_SHEET_NAME);
 
     const cols =
       json.table?.cols ||
@@ -2045,28 +2079,8 @@ async function loadSheet(){
 
   try{
 
-    const url =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}`;
-
-
-    const response =
-      await fetch(url);
-
-
-    if(!response.ok){
-
-      throw new Error(
-        `Google Sheets HTTP ${response.status}`
-      );
-
-    }
-
-
-    const text =
-      await response.text();
-
-
-    const json = parseGoogleVisualizationResponse(text);
+    const json =
+      await loadGoogleSheetJsonp(SHEET_NAME);
 
 
     monsters =
@@ -2159,7 +2173,11 @@ async function loadSheet(){
 
     updateTemperatureUI();
 
-    await loadRegionPresets();
+    try{
+      await loadRegionPresets();
+    }catch(regionError){
+      console.error("Regionen konnten nicht geladen werden:", regionError);
+    }
 
     filterMonsters();
 
@@ -2177,7 +2195,8 @@ async function loadSheet(){
     ).innerHTML = `
       <tr>
         <td colspan="7">
-          Fehler beim Laden der Monsterdaten.
+          Fehler beim Laden der Monsterdaten.<br>
+          <small>${escapeHTML(error?.message || String(error))}</small>
         </td>
       </tr>
     `;
@@ -2450,6 +2469,29 @@ function parseScore(value){
   return normalizeScore01(value);
 }
 
+
+function parseTemperatureScalar(value){
+
+  if(
+    value === undefined ||
+    value === null ||
+    value === ""
+  ){
+    return null;
+  }
+
+  const number = Number(
+    String(value)
+      .replace(",", ".")
+      .trim()
+  );
+
+  if(!Number.isFinite(number))
+    return null;
+
+  return Math.max(1, Math.min(5, number));
+
+}
 
 function parseTemperatureValues(
   value
@@ -2833,6 +2875,18 @@ const TEMPERATURE_LABELS = {
 
 function getTemperatureLabel(value){
   return TEMPERATURE_LABELS[value] || "Unbekannt";
+}
+
+function formatMonsterTemperatures(
+  temperatures
+){
+
+  if(!Array.isArray(temperatures) || temperatures.length === 0){
+    return "—";
+  }
+
+  return temperatures.join(",");
+
 }
 
 function formatTemperatureRange(
@@ -3498,11 +3552,10 @@ function getClimateScore(monster){
     distance = Math.min(distance, currentDistance);
   }
 
-  if(distance === 0) return 1;
-
-  // Bei 0–1-Daten entspricht die maximale mögliche Abweichung 1.
-  // Die Wertung fällt linear mit der Distanz.
-  return Math.max(0, 1 - distance);
+  if(distance === 0) return 5;
+  if(distance === 1) return 3.5;
+  if(distance === 2) return 1.5;
+  return 1;
 }
 
 /* =========================================================
@@ -4677,8 +4730,8 @@ function openInfoModal(
         font-size:12px;
       "
     >
-      Mehrere Werte möglich, z. B. 0.20,0.35 oder 0.70,0.85,1.00.
-      Wertebereich: 0.00 bis 1.00.
+      Mehrere Werte möglich, z. B. 1,2,3 oder 2,3,4.
+      Wertebereich: 1 bis 5.
     </div>
 
   `;
