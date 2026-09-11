@@ -1139,7 +1139,7 @@ tbody tr:hover{
   position:relative;
   z-index:200;
 }
-.mode-tab{
+.mode-tab{display:none;
   width:auto;
   padding:9px 14px;
   border:1px solid #333;
@@ -1155,7 +1155,7 @@ tbody tr:hover{
   font-weight:bold;
 }
 .mode-tab span{font-size:12px; margin-left:4px;}
-.region-editor-view{display:none; min-width:0;}
+.region-editor-view{display:none !important; min-width:0;}
 .region-editor-view.open{display:block;}
 .region-editor-card{
   background:#242424;
@@ -1213,15 +1213,24 @@ tbody tr:hover{
   .region-editor-head{align-items:stretch;flex-direction:column;}
   .region-editor-selects{min-width:0;}
 }
+
+.region-sheet-save-row{
+  margin-top:8px;
+}
+.region-sheet-save-row button{
+  width:100%;
+}
+#sidebarRegionSaveStatus{
+  margin-top:6px;
+  min-height:16px;
+  font-size:11px;
+}
 </style>
 </head>
 
 <body>
 
-<nav class="mode-nav" id="modeNav">
-  <button type="button" class="mode-tab active" data-view="monsters">Monster <span>▾</span></button>
-  <button type="button" class="mode-tab" data-view="regions">Regionen <span>▾</span></button>
-</nav>
+
 
 <button
   class="toggle-sidebar"
@@ -1505,6 +1514,20 @@ tbody tr:hover{
       <div
         id="regionProfiles"
         class="region-profiles"
+      ></div>
+
+      <div class="region-sheet-save-row">
+        <button
+          type="button"
+          id="sidebarRegionSaveSheet"
+          class="habitat-action apply"
+        >
+          In Sheet speichern
+        </button>
+      </div>
+      <div
+        id="sidebarRegionSaveStatus"
+        class="editor-status"
       ></div>
 
     </div>
@@ -2855,7 +2878,7 @@ function buildHabitatUI(){
 
         }else{
 
-          regionWeights[habitat.label] = 0.1;
+          regionWeights[habitat.label] = 0.05;
 
         }
 
@@ -2966,9 +2989,9 @@ function buildRegionStars(
 
   slider.type = "range";
   slider.className = "region-slider";
-  slider.min = "0.1";
+  slider.min = "0.05";
   slider.max = "1";
-  slider.step = "0.1";
+  slider.step = "0.05";
   slider.value = Number.isFinite(current) && current >= 0.1
     ? current
     : 0.1;
@@ -2981,7 +3004,7 @@ function buildRegionStars(
     document.createElement("span");
 
   valueLabel.className = "region-value";
-  valueLabel.textContent = Number(slider.value).toFixed(1);
+  valueLabel.textContent = Number(slider.value).toFixed(2);
 
   slider.addEventListener(
     "input",
@@ -2992,7 +3015,7 @@ function buildRegionStars(
         Number(event.target.value);
 
       valueLabel.textContent =
-        Number(event.target.value).toFixed(1);
+        Number(event.target.value).toFixed(2);
     }
   );
 
@@ -5514,7 +5537,7 @@ function buildEditGrid(){
     div.className = "biome-edit-item";
     div.innerHTML = `
       <label for="edit_${h.label}">${escapeHTML(h.label)}</label>
-      <input id="edit_${h.label}" type="number" min="0" max="1" step="0.1" value="0">
+      <input id="edit_${h.label}" type="number" min="0" max="1" step="0.05" value="0">
     `;
     container.appendChild(div);
   });
@@ -5680,13 +5703,13 @@ function buildMonsterEditorControls(monster){
     item.innerHTML = `
       <div class="editor-slider-head">
         <label>${escapeHTML(h.label)}</label>
-        <output>${safe.toFixed(1)}</output>
+        <output>${safe.toFixed(2)}</output>
       </div>
-      <input class="monster-edit-range" data-habitat="${escapeAttribute(h.label)}" type="range" min="0" max="1" step="0.1" value="${safe.toFixed(1)}">
+      <input class="monster-edit-range" data-habitat="${escapeAttribute(h.label)}" type="range" min="0" max="1" step="0.05" value="${safe.toFixed(2)}">
     `;
     const range = item.querySelector("input");
     const output = item.querySelector("output");
-    range.addEventListener("input", () => output.value = Number(range.value).toFixed(1));
+    range.addEventListener("input", () => output.value = Number(range.value).toFixed(2));
     grid.appendChild(item);
   });
   wrap.appendChild(grid);
@@ -5717,7 +5740,7 @@ function buildMonsterEditorControls(monster){
 function getMonsterEditorValuesFromModal(){
   const habitats = {};
   document.querySelectorAll(".monster-edit-range").forEach(input => {
-    habitats[input.dataset.habitat] = Math.max(0, Math.min(1, Math.round(Number(input.value) * 10) / 10));
+    habitats[input.dataset.habitat] = Math.max(0, Math.min(1, Math.round(Number(input.value) * 20) / 20));
   });
   const temperature = Math.max(1, Math.min(5, Math.round(Number(document.getElementById("monsterEditTemp")?.value || 3))));
   return { habitats, temperature };
@@ -5839,12 +5862,12 @@ function buildRegionEditorGrid(){
     const item = document.createElement("div");
     item.className = "region-editor-item";
     item.innerHTML = `
-      <div class="region-editor-item-head"><label>${escapeHTML(h.label)}</label><output data-region-output="${escapeAttribute(h.label)}">0.0</output></div>
-      <input data-region-range="${escapeAttribute(h.label)}" type="range" min="0" max="1" step="0.1" value="0">
+      <div class="region-editor-item-head"><label>${escapeHTML(h.label)}</label><output data-region-output="${escapeAttribute(h.label)}">0.00</output></div>
+      <input data-region-range="${escapeAttribute(h.label)}" type="range" min="0" max="1" step="0.05" value="0">
     `;
     const input = item.querySelector("input");
     const output = item.querySelector("output");
-    input.addEventListener("input", () => output.value = Number(input.value).toFixed(1));
+    input.addEventListener("input", () => output.value = Number(input.value).toFixed(2));
     grid.appendChild(item);
   });
   const temp = document.getElementById("regionEditorTemperature");
@@ -5862,8 +5885,8 @@ function loadRegionEditor(index){
     const output = document.querySelector(`[data-region-output="${CSS.escape(h.label)}"]`);
     const value = Number(region.habitats[h.label]);
     const safe = Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 0;
-    if(input) input.value = safe.toFixed(1);
-    if(output) output.value = safe.toFixed(1);
+    if(input) input.value = safe.toFixed(2);
+    if(output) output.value = safe.toFixed(2);
   });
   let temp = 3;
   if(typeof region.temperature === "object" && region.temperature){ temp = Number(region.temperature.min) || 3; }
@@ -5880,7 +5903,7 @@ function getRegionEditorValues(){
   const habitats = {};
   HABITATS.forEach(h => {
     const input = document.querySelector(`[data-region-range="${CSS.escape(h.label)}"]`);
-    habitats[h.label] = Math.max(0, Math.min(1, Math.round(Number(input?.value || 0)*10)/10));
+    habitats[h.label] = Math.max(0, Math.min(1, Math.round(Number(input?.value || 0)*20)/20));
   });
   const temp = Math.max(1, Math.min(5, Math.round(Number(document.getElementById("regionEditorTemperature")?.value || 3))));
   return {habitats, temperature:temp};
@@ -5943,7 +5966,77 @@ function writeRegionToSheet(){
   document.head.appendChild(script);
 }
 
+function getSidebarSelectedRegionIndex(){
+  const preset = document.getElementById("presetRegionSelect");
+  const world = document.getElementById("worldRegionSelect");
+  const value = (world && world.value) || (preset && preset.value) || "";
+  if(value === "") return null;
+  const index = Number(value);
+  return Number.isInteger(index) && regionPresets[index] ? index : null;
+}
+
+function writeSidebarRegionToSheet(){
+  const status = document.getElementById("sidebarRegionSaveStatus");
+  const index = getSidebarSelectedRegionIndex();
+  if(!status) return;
+  if(index === null){
+    status.textContent = "Bitte zuerst eine Vorlage oder Region auswählen.";
+    return;
+  }
+  if(!SHEET_WRITE_URL){
+    status.textContent = "Schreib-URL fehlt.";
+    return;
+  }
+  const region = regionPresets[index];
+  const habitats = {};
+  HABITATS.forEach(h => {
+    const value = Number(regionWeights[h.label] ?? 0);
+    habitats[h.label] = Math.max(0, Math.min(1, Math.round(value * 20) / 20));
+  });
+  const temp = Math.max(1, Math.min(5, Math.round(Number(selectedTemperatureMin || 3))));
+  const callbackName = "sidebarRegionWrite_" + Date.now() + "_" + Math.floor(Math.random()*100000);
+  let script = null;
+  window[callbackName] = function(result){
+    try{
+      if(result && result.ok){
+        region.habitats = {...habitats};
+        region.temperature = {min:temp,max:temp};
+        appliedRegionWeights = {...habitats};
+        appliedTemperatureMin = temp;
+        appliedTemperatureMax = temp;
+        status.textContent = `✓ ${region.name} im Google Sheet gespeichert.`;
+        filterMonsters();
+      }else{
+        status.textContent = "Fehler: " + (result?.error || "Unbekannter Fehler");
+      }
+    }finally{
+      delete window[callbackName];
+      if(script?.parentNode) script.parentNode.removeChild(script);
+    }
+  };
+  const params = new URLSearchParams({
+    action:"updateRegion",
+    sheetId:SHEET_ID,
+    sheetName:REGION_SHEET_NAME,
+    regionName:region.name,
+    habitats:JSON.stringify(habitats),
+    temperature:String(temp),
+    callback:callbackName
+  });
+  script = document.createElement("script");
+  script.async = true;
+  script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
+  script.onerror = () => {
+    delete window[callbackName];
+    status.textContent = "Fehler: Web-App nicht erreichbar.";
+    if(script?.parentNode) script.parentNode.removeChild(script);
+  };
+  status.textContent = "Speichere…";
+  document.head.appendChild(script);
+}
+
 buildRegionEditorGrid();
+document.getElementById("sidebarRegionSaveSheet")?.addEventListener("click", writeSidebarRegionToSheet);
 document.getElementById("regionEditorType")?.addEventListener("change", () => {
   populateRegionEditorSelects();
   selectedRegionEditorIndex = null;
@@ -5958,7 +6051,7 @@ loadRegionPresets = async function(){
   populateRegionEditorSelects();
 };
 
-setModeView("monsters");
+// Die Regionen werden über den bestehenden Filterbereich bearbeitet.
 
 /* =========================================================
    START
