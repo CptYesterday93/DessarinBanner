@@ -1057,6 +1057,7 @@ tbody tr:hover{
 
   .region-profiles{
     gap:5px;
+    grid-template-columns:repeat(3,minmax(0,1fr));
   }
 
   .region-row{
@@ -2434,34 +2435,61 @@ function normalizeScore01(value){
   }
 
   /*
-     Primärformat: 0.00–1.00
-     Kompatibilität mit vorhandenen Sheet-Werten:
-     Werte > 1 bis 1000 werden als Tausendstelwerte interpretiert.
-     Beispiele:
-       45  -> 0.045
-       966 -> 0.966
-       415 -> 0.415
-       958 -> 0.958
-       0.15 -> 0.15
-       0.6  -> 0.6
+     Neues Primärformat: 0.00–1.00.
+     Die Werte im Sheet werden unverändert als 0–1 gelesen.
+     Werte außerhalb dieses Bereichs gelten als ungültig,
+     damit das Tool keine Daten mehr eigenmächtig umskaliert.
   */
-  const normalized =
-    number <= 1
-      ? number
-      : number <= 1000
-        ? number / 1000
-        : null;
-
-  if(normalized === null){
+  if(number > 1){
     return null;
   }
 
-  return Math.max(0, Math.min(1, normalized));
+  return Math.max(0, Math.min(1, number));
 }
 
 
 function parseRegionScore(value){
-  return normalizeScore01(value);
+
+  if(
+    value === undefined ||
+    value === null ||
+    value === ""
+  ){
+    return null;
+  }
+
+  const number = Number(
+    String(value)
+      .replace(",", ".")
+      .trim()
+  );
+
+  if(!Number.isFinite(number) || number < 0){
+    return null;
+  }
+
+  /*
+     Regionenblatt / Biome: historisch 0–5, intern jetzt 0–1.
+
+     0 -> 0.0
+     1 -> 0.2
+     2 -> 0.4
+     3 -> 0.6
+     4 -> 0.8
+     5 -> 1.0
+
+     Falls das Regionenblatt bereits 0–1 enthält, bleibt der Wert
+     unverändert. So funktioniert das Tool mit beiden Varianten.
+  */
+  if(number <= 1){
+    return number;
+  }
+
+  if(number <= 5){
+    return number / 5;
+  }
+
+  return null;
 }
 
 
@@ -3487,7 +3515,7 @@ function getHabitatScore(monster){
      mit dem durchschnittlichen Stärkeprofil des Monsters über alle Habitate.
 
      Ist das relevante Profil deutlich stärker, bekommt das Monster einen
-     kleinen Bonus. Der Bonus ist absichtlich klein (max. +0.25), damit die
+     kleinen Bonus. Der Bonus ist absichtlich klein (max. +0.05), damit die
      Spezialisierung nur Nuancen erzeugt und die eigentliche Profilpassung
      nicht überstimmt.
   */
@@ -3552,10 +3580,20 @@ function getClimateScore(monster){
     distance = Math.min(distance, currentDistance);
   }
 
-  if(distance === 0) return 5;
-  if(distance === 1) return 3.5;
-  if(distance === 2) return 1.5;
-  return 1;
+  /*
+     Temperatur bleibt intern 1–5.
+     Für die gemeinsame Gesamtwertung wird der Klimascore
+     jedoch auf 0–1 normalisiert.
+
+     exakte Übereinstimmung = 1.00
+     Abstand 1 = 0.70
+     Abstand 2 = 0.30
+     größerer Abstand = 0.20
+  */
+  if(distance === 0) return 1;
+  if(distance === 1) return 0.7;
+  if(distance === 2) return 0.3;
+  return 0.2;
 }
 
 /* =========================================================
