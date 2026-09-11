@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V13</title>
+<title>DnD Monster Database – V14</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1255,7 +1255,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V13</h1>
+      <h1>DnD Monster Database – V14</h1>
     </div>
 
 
@@ -3659,25 +3659,22 @@ function habitatMatch(regionValue, monsterValue){
 
   /*
      Kleine Abweichungen bis ±0,10 bilden ein leichtes Plateau:
-     sie werden kaum bestraft.
-
-     Danach steigt die Strafe progressiv an. Große Abweichungen
-     werden dadurch deutlich härter bewertet als kleine.
+     sie werden kaum bestraft. Danach steigt die Strafe progressiv an.
 
      Richtwerte:
        0,00 -> 1,00
-       0,05 -> 0,985
-       0,10 -> 0,970
-       0,20 -> ca. 0,77
-       0,30 -> ca. 0,58
-       0,40 -> ca. 0,41
-       0,50 -> ca. 0,31
-       0,75 -> ca. 0,09
+       0,05 -> 0,99
+       0,10 -> 0,98
+       0,20 -> ca. 0,82
+       0,30 -> ca. 0,68
+       0,40 -> ca. 0,57
+       0,50 -> ca. 0,46
+       0,75 -> ca. 0,19
        1,00 -> 0,00
   */
 
   if(difference <= 0.10){
-    return 1 - difference * 0.30;
+    return 1 - difference * 0.20;
   }
 
   const normalized =
@@ -3685,7 +3682,7 @@ function habitatMatch(regionValue, monsterValue){
 
   return Math.pow(
     Math.max(0, 1 - normalized),
-    2.20
+    1.65
   );
 }
 
@@ -3702,18 +3699,18 @@ function habitatMatch(regionValue, monsterValue){
 
      Richtwerte:
        0,00 -> 1,00
-       0,05 -> 0,985
-       0,10 -> 0,970
-       0,20 -> ca. 0,77
-       0,30 -> ca. 0,58
-       0,40 -> ca. 0,41
-       0,50 -> ca. 0,31
-       0,75 -> ca. 0,09
+       0,05 -> 0,99
+       0,10 -> 0,98
+       0,20 -> ca. 0,82
+       0,30 -> ca. 0,68
+       0,40 -> ca. 0,57
+       0,50 -> ca. 0,46
+       0,75 -> ca. 0,19
        1,00 -> 0,00
   */
 
   if(difference <= 0.10){
-    return 1 - difference * 0.30;
+    return 1 - difference * 0.20;
   }
 
   const normalized =
@@ -3721,7 +3718,7 @@ function habitatMatch(regionValue, monsterValue){
 
   return Math.pow(
     Math.max(0, 1 - normalized),
-    2.20
+    1.65
   );
 }
 
@@ -5728,7 +5725,7 @@ document.getElementById("editModal").addEventListener("click", event => {
 
 
 /* =========================================================
-   V13 EDITOR + REGIONEN
+   V14 EDITOR + REGIONEN
 ========================================================= */
 
 let currentView = "monsters";
