@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V14</title>
+<title>DnD Monster Database – V17</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1255,7 +1255,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V14</h1>
+      <h1>DnD Monster Database – V17</h1>
     </div>
 
 
@@ -2252,12 +2252,13 @@ function applyRegionPresetToEditor(
 
       if(
         value !== null &&
-        value !== undefined
+        value !== undefined &&
+        Number(value) > 0
       ){
 
         regionWeights[
           habitat.label
-        ] = value;
+        ] = Number(value);
 
       }
 
@@ -2836,10 +2837,7 @@ function buildHabitatUI(){
 
 
     const active =
-      Object.prototype.hasOwnProperty.call(
-        regionWeights,
-        habitat.label
-      );
+      Number(regionWeights[habitat.label] ?? 0) > 0;
 
 
     if(active){
@@ -2868,10 +2866,7 @@ function buildHabitatUI(){
 
 
         if(
-          Object.prototype.hasOwnProperty.call(
-            regionWeights,
-            habitat.label
-          )
+          Number(regionWeights[habitat.label] ?? 0) > 0
         ){
 
           delete regionWeights[habitat.label];
@@ -2969,6 +2964,7 @@ function buildHabitatUI(){
 
 /* =========================================================
    REGION STERNE
+   0.00 = nicht ausgewählt / nicht relevant
 ========================================================= */
 
 function buildRegionStars(
@@ -2989,12 +2985,12 @@ function buildRegionStars(
 
   slider.type = "range";
   slider.className = "region-slider";
-  slider.min = "0.05";
+  slider.min = "0";
   slider.max = "1";
   slider.step = "0.05";
-  slider.value = Number.isFinite(current) && current >= 0.1
-    ? current
-    : 0.1;
+  slider.value = Number.isFinite(current)
+    ? Math.max(0, Math.min(1, current))
+    : 0;
   slider.setAttribute(
     "aria-label",
     `${habitat} Gewicht`
@@ -3041,9 +3037,7 @@ function updateHabitatQuickButton(){
 
 
   const count =
-    Object.keys(
-      regionWeights
-    ).length;
+    HABITATS.filter(habitat => Number(regionWeights[habitat.label] ?? 0) > 0).length;
 
 
   button.textContent =
@@ -3063,9 +3057,7 @@ document
     ()=>{
 
       const count =
-        Object.keys(
-          regionWeights
-        ).length;
+        HABITATS.filter(habitat => Number(regionWeights[habitat.label] ?? 0) > 0).length;
 
 
       if(
@@ -5725,7 +5717,7 @@ document.getElementById("editModal").addEventListener("click", event => {
 
 
 /* =========================================================
-   V14 EDITOR + REGIONEN
+   V17 EDITOR + REGIONEN
 ========================================================= */
 
 let currentView = "monsters";
