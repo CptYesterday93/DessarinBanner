@@ -31,7 +31,7 @@ body{
 
 .container{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 340px;
+  grid-template-columns:minmax(0,1fr) 470px;
   gap:20px;
   padding:20px;
   height:100vh;
@@ -237,20 +237,22 @@ input[type="number"]{
    REGIONSPROFIL
 ========================================================= */
 
-.region-profiles{
+ .region-profiles{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:7px;
 }
 
 .region-row{
   min-width:0;
   display:grid;
-  grid-template-columns:auto minmax(0,1fr) 16px;
+  grid-template-columns:minmax(0,1fr) 16px;
+  grid-template-rows:auto auto;
   align-items:center;
-  gap:3px;
-  min-height:32px;
-  padding:4px 5px;
+  column-gap:4px;
+  row-gap:2px;
+  min-height:52px;
+  padding:6px 7px;
   background:#292929;
   border:1px solid #3b3b3b;
   border-radius:8px;
@@ -259,20 +261,17 @@ input[type="number"]{
 
 .region-name-button{
   min-width:0;
-  width:auto;
-  padding:4px 2px;
+  width:100%;
+  padding:2px 0;
   border:none;
   background:transparent;
-  color:#ddd;
+  color:#aaa;
   text-align:left;
   font-size:11px;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
-}
-
-.region-row.active .region-name-button{
-  max-width:58px;
+  grid-column:1 / -1;
 }
 
 .region-name-button:hover{
@@ -287,9 +286,10 @@ input[type="number"]{
 .region-stars{
   display:flex;
   align-items:center;
-  gap:6px;
+  gap:5px;
   min-width:0;
   width:100%;
+  grid-column:1;
 }
 
 .region-slider{
@@ -299,12 +299,21 @@ input[type="number"]{
 }
 
 .region-value{
-  width:42px;
-  min-width:42px;
+  width:32px;
+  min-width:32px;
   text-align:right;
   color:#eee;
   font-size:10px;
   font-variant-numeric:tabular-nums;
+}
+
+.region-row:not(.active) .region-stars{
+  display:none;
+}
+
+.region-row:not(.active){
+  min-height:34px;
+  grid-template-rows:auto;
 }
 
 .sidebar .region-remove{
@@ -2379,55 +2388,60 @@ function formatCR(value){
    SCORE
 ========================================================= */
 
-function parseRegionScore(value){
-
-  if(
-    value === undefined ||
-    value === null ||
-    value === ""
-  ){
-
-    return null;
-
-  }
-
-  const number = Number(
-    String(value)
-      .replace(",", ".")
-      .trim()
-  );
-
-  if(
-    isNaN(number) ||
-    number < 0
-  ){
-
-    return null;
-
-  }
-
-  return Math.min(1, number);
-
-}
-
-
-function parseScore(value){
+function normalizeScore01(value){
 
   if(value === undefined || value === null || value === ""){
     return null;
   }
 
-  const number = Number(
-    String(value)
-      .replace(",", ".")
-      .trim()
-  );
+  const raw = String(value)
+    .trim()
+    .replace(",", ".");
 
-  if(!Number.isFinite(number)){
+  if(!raw){
     return null;
   }
 
-  return Math.max(0, Math.min(1, number));
+  const number = Number(raw);
+
+  if(!Number.isFinite(number) || number < 0){
+    return null;
+  }
+
+  /*
+     Primärformat: 0.00–1.00
+     Kompatibilität mit vorhandenen Sheet-Werten:
+     Werte > 1 bis 1000 werden als Tausendstelwerte interpretiert.
+     Beispiele:
+       45  -> 0.045
+       966 -> 0.966
+       415 -> 0.415
+       958 -> 0.958
+       0.15 -> 0.15
+       0.6  -> 0.6
+  */
+  const normalized =
+    number <= 1
+      ? number
+      : number <= 1000
+        ? number / 1000
+        : null;
+
+  if(normalized === null){
+    return null;
+  }
+
+  return Math.max(0, Math.min(1, normalized));
+}
+
+
+function parseRegionScore(value){
+  return normalizeScore01(value);
+}
+
+
+function parseScore(value){
+  return normalizeScore01(value);
 }
 
 
@@ -2582,7 +2596,7 @@ function buildHabitatUI(){
 
         regionWeights[
           habitat.label
-        ] = 0.5;
+        ] = 0.1;
 
 
         buildHabitatUI();
@@ -2692,12 +2706,12 @@ function buildRegionStars(
 
   slider.type = "range";
   slider.className = "region-slider";
-  slider.min = "0";
+  slider.min = "0.1";
   slider.max = "1";
   slider.step = "0.1";
-  slider.value = Number.isFinite(current)
+  slider.value = Number.isFinite(current) && current >= 0.1
     ? current
-    : 0.5;
+    : 0.1;
   slider.setAttribute(
     "aria-label",
     `${habitat} Gewicht`
@@ -2707,7 +2721,7 @@ function buildRegionStars(
     document.createElement("span");
 
   valueLabel.className = "region-value";
-  valueLabel.textContent = Number(slider.value).toFixed(2);
+  valueLabel.textContent = Number(slider.value).toFixed(1);
 
   slider.addEventListener(
     "input",
@@ -2718,7 +2732,7 @@ function buildRegionStars(
         Number(event.target.value);
 
       valueLabel.textContent =
-        Number(event.target.value).toFixed(2);
+        Number(event.target.value).toFixed(1);
     }
   );
 
@@ -2787,7 +2801,7 @@ document
 
             regionWeights[
               habitat.label
-            ] = 0.5;
+            ] = 0.1;
 
           }
         );
