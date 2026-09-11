@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V12</title>
+<title>DnD Monster Database – V13</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1255,7 +1255,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V12</h1>
+      <h1>DnD Monster Database – V13</h1>
     </div>
 
 
@@ -3651,22 +3651,94 @@ document
    - Zusätzliche Monster-Habitate erzeugen keinen Malus.
 */
 
+function habitatMatch(regionValue, monsterValue){
+
+  const difference = Math.abs(
+    regionValue - monsterValue
+  );
+
+  /*
+     Kleine Abweichungen bis ±0,10 bilden ein leichtes Plateau:
+     sie werden kaum bestraft.
+
+     Danach steigt die Strafe progressiv an. Große Abweichungen
+     werden dadurch deutlich härter bewertet als kleine.
+
+     Richtwerte:
+       0,00 -> 1,00
+       0,05 -> 0,985
+       0,10 -> 0,970
+       0,20 -> ca. 0,77
+       0,30 -> ca. 0,58
+       0,40 -> ca. 0,41
+       0,50 -> ca. 0,31
+       0,75 -> ca. 0,09
+       1,00 -> 0,00
+  */
+
+  if(difference <= 0.10){
+    return 1 - difference * 0.30;
+  }
+
+  const normalized =
+    (difference - 0.10) / 0.90;
+
+  return Math.pow(
+    Math.max(0, 1 - normalized),
+    2.20
+  );
+}
+
+
+function habitatMatch(regionValue, monsterValue){
+
+  const difference = Math.abs(
+    regionValue - monsterValue
+  );
+
+  /*
+     Kleine Abweichungen bis ±0,10 bilden ein leichtes Plateau:
+     sie werden kaum bestraft. Danach steigt die Strafe progressiv an.
+
+     Richtwerte:
+       0,00 -> 1,00
+       0,05 -> 0,985
+       0,10 -> 0,970
+       0,20 -> ca. 0,77
+       0,30 -> ca. 0,58
+       0,40 -> ca. 0,41
+       0,50 -> ca. 0,31
+       0,75 -> ca. 0,09
+       1,00 -> 0,00
+  */
+
+  if(difference <= 0.10){
+    return 1 - difference * 0.30;
+  }
+
+  const normalized =
+    (difference - 0.10) / 0.90;
+
+  return Math.pow(
+    Math.max(0, 1 - normalized),
+    2.20
+  );
+}
+
 function getHabitatScore(monster){
 
   /*
-     0–1-Bewertung
+     0–1-HABITAT-BEWERTUNG
 
-     Monsterwert = Qualität / Eignung für das Habitat.
-     Regionswert = Bedeutung des Habitats in der Region.
+     Monsterwert = Eignung für das jeweilige Biom.
+     Regionswert = Bedeutung des Bioms in der Region.
 
-     Beide Werte bleiben kontinuierlich und werden nicht gerundet.
-     Regionswert 0 wird ignoriert.
+     Die Region gewichtet nur die für sie relevanten Biome.
+     Die Übereinstimmung wird über eine progressive Distanzstrafe bewertet:
+     kleine Unterschiede bis ±0,10 werden kaum bestraft, größere
+     Unterschiede zunehmend stärker.
 
-     Die Übereinstimmung ist linear:
-       gleiche Werte -> 1.00
-       Abstand 0.25   -> 0.75
-       Abstand 0.50   -> 0.50
-       Abstand 1.00   -> 0.00
+     Die bestehende kleine Spezialisierungsnuance bleibt erhalten.
   */
 
   let totalRegionWeight = 0;
@@ -3700,11 +3772,10 @@ function getHabitatScore(monster){
       continue;
     }
 
-    const difference = Math.abs(
-      safeMonsterValue - safeRegionValue
+    const match = habitatMatch(
+      safeRegionValue,
+      safeMonsterValue
     );
-
-    const match = Math.max(0, 1 - difference);
 
     totalRegionWeight += weight;
     weightedMatch += match * weight;
@@ -3715,20 +3786,10 @@ function getHabitatScore(monster){
     return null;
   }
 
-  const baseScore = weightedMatch / totalRegionWeight;
+  const baseScore =
+    weightedMatch / totalRegionWeight;
 
-  /*
-     SPEZIALISIERUNG
-
-     Vergleicht die typische Stärke der für die Region relevanten Habitate
-     mit dem durchschnittlichen Stärkeprofil des Monsters über alle Habitate.
-
-     Ist das relevante Profil deutlich stärker, bekommt das Monster einen
-     kleinen Bonus. Der Bonus ist absichtlich klein (max. +0.05), damit die
-     Spezialisierung nur Nuancen erzeugt und die eigentliche Profilpassung
-     nicht überstimmt.
-  */
-
+  /* Kleine Spezialisierungsnuance, maximal +0,05. */
   const relevantAverage =
     weightedRelevantMonster / totalRegionWeight;
 
@@ -3736,7 +3797,11 @@ function getHabitatScore(monster){
   let allHabitatCount = 0;
 
   for(const habitat of HABITATS){
-    const value = Number(monster.habitats[habitat.label]);
+
+    const value = Number(
+      monster.habitats[habitat.label]
+    );
+
     const safeValue = Number.isFinite(value)
       ? Math.max(0, Math.min(1, value))
       : 0;
@@ -3754,7 +3819,8 @@ function getHabitatScore(monster){
     Math.min(1, relevantAverage - overallAverage)
   );
 
-  const specializationBonus = specialization * 0.05;
+  const specializationBonus =
+    specialization * 0.05;
 
   return Math.min(
     1,
@@ -5662,7 +5728,7 @@ document.getElementById("editModal").addEventListener("click", event => {
 
 
 /* =========================================================
-   V12 EDITOR + REGIONEN
+   V13 EDITOR + REGIONEN
 ========================================================= */
 
 let currentView = "monsters";
