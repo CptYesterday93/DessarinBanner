@@ -1371,16 +1371,16 @@ tbody tr:hover{
         </div>
 
         <div class="temperature-scale">
-          <span>0.00</span>
-          <span>0.25</span>
-          <span>0.50</span>
-          <span>0.75</span>
-          <span>1.00</span>
+          <span>1 · Arktisch</span>
+          <span>2 · Kalt</span>
+          <span>3 · Gemäßigt</span>
+          <span>4 · Heiß</span>
+          <span>5 · Vulkanisch</span>
         </div>
 
         <div class="temperature-current">
           <span>Gebiet</span>
-          <b id="temperatureCurrentValue">0.50–0.50</b>
+          <b id="temperatureCurrentValue">3 · Gemäßigt</b>
         </div>
 
       </div>
@@ -1528,16 +1528,16 @@ let regionWeights = {};
 let appliedRegionWeights = {};
 
 let selectedTemperatureMin =
-  0.5;
+  3;
 
 let selectedTemperatureMax =
-  0.5;
+  3;
 
 let appliedTemperatureMin =
-  0.5;
+  3;
 
 let appliedTemperatureMax =
-  0.5;
+  3;
 
 let showUnique =
   false;
@@ -1662,15 +1662,21 @@ function parseRegionTemperature(
   const tempColumn =
     headerMap["temperatur"];
 
-  if(
-    tempColumn !== undefined
-  ){
+  if(tempColumn !== undefined){
 
-    return parseScore(
+    const values = parseTemperatureValues(
       cells[tempColumn]?.f ??
       cells[tempColumn]?.v
     );
 
+    if(Array.isArray(values) && values.length > 0){
+      return {
+        min: Math.min(...values),
+        max: Math.max(...values)
+      };
+    }
+
+    return null;
   }
 
   const minColumn =
@@ -1684,36 +1690,34 @@ function parseRegionTemperature(
     maxColumn !== undefined
   ){
 
-    const min =
-      parseScore(
-        cells[minColumn]?.f ??
-        cells[minColumn]?.v
-      );
+    const minValues = parseTemperatureValues(
+      cells[minColumn]?.f ??
+      cells[minColumn]?.v
+    );
 
-    const max =
-      parseScore(
-        cells[maxColumn]?.f ??
-        cells[maxColumn]?.v
-      );
+    const maxValues = parseTemperatureValues(
+      cells[maxColumn]?.f ??
+      cells[maxColumn]?.v
+    );
+
+    const min = minValues?.[0] ?? maxValues?.[0] ?? 3;
+    const max = maxValues?.[maxValues.length - 1] ?? minValues?.[minValues.length - 1] ?? 3;
 
     return {
-      min:
-        min ?? max ?? 0.5,
-      max:
-        max ?? min ?? 0.5
+      min: Math.max(1, Math.min(5, min)),
+      max: Math.max(1, Math.min(5, max))
     };
-
   }
 
   /*
      Rückwärtskompatibilität mit einem alten Regionenblatt:
-     Kalt / Gemäßigt / Heiß werden auf 0–1 abgebildet.
+     Kalt / Gemäßigt / Heiß bleiben auf 1–5 abgebildet.
   */
 
   const oldColumns = [
-    ["kalt",0.0],
-    ["gemäßigt",0.5],
-    ["heiß",1.0]
+    ["kalt",2],
+    ["gemäßigt",3],
+    ["heiß",4]
   ];
 
   let bestLabel = null;
@@ -1729,7 +1733,7 @@ function parseRegionTemperature(
         return;
 
       const value =
-        parseScore(
+        parseRegionScore(
           cells[column]?.f ??
           cells[column]?.v
         );
@@ -1739,24 +1743,30 @@ function parseRegionTemperature(
         value > bestScore
       ){
 
-        bestScore =
-          value;
-
-        bestLabel =
-          temp;
-
+        bestScore = value;
+        bestLabel = temp;
       }
-
     }
   );
 
   return bestLabel === null
     ? null
-    : {
-        min:bestLabel,
-        max:bestLabel
-      };
+    : { min:bestLabel, max:bestLabel };
 
+}
+
+function parseGoogleVisualizationResponse(text){
+
+  const firstBrace = text.indexOf("{");
+  const lastBrace = text.lastIndexOf("}");
+
+  if(firstBrace < 0 || lastBrace < firstBrace){
+    throw new Error("Ungültige Google-Sheets-Antwort");
+  }
+
+  return JSON.parse(
+    text.slice(firstBrace, lastBrace + 1)
+  );
 }
 
 async function loadRegionPresets(){
@@ -1790,10 +1800,7 @@ async function loadRegionPresets(){
     const text =
       await response.text();
 
-    const json =
-      JSON.parse(
-        text.substring(47).slice(0,-2)
-      );
+    const json = parseGoogleVisualizationResponse(text);
 
     const cols =
       json.table?.cols ||
@@ -1955,7 +1962,9 @@ async function loadRegionPresets(){
       error
     );
 
-    select.innerHTML =
+    presetSelect.innerHTML =
+      `<option value="">Regionen nicht geladen</option>`;
+    worldSelect.innerHTML =
       `<option value="">Regionen nicht geladen</option>`;
 
   }
@@ -2057,10 +2066,7 @@ async function loadSheet(){
       await response.text();
 
 
-    const json =
-      JSON.parse(
-        text.substring(47).slice(0,-2)
-      );
+    const json = parseGoogleVisualizationResponse(text);
 
 
     monsters =
@@ -2467,41 +2473,39 @@ function parseTemperatureValues(
     return null;
 
   /*
-     Temperatur kann einen oder mehrere
-     Dezimalwerte zwischen 0 und 1 enthalten.
+     Temperatur bleibt auf der alten Skala 1–5.
+     Mehrere Temperaturstufen sind weiterhin möglich:
+       1
+       2,3
+       1,2,3,4,5
 
-     Trennzeichen Komma oder Semikolon werden
-     akzeptiert. Die Werte werden dedupliziert,
-     auf 0–1 begrenzt und nicht gerundet.
+     Komma und Semikolon werden als Trenner akzeptiert.
   */
 
   const values =
     raw
       .split(/[;,]/)
       .map(
-        item =>
-          Number(
-            item
-              .trim()
-              .replace(",", ".")
-          )
+        item => Number(
+          item
+            .trim()
+            .replace(",", ".")
+        )
       )
       .filter(
         value =>
           Number.isFinite(value) &&
-          value >= 0 &&
-          value <= 1
+          value >= 1 &&
+          value <= 5
       )
       .map(
-        value => Math.max(0, Math.min(1, value))
+        value => Math.round(value)
       )
       .filter(
         (value,index,array) =>
           array.indexOf(value) === index
       )
-      .sort(
-        (a,b) => a - b
-      );
+      .sort((a,b) => a - b);
 
   if(values.length === 0)
     return null;
@@ -2819,6 +2823,18 @@ document
    TEMPERATUR / KLIMA UI
 ========================================================= */
 
+const TEMPERATURE_LABELS = {
+  1:"Arktisch",
+  2:"Kalt",
+  3:"Gemäßigt",
+  4:"Heiß",
+  5:"Vulkanisch"
+};
+
+function getTemperatureLabel(value){
+  return TEMPERATURE_LABELS[value] || "Unbekannt";
+}
+
 function formatTemperatureRange(
   min,
   max
@@ -2828,22 +2844,19 @@ function formatTemperatureRange(
     return "—";
   }
 
-  if(Math.abs(min - max) < 0.000001){
-    return Number(min).toFixed(2);
+  if(min === max){
+    return `${min} · ${getTemperatureLabel(min)}`;
   }
 
-  return `${Number(min).toFixed(2)}–${Number(max).toFixed(2)}`;
-}
+  return `${min}–${max} · ${getTemperatureLabel(min)}–${getTemperatureLabel(max)}`;
 
+}
 
 function temperaturePercent(
   value
 ){
 
-  return Math.max(
-    0,
-    Math.min(100, value * 100)
-  );
+  return ((value - 1) / 4) * 100;
 
 }
 
@@ -2869,11 +2882,9 @@ function temperatureFromPointer(
     );
 
   const percent =
-    x / rect.width;
+    rect.width > 0 ? x / rect.width : 0;
 
-  return Number(
-    percent.toFixed(2)
-  );
+  return Math.round(1 + percent * 4);
 
 }
 
@@ -3135,7 +3146,7 @@ document
 
         selectedTemperatureMin =
           Math.min(
-            selectedTemperatureMin + 0.01,
+            selectedTemperatureMin + 1,
             selectedTemperatureMax
           );
 
@@ -3150,8 +3161,8 @@ document
 
         selectedTemperatureMin =
           Math.max(
-            0,
-            selectedTemperatureMin - 0.01
+            1,
+            selectedTemperatureMin - 1
           );
 
         updateTemperatureUI();
@@ -3176,8 +3187,8 @@ document
 
         selectedTemperatureMax =
           Math.min(
-            1,
-            selectedTemperatureMax + 0.01
+            5,
+            selectedTemperatureMax + 1
           );
 
         updateTemperatureUI();
@@ -3192,7 +3203,7 @@ document
         selectedTemperatureMax =
           Math.max(
             selectedTemperatureMin,
-            selectedTemperatureMax - 0.01
+            selectedTemperatureMax - 1
           );
 
         updateTemperatureUI();
@@ -3735,8 +3746,8 @@ function hasActiveFilters(){
     );
 
   const tempChanged =
-    appliedTemperatureMin !== 0.5 ||
-    appliedTemperatureMax !== 0.5;
+    appliedTemperatureMin !== 3 ||
+    appliedTemperatureMax !== 3;
 
   return Boolean(
     searchValue ||
@@ -4967,10 +4978,10 @@ document
 
       appliedRegionWeights = {};
 
-      selectedTemperatureMin = 0.5;
-      selectedTemperatureMax = 0.5;
-      appliedTemperatureMin = 0.5;
-      appliedTemperatureMax = 0.5;
+      selectedTemperatureMin = 3;
+      selectedTemperatureMax = 3;
+      appliedTemperatureMin = 3;
+      appliedTemperatureMax = 3;
 
       updateTemperatureUI();
       buildHabitatUI();
