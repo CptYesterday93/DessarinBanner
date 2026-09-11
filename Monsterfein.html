@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V11</title>
+<title>DnD Monster Database – V12</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1158,7 +1158,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V11</h1>
+      <h1>DnD Monster Database – V12</h1>
     </div>
 
 
@@ -2732,15 +2732,13 @@ function buildHabitatUI(){
           )
         ){
 
-          return;
+          delete regionWeights[habitat.label];
+
+        }else{
+
+          regionWeights[habitat.label] = 0.1;
 
         }
-
-
-        regionWeights[
-          habitat.label
-        ] = 0.1;
-
 
         buildHabitatUI();
 
@@ -5454,47 +5452,54 @@ function writeMonsterToSheet(){
   if(editMonsterIndex === null) return;
   const monster = monsters[editMonsterIndex];
   if(!monster) return;
+
   if(!SHEET_WRITE_URL){
     status.textContent = "Noch keine Schreib-URL hinterlegt.";
     return;
   }
 
   const edited = getEditedValues();
-  const payload = {
+  const callbackName = "sheetWriteCallback_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+
+  window[callbackName] = function(result){
+    try{
+      if(result && result.ok){
+        applyEditedValuesToMonster();
+        status.textContent = "✓ Ins Google Sheet geschrieben.";
+      }else{
+        status.textContent = "Fehler beim Schreiben: " + (result && result.error ? result.error : "Unbekannter Fehler");
+      }
+    }finally{
+      delete window[callbackName];
+      if(script && script.parentNode){
+        script.parentNode.removeChild(script);
+      }
+    }
+  };
+
+  const params = new URLSearchParams({
     action: "updateMonster",
     sheetId: SHEET_ID,
     sheetName: SHEET_NAME,
     monsterName: monster.name,
-    habitats: edited.habitats,
-    temperature: edited.temperature
-  };
-
-  // GET über ein unsichtbares iframe: funktioniert auch bei lokal
-  // geöffneter HTML-Datei ohne CORS-/fetch-Probleme.
-  let frame = document.getElementById("sheetWriteFrame");
-  if(!frame){
-    frame = document.createElement("iframe");
-    frame.id = "sheetWriteFrame";
-    frame.name = "sheetWriteFrame";
-    frame.style.display = "none";
-    document.body.appendChild(frame);
-  }
-
-  const params = new URLSearchParams({
-    action: payload.action,
-    sheetId: payload.sheetId,
-    sheetName: payload.sheetName,
-    monsterName: payload.monsterName,
-    habitats: JSON.stringify(payload.habitats),
-    temperature: String(payload.temperature)
+    habitats: JSON.stringify(edited.habitats),
+    temperature: String(edited.temperature),
+    callback: callbackName
   });
 
-  status.textContent = "Speichere ins Google Sheet…";
-  frame.src = `${SHEET_WRITE_URL}?${params.toString()}`;
+  const script = document.createElement("script");
+  script.async = true;
+  script.onerror = function(){
+    delete window[callbackName];
+    status.textContent = "Fehler: Google Apps Script ist nicht erreichbar oder nicht öffentlich bereitgestellt.";
+    if(script.parentNode){
+      script.parentNode.removeChild(script);
+    }
+  };
 
-  // Lokale Ansicht sofort aktualisieren; der Web-App-Aufruf schreibt parallel ins Sheet.
-  applyEditedValuesToMonster();
-  status.textContent = "An Google Sheet gesendet.";
+  status.textContent = "Schreibe ins Google Sheet…";
+  script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
+  document.head.appendChild(script);
 }
 
 buildEditGrid();
@@ -5520,8 +5525,6 @@ document.getElementById("editModal").addEventListener("click", event => {
 buildCRDropdowns();
 
 buildHabitatUI();
-
-updateTemperatureUI();
 
 updateTemperatureUI();
 
