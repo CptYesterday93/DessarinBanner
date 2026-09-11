@@ -440,6 +440,12 @@ tbody tr:hover{
   color:white;
 }
 
+.edit-monster-button{
+  width:auto;
+  min-width:26px;
+  margin-left:3px;
+}
+
 /* =========================================================
    WERTE
 ========================================================= */
@@ -482,7 +488,57 @@ tbody tr:hover{
 }
 
 .score-detail-stars{
-  letter-spacing:1px;
+  display:none;
+}
+
+.score-detail{
+  gap:2px 10px;
+  font-size:11px;
+  line-height:1.25;
+}
+
+.score-detail-item{
+  white-space:nowrap;
+}
+
+.biome-edit-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+}
+
+.biome-edit-item{
+  background:#2c2c2c;
+  border:1px solid #3d3d3d;
+  border-radius:8px;
+  padding:8px;
+}
+
+.biome-edit-item label{
+  display:block;
+  font-size:11px;
+  color:#bbb;
+  margin-bottom:5px;
+}
+
+.biome-edit-item input{
+  width:100%;
+  padding:7px 8px;
+  font-size:13px;
+}
+
+.editor-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:10px;
+}
+
+.editor-status{
+  margin-top:8px;
+  min-height:16px;
+  font-size:12px;
+  color:#aaa;
 }
 
 /* =========================================================
@@ -1433,6 +1489,30 @@ tbody tr:hover{
 </div>
 
 
+<div id="editModal" class="modal-backdrop">
+  <div class="modal" style="max-width:820px">
+    <div class="modal-header">
+      <div>
+        <h2 id="editModalTitle" class="modal-title">Monster bearbeiten</h2>
+        <div id="editModalSubtitle" style="color:#aaa;font-size:12px;margin-top:4px"></div>
+      </div>
+      <button id="editModalClose" class="modal-close">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="biome-edit-grid" id="biomeEditGrid"></div>
+      <div class="filter-group" style="margin-top:14px">
+        <label for="editTemperature">Temperatur (1–5)</label>
+        <input id="editTemperature" type="number" min="1" max="5" step="1">
+      </div>
+      <div class="editor-actions">
+        <button type="button" id="editSaveLocal">Im Tool übernehmen</button>
+        <button type="button" id="editSaveSheet" style="background:#4f46e5;border-color:#6d63ff">Ins Sheet schreiben</button>
+      </div>
+      <div id="editStatus" class="editor-status"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 
 /* =========================================================
@@ -1447,6 +1527,11 @@ const SHEET_NAME =
 
 const REGION_SHEET_NAME =
   "Regionen";
+
+// Einmalig die Google-Apps-Script-Web-App-URL eintragen,
+// damit Schnellkorrekturen direkt ins Sheet geschrieben werden können.
+const SHEET_WRITE_URL =
+  "";
 
 
 /* =========================================================
@@ -3655,81 +3740,23 @@ function renderHabitatDetails(
 
   const details = [];
 
+  Object.keys(appliedRegionWeights).forEach(habitat => {
+    const regionScore = Number(appliedRegionWeights[habitat]);
+    if(!Number.isFinite(regionScore) || regionScore <= 0) return;
 
-  Object.keys(
-    appliedRegionWeights
-  ).forEach(
-    habitat => {
+    const monsterScore = Number(monster.habitats[habitat]);
+    if(!Number.isFinite(monsterScore)) return;
 
-      const regionScore =
-        Number(
-          appliedRegionWeights[
-            habitat
-          ]
-        );
-
-      // In der Tabelle nur Habitate anzeigen, die tatsächlich
-      // als Filter aktiv sind. Region 0 bedeutet: nicht vorhanden.
-      if(
-        !Number.isFinite(regionScore) ||
-        regionScore <= 0
-      ){
-
-        return;
-
-      }
-
-      const score =
-        monster.habitats[
-          habitat
-        ];
-
-
-      if(
-        score === null ||
-        score === undefined
-      ){
-
-        return;
-
-      }
-
-
-      details.push(`
-
-        <span class="score-detail-item">
-
-          <span class="score-detail-name">
-            ${escapeHTML(
-              habitat
-            )}
-          </span>
-
-          <span class="score-detail-stars">
-            ${getStars(
-              score
-            )}
-          </span>
-
-          <span
-            style="
-              opacity:.55;
-              margin-left:3px;
-            "
-          >
-            Region ${Number(regionScore).toFixed(2)}
-          </span>
-
-        </span>
-
-      `);
-
-    }
-  );
-
+    details.push(`
+      <span class="score-detail-item">
+        <span class="score-detail-name">${escapeHTML(habitat)}</span>
+        <span>${monsterScore.toFixed(2)}</span>
+        <span style="opacity:.55">R:${regionScore.toFixed(2)}</span>
+      </span>
+    `);
+  });
 
   return details.join("");
-
 }
 
 
@@ -4313,6 +4340,14 @@ function renderTable(
             >
               Info
             </button>
+            <button
+              type="button"
+              class="info-button edit-monster-button"
+              data-monster-index="${item.index}"
+              title="Werte bearbeiten"
+            >
+              ✎
+            </button>
 
           </div>
 
@@ -4334,6 +4369,14 @@ function renderTable(
               data-monster-index="${item.index}"
             >
               Info
+            </button>
+            <button
+              type="button"
+              class="info-button edit-monster-button"
+              data-monster-index="${item.index}"
+              title="Werte bearbeiten"
+            >
+              ✎
             </button>
 
           </div>
@@ -5339,6 +5382,125 @@ function escapeAttribute(
 
 }
 
+
+/* =========================================================
+   SCHNELLKORREKTUR / SHEET-SCHREIBEN
+========================================================= */
+
+let editMonsterIndex = null;
+
+function buildEditGrid(){
+  const container = document.getElementById("biomeEditGrid");
+  container.innerHTML = "";
+  HABITATS.forEach(h => {
+    const div = document.createElement("div");
+    div.className = "biome-edit-item";
+    div.innerHTML = `
+      <label for="edit_${h.label}">${escapeHTML(h.label)}</label>
+      <input id="edit_${h.label}" type="number" min="0" max="1" step="0.1" value="0">
+    `;
+    container.appendChild(div);
+  });
+}
+
+function openEditModal(index){
+  const monster = monsters[index];
+  if(!monster) return;
+  editMonsterIndex = index;
+  document.getElementById("editModalTitle").textContent = monster.name;
+  document.getElementById("editModalSubtitle").textContent = "Habitatwerte 0,0–1,0 · Temperatur 1–5";
+  HABITATS.forEach(h => {
+    const input = document.getElementById(`edit_${h.label}`);
+    if(input) input.value = Number(monster.habitats[h.label] || 0).toFixed(1);
+  });
+  const temp = Array.isArray(monster.temperature) && monster.temperature.length ? monster.temperature[0] : 3;
+  document.getElementById("editTemperature").value = temp;
+  document.getElementById("editStatus").textContent = "";
+  document.getElementById("editModal").classList.add("open");
+}
+
+function closeEditModal(){
+  document.getElementById("editModal").classList.remove("open");
+  editMonsterIndex = null;
+}
+
+function getEditedValues(){
+  const habitats = {};
+  HABITATS.forEach(h => {
+    const input = document.getElementById(`edit_${h.label}`);
+    let value = Number(input?.value ?? 0);
+    if(!Number.isFinite(value)) value = 0;
+    habitats[h.label] = Math.max(0, Math.min(1, Math.round(value*10)/10));
+  });
+  let temperature = Number(document.getElementById("editTemperature").value);
+  if(!Number.isFinite(temperature)) temperature = 3;
+  temperature = Math.max(1, Math.min(5, Math.round(temperature)));
+  return { habitats, temperature };
+}
+
+function applyEditedValuesToMonster(){
+  if(editMonsterIndex === null) return null;
+  const monster = monsters[editMonsterIndex];
+  if(!monster) return null;
+  const edited = getEditedValues();
+  monster.habitats = edited.habitats;
+  monster.temperature = [edited.temperature];
+  filterMonsters();
+  return edited;
+}
+
+async function writeMonsterToSheet(){
+  const status = document.getElementById("editStatus");
+  if(editMonsterIndex === null) return;
+  const monster = monsters[editMonsterIndex];
+  if(!monster) return;
+  if(!SHEET_WRITE_URL){
+    status.textContent = "Noch keine Schreib-URL hinterlegt. Bitte SHEET_WRITE_URL im Script setzen.";
+    return;
+  }
+
+  const edited = getEditedValues();
+  status.textContent = "Speichere…";
+
+  const payload = {
+    action: "updateMonster",
+    sheetId: SHEET_ID,
+    sheetName: SHEET_NAME,
+    monsterName: monster.name,
+    habitats: edited.habitats,
+    temperature: edited.temperature
+  };
+
+  try{
+    await fetch(SHEET_WRITE_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    applyEditedValuesToMonster();
+    status.textContent = "Änderung gesendet. Das Sheet wird aktualisiert.";
+  }catch(error){
+    console.error(error);
+    status.textContent = "Speichern fehlgeschlagen.";
+  }
+}
+
+buildEditGrid();
+document.addEventListener("click", event => {
+  const button = event.target.closest(".edit-monster-button");
+  if(button) openEditModal(Number(button.dataset.monsterIndex));
+});
+
+document.getElementById("editModalClose").addEventListener("click", closeEditModal);
+document.getElementById("editSaveLocal").addEventListener("click", () => {
+  applyEditedValuesToMonster();
+  document.getElementById("editStatus").textContent = "Werte im Tool übernommen.";
+});
+document.getElementById("editSaveSheet").addEventListener("click", writeMonsterToSheet);
+document.getElementById("editModal").addEventListener("click", event => {
+  if(event.target.id === "editModal") closeEditModal();
+});
 
 /* =========================================================
    START
