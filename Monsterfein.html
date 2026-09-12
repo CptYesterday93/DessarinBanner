@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V31</title>
+<title>DnD Monster Database – V32</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1644,7 +1644,7 @@ tbody tr:hover{
       <div class="biome-edit-grid" id="biomeEditGrid"></div>
       <div class="filter-group" style="margin-top:14px">
         <label for="editTemperature">Temperatur (0–1)</label>
-        <input id="editTemperature" type="number" min="0" max="1" step="0.05">
+        <input id="editTemperature" type="number" min="0" max="1" step="0.1">
       </div>
       <div class="editor-actions">
         <button type="button" id="editSaveLocal">Im Tool übernehmen</button>
@@ -3440,7 +3440,7 @@ document
 
         selectedTemperatureMin =
           Math.min(
-            selectedTemperatureMin + 0.05,
+            selectedTemperatureMin + 0.1,
             selectedTemperatureMax
           );
 
@@ -3456,7 +3456,7 @@ document
         selectedTemperatureMin =
           Math.max(
             0,
-            selectedTemperatureMin - 0.05
+            selectedTemperatureMin - 0.1
           );
 
         updateTemperatureUI();
@@ -3482,7 +3482,7 @@ document
         selectedTemperatureMax =
           Math.min(
             1,
-            selectedTemperatureMax + 0.05
+            selectedTemperatureMax + 0.1
           );
 
         updateTemperatureUI();
@@ -3497,7 +3497,7 @@ document
         selectedTemperatureMax =
           Math.max(
             selectedTemperatureMin,
-            selectedTemperatureMax - 0.05
+            selectedTemperatureMax - 0.1
           );
 
         updateTemperatureUI();
@@ -5633,7 +5633,7 @@ function buildEditGrid(){
     div.className = "biome-edit-item";
     div.innerHTML = `
       <label for="edit_${h.label}">${escapeHTML(h.label)}</label>
-      <input id="edit_${h.label}" type="number" min="0" max="1" step="0.05" value="0">
+      <input id="edit_${h.label}" type="number" min="0" max="1" step="0.1" value="0">
     `;
     container.appendChild(div);
   });
@@ -5666,7 +5666,7 @@ function getEditedValues(){
     const input = document.getElementById(`edit_${h.label}`);
     let value = parseNumber(input?.value ?? 0);
     if(!Number.isFinite(value)) value = 0;
-    habitats[h.label] = Math.max(0, Math.min(1, Math.round(value*20)/20));
+    habitats[h.label] = Math.max(0, Math.min(1, Math.round(value*10)/10));
   });
   let temperature = parseNumber(document.getElementById("editTemperature").value);
   if(!Number.isFinite(temperature)) temperature = 0.50;
@@ -5987,7 +5987,7 @@ function loadRegionEditor(index){
   let temp = 0.50;
   if(typeof region.temperature === "object" && region.temperature){ temp = Number(region.temperature.min); }
   else if(Number.isFinite(Number(region.temperature))) temp = Number(region.temperature);
-  temp = Number.isFinite(temp) ? Math.max(0, Math.min(1, Math.round(temp * 20) / 20)) : 0.50;
+  temp = Number.isFinite(temp) ? Math.max(0, Math.min(1, Math.round(temp * 10) / 10)) : 0.50;
   const tempInput = document.getElementById("regionEditorTemperature");
   const tempOut = document.getElementById("regionEditorTemperatureValue");
   if(tempInput) tempInput.value = String(temp);
@@ -5999,9 +5999,9 @@ function getRegionEditorValues(){
   const habitats = {};
   HABITATS.forEach(h => {
     const input = document.querySelector(`[data-region-range="${CSS.escape(h.label)}"]`);
-    habitats[h.label] = Math.max(0, Math.min(1, Math.round(Number(input?.value || 0)*20)/20));
+    habitats[h.label] = Math.max(0, Math.min(1, Math.round(Number(input?.value || 0)*10)/10));
   });
-  const temp = Math.max(0, Math.min(1, Math.round(Number(document.getElementById("regionEditorTemperature")?.value ?? 0.50) * 20) / 20));
+  const temp = Math.max(0, Math.min(1, Math.round(Number(document.getElementById("regionEditorTemperature")?.value ?? 0.50) * 10) / 10));
   return {habitats, temperature:temp};
 }
 
