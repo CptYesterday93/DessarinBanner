@@ -2469,19 +2469,31 @@ function parseNumber(value){
     typeof value === "number"
   ){
 
-    return value;
+    return Number.isFinite(value) ? value : 0;
 
   }
 
 
-  const text =
-    String(value)
-      .trim()
-      .replace(/\./g,"")
-      .replace(",", ".");
+  let text = String(value).trim().replace(/\s+/g, "");
 
+  // Unterstützt deutsche und englische Dezimalschreibweise:
+  // ",5" -> 0.5, "0,5" -> 0.5, "0.5" -> 0.5.
+  // Bei gemischter Schreibweise wird das letzte Trennzeichen als Dezimaltrennzeichen behandelt.
+  const comma = text.lastIndexOf(",");
+  const dot = text.lastIndexOf(".");
 
-  return Number(text) || 0;
+  if(comma >= 0 && dot >= 0){
+    if(comma > dot){
+      text = text.replace(/\./g, "").replace(",", ".");
+    }else{
+      text = text.replace(/,/g, "");
+    }
+  }else if(comma >= 0){
+    text = text.replace(",", ".");
+  }
+
+  const number = Number(text);
+  return Number.isFinite(number) ? number : 0;
 
 }
 
@@ -5610,7 +5622,7 @@ function openEditModal(index){
   document.getElementById("editModalSubtitle").textContent = "Habitatwerte 0,0–1,0 · Temperatur 0,0–1,0";
   HABITATS.forEach(h => {
     const input = document.getElementById(`edit_${h.label}`);
-    if(input) input.value = Number(monster.habitats[h.label] || 0).toFixed(1);
+    if(input) input.value = Number(monster.habitats[h.label] || 0).toFixed(2);
   });
   const temp = Array.isArray(monster.temperature) && monster.temperature.length ? Number(monster.temperature[0]) : 0.50;
   document.getElementById("editTemperature").value = Number(temp).toFixed(2);
@@ -5627,11 +5639,11 @@ function getEditedValues(){
   const habitats = {};
   HABITATS.forEach(h => {
     const input = document.getElementById(`edit_${h.label}`);
-    let value = Number(input?.value ?? 0);
+    let value = parseNumber(input?.value ?? 0);
     if(!Number.isFinite(value)) value = 0;
-    habitats[h.label] = Math.max(0, Math.min(1, Math.round(value*10)/10));
+    habitats[h.label] = Math.max(0, Math.min(1, Math.round(value*20)/20));
   });
-  let temperature = Number(document.getElementById("editTemperature").value);
+  let temperature = parseNumber(document.getElementById("editTemperature").value);
   if(!Number.isFinite(temperature)) temperature = 0.50;
   temperature = Math.max(0, Math.min(1, Math.round(temperature * 20) / 20));
   return { habitats, temperature };
