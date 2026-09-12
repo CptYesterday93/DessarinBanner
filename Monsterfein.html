@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V40</title>
+<title>DnD Monster Database – V42</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1255,7 +1255,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V40</h1>
+      <h1>DnD Monster Database – V42</h1>
       <div id="sheetDebug" style="font-size:12px;opacity:.65;margin-top:4px">Lade Monsterdaten…</div>
     </div>
 
@@ -1988,7 +1988,7 @@ function loadGoogleSheetJsonp(sheetName){
 
     const timeoutId = setTimeout(() => {
       cleanup();
-      reject(new Error(`Apps Script Timeout: ${sheetName}`));
+      reject(new Error(`Google Sheets Timeout: ${sheetName}`));
     }, 15000);
 
     function cleanup(){
@@ -2004,155 +2004,42 @@ function loadGoogleSheetJsonp(sheetName){
 
     window[callbackName] = data => {
       cleanup();
-
-      if(!data || data.ok !== true){
-        reject(
-          new Error(
-            data?.error ||
-            `Ungültige Apps-Script-Antwort für ${sheetName}`
-          )
-        );
+      if(!data || !data.table){
+        reject(new Error(`Ungültige Google-Sheets-Antwort für ${sheetName}`));
         return;
       }
-
-      const headers =
-        Array.isArray(data.headers)
-          ? data.headers
-          : [];
-
-      const values =
-        Array.isArray(data.rows)
-          ? data.rows
-          : [];
-
-      // Wir wandeln die direkte Apps-Script-Antwort in das bisherige
-      // interne Tabellenformat um. Dadurch muss die restliche App
-      // nicht auf Zell-/Spaltenlogik umgebaut werden.
-      resolve({
-        table:{
-          cols: headers.map(header => ({ label:String(header ?? "") })),
-          rows: values.map(row => ({
-            c: headers.map((_, index) => ({
-              v: row?.[index] ?? ""
-            }))
-          }))
-        }
-      });
+      resolve(data);
     };
 
     script.onerror = () => {
       cleanup();
-      reject(
-        new Error(
-          `Apps Script konnte nicht geladen werden: ${sheetName}`
-        )
-      );
+      reject(new Error(`Google Sheets konnte nicht geladen werden: ${sheetName}`));
     };
 
-    const params = new URLSearchParams({
-      action:"readSheet",
-      sheetId:SHEET_ID,
-      sheetName:String(sheetName),
-      callback:callbackName,
-      cacheBuster:String(Date.now())
-    });
+    // Vorschau wieder wie vor dem Apps-Script-Leseweg:
+    // Daten direkt über Google Visualization laden. Dadurch fragt die
+    // Vorschau nicht mehr nach Netzwerkzugriff auf script.google.com.
+    const cacheBuster = Date.now().toString();
+    const url =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq` +
+      `?sheet=${encodeURIComponent(sheetName)}` +
+      `&range=A1:R3000` +
+      `&tqx=${encodeURIComponent(`responseHandler:${callbackName}`)}` +
+      `&cacheBuster=${cacheBuster}`;
 
-    script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
+    script.src = url;
     document.head.appendChild(script);
   });
 
 }
 
 async function loadDatabaseJsonp(){
-
-  return new Promise((resolve, reject) => {
-
-    const callbackName =
-      `__databaseCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
-
-    const script = document.createElement("script");
-
-    const timeoutId = setTimeout(() => {
-      cleanup();
-      reject(new Error("Apps Script Timeout: Monster-Daten"));
-    }, 15000);
-
-    function cleanup(){
-      clearTimeout(timeoutId);
-      if(script.parentNode)
-        script.parentNode.removeChild(script);
-      try{
-        delete window[callbackName];
-      }catch(_error){
-        window[callbackName] = undefined;
-      }
-    }
-
-    window[callbackName] = data => {
-      cleanup();
-
-      if(!data || data.ok !== true){
-        reject(
-          new Error(
-            data?.error ||
-            "Ungültige Apps-Script-Antwort für die Datenbank"
-          )
-        );
-        return;
-      }
-
-      resolve(data);
-    };
-
-    script.onerror = () => {
-      cleanup();
-      reject(
-        new Error("Apps Script konnte nicht geladen werden")
-      );
-    };
-
-    const params = new URLSearchParams({
-      action:"readDatabase",
-      sheetId:SHEET_ID,
-      monsterSheetName:SHEET_NAME,
-      regionSheetName:REGION_SHEET_NAME,
-      callback:callbackName,
-      cacheBuster:String(Date.now())
-    });
-
-    script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
-    document.head.appendChild(script);
-  });
-
+  const [monsterJson, regionJson] = await Promise.all([
+    loadGoogleSheetJsonp(SHEET_NAME),
+    loadGoogleSheetJsonp(REGION_SHEET_NAME)
+  ]);
+  return {ok:true, monsterJson, regionJson};
 }
-
-function directSheetToTable(data){
-
-  const headers =
-    Array.isArray(data?.headers)
-      ? data.headers
-      : [];
-
-  const rows =
-    Array.isArray(data?.rows)
-      ? data.rows
-      : [];
-
-  return {
-    table:{
-      cols: headers.map(header => ({
-        label:String(header ?? "")
-      })),
-      rows: rows.map(row => ({
-        c: headers.map((_, index) => ({
-          v: row?.[index] ?? ""
-        }))
-      }))
-    }
-  };
-
-}
-
 
 async function loadRegionPresets(preloadedJson = null){
 
@@ -2418,14 +2305,14 @@ async function loadSheet(){
 
   try{
 
-    const database =
-      await loadDatabaseJsonp();
-
-    const json =
-      directSheetToTable(database.monsters);
-
-    const regionJson =
-      directSheetToTable(database.regions);
+    // Monster und Regionen parallel laden. Das nutzt die bereits
+    // funktionierende readSheet-Aktion und braucht keine neue
+    // readDatabase-Deployment-Version.
+    const [json, regionJson] =
+      await Promise.all([
+        loadGoogleSheetJsonp(SHEET_NAME),
+        loadGoogleSheetJsonp(REGION_SHEET_NAME)
+      ]);
 
 
     monsters =
@@ -2527,7 +2414,7 @@ async function loadSheet(){
     if(debugEl){
       const first = monsters[0]?.name || "—";
       const last = monsters[monsters.length - 1]?.name || "—";
-      debugEl.textContent = `Apps Script geladen: ${monsters.length} Kreaturen | Erste: ${first} | Letzte: ${last}`;
+      debugEl.textContent = `Google Sheets geladen: ${monsters.length} Kreaturen | Erste: ${first} | Letzte: ${last}`;
     }
 
     filterMonsters();
