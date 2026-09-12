@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V18</title>
+<title>DnD Monster Database – V27</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1255,7 +1255,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V18</h1>
+      <h1>DnD Monster Database – V27</h1>
     </div>
 
 
@@ -1882,14 +1882,25 @@ function getHeaderMap(
 
 }
 
+function getSheetCellValue(cell){
+
+  if(!cell) return undefined;
+
+  // For numeric cells, Google Visualization provides the raw value in `v`.
+  // Prefer it over the display/formatted value `f`, because `f` can be
+  // affected by locale or number formatting and may otherwise turn 0.4 into 0.
+  if(cell.v !== undefined && cell.v !== null && cell.v !== "") return cell.v;
+
+  return cell.f;
+}
+
 function parseRegionTemperature(cells, headerMap){
 
   const tempColumn = headerMap["temperatur"];
 
   if(tempColumn !== undefined){
     const values = parseTemperatureValues(
-      cells[tempColumn]?.f ??
-      cells[tempColumn]?.v
+      getSheetCellValue(cells[tempColumn])
     );
 
     if(Array.isArray(values) && values.length > 0){
@@ -1905,12 +1916,10 @@ function parseRegionTemperature(cells, headerMap){
 
   if(minColumn !== undefined || maxColumn !== undefined){
     const minValues = parseTemperatureValues(
-      cells[minColumn]?.f ??
-      cells[minColumn]?.v
+      getSheetCellValue(cells[minColumn])
     );
     const maxValues = parseTemperatureValues(
-      cells[maxColumn]?.f ??
-      cells[maxColumn]?.v
+      getSheetCellValue(cells[maxColumn])
     );
 
     const values = [
@@ -1938,8 +1947,7 @@ function parseRegionTemperature(cells, headerMap){
     if(column === undefined) return;
 
     const value = parseRegionScore(
-      cells[column]?.f ??
-      cells[column]?.v
+      getSheetCellValue(cells[column])
     );
 
     if(value !== null && value > bestScore){
@@ -2112,8 +2120,7 @@ async function loadRegionPresets(){
                 habitat.label
               ] =
                 parseRegionScore(
-                  cells[column]?.f ??
-                  cells[column]?.v
+                  getSheetCellValue(cells[column])
                 );
 
             }
@@ -2345,8 +2352,7 @@ async function loadSheet(){
               habitat.label
             ] =
               parseScore(
-                cell?.f ??
-                cell?.v
+                getSheetCellValue(cell)
               );
 
           });
