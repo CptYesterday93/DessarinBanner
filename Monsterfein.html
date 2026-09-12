@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V17</title>
+<title>DnD Monster Database – V18</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1255,7 +1255,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V17</h1>
+      <h1>DnD Monster Database – V18</h1>
     </div>
 
 
@@ -1339,7 +1339,7 @@ tbody tr:hover{
       <div class="region-editor-head">
         <div>
           <h2>Regionen bearbeiten</h2>
-          <p>Biome 0,0–1,0 · Temperatur 1–5</p>
+          <p>Biome 0,0–1,0 · Temperatur 0,0–1,0</p>
         </div>
         <div class="region-editor-selects">
           <select id="regionEditorType">
@@ -1354,8 +1354,8 @@ tbody tr:hover{
       <div class="region-editor-grid" id="regionEditorGrid"></div>
       <div class="region-editor-temp">
         <label for="regionEditorTemperature">Temperatur</label>
-        <input id="regionEditorTemperature" type="range" min="1" max="5" step="1" value="3">
-        <output id="regionEditorTemperatureValue">3</output>
+        <input id="regionEditorTemperature" type="range" min="0" max="1" step="0.05" value="0.50">
+        <output id="regionEditorTemperatureValue">0.50</output>
       </div>
       <div class="region-editor-actions">
         <button type="button" id="regionSaveSheet">In Sheet speichern</button>
@@ -1572,14 +1572,14 @@ tbody tr:hover{
         <div class="temperature-scale">
           <span>1 · Arktisch</span>
           <span>2 · Kalt</span>
-          <span>3 · Gemäßigt</span>
+          <span>0.50 · Gemäßigt</span>
           <span>4 · Heiß</span>
           <span>5 · Vulkanisch</span>
         </div>
 
         <div class="temperature-current">
           <span>Gebiet</span>
-          <b id="temperatureCurrentValue">3 · Gemäßigt</b>
+          <b id="temperatureCurrentValue">0.50 · Gemäßigt</b>
         </div>
 
       </div>
@@ -1643,8 +1643,8 @@ tbody tr:hover{
     <div class="modal-body">
       <div class="biome-edit-grid" id="biomeEditGrid"></div>
       <div class="filter-group" style="margin-top:14px">
-        <label for="editTemperature">Temperatur (1–5)</label>
-        <input id="editTemperature" type="number" min="1" max="5" step="1">
+        <label for="editTemperature">Temperatur (0–1)</label>
+        <input id="editTemperature" type="number" min="0" max="1" step="0.05">
       </div>
       <div class="editor-actions">
         <button type="button" id="editSaveLocal">Im Tool übernehmen</button>
@@ -1714,7 +1714,7 @@ const CLIMATES = [
    TEMPERATUR
    Spalte R = Index 17
 
-   Wertebereich: 1–5
+   Wertebereich: 0–1
 */
 const TEMPERATURE_COLUMN_INDEX = 17;
 
@@ -1756,16 +1756,16 @@ let regionWeights = {};
 let appliedRegionWeights = {};
 
 let selectedTemperatureMin =
-  3;
+  0.50;
 
 let selectedTemperatureMax =
-  3;
+  0.50;
 
 let appliedTemperatureMin =
-  3;
+  0.50;
 
 let appliedTemperatureMax =
-  3;
+  0.50;
 
 let showUnique =
   false;
@@ -1882,104 +1882,75 @@ function getHeaderMap(
 
 }
 
-function parseRegionTemperature(
-  cells,
-  headerMap
-){
+function parseRegionTemperature(cells, headerMap){
 
-  const tempColumn =
-    headerMap["temperatur"];
+  const tempColumn = headerMap["temperatur"];
 
   if(tempColumn !== undefined){
-
     const values = parseTemperatureValues(
       cells[tempColumn]?.f ??
       cells[tempColumn]?.v
     );
 
     if(Array.isArray(values) && values.length > 0){
-      return {
-        min: Math.min(...values),
-        max: Math.max(...values)
-      };
+      const value = values[0];
+      return {min:value, max:value};
     }
 
     return null;
   }
 
-  const minColumn =
-    headerMap["temperatur von"];
+  const minColumn = headerMap["temperatur von"];
+  const maxColumn = headerMap["temperatur bis"];
 
-  const maxColumn =
-    headerMap["temperatur bis"];
-
-  if(
-    minColumn !== undefined ||
-    maxColumn !== undefined
-  ){
-
+  if(minColumn !== undefined || maxColumn !== undefined){
     const minValues = parseTemperatureValues(
       cells[minColumn]?.f ??
       cells[minColumn]?.v
     );
-
     const maxValues = parseTemperatureValues(
       cells[maxColumn]?.f ??
       cells[maxColumn]?.v
     );
 
-    const min = minValues?.[0] ?? maxValues?.[0] ?? 3;
-    const max = maxValues?.[maxValues.length - 1] ?? minValues?.[minValues.length - 1] ?? 3;
+    const values = [
+      ...(minValues || []),
+      ...(maxValues || [])
+    ].filter(Number.isFinite);
 
-    return {
-      min: Math.max(1, Math.min(5, min)),
-      max: Math.max(1, Math.min(5, max))
-    };
+    if(values.length === 0) return null;
+
+    const value = values.reduce((sum, item) => sum + item, 0) / values.length;
+    return {min:value, max:value};
   }
 
-  /*
-     Rückwärtskompatibilität mit einem alten Regionenblatt:
-     Kalt / Gemäßigt / Heiß bleiben auf 1–5 abgebildet.
-  */
-
   const oldColumns = [
-    ["kalt",2],
-    ["gemäßigt",3],
-    ["heiß",4]
+    ["kalt",0.25],
+    ["gemäßigt",0.50],
+    ["heiß",0.75]
   ];
 
   let bestLabel = null;
   let bestScore = -Infinity;
 
-  oldColumns.forEach(
-    ([name,temp]) => {
+  oldColumns.forEach(([name,temp]) => {
+    const column = headerMap[name];
+    if(column === undefined) return;
 
-      const column =
-        headerMap[name];
+    const value = parseRegionScore(
+      cells[column]?.f ??
+      cells[column]?.v
+    );
 
-      if(column === undefined)
-        return;
-
-      const value =
-        parseRegionScore(
-          cells[column]?.f ??
-          cells[column]?.v
-        );
-
-      if(
-        value !== null &&
-        value > bestScore
-      ){
-
-        bestScore = value;
-        bestLabel = temp;
-      }
+    if(value !== null && value > bestScore){
+      bestScore = value;
+      bestLabel = temp;
     }
-  );
+  });
 
   return bestLabel === null
     ? null
-    : { min:bestLabel, max:bestLabel };
+    : {min:bestLabel, max:bestLabel};
 
 }
 
@@ -2277,19 +2248,20 @@ function applyRegionPresetToEditor(
       typeof temperature === "object"
     ){
 
-      selectedTemperatureMin =
-        temperature.min;
+      const min = parseTemperatureScalar(temperature.min);
+      const max = parseTemperatureScalar(temperature.max);
+      const midpoint = Number.isFinite(min) && Number.isFinite(max)
+        ? (min + max) / 2
+        : (min ?? max ?? 0.50);
 
-      selectedTemperatureMax =
-        temperature.max;
+      selectedTemperatureMin = midpoint;
+      selectedTemperatureMax = midpoint;
 
     }else{
 
-      selectedTemperatureMin =
-        temperature;
-
-      selectedTemperatureMax =
-        temperature;
+      const value = parseTemperatureScalar(temperature);
+      selectedTemperatureMin = value ?? 0.50;
+      selectedTemperatureMax = value ?? 0.50;
 
     }
 
@@ -2710,90 +2682,80 @@ function parseScore(value){
 }
 
 
-function parseTemperatureScalar(value){
+function normalizeTemperature01(value){
 
-  if(
-    value === undefined ||
-    value === null ||
-    value === ""
-  ){
+  if(value === undefined || value === null || value === ""){
     return null;
   }
 
-  const number = Number(
-    String(value)
-      .replace(",", ".")
-      .trim()
-  );
+  const raw = String(value).trim();
 
-  if(!Number.isFinite(number))
-    return null;
+  if(!raw) return null;
 
-  return Math.max(1, Math.min(5, number));
+  const number = Number(raw.replace(",", "."));
 
-}
-
-function parseTemperatureValues(
-  value
-){
-
-  if(
-    value === undefined ||
-    value === null ||
-    value === ""
-  ){
-
-    return null;
-
-  }
-
-  const raw =
-    String(value)
-      .trim();
-
-  if(!raw)
-    return null;
+  if(!Number.isFinite(number)) return null;
 
   /*
-     Temperatur bleibt auf der alten Skala 1–5.
-     Mehrere Temperaturstufen sind weiterhin möglich:
-       1
-       2,3
-       1,2,3,4,5
-
-     Komma und Semikolon werden als Trenner akzeptiert.
+     Neue Skala: 0–1.
+     Rückwärtskompatibel zur alten 1–5-Skala:
+       1 -> 0.00
+       2 -> 0.25
+       3 -> 0.50
+       4 -> 0.75
+       5 -> 1.00
+     Ganze alte Werte > 1 werden automatisch umgerechnet.
+     Werte 0–1 bleiben auf der neuen Skala.
   */
+  if(number > 1){
+    return Math.max(0, Math.min(1, (number - 1) / 4));
+  }
 
-  const values =
-    raw
-      .split(/[;,]/)
-      .map(
-        item => Number(
-          item
-            .trim()
-            .replace(",", ".")
-        )
-      )
-      .filter(
-        value =>
-          Number.isFinite(value) &&
-          value >= 1 &&
-          value <= 5
-      )
-      .map(
-        value => Math.round(value)
-      )
-      .filter(
-        (value,index,array) =>
-          array.indexOf(value) === index
-      )
-      .sort((a,b) => a - b);
+  return Math.max(0, Math.min(1, number));
+}
 
-  if(values.length === 0)
+function parseTemperatureScalar(value){
+  return normalizeTemperature01(value);
+}
+
+function parseTemperatureValues(value){
+
+  if(value === undefined || value === null || value === ""){
     return null;
+  }
 
-  return values;
+  const raw = String(value).trim();
+  if(!raw) return null;
 
+  /*
+     Temperatur ist jetzt ein einzelner Schwerpunkt auf 0–1.
+     Alte Mehrfachangaben wie 2,3,4 werden zu ihrem Mittelpunkt
+     zusammengeführt: 2/3/4 -> 0.50.
+     Neue Dezimalwerte wie 0.65 oder 0,65 bleiben Einzelwerte.
+  */
+  const newDecimalPattern = /^0?(?:[.,]\d+)?$/;
+  const singleNewPattern = /^(?:0[.,]\d+|1(?:[.,]0+)?)$/;
+
+  if(singleNewPattern.test(raw)){
+    const value01 = normalizeTemperature01(raw);
+    return value01 === null ? null : [Math.round(value01 * 100) / 100];
+  }
+
+  const oldValues = raw
+    .split(/[;,]/)
+    .map(item => Number(item.trim().replace(",", ".")))
+    .filter(value => Number.isFinite(value) && value >= 1 && value <= 5)
+    .map(value => Math.round(value));
+
+  if(oldValues.length === 0){
+    const value01 = normalizeTemperature01(raw);
+    return value01 === null ? null : [Math.round(value01 * 100) / 100];
+  }
+
+  const averageOld = oldValues.reduce((sum, value) => sum + value, 0) / oldValues.length;
+  const average01 = (averageOld - 1) / 4;
+
+  return [Math.round(Math.max(0, Math.min(1, average01)) * 100) / 100];
 }
 
 /* =========================================================
@@ -3095,15 +3057,23 @@ document
 ========================================================= */
 
 const TEMPERATURE_LABELS = {
-  1:"Arktisch",
-  2:"Kalt",
-  3:"Gemäßigt",
-  4:"Heiß",
-  5:"Vulkanisch"
+  0:"Arktisch",
+  0.25:"Kalt",
+  0.5:"Gemäßigt",
+  0.75:"Heiß",
+  1:"Vulkanisch"
 };
 
 function getTemperatureLabel(value){
-  return TEMPERATURE_LABELS[value] || "Unbekannt";
+  const rounded = Math.round(Number(value) * 100) / 100;
+  if(Object.prototype.hasOwnProperty.call(TEMPERATURE_LABELS, rounded)){
+    return TEMPERATURE_LABELS[rounded];
+  }
+
+  if(rounded < 0.25) return "Arktisch–Kalt";
+  if(rounded < 0.5) return "Kalt–Gemäßigt";
+  if(rounded < 0.75) return "Gemäßigt–Heiß";
+  return "Heiß–Vulkanisch";
 }
 
 function formatMonsterTemperatures(
@@ -3114,7 +3084,7 @@ function formatMonsterTemperatures(
     return "—";
   }
 
-  return temperatures.join(",");
+  return Number(temperatures[0]).toFixed(2);
 
 }
 
@@ -3128,10 +3098,10 @@ function formatTemperatureRange(
   }
 
   if(min === max){
-    return `${min} · ${getTemperatureLabel(min)}`;
+    return `${Number(min).toFixed(2)} · ${getTemperatureLabel(min)}`;
   }
 
-  return `${min}–${max} · ${getTemperatureLabel(min)}–${getTemperatureLabel(max)}`;
+  return `${Number(min).toFixed(2)}–${Number(max).toFixed(2)} · ${getTemperatureLabel(min)}–${getTemperatureLabel(max)}`;
 
 }
 
@@ -3139,7 +3109,7 @@ function temperaturePercent(
   value
 ){
 
-  return ((value - 1) / 4) * 100;
+  return Number(value) * 100;
 
 }
 
@@ -3167,7 +3137,7 @@ function temperatureFromPointer(
   const percent =
     rect.width > 0 ? x / rect.width : 0;
 
-  return Math.round(1 + percent * 4);
+  return Math.round(percent * 20) / 20;
 
 }
 
@@ -3429,7 +3399,7 @@ document
 
         selectedTemperatureMin =
           Math.min(
-            selectedTemperatureMin + 1,
+            selectedTemperatureMin + 0.05,
             selectedTemperatureMax
           );
 
@@ -3444,8 +3414,8 @@ document
 
         selectedTemperatureMin =
           Math.max(
-            1,
-            selectedTemperatureMin - 1
+            0,
+            selectedTemperatureMin - 0.05
           );
 
         updateTemperatureUI();
@@ -3470,8 +3440,8 @@ document
 
         selectedTemperatureMax =
           Math.min(
-            5,
-            selectedTemperatureMax + 1
+            1,
+            selectedTemperatureMax + 0.05
           );
 
         updateTemperatureUI();
@@ -3486,7 +3456,7 @@ document
         selectedTemperatureMax =
           Math.max(
             selectedTemperatureMin,
-            selectedTemperatureMax - 1
+            selectedTemperatureMax - 0.05
           );
 
         updateTemperatureUI();
@@ -3821,6 +3791,30 @@ function getHabitatScore(monster){
    KLIMA
 ========================================================= */
 
+function temperatureMatch(regionValue, monsterValue){
+
+  const difference = Math.abs(Number(regionValue) - Number(monsterValue));
+
+  if(!Number.isFinite(difference)) return 0;
+
+  /*
+     Temperatur-Plateau:
+     Bis ±0.10 bleibt der Match nahezu vollständig erhalten.
+     Danach fällt die Übereinstimmung weich, aber deutlich ab.
+     Exakte Übereinstimmung = 1.00
+  */
+  if(difference <= 0.10){
+    return 1 - difference * 0.20;
+  }
+
+  const normalized = (difference - 0.10) / 0.90;
+
+  return Math.pow(
+    Math.max(0, 1 - normalized),
+    1.65
+  );
+}
+
 function getClimateScore(monster){
 
   const monsterTemperatures = monster.temperature;
@@ -3829,35 +3823,22 @@ function getClimateScore(monster){
     return null;
   }
 
-  let distance = Infinity;
+  const regionCenter =
+    (Number(appliedTemperatureMin) + Number(appliedTemperatureMax)) / 2;
+
+  let bestScore = 0;
 
   for(const temperature of monsterTemperatures){
+    const normalizedTemperature = normalizeTemperature01(temperature);
+    if(normalizedTemperature === null) continue;
 
-    let currentDistance = 0;
-
-    if(temperature < appliedTemperatureMin){
-      currentDistance = appliedTemperatureMin - temperature;
-    }else if(temperature > appliedTemperatureMax){
-      currentDistance = temperature - appliedTemperatureMax;
-    }
-
-    distance = Math.min(distance, currentDistance);
+    bestScore = Math.max(
+      bestScore,
+      temperatureMatch(regionCenter, normalizedTemperature)
+    );
   }
 
-  /*
-     Temperatur bleibt intern 1–5.
-     Für die gemeinsame Gesamtwertung wird der Klimascore
-     jedoch auf 0–1 normalisiert.
-
-     exakte Übereinstimmung = 1.00
-     Abstand 1 = 0.70
-     Abstand 2 = 0.30
-     größerer Abstand = 0.20
-  */
-  if(distance === 0) return 1;
-  if(distance === 1) return 0.7;
-  if(distance === 2) return 0.3;
-  return 0.2;
+  return bestScore;
 }
 
 /* =========================================================
@@ -4043,8 +4024,8 @@ function hasActiveFilters(){
     );
 
   const tempChanged =
-    appliedTemperatureMin !== 3 ||
-    appliedTemperatureMax !== 3;
+    appliedTemperatureMin !== 0.50 ||
+    appliedTemperatureMax !== 0.50;
 
   return Boolean(
     searchValue ||
@@ -5291,10 +5272,10 @@ document
 
       appliedRegionWeights = {};
 
-      selectedTemperatureMin = 3;
-      selectedTemperatureMax = 3;
-      appliedTemperatureMin = 3;
-      appliedTemperatureMax = 3;
+      selectedTemperatureMin = 0.50;
+      selectedTemperatureMax = 0.50;
+      appliedTemperatureMin = 0.50;
+      appliedTemperatureMax = 0.50;
 
       updateTemperatureUI();
       buildHabitatUI();
@@ -5603,13 +5584,13 @@ function openEditModal(index){
   if(!monster) return;
   editMonsterIndex = index;
   document.getElementById("editModalTitle").textContent = monster.name;
-  document.getElementById("editModalSubtitle").textContent = "Habitatwerte 0,0–1,0 · Temperatur 1–5";
+  document.getElementById("editModalSubtitle").textContent = "Habitatwerte 0,0–1,0 · Temperatur 0,0–1,0";
   HABITATS.forEach(h => {
     const input = document.getElementById(`edit_${h.label}`);
     if(input) input.value = Number(monster.habitats[h.label] || 0).toFixed(1);
   });
-  const temp = Array.isArray(monster.temperature) && monster.temperature.length ? monster.temperature[0] : 3;
-  document.getElementById("editTemperature").value = temp;
+  const temp = Array.isArray(monster.temperature) && monster.temperature.length ? Number(monster.temperature[0]) : 0.50;
+  document.getElementById("editTemperature").value = Number(temp).toFixed(2);
   document.getElementById("editStatus").textContent = "";
   document.getElementById("editModal").classList.add("open");
 }
@@ -5628,8 +5609,8 @@ function getEditedValues(){
     habitats[h.label] = Math.max(0, Math.min(1, Math.round(value*10)/10));
   });
   let temperature = Number(document.getElementById("editTemperature").value);
-  if(!Number.isFinite(temperature)) temperature = 3;
-  temperature = Math.max(1, Math.min(5, Math.round(temperature)));
+  if(!Number.isFinite(temperature)) temperature = 0.50;
+  temperature = Math.max(0, Math.min(1, Math.round(temperature * 20) / 20));
   return { habitats, temperature };
 }
 
@@ -5680,7 +5661,7 @@ function writeMonsterToSheet(){
     sheetName: SHEET_NAME,
     monsterName: monster.name,
     habitats: JSON.stringify(edited.habitats),
-    temperature: String(edited.temperature),
+    temperature: Number(edited.temperature).toFixed(2),
     callback: callbackName
   });
 
@@ -5769,13 +5750,13 @@ function buildMonsterEditorControls(monster){
   });
   wrap.appendChild(grid);
 
-  const temp = Array.isArray(monster.temperature) && monster.temperature.length ? monster.temperature[0] : 3;
+  const temp = Array.isArray(monster.temperature) && monster.temperature.length ? Number(monster.temperature[0]) : 0.50;
   const tempWrap = document.createElement("div");
   tempWrap.style.marginTop = "12px";
   tempWrap.className = "editor-slider-item";
   tempWrap.innerHTML = `
-    <div class="editor-slider-head"><label>Temperatur (1–5)</label><output id="monsterEditTempOut">${temp}</output></div>
-    <input id="monsterEditTemp" type="range" min="1" max="5" step="1" value="${temp}">
+    <div class="editor-slider-head"><label>Temperatur (0–1)</label><output id="monsterEditTempOut">${temp}</output></div>
+    <input id="monsterEditTemp" type="range" min="0" max="1" step="0.05" value="${temp}">
   `;
   const tempRange = tempWrap.querySelector("#monsterEditTemp");
   const tempOut = tempWrap.querySelector("#monsterEditTempOut");
@@ -5797,7 +5778,7 @@ function getMonsterEditorValuesFromModal(){
   document.querySelectorAll(".monster-edit-range").forEach(input => {
     habitats[input.dataset.habitat] = Math.max(0, Math.min(1, Math.round(Number(input.value) * 20) / 20));
   });
-  const temperature = Math.max(1, Math.min(5, Math.round(Number(document.getElementById("monsterEditTemp")?.value || 3))));
+  const temperature = Math.max(0, Math.min(1, Math.round(Number(document.getElementById("monsterEditTemp")?.value ?? 0.50) * 20) / 20));
   return { habitats, temperature };
 }
 
@@ -5839,7 +5820,7 @@ function writeMonsterFromInfoModal(monsterIndex, statusEl){
   const params = new URLSearchParams({
     action:"updateMonster", sheetId:SHEET_ID, sheetName:SHEET_NAME,
     monsterName:monster.name, habitats:JSON.stringify(edited.habitats),
-    temperature:String(edited.temperature), callback:callbackName
+    temperature:Number(edited.temperature).toFixed(2), callback:callbackName
   });
   script = document.createElement("script");
   script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
@@ -5943,10 +5924,10 @@ function loadRegionEditor(index){
     if(input) input.value = safe.toFixed(2);
     if(output) output.value = safe.toFixed(2);
   });
-  let temp = 3;
-  if(typeof region.temperature === "object" && region.temperature){ temp = Number(region.temperature.min) || 3; }
+  let temp = 0.50;
+  if(typeof region.temperature === "object" && region.temperature){ temp = Number(region.temperature.min); }
   else if(Number.isFinite(Number(region.temperature))) temp = Number(region.temperature);
-  temp = Math.max(1, Math.min(5, Math.round(temp)));
+  temp = Number.isFinite(temp) ? Math.max(0, Math.min(1, Math.round(temp * 20) / 20)) : 0.50;
   const tempInput = document.getElementById("regionEditorTemperature");
   const tempOut = document.getElementById("regionEditorTemperatureValue");
   if(tempInput) tempInput.value = String(temp);
@@ -5960,7 +5941,7 @@ function getRegionEditorValues(){
     const input = document.querySelector(`[data-region-range="${CSS.escape(h.label)}"]`);
     habitats[h.label] = Math.max(0, Math.min(1, Math.round(Number(input?.value || 0)*20)/20));
   });
-  const temp = Math.max(1, Math.min(5, Math.round(Number(document.getElementById("regionEditorTemperature")?.value || 3))));
+  const temp = Math.max(0, Math.min(1, Math.round(Number(document.getElementById("regionEditorTemperature")?.value ?? 0.50) * 20) / 20));
   return {habitats, temperature:temp};
 }
 
@@ -6008,7 +5989,7 @@ function writeRegionToSheet(){
   const params = new URLSearchParams({
     action:"updateRegion", sheetId:SHEET_ID, sheetName:REGION_SHEET_NAME,
     regionName:region.name, habitats:JSON.stringify(edited.habitats),
-    temperature:String(edited.temperature), callback:callbackName
+    temperature:Number(edited.temperature).toFixed(2), callback:callbackName
   });
   script = document.createElement("script");
   script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
@@ -6048,7 +6029,7 @@ function writeSidebarRegionToSheet(){
     const value = Number(regionWeights[h.label] ?? 0);
     habitats[h.label] = Math.max(0, Math.min(1, Math.round(value * 20) / 20));
   });
-  const temp = Math.max(1, Math.min(5, Math.round(Number(selectedTemperatureMin || 3))));
+  const temp = Math.max(0, Math.min(1, Math.round(Number(selectedTemperatureMin ?? 0.50) * 20) / 20));
   const callbackName = "sidebarRegionWrite_" + Date.now() + "_" + Math.floor(Math.random()*100000);
   let script = null;
   window[callbackName] = function(result){
