@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V39</title>
+<title>DnD Monster Database – V40</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1255,7 +1255,7 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V37</h1>
+      <h1>DnD Monster Database – V40</h1>
       <div id="sheetDebug" style="font-size:12px;opacity:.65;margin-top:4px">Lade Monsterdaten…</div>
     </div>
 
@@ -2063,7 +2063,98 @@ function loadGoogleSheetJsonp(sheetName){
 
 }
 
-async function loadRegionPresets(){
+async function loadDatabaseJsonp(){
+
+  return new Promise((resolve, reject) => {
+
+    const callbackName =
+      `__databaseCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+
+    const script = document.createElement("script");
+
+    const timeoutId = setTimeout(() => {
+      cleanup();
+      reject(new Error("Apps Script Timeout: Monster-Daten"));
+    }, 15000);
+
+    function cleanup(){
+      clearTimeout(timeoutId);
+      if(script.parentNode)
+        script.parentNode.removeChild(script);
+      try{
+        delete window[callbackName];
+      }catch(_error){
+        window[callbackName] = undefined;
+      }
+    }
+
+    window[callbackName] = data => {
+      cleanup();
+
+      if(!data || data.ok !== true){
+        reject(
+          new Error(
+            data?.error ||
+            "Ungültige Apps-Script-Antwort für die Datenbank"
+          )
+        );
+        return;
+      }
+
+      resolve(data);
+    };
+
+    script.onerror = () => {
+      cleanup();
+      reject(
+        new Error("Apps Script konnte nicht geladen werden")
+      );
+    };
+
+    const params = new URLSearchParams({
+      action:"readDatabase",
+      sheetId:SHEET_ID,
+      monsterSheetName:SHEET_NAME,
+      regionSheetName:REGION_SHEET_NAME,
+      callback:callbackName,
+      cacheBuster:String(Date.now())
+    });
+
+    script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
+    document.head.appendChild(script);
+  });
+
+}
+
+function directSheetToTable(data){
+
+  const headers =
+    Array.isArray(data?.headers)
+      ? data.headers
+      : [];
+
+  const rows =
+    Array.isArray(data?.rows)
+      ? data.rows
+      : [];
+
+  return {
+    table:{
+      cols: headers.map(header => ({
+        label:String(header ?? "")
+      })),
+      rows: rows.map(row => ({
+        c: headers.map((_, index) => ({
+          v: row?.[index] ?? ""
+        }))
+      }))
+    }
+  };
+
+}
+
+
+async function loadRegionPresets(preloadedJson = null){
 
   const presetSelect =
     document.getElementById(
@@ -2081,7 +2172,7 @@ async function loadRegionPresets(){
   try{
 
     const json =
-      await loadGoogleSheetJsonp(REGION_SHEET_NAME);
+      preloadedJson || await loadGoogleSheetJsonp(REGION_SHEET_NAME);
 
     const cols =
       json.table?.cols ||
@@ -2327,8 +2418,14 @@ async function loadSheet(){
 
   try{
 
+    const database =
+      await loadDatabaseJsonp();
+
     const json =
-      await loadGoogleSheetJsonp(SHEET_NAME);
+      directSheetToTable(database.monsters);
+
+    const regionJson =
+      directSheetToTable(database.regions);
 
 
     monsters =
@@ -2421,7 +2518,7 @@ async function loadSheet(){
     updateTemperatureUI();
 
     try{
-      await loadRegionPresets();
+      await loadRegionPresets(regionJson);
     }catch(regionError){
       console.error("Regionen konnten nicht geladen werden:", regionError);
     }
