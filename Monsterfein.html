@@ -1570,11 +1570,11 @@ tbody tr:hover{
         </div>
 
         <div class="temperature-scale">
-          <span>1 · Arktisch</span>
-          <span>2 · Kalt</span>
+          <span>0.00 · Arktisch</span>
+          <span>0.20 · Kalt</span>
           <span>0.50 · Gemäßigt</span>
-          <span>4 · Heiß</span>
-          <span>5 · Vulkanisch</span>
+          <span>0.80 · Heiß</span>
+          <span>1.00 · Vulkanisch</span>
         </div>
 
         <div class="temperature-current">
@@ -2697,17 +2697,27 @@ function normalizeTemperature01(value){
   if(!Number.isFinite(number)) return null;
 
   /*
-     Neue Skala: 0–1.
-     Rückwärtskompatibel zur alten 1–5-Skala:
-       1 -> 0.00
-       2 -> 0.25
-       3 -> 0.50
-       4 -> 0.75
-       5 -> 1.00
-     Ganze alte Werte > 1 werden automatisch umgerechnet.
-     Werte 0–1 bleiben auf der neuen Skala.
+     Neue Temperatur-Schwerpunkt-Skala: 0–1.
+     Semantische Anker:
+       1 -> 0.00  Arktisch
+       2 -> 0.20  Kalt
+       3 -> 0.50  Gemäßigt
+       4 -> 0.80  Heiß
+       5 -> 1.00  Vulkanisch / extrem heiß
+     Neue 0–1-Werte bleiben unverändert.
   */
   if(number > 1){
+    const legacyMap = {
+      1: 0.00,
+      2: 0.20,
+      3: 0.50,
+      4: 0.80,
+      5: 1.00
+    };
+    const rounded = Math.round(number * 100) / 100;
+    if(Object.prototype.hasOwnProperty.call(legacyMap, rounded)){
+      return legacyMap[rounded];
+    }
     return Math.max(0, Math.min(1, (number - 1) / 4));
   }
 
@@ -2729,8 +2739,8 @@ function parseTemperatureValues(value){
 
   /*
      Temperatur ist jetzt ein einzelner Schwerpunkt auf 0–1.
-     Alte Mehrfachangaben wie 2,3,4 werden zu ihrem Mittelpunkt
-     zusammengeführt: 2/3/4 -> 0.50.
+     Alte Mehrfachangaben wie 2,3,4 werden auf die neue
+     semantische 0–1-Skala übertragen und gemittelt: 2/3/4 -> 0.50.
      Neue Dezimalwerte wie 0.65 oder 0,65 bleiben Einzelwerte.
   */
   const newDecimalPattern = /^0?(?:[.,]\d+)?$/;
@@ -2752,8 +2762,19 @@ function parseTemperatureValues(value){
     return value01 === null ? null : [Math.round(value01 * 100) / 100];
   }
 
-  const averageOld = oldValues.reduce((sum, value) => sum + value, 0) / oldValues.length;
-  const average01 = (averageOld - 1) / 4;
+  const legacyMap = {
+    1: 0.00,
+    2: 0.20,
+    3: 0.50,
+    4: 0.80,
+    5: 1.00
+  };
+
+  const mappedValues = oldValues
+    .map(value => legacyMap[value])
+    .filter(value => Number.isFinite(value));
+
+  const average01 = mappedValues.reduce((sum, value) => sum + value, 0) / mappedValues.length;
 
   return [Math.round(Math.max(0, Math.min(1, average01)) * 100) / 100];
 }
@@ -3058,9 +3079,11 @@ document
 
 const TEMPERATURE_LABELS = {
   0:"Arktisch",
-  0.25:"Kalt",
+  0.2:"Kalt",
+  0.4:"Kühl",
   0.5:"Gemäßigt",
-  0.75:"Heiß",
+  0.6:"Warm-gemäßigt",
+  0.8:"Heiß",
   1:"Vulkanisch"
 };
 
@@ -3644,7 +3667,7 @@ function habitatMatch(regionValue, monsterValue){
 
   return Math.pow(
     Math.max(0, 1 - normalized),
-    1.65
+    2.40
   );
 }
 
@@ -3680,7 +3703,7 @@ function habitatMatch(regionValue, monsterValue){
 
   return Math.pow(
     Math.max(0, 1 - normalized),
-    1.65
+    2.40
   );
 }
 
@@ -3811,7 +3834,7 @@ function temperatureMatch(regionValue, monsterValue){
 
   return Math.pow(
     Math.max(0, 1 - normalized),
-    1.65
+    2.40
   );
 }
 
