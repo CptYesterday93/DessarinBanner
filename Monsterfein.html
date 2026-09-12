@@ -3802,7 +3802,11 @@ function getHabitatScore(monster){
     const safeRegionValue =
       Math.max(0, Math.min(1, regionValue));
 
-    const weight = safeRegionValue;
+    // Dominante regionale Habitate sollen deutlich stärker prägen.
+    // Durch die Quadratur zählt z. B. 1.0 etwa viermal so stark wie 0.5.
+    // Dadurch können kleine Nebenhabitate ein dominantes Gegenbiom nicht mehr
+    // überstimmen (z. B. Meer 1.0 in einer Meeresregion).
+    const weight = Math.pow(safeRegionValue, 2);
 
     if(weight <= 0){
       continue;
