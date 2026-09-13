@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V44</title>
+<title>DnD Monster Database – V45</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -76,6 +76,38 @@ h3{
 
 .topbar{
   margin-bottom:16px;
+}
+
+.topbar-main{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.random-monster-button{
+  width:auto;
+  min-width:190px;
+  padding:10px 16px;
+  background:#4f46e5;
+  border-color:#6d63ff;
+  font-weight:bold;
+  white-space:nowrap;
+}
+
+.random-monster-button:hover{
+  filter:brightness(1.08);
+}
+
+@media(max-width:900px){
+  .topbar-main{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .random-monster-button{
+    width:100%;
+  }
 }
 
 input,
@@ -1255,7 +1287,17 @@ tbody tr:hover{
   <div class="table-section">
 
     <div class="topbar">
-      <h1>DnD Monster Database – V44</h1>
+      <div class="topbar-main">
+        <h1>DnD Monster Database – V45</h1>
+        <button
+          type="button"
+          id="randomMonsterButton"
+          class="random-monster-button"
+          title="Wählt zufällig eine Kreatur aus den aktuell passenden Ergebnissen aus"
+        >
+          🎲 Zufällige Kreatur
+        </button>
+      </div>
       <div id="sheetDebug" style="font-size:12px;opacity:.65;margin-top:4px">Lade Monsterdaten…</div>
     </div>
 
@@ -3636,6 +3678,101 @@ document
         "presetRegionSelect"
       )
   );
+
+
+/* =========================================================
+   ZUFÄLLIGE KREATUR
+========================================================= */
+
+function getCurrentFilteredMonsterCandidates(){
+
+  const search =
+    document
+      .getElementById("searchInput")
+      .value
+      .toLowerCase()
+      .trim();
+
+  const crMinValue =
+    document.getElementById("crMin").value;
+
+  const crMaxValue =
+    document.getElementById("crMax").value;
+
+  const crMin =
+    crMinValue === "" ? null : Number(crMinValue);
+
+  const crMax =
+    crMaxValue === "" ? null : Number(crMaxValue);
+
+  const xpMin =
+    parseFloat(document.getElementById("xpMin").value);
+
+  const xpMax =
+    parseFloat(document.getElementById("xpMax").value);
+
+  const candidates = [];
+
+  monsters.forEach((monster, index) => {
+
+    if(!showUnique && monster.unique === "Ja") return;
+
+    if(crMin !== null && monster.cr < crMin) return;
+    if(crMax !== null && monster.cr > crMax) return;
+    if(!isNaN(xpMin) && monster.xp < xpMin) return;
+    if(!isNaN(xpMax) && monster.xp > xpMax) return;
+
+    if(
+      search &&
+      !searchMatchesMonsterName(monster.name, search)
+    ) return;
+
+    const scores = calculateScores(monster);
+
+    candidates.push({
+      monster,
+      index,
+      total:scores.total,
+      habitat:scores.habitat,
+      climate:scores.climate
+    });
+
+  });
+
+  return candidates;
+
+}
+
+function pickRandomMonster(){
+
+  const candidates =
+    getCurrentFilteredMonsterCandidates();
+
+  if(!candidates.length){
+    alert("Keine Kreatur passt zu den aktuellen Filtern.");
+    return;
+  }
+
+  const picked =
+    candidates[Math.floor(Math.random() * candidates.length)];
+
+  const searchInput =
+    document.getElementById("searchInput");
+
+  searchInput.value = picked.monster.name;
+
+  filterMonsters();
+
+  const tableSection =
+    document.querySelector(".table-section");
+
+  if(tableSection) tableSection.scrollTop = 0;
+
+}
+
+document
+  .getElementById("randomMonsterButton")
+  .addEventListener("click", pickRandomMonster);
 
 
 /* =========================================================
