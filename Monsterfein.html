@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V45</title>
+<title>DnD Monster Database – V48</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1288,7 +1288,7 @@ tbody tr:hover{
 
     <div class="topbar">
       <div class="topbar-main">
-        <h1>DnD Monster Database – V45</h1>
+        <h1>DnD Monster Database – V48</h1>
         <button
           type="button"
           id="randomMonsterButton"
@@ -1716,7 +1716,7 @@ const REGION_SHEET_NAME =
 // Einmalig die Google-Apps-Script-Web-App-URL eintragen,
 // damit Schnellkorrekturen direkt ins Sheet geschrieben werden können.
 const SHEET_WRITE_URL =
-  "https://script.google.com/macros/s/AKfycbw0-FcDLlXxkQA-JndiLVndcCVutSbB4eRp-kHDwet-mUvbiKkamTsNi4Soef8pYJqdZA/exec";
+  "https://script.google.com/macros/s/AKfycbzkjUGXNgeOdZqhOr2LCzD-91ROPy9kv9mlw3iVluiAISC53cg65WLjazwOixms-wzugQ/exec";
 
 
 /* =========================================================
@@ -2086,14 +2086,10 @@ async function loadDatabaseJsonp(){
 async function loadRegionPresets(preloadedJson = null){
 
   const presetSelect =
-    document.getElementById(
-      "presetRegionSelect"
-    );
+    document.getElementById("presetRegionSelect");
 
   const worldSelect =
-    document.getElementById(
-      "worldRegionSelect"
-    );
+    document.getElementById("worldRegionSelect");
 
   if(!presetSelect || !worldSelect)
     return;
@@ -2103,167 +2099,92 @@ async function loadRegionPresets(preloadedJson = null){
     const json =
       preloadedJson || await loadGoogleSheetJsonp(REGION_SHEET_NAME);
 
-    const cols =
-      json.table?.cols ||
-      [];
+    const rows = json.table?.rows || [];
+    const cols = json.table?.cols || [];
+    const headerMap = getHeaderMap(cols);
 
-    const rows =
-      json.table?.rows ||
-      [];
+    // Regionenblatt hat eine feste, bekannte Struktur:
+    // A Region, B:M 12 Habitate, N Temperatur, O Typ.
+    // Wir verwenden die Positionen als robuste Fallback-/Primärquelle,
+    // damit Änderungen an Header-Labels oder Locale-Formatierungen
+    // nicht dazu führen, dass vorhandene Regionswerte als leer erscheinen.
+    const fixedRegionColumn = 0;
+    const fixedHabitatStart = 1;
+    const fixedTemperatureColumn = 13;
+    const fixedTypeColumn = 14;
 
-    const headerMap =
-      getHeaderMap(
-        cols
-      );
+    const regionPresetsLoaded = rows
+      .map((row) => {
+        const cells = row.c || [];
+        const name = String(
+          getSheetCellValue(cells[fixedRegionColumn]) ?? ""
+        ).trim();
 
-    const regionColumn =
-      headerMap["region"] ??
-      0;
+        if(!name) return null;
 
-    regionPresets =
-      rows.map(
-        (row,index) => {
+        const preset = {
+          name,
+          type: String(
+            getSheetCellValue(cells[fixedTypeColumn]) ?? ""
+          ).trim(),
+          habitats:{},
+          temperature:null
+        };
 
-          const cells =
-            row.c || [];
+        HABITATS.forEach((habitat, habitatIndex) => {
+          const fixedColumn = fixedHabitatStart + habitatIndex;
+          const raw = getSheetCellValue(cells[fixedColumn]);
+          const parsed = parseRegionScore(raw);
+          preset.habitats[habitat.label] = parsed;
+        });
 
-          const name =
-            String(
-              cells[regionColumn]?.f ??
-              cells[regionColumn]?.v ??
-              ""
-            ).trim();
-
-          if(!name)
-            return null;
-
-          const typeColumn =
-            headerMap["typ"];
-
-          const type =
-            typeColumn === undefined
-              ? ""
-              : String(
-                  cells[typeColumn]?.f ??
-                  cells[typeColumn]?.v ??
-                  ""
-                ).trim();
-
-          const preset = {
-            name,
-            type,
-            habitats:{},
-            temperature:null
-          };
-
-          HABITATS.forEach(
-            habitat => {
-
-              const column =
-                headerMap[
-                  habitat.label.toLowerCase()
-                ];
-
-              if(
-                column === undefined
-              ){
-
-                preset.habitats[
-                  habitat.label
-                ] = null;
-
-                return;
-
-              }
-
-              preset.habitats[
-                habitat.label
-              ] =
-                parseRegionScore(
-                  getSheetCellValue(cells[column])
-                );
-
-            }
-          );
-
-          preset.temperature =
-            parseRegionTemperature(
-              cells,
-              headerMap
-            );
-
-          return preset;
-
+        const tempRaw = getSheetCellValue(cells[fixedTemperatureColumn]);
+        const tempValues = parseTemperatureValues(tempRaw);
+        if(Array.isArray(tempValues) && tempValues.length){
+          const temp = tempValues[0];
+          preset.temperature = {min:temp, max:temp};
+        }else{
+          // Fallback auf den bisherigen Header-basierten Temperaturparser.
+          preset.temperature = parseRegionTemperature(cells, headerMap);
         }
-      ).filter(Boolean);
 
-    const presets =
-      regionPresets
-        .filter(
-          region =>
-            String(
-              region.type || ""
-            ).trim().toLowerCase() === "vorlage"
-        )
-        .sort(
-          (a,b) =>
-            a.name.localeCompare(
-              b.name,
-              "de",
-              {
-                sensitivity:"base",
-                numeric:true
-              }
-            )
-        );
+        return preset;
+      })
+      .filter(Boolean);
 
-    const worldRegions =
-      regionPresets
-        .filter(
-          region =>
-            String(
-              region.type || ""
-            ).trim().toLowerCase() === "region"
-        )
-        .sort(
-          (a,b) =>
-            a.name.localeCompare(
-              b.name,
-              "de",
-              {
-                sensitivity:"base",
-                numeric:true
-              }
-            )
-        );
+    regionPresets = regionPresetsLoaded;
+
+    const presets = regionPresets
+      .filter(region =>
+        String(region.type || "").trim().toLowerCase() === "vorlage"
+      )
+      .sort((a,b) => a.name.localeCompare(b.name,"de",{sensitivity:"base",numeric:true}));
+
+    const worldRegions = regionPresets
+      .filter(region =>
+        String(region.type || "").trim().toLowerCase() === "region"
+      )
+      .sort((a,b) => a.name.localeCompare(b.name,"de",{sensitivity:"base",numeric:true}));
 
     presetSelect.innerHTML =
       `<option value="">Vorlage wählen…</option>` +
-      presets
-        .map(
-          region =>
-            `<option value="${regionPresets.indexOf(region)}">${escapeHTML(region.name)}</option>`
-        )
-        .join("");
+      presets.map(region =>
+        `<option value="${regionPresets.indexOf(region)}">${escapeHTML(region.name)}</option>`
+      ).join("");
 
     worldSelect.innerHTML =
       `<option value="">Region wählen…</option>` +
-      worldRegions
-        .map(
-          region =>
-            `<option value="${regionPresets.indexOf(region)}">${escapeHTML(region.name)}</option>`
-        )
-        .join("");
+      worldRegions.map(region =>
+        `<option value="${regionPresets.indexOf(region)}">${escapeHTML(region.name)}</option>`
+      ).join("");
 
   }catch(error){
 
-    console.error(
-      "Fehler beim Laden der Regionen:",
-      error
-    );
+    console.error("Fehler beim Laden der Regionen:", error);
 
     presetSelect.innerHTML =
       `<option value="">Regionen nicht geladen</option>`;
+
     worldSelect.innerHTML =
       `<option value="">Regionen nicht geladen</option>`;
 
