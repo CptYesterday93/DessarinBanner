@@ -3666,10 +3666,23 @@ function getCurrentFilteredMonsterCandidates(){
 
 function pickRandomMonster(){
 
+  /*
+     Die Namenssuche soll beim Würfeln keinen Einfluss haben.
+     Andere Filter (CR, XP, Lebensraum, Temperatur, Einzigartige)
+     bleiben unverändert und bestimmen weiterhin die Auswahlmenge.
+  */
+  const searchInput =
+    document.getElementById("searchInput");
+
+  if(searchInput){
+    searchInput.value = "";
+  }
+
   const candidates =
     getCurrentFilteredMonsterCandidates();
 
   if(!candidates.length){
+    filterMonsters();
     alert("Keine Kreatur passt zu den aktuellen Filtern.");
     return;
   }
@@ -3677,10 +3690,10 @@ function pickRandomMonster(){
   const picked =
     candidates[Math.floor(Math.random() * candidates.length)];
 
-  const searchInput =
-    document.getElementById("searchInput");
-
-  searchInput.value = picked.monster.name;
+  /* Die gezogene Kreatur bleibt anschließend als Suchtreffer sichtbar. */
+  if(searchInput){
+    searchInput.value = picked.monster.name;
+  }
 
   filterMonsters();
 
