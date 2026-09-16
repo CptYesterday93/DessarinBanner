@@ -3807,90 +3807,56 @@ document
 ========================================================= */
 
 /*
-   Symmetrischer Habitatvergleich:
-   - Region und Monster werden in BEIDE Richtungen verglichen.
-   - Region 0 / Monster 0 = kein relevanter Unterschied → nicht gewertet.
-   - Region 0 / Monster > 0 = echter Malus.
-   - Region > 0 / Monster 0 = echter Malus.
-   - Je stärker ein Habitat in einem der beiden Profile ausgeprägt ist,
-     desto wichtiger ist die Abweichung.
-   - Ein Regions- oder Monsterwert von 1.0 ist damit bewusst sehr dominant.
+   Gerichteter Habitat-Match:
+
+   Die Region beschreibt, WAS dort vorhanden ist.
+   Das Monsterprofil beschreibt, WO die Kreatur gut leben kann.
+
+   Deshalb vergleichen wir nicht mehr die beiden Profile symmetrisch.
+   Stattdessen sammeln wir positive Evidenz:
+
+     Evidenz = Regionwert × Monsterwert
+
+   Mehrere passende Habitate dürfen sich verstärken. Nicht vorhandene
+   regionale Habitate bestrafen das Monster NICHT automatisch.
+
+   Zusätzlich betrachten wir, welcher Anteil der Monster-Habitatpräferenz
+   durch die Region grundsätzlich abgedeckt wird. So bleibt eine Kreatur
+   mit mehreren relevanten Habitaten ein Generalist, ohne durch 0-Werte
+   künstlich heruntergezogen zu werden.
+
+   Ein Sonderfall bleibt wichtig:
+   Hat eine Kreatur ein klares Primärhabitat (max. Monsterwert >= 0,8)
+   und bietet die Region dieses Habitat überhaupt nicht (Regionwert 0),
+   erhält der Lebensraummatch einen deutlichen, aber begrenzten Malus.
+
+   Kleine Regionswerte sind dabei echte, schwache Signale – sie werden
+   nicht als harte Ausschlüsse behandelt.
 */
 
 function habitatMatch(regionValue, monsterValue){
 
-  /*
-     Symmetrischer Vergleich in festen 0,1-Stufen.
+  const region = Number(regionValue);
+  const monster = Number(monsterValue);
 
-     Die Habitatwerte werden bewusst in Zehntelschritten gepflegt.
-     Deshalb wird auch die Abweichung auf eine Zehntelstufe gerundet
-     und anschließend über eine feste Tabelle bewertet.
+  if(!Number.isFinite(region) || !Number.isFinite(monster)){
+    return 0;
+  }
 
-     0,0 = perfekter Match
-     1,0 = maximaler Mismatch
-
-     Dadurch sind beide Richtungen gleichwertig:
-       Region 0,0 / Monster 0,7  -> Malus
-       Region 0,7 / Monster 0,0  -> gleicher Malus
-
-     Die Werte sind bewusst linear und nachvollziehbar:
-       0,0 -> 1,00
-       0,1 -> 0,90
-       0,2 -> 0,80
-       ...
-       0,9 -> 0,10
-       1,0 -> 0,00
-  */
-
-  const difference = Math.abs(
-    Number(regionValue) - Number(monsterValue)
-  );
-
-  const step = Math.min(
-    1,
-    Math.max(0, Math.round((difference + Number.EPSILON) * 10) / 10)
-  );
-
-  const matchTable = [
-    1.00,
-    0.90,
-    0.80,
-    0.70,
-    0.60,
-    0.50,
-    0.40,
-    0.30,
-    0.20,
-    0.10,
-    0.00
-  ];
-
-  return matchTable[Math.round(step * 10)];
+  return Math.max(0, Math.min(1, region)) *
+         Math.max(0, Math.min(1, monster));
 }
 
 function getHabitatScore(monster){
 
-  /*
-     SYMMETRISCHER 0–1-HABITATVERGLEICH
+  let positiveEvidence = 0;
+  let productRemaining = 1;
 
-     Anders als zuvor werden jetzt nicht nur die in der Region relevanten
-     Habitate betrachtet. Auch ein Habitat, das die Region nicht hat,
-     aber vom Monster stark bevorzugt wird, erzeugt einen Malus.
+  let monsterMass = 0;
+  let supportedMonsterMass = 0;
 
-     Die Stärke eines Habitats wird durch den jeweils höheren Wert von
-     Region und Monster bestimmt und quadratisch gewichtet:
-       1,0 -> 1,00
-       0,8 -> 0,64
-       0,5 -> 0,25
-       0,2 -> 0,04
-       0,0 / 0,0 -> 0
-
-     Dadurch bleibt die Semantik erhalten:
-     1,0 = praktisch definierendes Habitat.
-  */
-
-  let totalWeight = 0;
-  let weightedMatch = 0;
+  let maxMonsterValue = 0;
+  const primaryHabitats = [];
 
   for(const habitat of HABITATS){
 
@@ -3910,40 +3876,105 @@ function getHabitatScore(monster){
       ? Math.max(0, Math.min(1, monsterRaw))
       : 0;
 
-    /* Beide 0 = weder vorhanden noch relevant. */
-    if(regionValue === 0 && monsterValue === 0){
-      continue;
+    if(monsterValue > 0){
+      monsterMass += monsterValue;
+
+      /*
+         Wie viel dieses Monster-Habitats ist in der Region überhaupt
+         vorhanden? min() misst Abdeckung, ohne zusätzliche Regionen
+         als Gegenpol zu behandeln.
+      */
+      supportedMonsterMass += Math.min(
+        regionValue,
+        monsterValue
+      );
+
+      if(monsterValue > maxMonsterValue + 1e-9){
+        maxMonsterValue = monsterValue;
+        primaryHabitats.length = 0;
+        primaryHabitats.push(habitat.label);
+      }else if(
+        monsterValue > 0 &&
+        Math.abs(monsterValue - maxMonsterValue) <= 1e-9
+      ){
+        primaryHabitats.push(habitat.label);
+      }
     }
 
-    /*
-       Der stärkere Wert bestimmt, wie wichtig diese Achse ist.
-       So wird z. B. Region Meer 0 / Monster Meer 0,7
-       genauso als relevanter Mismatch erkannt wie
-       Region Meer 0,7 / Monster Meer 0.
-    */
-    const weight = Math.pow(
-      Math.max(regionValue, monsterValue),
-      2
-    );
-
-    if(weight <= 0) continue;
-
-    const match = habitatMatch(
+    const evidence = habitatMatch(
       regionValue,
       monsterValue
     );
 
-    totalWeight += weight;
-    weightedMatch += match * weight;
+    if(evidence <= 0) continue;
+
+    positiveEvidence += evidence;
+
+    /*
+       Sättigende Zusammenführung:
+       Mehrere passende regionale Merkmale verstärken sich,
+       aber ein einzelner Treffer springt nicht automatisch auf 1,0.
+
+       Der Faktor 0,95 hält 1,0 als seltenen Spitzenwert frei.
+    */
+    const scaledEvidence = evidence * 0.95;
+    productRemaining *= (1 - scaledEvidence);
   }
 
-  if(totalWeight <= 0){
+  if(monsterMass <= 0){
     return null;
   }
 
-  return Math.min(
-    1,
-    weightedMatch / totalWeight
+  const combinedEvidence =
+    Math.max(
+      0,
+      Math.min(0.95, 1 - productRemaining)
+    );
+
+  /*
+     Profilabdeckung des Monsters:
+     1,0 = alle starken Monster-Habitate sind regional vollständig
+     vertreten; kleinere Werte = nur ein Teil des Profils findet
+     Unterstützung in der Region.
+  */
+  const coverage = Math.max(
+    0,
+    Math.min(
+      1,
+      supportedMonsterMass / monsterMass
+    )
+  );
+
+  /*
+     Die Abdeckung modifiziert den positiven Match nur moderat.
+     Damit kann ein Spezialist mit einem starken Treffer hoch landen,
+     während ein Generalist durch mehrere teilweise passende Habitate
+     ebenfalls sichtbar bleibt.
+  */
+  let score = combinedEvidence * (
+    0.75 + 0.25 * coverage
+  );
+
+  /*
+     Primärhabitat:
+     Hat das Monster einen klaren Kern (>= 0,8), darf dieser in der
+     Region nicht komplett fehlen. Kleine Werte wie 0,1 sind aber kein
+     harter Ausschluss – nur echte 0,0 löst den Malus aus.
+  */
+  if(maxMonsterValue >= 0.8 && primaryHabitats.length > 0){
+
+    const primaryPresent = primaryHabitats.some(
+      habitat => Number(appliedRegionWeights[habitat] ?? 0) > 0
+    );
+
+    if(!primaryPresent){
+      score *= 0.55;
+    }
+  }
+
+  return Math.max(
+    0,
+    Math.min(0.95, score)
   );
 }
 
