@@ -514,6 +514,10 @@ tbody tr:hover{
   line-height:1;
 }
 
+.score-marker[title]{
+  cursor:help;
+}
+
 .score-marker-star{
   color:#ffd54a;
   text-shadow:0 0 5px rgba(255,213,74,.25);
@@ -4038,18 +4042,25 @@ function getScoreBand(score){
   return { cls:"score-marker-black", symbol:"", label:"kaum passend" };
 }
 
-function getScoreMarkerHTML(score){
+function getScoreMarkerHTML(score, contextLabel="Wertung"){
   const band = getScoreBand(score);
   if(!band) return "";
+
+  const numeric = Number(score);
+  const value = Number.isFinite(numeric) ? numeric.toFixed(2) : "—";
+  const tooltip = `${contextLabel}: ${value} – ${band.label}`;
+  const escapedTooltip = escapeHTML(tooltip);
+  const escapedAria = escapeHTML(`${contextLabel}: ${value}, ${band.label}`);
+
   if(band.symbol){
-    return `<span class="score-marker ${band.cls}" role="img" aria-label="${band.label}">${band.symbol}</span>`;
+    return `<span class="score-marker ${band.cls}" role="img" aria-label="${escapedAria}" title="${escapedTooltip}">${band.symbol}</span>`;
   }
-  return `<span class="score-marker score-marker-dot ${band.cls}" role="img" aria-label="${band.label}"></span>`;
+  return `<span class="score-marker score-marker-dot ${band.cls}" role="img" aria-label="${escapedAria}" title="${escapedTooltip}"></span>`;
 }
 
-function formatScoredValue(score){
+function formatScoredValue(score, contextLabel="Wertung"){
   if(score === null || score === undefined) return "—";
-  return `${getScoreMarkerHTML(score)}${formatScore(score)}`;
+  return `${getScoreMarkerHTML(score, contextLabel)}${formatScore(score)}`;
 }
 
 // Rückwärtskompatibel für bestehende Stellen im Profil-Editor.
@@ -4764,7 +4775,8 @@ function renderTable(
 
         <td class="score score-total">
           ${formatScoredValue(
-            item.total
+            item.total,
+            "Gesamt"
           )}
         </td>
 
@@ -4772,7 +4784,8 @@ function renderTable(
         <td class="score">
 
           ${formatScoredValue(
-            item.habitat
+            item.habitat,
+            "Lebensraum"
           )}
 
           ${
@@ -4791,7 +4804,8 @@ function renderTable(
         <td class="score">
 
           ${formatScoredValue(
-            item.climate
+            item.climate,
+            "Klima"
           )}
 
           <div
@@ -4954,7 +4968,8 @@ function renderMobileCards(
 
             <div class="mobile-score">
               ${formatScoredValue(
-                item.total
+                item.total,
+                "Gesamt"
               )}
             </div>
 
@@ -4969,7 +4984,8 @@ function renderMobileCards(
 
             <div class="mobile-value">
               ${formatScoredValue(
-                item.habitat
+                item.habitat,
+                "Lebensraum"
               )}
             </div>
 
@@ -4984,7 +5000,8 @@ function renderMobileCards(
 
             <div class="mobile-value">
               ${formatScoredValue(
-                item.climate
+                item.climate,
+                "Klima"
               )}
               –
               ${formatTemperatureRange(
@@ -5205,7 +5222,8 @@ function openInfoModal(
 
             <span class="profile-item-score">
               ${formatScoredValue(
-                scores.total
+                scores.total,
+                "Gesamt"
               )}
             </span>
 
@@ -5220,7 +5238,8 @@ function openInfoModal(
 
             <span class="profile-item-score">
               ${formatScoredValue(
-                scores.habitat
+                scores.habitat,
+                "Lebensraum"
               )}
             </span>
 
@@ -5238,7 +5257,8 @@ function openInfoModal(
 
             <span class="profile-item-score">
               ${formatScoredValue(
-                scores.climate
+                scores.climate,
+                "Klima"
               )}
             </span>
 
@@ -6022,9 +6042,9 @@ function openInfoModal(monster){
     <div class="modal-section">
       <h3>Aktuelle Bewertung</h3>
       <div class="profile-grid">
-        <div class="profile-item"><span class="profile-item-name">Gesamt</span><span class="profile-item-score">${formatScoredValue(scores.total)}</span></div>
-        <div class="profile-item"><span class="profile-item-name">Lebensraum</span><span class="profile-item-score">${formatScoredValue(scores.habitat)}</span></div>
-        <div class="profile-item"><span class="profile-item-name">Temperatur Region (${formatTemperatureRange(appliedTemperatureMin, appliedTemperatureMax)})</span><span class="profile-item-score">${formatScoredValue(scores.climate)}</span></div>
+        <div class="profile-item"><span class="profile-item-name">Gesamt</span><span class="profile-item-score">${formatScoredValue(scores.total, "Gesamt")}</span></div>
+        <div class="profile-item"><span class="profile-item-name">Lebensraum</span><span class="profile-item-score">${formatScoredValue(scores.habitat, "Lebensraum")}</span></div>
+        <div class="profile-item"><span class="profile-item-name">Temperatur Region (${formatTemperatureRange(appliedTemperatureMin, appliedTemperatureMax)})</span><span class="profile-item-score">${formatScoredValue(scores.climate, "Klima")}</span></div>
       </div>
     </div>
   `;
