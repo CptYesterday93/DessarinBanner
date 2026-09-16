@@ -1716,7 +1716,7 @@ const REGION_SHEET_NAME =
 // Einmalig die Google-Apps-Script-Web-App-URL eintragen,
 // damit Schnellkorrekturen direkt ins Sheet geschrieben werden können.
 const SHEET_WRITE_URL =
-  "https://script.google.com/macros/s/AKfycbzkjUGXNgeOdZqhOr2LCzD-91ROPy9kv9mlw3iVluiAISC53cg65WLjazwOixms-wzugQ/exec";
+  "https://script.google.com/macros/s/AKfycbwJs-r-hQbtTSX-AxQVb_GaAnS2_v8MVtnZ9GWYY8LeuLXHa7gCXe328rvaZ4JotnVXFw/exec";
 
 
 /* =========================================================
@@ -2360,6 +2360,12 @@ async function loadSheet(){
         })
         .filter(
           monster => monster.name
+        )
+        // Die Google-Visualization-Antwort kann die Kopfzeile als erste
+        // Datenzeile liefern. "Monster" ist kein Datensatz und darf
+        // weder gezählt noch in die Monsterliste übernommen werden.
+        .filter(
+          monster => String(monster.name).trim().toLowerCase() !== "monster"
         );
 
 
@@ -3666,23 +3672,10 @@ function getCurrentFilteredMonsterCandidates(){
 
 function pickRandomMonster(){
 
-  /*
-     Die Namenssuche soll beim Würfeln keinen Einfluss haben.
-     Andere Filter (CR, XP, Lebensraum, Temperatur, Einzigartige)
-     bleiben unverändert und bestimmen weiterhin die Auswahlmenge.
-  */
-  const searchInput =
-    document.getElementById("searchInput");
-
-  if(searchInput){
-    searchInput.value = "";
-  }
-
   const candidates =
     getCurrentFilteredMonsterCandidates();
 
   if(!candidates.length){
-    filterMonsters();
     alert("Keine Kreatur passt zu den aktuellen Filtern.");
     return;
   }
@@ -3690,10 +3683,10 @@ function pickRandomMonster(){
   const picked =
     candidates[Math.floor(Math.random() * candidates.length)];
 
-  /* Die gezogene Kreatur bleibt anschließend als Suchtreffer sichtbar. */
-  if(searchInput){
-    searchInput.value = picked.monster.name;
-  }
+  const searchInput =
+    document.getElementById("searchInput");
+
+  searchInput.value = picked.monster.name;
 
   filterMonsters();
 
