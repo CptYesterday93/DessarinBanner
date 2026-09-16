@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V53</title>
+<title>DnD Monster Database – V55</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -514,8 +514,30 @@ tbody tr:hover{
   line-height:1;
 }
 
-.score-marker[title]{
+.score-marker[data-tooltip]{
   cursor:help;
+}
+
+/* Sofortiger eigener Hover-Tooltip fuer Wertungen; kein Browser-title-Delay. */
+.score-tooltip{
+  position:fixed;
+  z-index:10000;
+  display:none;
+  pointer-events:none;
+  max-width:260px;
+  padding:7px 10px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:7px;
+  background:rgba(24,24,24,.97);
+  color:#fff;
+  font-size:12px;
+  line-height:1.25;
+  white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.45);
+}
+
+.score-tooltip.visible{
+  display:block;
 }
 
 .score-marker-star{
@@ -1335,7 +1357,7 @@ tbody tr:hover{
 
     <div class="topbar">
       <div class="topbar-main">
-        <h1>DnD Monster Database – V53</h1>
+        <h1>DnD Monster Database – V55</h1>
         <button
           type="button"
           id="randomMonsterButton"
@@ -4053,9 +4075,9 @@ function getScoreMarkerHTML(score, contextLabel="Wertung"){
   const escapedAria = escapeHTML(`${contextLabel}: ${value}, ${band.label}`);
 
   if(band.symbol){
-    return `<span class="score-marker ${band.cls}" role="img" aria-label="${escapedAria}" title="${escapedTooltip}">${band.symbol}</span>`;
+    return `<span class="score-marker ${band.cls}" role="img" aria-label="${escapedAria}" data-tooltip="${escapedTooltip}">${band.symbol}</span>`;
   }
-  return `<span class="score-marker score-marker-dot ${band.cls}" role="img" aria-label="${escapedAria}" title="${escapedTooltip}"></span>`;
+  return `<span class="score-marker score-marker-dot ${band.cls}" role="img" aria-label="${escapedAria}" data-tooltip="${escapedTooltip}"></span>`;
 }
 
 function formatScoredValue(score, contextLabel="Wertung"){
@@ -6293,6 +6315,78 @@ updateTemperatureUI();
 
 loadSheet();
 
+</script>
+
+<div id="scoreTooltip" class="score-tooltip" role="status" aria-hidden="true"></div>
+
+<script>
+(() => {
+  const tooltip = document.getElementById('scoreTooltip');
+  let activeMarker = null;
+
+  function hideTooltip(){
+    activeMarker = null;
+    tooltip.classList.remove('visible');
+    tooltip.setAttribute('aria-hidden', 'true');
+  }
+
+  function positionTooltip(marker){
+    const rect = marker.getBoundingClientRect();
+    const gap = 8;
+    const tipRect = tooltip.getBoundingClientRect();
+    let left = rect.left + (rect.width / 2) - (tipRect.width / 2);
+    let top = rect.bottom + gap;
+
+    if(left < 8) left = 8;
+    if(left + tipRect.width > window.innerWidth - 8){
+      left = window.innerWidth - tipRect.width - 8;
+    }
+
+    if(top + tipRect.height > window.innerHeight - 8){
+      top = rect.top - tipRect.height - gap;
+    }
+
+    if(top < 8) top = 8;
+
+    tooltip.style.left = `${Math.round(left)}px`;
+    tooltip.style.top = `${Math.round(top)}px`;
+  }
+
+  document.addEventListener('mouseover', (event) => {
+    const marker = event.target.closest?.('.score-marker[data-tooltip]');
+    if(!marker) return;
+    if(marker === activeMarker) return;
+
+    activeMarker = marker;
+    tooltip.textContent = marker.dataset.tooltip || '';
+    tooltip.classList.add('visible');
+    tooltip.setAttribute('aria-hidden', 'false');
+    positionTooltip(marker);
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    const marker = event.target.closest?.('.score-marker[data-tooltip]');
+    if(marker && marker === activeMarker){
+      positionTooltip(marker);
+    }
+  });
+
+  document.addEventListener('mouseout', (event) => {
+    const marker = event.target.closest?.('.score-marker[data-tooltip]');
+    if(!marker || marker !== activeMarker) return;
+    const next = event.relatedTarget;
+    if(next && marker.contains(next)) return;
+    hideTooltip();
+  });
+
+  window.addEventListener('scroll', () => {
+    if(activeMarker) positionTooltip(activeMarker);
+  }, true);
+
+  window.addEventListener('resize', () => {
+    if(activeMarker) positionTooltip(activeMarker);
+  });
+})();
 </script>
 
 </body>
