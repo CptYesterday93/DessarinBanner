@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD Monster Database – V48</title>
+<title>DnD Monster Database – V49</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -498,6 +498,49 @@ tbody tr:hover{
 
 .score-total{
   font-size:16px;
+}
+
+.score-marker{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:18px;
+  min-width:18px;
+  height:18px;
+  margin-right:5px;
+  vertical-align:-2px;
+  font-size:14px;
+  font-weight:900;
+  line-height:1;
+}
+
+.score-marker-star{
+  color:#ffd54a;
+  text-shadow:0 0 5px rgba(255,213,74,.25);
+}
+
+.score-marker-dot{
+  width:10px;
+  min-width:10px;
+  height:10px;
+  border-radius:50%;
+  margin-right:7px;
+  border:1px solid rgba(255,255,255,.16);
+  box-sizing:border-box;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.16);
+}
+
+.score-marker-blue{ background:#168cff; }
+.score-marker-yellow{ background:#ffd84d; }
+.score-marker-orange{ background:#ff9f43; }
+.score-marker-gray{ background:#d6d6d6; }
+.score-marker-black{ background:#171717; border-color:#666; }
+
+.score-label{
+  font-size:10px;
+  color:#999;
+  margin-left:3px;
+  font-weight:600;
 }
 
 .score-detail{
@@ -1288,7 +1331,7 @@ tbody tr:hover{
 
     <div class="topbar">
       <div class="topbar-main">
-        <h1>DnD Monster Database – V48</h1>
+        <h1>DnD Monster Database – V49</h1>
         <button
           type="button"
           id="randomMonsterButton"
@@ -1716,7 +1759,7 @@ const REGION_SHEET_NAME =
 // Einmalig die Google-Apps-Script-Web-App-URL eintragen,
 // damit Schnellkorrekturen direkt ins Sheet geschrieben werden können.
 const SHEET_WRITE_URL =
-  "https://script.google.com/macros/s/AKfycbwJs-r-hQbtTSX-AxQVb_GaAnS2_v8MVtnZ9GWYY8LeuLXHa7gCXe328rvaZ4JotnVXFw/exec";
+  "https://script.google.com/macros/s/AKfycbxK4nyu3mA0PblTiLFsOIXbRbXQvRQPCU5Z7bA1KfQ9QMMOvBaM8iUtyZS8IR9wo38V3Q/exec";
 
 
 /* =========================================================
@@ -4038,16 +4081,34 @@ function formatScore(
    STERNE
 ========================================================= */
 
-function getStars(score){
+function getScoreBand(score){
+  if(score === null || score === undefined || !Number.isFinite(Number(score))) return null;
+  const n = Number(score);
+  if(n >= 0.90) return { cls:"score-marker-star", symbol:"★", label:"nahezu perfekt" };
+  if(n >= 0.80) return { cls:"score-marker-blue", symbol:"", label:"sehr passend" };
+  if(n >= 0.65) return { cls:"score-marker-yellow", symbol:"", label:"passend" };
+  if(n >= 0.50) return { cls:"score-marker-orange", symbol:"", label:"teilweise passend" };
+  if(n >= 0.30) return { cls:"score-marker-gray", symbol:"", label:"eher unpassend" };
+  return { cls:"score-marker-black", symbol:"", label:"kaum passend" };
+}
 
-  if(score === null || score === undefined){
-    return "—";
+function getScoreMarkerHTML(score){
+  const band = getScoreBand(score);
+  if(!band) return "";
+  if(band.symbol){
+    return `<span class="score-marker ${band.cls}" role="img" aria-label="${band.label}">${band.symbol}</span>`;
   }
+  return `<span class="score-marker score-marker-dot ${band.cls}" role="img" aria-label="${band.label}"></span>`;
+}
 
-  const rounded =
-    Math.max(0, Math.min(5, Math.round(score * 5)));
+function formatScoredValue(score){
+  if(score === null || score === undefined) return "—";
+  return `${getScoreMarkerHTML(score)}${formatScore(score)}`;
+}
 
-  return "★".repeat(rounded) + "☆".repeat(5 - rounded);
+// Rückwärtskompatibel für bestehende Stellen im Profil-Editor.
+function getStars(score){
+  return formatScoredValue(score);
 }
 
 
@@ -4756,7 +4817,7 @@ function renderTable(
 
 
         <td class="score score-total">
-          ${formatScore(
+          ${formatScoredValue(
             item.total
           )}
         </td>
@@ -4946,7 +5007,7 @@ function renderMobileCards(
             </div>
 
             <div class="mobile-score">
-              ${formatScore(
+              ${formatScoredValue(
                 item.total
               )}
             </div>
@@ -5098,7 +5159,7 @@ function openInfoModal(
           </span>
 
           <span class="profile-item-score">
-            ${getStars(
+            ${formatScore(
               monster.habitats[
                 habitat.label
               ]
@@ -5197,7 +5258,7 @@ function openInfoModal(
             </span>
 
             <span class="profile-item-score">
-              ${formatScore(
+              ${formatScoredValue(
                 scores.total
               )}
             </span>
