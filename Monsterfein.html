@@ -4825,7 +4825,7 @@ function renderTable(
 
         <td class="score">
 
-          ${formatScore(
+          ${formatScoredValue(
             item.habitat
           )}
 
@@ -4844,7 +4844,7 @@ function renderTable(
 
         <td class="score">
 
-          ${formatScore(
+          ${formatScoredValue(
             item.climate
           )}
 
@@ -5022,7 +5022,7 @@ function renderMobileCards(
             </div>
 
             <div class="mobile-value">
-              ${formatScore(
+              ${formatScoredValue(
                 item.habitat
               )}
             </div>
@@ -5037,7 +5037,7 @@ function renderMobileCards(
             </div>
 
             <div class="mobile-value">
-              ${formatScore(
+              ${formatScoredValue(
                 item.climate
               )}
               –
@@ -5273,7 +5273,7 @@ function openInfoModal(
             </span>
 
             <span class="profile-item-score">
-              ${formatScore(
+              ${formatScoredValue(
                 scores.habitat
               )}
             </span>
@@ -5291,7 +5291,7 @@ function openInfoModal(
             </span>
 
             <span class="profile-item-score">
-              ${formatScore(
+              ${formatScoredValue(
                 scores.climate
               )}
             </span>
@@ -6076,9 +6076,9 @@ function openInfoModal(monster){
     <div class="modal-section">
       <h3>Aktuelle Bewertung</h3>
       <div class="profile-grid">
-        <div class="profile-item"><span class="profile-item-name">Gesamt</span><span class="profile-item-score">${formatScore(scores.total)}</span></div>
-        <div class="profile-item"><span class="profile-item-name">Lebensraum</span><span class="profile-item-score">${formatScore(scores.habitat)}</span></div>
-        <div class="profile-item"><span class="profile-item-name">Temperatur Region (${formatTemperatureRange(appliedTemperatureMin, appliedTemperatureMax)})</span><span class="profile-item-score">${formatScore(scores.climate)}</span></div>
+        <div class="profile-item"><span class="profile-item-name">Gesamt</span><span class="profile-item-score">${formatScoredValue(scores.total)}</span></div>
+        <div class="profile-item"><span class="profile-item-name">Lebensraum</span><span class="profile-item-score">${formatScoredValue(scores.habitat)}</span></div>
+        <div class="profile-item"><span class="profile-item-name">Temperatur Region (${formatTemperatureRange(appliedTemperatureMin, appliedTemperatureMax)})</span><span class="profile-item-score">${formatScoredValue(scores.climate)}</span></div>
       </div>
     </div>
   `;
