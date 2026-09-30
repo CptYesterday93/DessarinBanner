@@ -474,10 +474,22 @@ tbody tr:hover{
   color:white;
 }
 
-.edit-monster-button{
+.edit-button{
   width:auto;
   min-width:26px;
   margin-left:3px;
+  padding:4px 7px;
+  background:#333;
+  border:1px solid #4a4a4a;
+  border-radius:6px;
+  color:#aaa;
+  font-size:12px;
+  line-height:1;
+}
+
+.edit-button:hover{
+  background:#444;
+  color:white;
 }
 
 /* =========================================================
@@ -626,8 +638,60 @@ tbody tr:hover{
 
 .biome-edit-item input{
   width:100%;
-  padding:7px 8px;
   font-size:13px;
+}
+
+.biome-edit-item input[type="range"],
+#editTemperature{
+  width:100%;
+  height:16px;
+  padding:0 !important;
+  accent-color:#4f46e5;
+}
+
+#editTemperatureValue{
+  color:#f0c75e;
+  font-weight:bold;
+  font-variant-numeric:tabular-nums;
+}
+
+.info-modal-compact .modal-section{
+  margin-bottom:14px;
+}
+
+.info-modal-compact .modal-section h3{
+  margin:0 0 8px;
+  font-size:16px;
+}
+
+.info-modal-compact .modal-meta{
+  gap:8px 18px;
+  margin-bottom:14px;
+  font-size:13px;
+}
+
+.info-modal-compact .profile-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
+
+.info-modal-compact .profile-item{
+  padding:7px 9px;
+  min-height:34px;
+}
+
+.info-modal-compact .profile-item-name{
+  font-size:12px;
+}
+
+.info-modal-compact .profile-item-score{
+  font-size:13px;
+}
+
+.info-modal-compact .temperature-note{
+  margin-top:7px;
+  color:#999;
+  font-size:11px;
 }
 
 .editor-actions{
@@ -1790,8 +1854,11 @@ tbody tr:hover{
     <div class="modal-body">
       <div class="biome-edit-grid" id="biomeEditGrid"></div>
       <div class="filter-group" style="margin-top:14px">
-        <label for="editTemperature">Temperatur (0–1)</label>
-        <input id="editTemperature" type="number" min="0" max="1" step="0.1">
+        <div class="editor-slider-head">
+          <label for="editTemperature">Temperatur (0–1)</label>
+          <output id="editTemperatureValue">0.50</output>
+        </div>
+        <input id="editTemperature" type="range" min="0" max="1" step="0.1" value="0.50">
       </div>
       <div class="editor-actions">
         <button type="button" id="editSaveLocal">Im Tool übernehmen</button>
@@ -4794,7 +4861,7 @@ function renderTable(
             </button>
             <button
               type="button"
-              class="info-button edit-monster-button"
+              class="edit-button edit-monster-button"
               data-monster-index="${item.index}"
               title="Werte bearbeiten"
             >
@@ -4824,7 +4891,7 @@ function renderTable(
             </button>
             <button
               type="button"
-              class="info-button edit-monster-button"
+              class="edit-button edit-monster-button"
               data-monster-index="${item.index}"
               title="Werte bearbeiten"
             >
@@ -5851,32 +5918,127 @@ function escapeAttribute(
 let editMonsterIndex = null;
 
 function buildEditGrid(){
-  const container = document.getElementById("biomeEditGrid");
+
+  const container =
+    document.getElementById("biomeEditGrid");
+
   container.innerHTML = "";
+
   HABITATS.forEach(h => {
-    const div = document.createElement("div");
-    div.className = "biome-edit-item";
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "biome-edit-item";
+
     div.innerHTML = `
-      <label for="edit_${h.label}">${escapeHTML(h.label)}</label>
-      <input id="edit_${h.label}" type="number" min="0" max="1" step="0.1" value="0">
+      <div class="editor-slider-head">
+        <label for="edit_${h.label}">
+          ${escapeHTML(h.label)}
+        </label>
+        <output id="editValue_${h.label}">
+          0.00
+        </output>
+      </div>
+
+      <input
+        id="edit_${h.label}"
+        type="range"
+        min="0"
+        max="1"
+        step="0.1"
+        value="0"
+      >
     `;
+
+    const range =
+      div.querySelector("input");
+
+    const output =
+      div.querySelector("output");
+
+    range.addEventListener("input", () => {
+      output.value =
+        Number(range.value).toFixed(2);
+    });
+
     container.appendChild(div);
+
   });
 }
 
 function openEditModal(index){
-  const monster = monsters[index];
-  if(!monster) return;
-  editMonsterIndex = index;
-  document.getElementById("editModalTitle").textContent = monster.name;
-  document.getElementById("editModalSubtitle").textContent = "Habitatwerte 0,0–1,0 · Temperatur 0,0–1,0";
+
+  const monster =
+    monsters[index];
+
+  if(!monster)
+    return;
+
+  editMonsterIndex =
+    index;
+
+  document.getElementById("editModalTitle").textContent =
+    monster.name;
+
+  document.getElementById("editModalSubtitle").textContent =
+    "Habitatwerte 0,0–1,0 · Temperatur 0,0–1,0";
+
   HABITATS.forEach(h => {
-    const input = document.getElementById(`edit_${h.label}`);
-    if(input) input.value = Number(monster.habitats[h.label] || 0).toFixed(2);
+
+    const input =
+      document.getElementById(`edit_${h.label}`);
+
+    const output =
+      document.getElementById(`editValue_${h.label}`);
+
+    const value =
+      Number(monster.habitats[h.label] || 0);
+
+    const safe =
+      Number.isFinite(value)
+        ? Math.max(0, Math.min(1, value))
+        : 0;
+
+    if(input)
+      input.value =
+        safe.toFixed(2);
+
+    if(output)
+      output.value =
+        safe.toFixed(2);
+
   });
-  const temp = Array.isArray(monster.temperature) && monster.temperature.length ? Number(monster.temperature[0]) : 0.50;
-  document.getElementById("editTemperature").value = Number(temp).toFixed(2);
-  document.getElementById("editStatus").textContent = "";
+
+  const temp =
+    Array.isArray(monster.temperature) &&
+    monster.temperature.length
+      ? Number(monster.temperature[0])
+      : 0.50;
+
+  const safeTemp =
+    Number.isFinite(temp)
+      ? Math.max(0, Math.min(1, temp))
+      : 0.50;
+
+  const tempInput =
+    document.getElementById("editTemperature");
+
+  const tempOutput =
+    document.getElementById("editTemperatureValue");
+
+  if(tempInput)
+    tempInput.value =
+      safeTemp.toFixed(2);
+
+  if(tempOutput)
+    tempOutput.value =
+      safeTemp.toFixed(2);
+
+  document.getElementById("editStatus").textContent =
+    "";
+
   document.getElementById("editModal").classList.add("open");
 }
 
@@ -5971,6 +6133,11 @@ document.addEventListener("click", event => {
   if(button) openEditModal(Number(button.dataset.monsterIndex));
 });
 
+document.getElementById("editTemperature").addEventListener("input", () => {
+  document.getElementById("editTemperatureValue").value =
+    Number(document.getElementById("editTemperature").value).toFixed(2);
+});
+
 document.getElementById("editModalClose").addEventListener("click", closeEditModal);
 document.getElementById("editSaveLocal").addEventListener("click", () => {
   applyEditedValuesToMonster();
@@ -6011,157 +6178,109 @@ document.querySelectorAll(".mode-tab").forEach(tab => {
   tab.addEventListener("click", () => setModeView(tab.dataset.view));
 });
 
-function buildMonsterEditorControls(monster){
-  const wrap = document.createElement("div");
-  wrap.className = "modal-section";
-  wrap.innerHTML = '<h3>Werte bearbeiten</h3>';
-  const grid = document.createElement("div");
-  grid.className = "editor-slider-grid";
-  HABITATS.forEach(h => {
-    const item = document.createElement("div");
-    item.className = "editor-slider-item";
-    const safe = Number.isFinite(Number(monster.habitats[h.label])) ? Number(monster.habitats[h.label]) : 0;
-    item.innerHTML = `
-      <div class="editor-slider-head">
-        <label>${escapeHTML(h.label)}</label>
-        <output>${safe.toFixed(2)}</output>
-      </div>
-      <input class="monster-edit-range" data-habitat="${escapeAttribute(h.label)}" type="range" min="0" max="1" step="0.1" value="${safe.toFixed(2)}">
-    `;
-    const range = item.querySelector("input");
-    const output = item.querySelector("output");
-    range.addEventListener("input", () => output.value = Number(range.value).toFixed(2));
-    grid.appendChild(item);
-  });
-  wrap.appendChild(grid);
-
-  const temp = Array.isArray(monster.temperature) && monster.temperature.length ? Number(monster.temperature[0]) : 0.50;
-  const tempWrap = document.createElement("div");
-  tempWrap.style.marginTop = "12px";
-  tempWrap.className = "editor-slider-item";
-  tempWrap.innerHTML = `
-    <div class="editor-slider-head"><label>Temperatur (0–1)</label><output id="monsterEditTempOut">${temp}</output></div>
-    <input id="monsterEditTemp" type="range" min="0" max="1" step="0.1" value="${temp}">
-  `;
-  const tempRange = tempWrap.querySelector("#monsterEditTemp");
-  const tempOut = tempWrap.querySelector("#monsterEditTempOut");
-  tempRange.addEventListener("input", () => tempOut.value = tempRange.value);
-  wrap.appendChild(tempWrap);
-
-  const actions = document.createElement("div");
-  actions.className = "editor-save-row";
-  actions.innerHTML = `
-    <button type="button" id="monsterSaveLocal">Im Tool übernehmen</button>
-    <button type="button" id="monsterSaveSheet" style="background:#4f46e5;border-color:#6d63ff">In Sheet speichern</button>
-  `;
-  wrap.appendChild(actions);
-  return wrap;
-}
-
-function getMonsterEditorValuesFromModal(){
-  const habitats = {};
-  document.querySelectorAll(".monster-edit-range").forEach(input => {
-    habitats[input.dataset.habitat] = Math.max(0, Math.min(1, Math.round(Number(input.value) * 20) / 20));
-  });
-  const temperature = Math.max(0, Math.min(1, Math.round(Number(document.getElementById("monsterEditTemp")?.value ?? 0.50) * 20) / 20));
-  return { habitats, temperature };
-}
-
-function applyMonsterEditorLocal(monsterIndex){
-  const monster = monsters[monsterIndex];
-  if(!monster) return null;
-  const edited = getMonsterEditorValuesFromModal();
-  monster.habitats = edited.habitats;
-  monster.temperature = [edited.temperature];
-  filterMonsters();
-  return edited;
-}
-
-function writeMonsterFromInfoModal(monsterIndex, statusEl){
-  const monster = monsters[monsterIndex];
-  if(!monster) return;
-  const edited = getMonsterEditorValuesFromModal();
-  if(!SHEET_WRITE_URL){
-    statusEl.textContent = "Schreib-URL fehlt.";
-    return;
-  }
-  const callbackName = "sheetWriteCallback_" + Date.now() + "_" + Math.floor(Math.random()*100000);
-  let script = null;
-  window[callbackName] = function(result){
-    try{
-      if(result && result.ok){
-        monster.habitats = edited.habitats;
-        monster.temperature = [edited.temperature];
-        filterMonsters();
-        statusEl.textContent = "✓ Im Google Sheet gespeichert.";
-      }else{
-        statusEl.textContent = "Fehler: " + (result?.error || "Unbekannter Fehler");
-      }
-    }finally{
-      delete window[callbackName];
-      if(script?.parentNode) script.parentNode.removeChild(script);
-    }
-  };
-  const params = new URLSearchParams({
-    action:"updateMonster", sheetId:SHEET_ID, sheetName:SHEET_NAME,
-    monsterName:monster.name, habitats:JSON.stringify(edited.habitats),
-    temperature:Number(edited.temperature).toFixed(2), callback:callbackName
-  });
-  script = document.createElement("script");
-  script.src = `${SHEET_WRITE_URL}?${params.toString()}`;
-  script.onerror = () => {
-    delete window[callbackName];
-    statusEl.textContent = "Fehler: Web-App nicht erreichbar.";
-    if(script?.parentNode) script.parentNode.removeChild(script);
-  };
-  statusEl.textContent = "Speichere…";
-  document.head.appendChild(script);
-}
-
 function openInfoModal(monster){
-  if(!monster) return;
-  const modal = document.getElementById("infoModal");
-  const index = monsters.indexOf(monster);
-  document.getElementById("modalTitle").textContent = monster.name;
-  const scores = calculateScores(monster);
-  const editor = buildMonsterEditorControls(monster);
-  const body = document.getElementById("modalBody");
-  body.innerHTML = `
-    <div class="modal-meta">
-      <span><strong>CR:</strong> ${formatCR(monster.cr)}</span>
-      <span><strong>XP:</strong> ${monster.xp.toLocaleString("de-DE")}</span>
-      <span><strong>Einzigartig:</strong> ${escapeHTML(monster.unique || "-")}</span>
-    </div>
-    <div class="modal-section">
-      <h3>Aktuelle Bewertung</h3>
-      <div class="profile-grid">
-        <div class="profile-item"><span class="profile-item-name">Gesamt</span><span class="profile-item-score">${formatScoredValue(scores.total, "Gesamt")}</span></div>
-        <div class="profile-item"><span class="profile-item-name">Lebensraum</span><span class="profile-item-score">${formatScoredValue(scores.habitat, "Lebensraum")}</span></div>
-        <div class="profile-item"><span class="profile-item-name">Temperatur Region (${formatTemperatureRange(appliedTemperatureMin, appliedTemperatureMax)})</span><span class="profile-item-score">${formatScoredValue(scores.climate, "Klima")}</span></div>
+
+  if(!monster)
+    return;
+
+  const modal =
+    document.getElementById("infoModal");
+
+  document.getElementById("modalTitle").textContent =
+    monster.name;
+
+  const scores =
+    calculateScores(monster);
+
+  let habitatHTML = "";
+
+  HABITATS.forEach(habitat => {
+
+    const value =
+      Number(monster.habitats[habitat.label]);
+
+    habitatHTML += `
+      <div class="profile-item">
+        <span class="profile-item-name">
+          ${escapeHTML(habitat.label)}
+        </span>
+        <span class="profile-item-score">
+          ${Number.isFinite(value) ? value.toFixed(2) : "0.00"}
+        </span>
       </div>
+    `;
+
+  });
+
+  const temperature =
+    Array.isArray(monster.temperature) &&
+    monster.temperature.length
+      ? Number(monster.temperature[0])
+      : 0.50;
+
+  document.getElementById("modalBody").innerHTML = `
+
+    <div class="info-modal-compact">
+
+      <div class="modal-meta">
+        <span><strong>CR:</strong> ${formatCR(monster.cr)}</span>
+        <span><strong>XP:</strong> ${monster.xp.toLocaleString("de-DE")}</span>
+        <span><strong>Einzigartig:</strong> ${escapeHTML(monster.unique || "-")}</span>
+      </div>
+
+      <div class="modal-section">
+        <h3>Aktuelle Bewertung</h3>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-item-name">Gesamt</span>
+            <span class="profile-item-score">
+              ${formatScoredValue(scores.total, "Gesamt")}
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-item-name">Lebensraum</span>
+            <span class="profile-item-score">
+              ${formatScoredValue(scores.habitat, "Lebensraum")}
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-item-name">Klima</span>
+            <span class="profile-item-score">
+              ${formatScoredValue(scores.climate, "Klima")}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Lebensräume</h3>
+
+        <div class="profile-grid">
+          ${habitatHTML}
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Klima</h3>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-item-name">Temperatur</span>
+            <span class="profile-item-score">
+              ${Number.isFinite(temperature) ? temperature.toFixed(2) : "0.50"}
+            </span>
+          </div>
+        </div>
+      </div>
+
     </div>
   `;
-  body.appendChild(editor);
-  const status = document.createElement("div");
-  status.id = "monsterInfoSaveStatus";
-  status.className = "editor-status";
-  body.appendChild(status);
-  document.getElementById("monsterSaveLocal").addEventListener("click", () => {
-    applyMonsterEditorLocal(index);
-    status.textContent = "Werte im Tool übernommen.";
-  });
-  document.getElementById("monsterSaveSheet").addEventListener("click", () => writeMonsterFromInfoModal(index, status));
+
   modal.classList.add("open");
 }
-
-// Edit-Symbol und Info öffnen beide jetzt dieselbe bearbeitbare Monsteransicht.
-document.addEventListener("click", event => {
-  const btn = event.target.closest(".edit-monster-button");
-  if(!btn) return;
-  event.preventDefault();
-  event.stopPropagation();
-  openInfoModal(monsters[Number(btn.dataset.monsterIndex)]);
-}, true);
 
 function populateRegionEditorSelects(){
   const typeSelect = document.getElementById("regionEditorType");
