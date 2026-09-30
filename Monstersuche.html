@@ -327,6 +327,8 @@ input[type="number"]{
 .region-slider{
   width:100%;
   min-width:0;
+  height:16px;
+  padding:0 !important;
   accent-color:#4f46e5;
 }
 
@@ -666,6 +668,7 @@ tbody tr:hover{
   transform:translateX(-50%);
   color:#eee;
   font-size:10px;
+  text-align:center;
   font-variant-numeric:tabular-nums;
   font-weight:bold;
   line-height:14px;
@@ -742,21 +745,6 @@ tbody tr:hover{
   font-weight:bold;
 }
 
-.temperature-current{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin-top:9px;
-  padding-top:8px;
-  border-top:1px solid #3a3a3a;
-  color:#888;
-  font-size:12px;
-}
-
-.temperature-current b{
-  color:#eee;
-}
 
 /* =========================================================
    SUCHE
@@ -1055,11 +1043,13 @@ tbody tr:hover{
   .sidebar{
     padding:14px;
     height:calc(100vh - 40px);
-    overflow:hidden;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scrollbar-width:thin;
   }
 
   .sidebar .filter-group{
-    margin-bottom:13px;
+    margin-bottom:10px;
   }
 
   .sidebar .filter-group > label{
@@ -1100,11 +1090,31 @@ tbody tr:hover{
   }
 
   .sidebar .region-row{
-    min-height:30px;
+    min-height:28px;
+    padding:5px 6px;
+  }
+
+  .sidebar .region-row.active{
+    min-height:46px;
+  }
+
+  .sidebar .region-name-button{
+    font-size:11px;
+    padding:1px 0;
+  }
+
+  .sidebar .region-stars{
+    gap:4px;
+  }
+
+  .sidebar .region-value{
+    width:30px;
+    min-width:30px;
+    font-size:9px;
   }
 
   .sidebar .temperature-filter{
-    padding:9px 8px 8px;
+    padding:7px 6px 6px;
   }
 
 }
@@ -1204,7 +1214,9 @@ tbody tr:hover{
 
   .sidebar{
     padding:14px;
-    overflow:hidden;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scrollbar-width:thin;
   }
 
   .filter-group{
@@ -1236,16 +1248,15 @@ tbody tr:hover{
   }
 
   .region-row{
-    min-height:30px;
+    min-height:28px;
+  }
+
+  .region-row.active{
+    min-height:46px;
   }
 
   .temperature-filter{
     padding:8px;
-  }
-
-  .temperature-current{
-    margin-top:6px;
-    padding-top:6px;
   }
 
 }
@@ -3240,7 +3251,7 @@ function formatTemperatureRange(
     return `${Number(min).toFixed(2)} · ${getTemperatureLabel(min)}`;
   }
 
-  return `${Number(min).toFixed(2)}–${Number(max).toFixed(2)} · ${getTemperatureLabel(min)}–${getTemperatureLabel(max)}`;
+  return `${Number(min).toFixed(2)}–${Number(max).toFixed(2)}`;
 
 }
 
@@ -3768,11 +3779,7 @@ function pickRandomMonster(){
   const searchInput =
     document.getElementById("searchInput");
 
-  /*
-     Die Zufallsauswahl darf nicht durch den aktuell
-     eingetragenen Suchbegriff eingeschränkt werden.
-     Deshalb Suche zuerst leeren und erst danach Kandidaten ermitteln.
-  */
+  // Der bestehende Suchbegriff soll die Zufallsauswahl nicht einschränken.
   searchInput.value = "";
 
   filterMonsters();
