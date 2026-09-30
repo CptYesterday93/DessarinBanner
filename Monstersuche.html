@@ -646,12 +646,30 @@ tbody tr:hover{
    TEMPERATUR RANGE
 ========================================================= */
 
+.temperature-control-row{
+  position:relative;
+  padding-top:16px;
+}
+
 .temperature-range-wrap{
   position:relative;
   height:34px;
   margin:1px 5px 5px;
   touch-action:none;
   user-select:none;
+}
+
+.temperature-value-inline{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  color:#eee;
+  font-size:10px;
+  font-variant-numeric:tabular-nums;
+  font-weight:bold;
+  line-height:14px;
+  white-space:nowrap;
 }
 
 .temperature-track,
@@ -1655,29 +1673,38 @@ tbody tr:hover{
 
       <div class="temperature-filter">
 
-        <div class="temperature-range-wrap" id="temperatureRange">
+        <div class="temperature-control-row">
 
-          <div class="temperature-track"></div>
-          <div
-            class="temperature-track-active"
-            id="temperatureTrackActive"
-          ></div>
+          <div class="temperature-range-wrap" id="temperatureRange">
 
-          <div
-            class="temperature-handle temperature-handle-left"
-            id="temperatureHandleLeft"
-            role="slider"
-            aria-label="Untere Temperaturgrenze"
-            tabindex="0"
-          ></div>
+            <div class="temperature-track"></div>
+            <div
+              class="temperature-track-active"
+              id="temperatureTrackActive"
+            ></div>
 
-          <div
-            class="temperature-handle temperature-handle-right"
-            id="temperatureHandleRight"
-            role="slider"
-            aria-label="Obere Temperaturgrenze"
-            tabindex="0"
-          ></div>
+            <div
+              class="temperature-handle temperature-handle-left"
+              id="temperatureHandleLeft"
+              role="slider"
+              aria-label="Untere Temperaturgrenze"
+              tabindex="0"
+            ></div>
+
+            <div
+              class="temperature-handle temperature-handle-right"
+              id="temperatureHandleRight"
+              role="slider"
+              aria-label="Obere Temperaturgrenze"
+              tabindex="0"
+            ></div>
+
+          </div>
+
+          <b
+            id="temperatureCurrentValue"
+            class="temperature-value-inline"
+          >0.50</b>
 
         </div>
 
@@ -1689,10 +1716,7 @@ tbody tr:hover{
           <span>1.00 · Vulkanisch</span>
         </div>
 
-        <div class="temperature-current">
-          <span>Gebiet</span>
-          <b id="temperatureCurrentValue">0.50 · Gemäßigt</b>
-        </div>
+      </div>
 
       </div>
 
@@ -3741,6 +3765,18 @@ function getCurrentFilteredMonsterCandidates(){
 
 function pickRandomMonster(){
 
+  const searchInput =
+    document.getElementById("searchInput");
+
+  /*
+     Die Zufallsauswahl darf nicht durch den aktuell
+     eingetragenen Suchbegriff eingeschränkt werden.
+     Deshalb Suche zuerst leeren und erst danach Kandidaten ermitteln.
+  */
+  searchInput.value = "";
+
+  filterMonsters();
+
   const candidates =
     getCurrentFilteredMonsterCandidates();
 
@@ -3751,9 +3787,6 @@ function pickRandomMonster(){
 
   const picked =
     candidates[Math.floor(Math.random() * candidates.length)];
-
-  const searchInput =
-    document.getElementById("searchInput");
 
   searchInput.value = picked.monster.name;
 
