@@ -4157,7 +4157,7 @@ function calculateScores(monster){
   }else if(climate === null){
     total = habitat;
   }else{
-    total = habitat * 0.75 + climate * 0.25;
+    total = Math.pow(habitat, 0.6) * Math.pow(climate, 0.4);
   }
 
   return { habitat, climate, total };
