@@ -4293,24 +4293,31 @@ function hasActiveFilters(){
 
 }
 
+function normalizeSearchText(value){
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/ß/g, "ss")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
 function searchMatchesMonsterName(name, query){
-
-  const nameTokens = String(name || "")
-    .toLowerCase()
-    .match(/[\p{L}\p{N}]+/gu) || [];
-
-  const queryTokens = String(query || "")
-    .toLowerCase()
-    .match(/[\p{L}\p{N}]+/gu) || [];
+  const normalizedName = normalizeSearchText(name);
+  const queryTokens = normalizeSearchText(query)
+    .split(/\s+/)
+    .filter(Boolean);
 
   if(!queryTokens.length){
     return true;
   }
 
+  // Jeder Suchteil darf innerhalb eines Namensbestandteils vorkommen:
+  // "rust mo" findet dadurch auch "Rust Monster (Legacy)".
   return queryTokens.every(token =>
-    nameTokens.includes(token)
+    normalizedName.includes(token)
   );
-
 }
 
 function filterMonsters(){
@@ -5491,8 +5498,7 @@ document.addEventListener(
 
 [
   "xpMin",
-  "xpMax",
-  "searchInput"
+  "xpMax"
 ]
 .forEach(
   id => {
@@ -5508,6 +5514,21 @@ document.addEventListener(
 
   }
 );
+
+// Freitextsuche erst 300 ms nach dem letzten Tastendruck ausführen.
+// So wird bei schnellem Tippen nicht für jedes Zeichen die gesamte
+// Monsterliste neu gefiltert und bewertet.
+let searchDebounceTimer = null;
+const SEARCH_DEBOUNCE_MS = 300;
+
+document
+  .getElementById("searchInput")
+  .addEventListener("input", () => {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      filterMonsters();
+    }, SEARCH_DEBOUNCE_MS);
+  });
 
 
 document
