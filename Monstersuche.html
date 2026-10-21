@@ -1963,6 +1963,16 @@ for(let i=1;i<=30;i++){
 
 let monsters = [];
 
+// Ergebnisse der Habitat-/Klimabewertung bleiben erhalten, solange sich
+// weder das Monsterprofil noch die angewendete Region/Temperatur ändern.
+let scoreCache = new WeakMap();
+
+// Normalisierte Namen einmal vorbereiten, statt sie bei jedem Suchlauf neu zu zerlegen.
+let normalizedMonsterNameCache = new Map();
+
+// Die Freitextsuche wird leicht verzögert ausgeführt, nicht bei jedem Tastendruck.
+let searchDebounceTimer = null;
+
 let regionPresets = [];
 
 let regionWeights = {};
@@ -2539,6 +2549,8 @@ async function loadSheet(){
           monster => String(monster.name).trim().toLowerCase() !== "monster"
         );
 
+    invalidateScoreCache();
+    normalizedMonsterNameCache.clear();
 
     buildHabitatUI();
 
@@ -3825,7 +3837,7 @@ function getCurrentFilteredMonsterCandidates(){
       !searchMatchesMonsterName(monster.name, search)
     ) return;
 
-    const scores = calculateScores(monster);
+    const scores = getCachedScores(monster);
 
     candidates.push({
       monster,
@@ -3845,6 +3857,8 @@ function pickRandomMonster(){
 
   const searchInput =
     document.getElementById("searchInput");
+
+  cancelPendingSearchFilter();
 
   // Der bestehende Suchbegriff soll die Zufallsauswahl nicht einschränken.
   searchInput.value = "";
@@ -3902,7 +3916,7 @@ document
       appliedTemperatureMax =
         selectedTemperatureMax;
 
-
+      invalidateScoreCache();
       filterMonsters();
 
     }
@@ -4165,6 +4179,19 @@ function calculateScores(monster){
   return { habitat, climate, total };
 }
 
+function invalidateScoreCache(){
+  scoreCache = new WeakMap();
+}
+
+function getCachedScores(monster){
+  const cached = scoreCache.get(monster);
+  if(cached !== undefined) return cached;
+
+  const scores = calculateScores(monster);
+  scoreCache.set(monster, scores);
+  return scores;
+}
+
 
 /* =========================================================
    SCORE FORMAT
@@ -4362,24 +4389,34 @@ function hasActiveFilters(){
 
 }
 
+function normalizeSearchText(value){
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/ß/g, "ss")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
 function searchMatchesMonsterName(name, query){
+  const rawName = String(name || "");
+  let normalizedName = normalizedMonsterNameCache.get(rawName);
 
-  const nameTokens = String(name || "")
-    .toLowerCase()
-    .match(/[\p{L}\p{N}]+/gu) || [];
-
-  const queryTokens = String(query || "")
-    .toLowerCase()
-    .match(/[\p{L}\p{N}]+/gu) || [];
-
-  if(!queryTokens.length){
-    return true;
+  if(normalizedName === undefined){
+    normalizedName = normalizeSearchText(rawName);
+    normalizedMonsterNameCache.set(rawName, normalizedName);
   }
 
-  return queryTokens.every(token =>
-    nameTokens.includes(token)
-  );
+  // Mehrere Suchteile dürfen in beliebiger Reihenfolge im Namen vorkommen.
+  // Jeder Suchteil ist ein Teilstring, kein vollständiges Wort.
+  const queryTokens = normalizeSearchText(query)
+    .split(/\s+/)
+    .filter(Boolean);
 
+  if(!queryTokens.length) return true;
+
+  return queryTokens.every(token => normalizedName.includes(token));
 }
 
 function filterMonsters(){
@@ -4605,7 +4642,7 @@ function filterMonsters(){
 
 
     const scores =
-      calculateScores(
+      getCachedScores(
         monster
       );
 
@@ -5330,7 +5367,7 @@ function openInfoModal(
 
 
   const scores =
-    calculateScores(
+    getCachedScores(
       monster
     );
 
@@ -5560,23 +5597,44 @@ document.addEventListener(
 
 [
   "xpMin",
-  "xpMax",
-  "searchInput"
+  "xpMax"
 ]
 .forEach(
   id => {
-
     document
-      .getElementById(
-        id
-      )
-      .addEventListener(
-        "input",
-        filterMonsters
-      );
-
+      .getElementById(id)
+      .addEventListener("input", filterMonsters);
   }
 );
+
+function cancelPendingSearchFilter(){
+  if(searchDebounceTimer !== null){
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = null;
+  }
+}
+
+function applySearchImmediately(){
+  cancelPendingSearchFilter();
+  filterMonsters();
+}
+
+const searchInput = document.getElementById("searchInput");
+
+searchInput.addEventListener("input", () => {
+  cancelPendingSearchFilter();
+  searchDebounceTimer = setTimeout(() => {
+    searchDebounceTimer = null;
+    filterMonsters();
+  }, 300);
+});
+
+searchInput.addEventListener("keydown", event => {
+  if(event.key === "Enter"){
+    event.preventDefault();
+    applySearchImmediately();
+  }
+});
 
 
 document
@@ -5631,6 +5689,7 @@ document
       appliedTemperatureMin = 0.50;
       appliedTemperatureMax = 0.50;
 
+      invalidateScoreCache();
       updateTemperatureUI();
       buildHabitatUI();
 
@@ -5656,8 +5715,7 @@ document
         "searchInput"
       ).value = "";
 
-
-      filterMonsters();
+      applySearchImmediately();
 
     }
   );
@@ -6070,6 +6128,7 @@ function applyEditedValuesToMonster(){
   const edited = getEditedValues();
   monster.habitats = edited.habitats;
   monster.temperature = [edited.temperature];
+  invalidateScoreCache();
   filterMonsters();
   return edited;
 }
@@ -6192,7 +6251,7 @@ function openInfoModal(monster){
     monster.name;
 
   const scores =
-    calculateScores(monster);
+    getCachedScores(monster);
 
   let habitatHTML = "";
 
@@ -6364,6 +6423,7 @@ function applyRegionEditorLocal(){
   appliedRegionWeights = {...regionWeights};
   appliedTemperatureMin = edited.temperature;
   appliedTemperatureMax = edited.temperature;
+  invalidateScoreCache();
   buildHabitatUI();
   updateTemperatureUI();
   filterMonsters();
@@ -6446,6 +6506,7 @@ function writeSidebarRegionToSheet(){
         appliedRegionWeights = {...habitats};
         appliedTemperatureMin = temp;
         appliedTemperatureMax = temp;
+        invalidateScoreCache();
         status.textContent = `✓ ${region.name} im Google Sheet gespeichert.`;
         filterMonsters();
       }else{
