@@ -1544,7 +1544,7 @@ tbody tr:hover{
       <div class="region-editor-head">
         <div>
           <h2>Regionen bearbeiten</h2>
-          <p>Biome 0,0–1,0 · Temperatur 0,0–1,0</p>
+          <p>Biome 0,0–1,0 · Temperatur 0,1–1,0</p>
         </div>
         <div class="region-editor-selects">
           <select id="regionEditorType">
@@ -1559,7 +1559,7 @@ tbody tr:hover{
       <div class="region-editor-grid" id="regionEditorGrid"></div>
       <div class="region-editor-temp">
         <label for="regionEditorTemperature">Temperatur</label>
-        <input id="regionEditorTemperature" type="range" min="0" max="1" step="0.1" value="0.50">
+        <input id="regionEditorTemperature" type="range" min="0.1" max="1" step="0.1" value="0.50">
         <output id="regionEditorTemperatureValue">0.50</output>
       </div>
       <div class="region-editor-actions">
@@ -1784,7 +1784,7 @@ tbody tr:hover{
         </div>
 
         <div class="temperature-scale">
-          <span>0.00 · Arktisch</span>
+          <span>0.10 · Arktisch</span>
           <span>0.20 · Kalt</span>
           <span>0.50 · Gemäßigt</span>
           <span>0.80 · Heiß</span>
@@ -1855,10 +1855,10 @@ tbody tr:hover{
       <div class="biome-edit-grid" id="biomeEditGrid"></div>
       <div class="filter-group" style="margin-top:14px">
         <div class="editor-slider-head">
-          <label for="editTemperature">Temperatur (0–1)</label>
+          <label for="editTemperature">Temperatur (0,1–1,0)</label>
           <output id="editTemperatureValue">0.50</output>
         </div>
-        <input id="editTemperature" type="range" min="0" max="1" step="0.1" value="0.50">
+        <input id="editTemperature" type="range" min="0.1" max="1" step="0.1" value="0.50">
       </div>
       <div class="editor-actions">
         <button type="button" id="editSaveLocal">Im Tool übernehmen</button>
@@ -1962,16 +1962,6 @@ for(let i=1;i<=30;i++){
 ========================================================= */
 
 let monsters = [];
-
-// Ergebnisse der Habitat-/Klimabewertung bleiben erhalten, solange sich
-// weder das Monsterprofil noch die angewendete Region/Temperatur ändern.
-let scoreCache = new WeakMap();
-
-// Normalisierte Namen einmal vorbereiten, statt sie bei jedem Suchlauf neu zu zerlegen.
-let normalizedMonsterNameCache = new Map();
-
-// Die Freitextsuche wird leicht verzögert ausgeführt, nicht bei jedem Tastendruck.
-let searchDebounceTimer = null;
 
 let regionPresets = [];
 
@@ -2158,9 +2148,9 @@ function parseRegionTemperature(cells, headerMap){
   }
 
   const oldColumns = [
-    ["kalt",0.25],
+    ["kalt",0.20],
     ["gemäßigt",0.50],
-    ["heiß",0.75]
+    ["heiß",0.80]
   ];
 
   let bestLabel = null;
@@ -2531,8 +2521,7 @@ async function loadSheet(){
 
           monster.temperature =
             parseTemperatureValues(
-              temperatureCell?.f ??
-              temperatureCell?.v
+              getSheetCellValue(temperatureCell)
             );
 
 
@@ -2549,8 +2538,6 @@ async function loadSheet(){
           monster => String(monster.name).trim().toLowerCase() !== "monster"
         );
 
-    invalidateScoreCache();
-    normalizedMonsterNameCache.clear();
 
     buildHabitatUI();
 
@@ -2895,39 +2882,17 @@ function normalizeTemperature01(value){
   }
 
   const raw = String(value).trim();
-
   if(!raw) return null;
 
   const number = Number(raw.replace(",", "."));
 
-  if(!Number.isFinite(number)) return null;
-
-  /*
-     Neue Temperatur-Schwerpunkt-Skala: 0–1.
-     Semantische Anker:
-       1 -> 0.00  Arktisch
-       2 -> 0.20  Kalt
-       3 -> 0.50  Gemäßigt
-       4 -> 0.80  Heiß
-       5 -> 1.00  Vulkanisch / extrem heiß
-     Neue 0–1-Werte bleiben unverändert.
-  */
-  if(number > 1){
-    const legacyMap = {
-      1: 0.00,
-      2: 0.20,
-      3: 0.50,
-      4: 0.80,
-      5: 1.00
-    };
-    const rounded = Math.round(number * 100) / 100;
-    if(Object.prototype.hasOwnProperty.call(legacyMap, rounded)){
-      return legacyMap[rounded];
-    }
-    return Math.max(0, Math.min(1, (number - 1) / 4));
+  // Neue Skala: 0.10 bis 1.00. Keine automatische Umrechnung
+  // alter 1–5-Werte: Ein aktueller Wert von 1 bedeutet 1.00.
+  if(!Number.isFinite(number) || number < 0.10 || number > 1.00){
+    return null;
   }
 
-  return Math.max(0, Math.min(1, number));
+  return Math.round(number * 100) / 100;
 }
 
 function parseTemperatureScalar(value){
@@ -2936,53 +2901,10 @@ function parseTemperatureScalar(value){
 
 function parseTemperatureValues(value){
 
-  if(value === undefined || value === null || value === ""){
-    return null;
-  }
-
-  const raw = String(value).trim();
-  if(!raw) return null;
-
-  /*
-     Temperatur ist jetzt ein einzelner Schwerpunkt auf 0–1.
-     Alte Mehrfachangaben wie 2,3,4 werden auf die neue
-     semantische 0–1-Skala übertragen und gemittelt: 2/3/4 -> 0.50.
-     Neue Dezimalwerte wie 0.65 oder 0,65 bleiben Einzelwerte.
-  */
-  const newDecimalPattern = /^0?(?:[.,]\d+)?$/;
-  const singleNewPattern = /^(?:0[.,]\d+|1(?:[.,]0+)?)$/;
-
-  if(singleNewPattern.test(raw)){
-    const value01 = normalizeTemperature01(raw);
-    return value01 === null ? null : [Math.round(value01 * 100) / 100];
-  }
-
-  const oldValues = raw
-    .split(/[;,]/)
-    .map(item => Number(item.trim().replace(",", ".")))
-    .filter(value => Number.isFinite(value) && value >= 1 && value <= 5)
-    .map(value => Math.round(value));
-
-  if(oldValues.length === 0){
-    const value01 = normalizeTemperature01(raw);
-    return value01 === null ? null : [Math.round(value01 * 100) / 100];
-  }
-
-  const legacyMap = {
-    1: 0.00,
-    2: 0.20,
-    3: 0.50,
-    4: 0.80,
-    5: 1.00
-  };
-
-  const mappedValues = oldValues
-    .map(value => legacyMap[value])
-    .filter(value => Number.isFinite(value));
-
-  const average01 = mappedValues.reduce((sum, value) => sum + value, 0) / mappedValues.length;
-
-  return [Math.round(Math.max(0, Math.min(1, average01)) * 100) / 100];
+  // Im Sheet steht nur noch ein Temperatur-Schwerpunkt als Zahl
+  // zwischen 0.10 und 1.00. Dezimalkomma wird unterstützt.
+  const temperature = normalizeTemperature01(value);
+  return temperature === null ? null : [temperature];
 }
 
 /* =========================================================
@@ -3284,7 +3206,7 @@ document
 ========================================================= */
 
 const TEMPERATURE_LABELS = {
-  0:"Arktisch",
+  0.1:"Arktisch",
   0.2:"Kalt",
   0.4:"Kühl",
   0.5:"Gemäßigt",
@@ -3338,7 +3260,7 @@ function temperaturePercent(
   value
 ){
 
-  return Number(value) * 100;
+  return ((Number(value) - 0.10) / 0.90) * 100;
 
 }
 
@@ -3366,7 +3288,7 @@ function temperatureFromPointer(
   const percent =
     rect.width > 0 ? x / rect.width : 0;
 
-  return Math.round(percent * 20) / 20;
+  return Math.round((0.10 + percent * 0.90) * 10) / 10;
 
 }
 
@@ -3643,7 +3565,7 @@ document
 
         selectedTemperatureMin =
           Math.max(
-            0,
+            0.10,
             selectedTemperatureMin - 0.1
           );
 
@@ -3837,7 +3759,7 @@ function getCurrentFilteredMonsterCandidates(){
       !searchMatchesMonsterName(monster.name, search)
     ) return;
 
-    const scores = getCachedScores(monster);
+    const scores = calculateScores(monster);
 
     candidates.push({
       monster,
@@ -3857,8 +3779,6 @@ function pickRandomMonster(){
 
   const searchInput =
     document.getElementById("searchInput");
-
-  cancelPendingSearchFilter();
 
   // Der bestehende Suchbegriff soll die Zufallsauswahl nicht einschränken.
   searchInput.value = "";
@@ -3916,7 +3836,7 @@ document
       appliedTemperatureMax =
         selectedTemperatureMax;
 
-      invalidateScoreCache();
+
       filterMonsters();
 
     }
@@ -3970,7 +3890,6 @@ function habitatMatch(regionValue, monsterValue){
 
 function getHabitatScore(monster){
 
-  let positiveEvidence = 0;
   let productRemaining = 1;
 
   let monsterMass = 0;
@@ -4028,8 +3947,6 @@ function getHabitatScore(monster){
     );
 
     if(evidence <= 0) continue;
-
-    positiveEvidence += evidence;
 
     /*
        Sättigende Zusammenführung:
@@ -4177,19 +4094,6 @@ function calculateScores(monster){
   }
 
   return { habitat, climate, total };
-}
-
-function invalidateScoreCache(){
-  scoreCache = new WeakMap();
-}
-
-function getCachedScores(monster){
-  const cached = scoreCache.get(monster);
-  if(cached !== undefined) return cached;
-
-  const scores = calculateScores(monster);
-  scoreCache.set(monster, scores);
-  return scores;
 }
 
 
@@ -4389,34 +4293,24 @@ function hasActiveFilters(){
 
 }
 
-function normalizeSearchText(value){
-  return String(value ?? "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/ß/g, "ss")
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
-}
-
 function searchMatchesMonsterName(name, query){
-  const rawName = String(name || "");
-  let normalizedName = normalizedMonsterNameCache.get(rawName);
 
-  if(normalizedName === undefined){
-    normalizedName = normalizeSearchText(rawName);
-    normalizedMonsterNameCache.set(rawName, normalizedName);
+  const nameTokens = String(name || "")
+    .toLowerCase()
+    .match(/[\p{L}\p{N}]+/gu) || [];
+
+  const queryTokens = String(query || "")
+    .toLowerCase()
+    .match(/[\p{L}\p{N}]+/gu) || [];
+
+  if(!queryTokens.length){
+    return true;
   }
 
-  // Mehrere Suchteile dürfen in beliebiger Reihenfolge im Namen vorkommen.
-  // Jeder Suchteil ist ein Teilstring, kein vollständiges Wort.
-  const queryTokens = normalizeSearchText(query)
-    .split(/\s+/)
-    .filter(Boolean);
+  return queryTokens.every(token =>
+    nameTokens.includes(token)
+  );
 
-  if(!queryTokens.length) return true;
-
-  return queryTokens.every(token => normalizedName.includes(token));
 }
 
 function filterMonsters(){
@@ -4642,7 +4536,7 @@ function filterMonsters(){
 
 
     const scores =
-      getCachedScores(
+      calculateScores(
         monster
       );
 
@@ -5367,7 +5261,7 @@ function openInfoModal(
 
 
   const scores =
-    getCachedScores(
+    calculateScores(
       monster
     );
 
@@ -5597,44 +5491,23 @@ document.addEventListener(
 
 [
   "xpMin",
-  "xpMax"
+  "xpMax",
+  "searchInput"
 ]
 .forEach(
   id => {
+
     document
-      .getElementById(id)
-      .addEventListener("input", filterMonsters);
+      .getElementById(
+        id
+      )
+      .addEventListener(
+        "input",
+        filterMonsters
+      );
+
   }
 );
-
-function cancelPendingSearchFilter(){
-  if(searchDebounceTimer !== null){
-    clearTimeout(searchDebounceTimer);
-    searchDebounceTimer = null;
-  }
-}
-
-function applySearchImmediately(){
-  cancelPendingSearchFilter();
-  filterMonsters();
-}
-
-const searchInput = document.getElementById("searchInput");
-
-searchInput.addEventListener("input", () => {
-  cancelPendingSearchFilter();
-  searchDebounceTimer = setTimeout(() => {
-    searchDebounceTimer = null;
-    filterMonsters();
-  }, 300);
-});
-
-searchInput.addEventListener("keydown", event => {
-  if(event.key === "Enter"){
-    event.preventDefault();
-    applySearchImmediately();
-  }
-});
 
 
 document
@@ -5689,7 +5562,6 @@ document
       appliedTemperatureMin = 0.50;
       appliedTemperatureMax = 0.50;
 
-      invalidateScoreCache();
       updateTemperatureUI();
       buildHabitatUI();
 
@@ -5715,7 +5587,8 @@ document
         "searchInput"
       ).value = "";
 
-      applySearchImmediately();
+
+      filterMonsters();
 
     }
   );
@@ -6043,7 +5916,7 @@ function openEditModal(index){
     monster.name;
 
   document.getElementById("editModalSubtitle").textContent =
-    "Habitatwerte 0,0–1,0 · Temperatur 0,0–1,0";
+    "Habitatwerte 0,0–1,0 · Temperatur 0,1–1,0";
 
   HABITATS.forEach(h => {
 
@@ -6079,7 +5952,7 @@ function openEditModal(index){
 
   const safeTemp =
     Number.isFinite(temp)
-      ? Math.max(0, Math.min(1, temp))
+      ? Math.max(0.1, Math.min(1, temp))
       : 0.50;
 
   const tempInput =
@@ -6117,7 +5990,7 @@ function getEditedValues(){
   });
   let temperature = parseNumber(document.getElementById("editTemperature").value);
   if(!Number.isFinite(temperature)) temperature = 0.50;
-  temperature = Math.max(0, Math.min(1, Math.round(temperature * 20) / 20));
+  temperature = Math.max(0.1, Math.min(1, Math.round(temperature * 10) / 10));
   return { habitats, temperature };
 }
 
@@ -6128,7 +6001,6 @@ function applyEditedValuesToMonster(){
   const edited = getEditedValues();
   monster.habitats = edited.habitats;
   monster.temperature = [edited.temperature];
-  invalidateScoreCache();
   filterMonsters();
   return edited;
 }
@@ -6251,7 +6123,7 @@ function openInfoModal(monster){
     monster.name;
 
   const scores =
-    getCachedScores(monster);
+    calculateScores(monster);
 
   let habitatHTML = "";
 
@@ -6392,7 +6264,7 @@ function loadRegionEditor(index){
   let temp = 0.50;
   if(typeof region.temperature === "object" && region.temperature){ temp = Number(region.temperature.min); }
   else if(Number.isFinite(Number(region.temperature))) temp = Number(region.temperature);
-  temp = Number.isFinite(temp) ? Math.max(0, Math.min(1, Math.round(temp * 10) / 10)) : 0.50;
+  temp = Number.isFinite(temp) ? Math.max(0.1, Math.min(1, Math.round(temp * 10) / 10)) : 0.50;
   const tempInput = document.getElementById("regionEditorTemperature");
   const tempOut = document.getElementById("regionEditorTemperatureValue");
   if(tempInput) tempInput.value = String(temp);
@@ -6406,7 +6278,7 @@ function getRegionEditorValues(){
     const input = document.querySelector(`[data-region-range="${CSS.escape(h.label)}"]`);
     habitats[h.label] = Math.max(0, Math.min(1, Math.round(Number(input?.value || 0)*10)/10));
   });
-  const temp = Math.max(0, Math.min(1, Math.round(Number(document.getElementById("regionEditorTemperature")?.value ?? 0.50) * 10) / 10));
+  const temp = Math.max(0.1, Math.min(1, Math.round(Number(document.getElementById("regionEditorTemperature")?.value ?? 0.50) * 10) / 10));
   return {habitats, temperature:temp};
 }
 
@@ -6423,7 +6295,6 @@ function applyRegionEditorLocal(){
   appliedRegionWeights = {...regionWeights};
   appliedTemperatureMin = edited.temperature;
   appliedTemperatureMax = edited.temperature;
-  invalidateScoreCache();
   buildHabitatUI();
   updateTemperatureUI();
   filterMonsters();
@@ -6495,7 +6366,7 @@ function writeSidebarRegionToSheet(){
     const value = Number(regionWeights[h.label] ?? 0);
     habitats[h.label] = Math.max(0, Math.min(1, Math.round(value * 20) / 20));
   });
-  const temp = Math.max(0, Math.min(1, Math.round(Number(selectedTemperatureMin ?? 0.50) * 20) / 20));
+  const temp = Math.max(0.1, Math.min(1, Math.round(Number(selectedTemperatureMin ?? 0.50) * 10) / 10));
   const callbackName = "sidebarRegionWrite_" + Date.now() + "_" + Math.floor(Math.random()*100000);
   let script = null;
   window[callbackName] = function(result){
@@ -6506,7 +6377,6 @@ function writeSidebarRegionToSheet(){
         appliedRegionWeights = {...habitats};
         appliedTemperatureMin = temp;
         appliedTemperatureMax = temp;
-        invalidateScoreCache();
         status.textContent = `✓ ${region.name} im Google Sheet gespeichert.`;
         filterMonsters();
       }else{
