@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>DnD 5e Kreaturensuche</title>
+<title>Kreaturensuche Dessarin Banner</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -165,12 +165,6 @@ input[type="number"]{
   width:100%;
 }
 
-/* Public/Lite: echte Regionsauswahl ausblenden, Logik bleibt erhalten.
-   Für eine andere Version einfach diese Regel entfernen/überschreiben. */
-.region-preset-row .world-region-hidden{
-  display:none !important;
-}
-
 .region-preset-hint{
   margin:0 0 9px;
   color:#777;
@@ -294,13 +288,7 @@ input[type="number"]{
   background:#292929;
   border:1px solid #3b3b3b;
   border-radius:8px;
-  overflow:visible;
-  position:relative;
-  z-index:1;
-}
-
-.region-row:hover{
-  z-index:10;
+  overflow:hidden;
 }
 
 .region-name-button{
@@ -316,43 +304,10 @@ input[type="number"]{
   overflow:hidden;
   text-overflow:ellipsis;
   grid-column:1 / -1;
-  position:relative;
 }
 
 .region-name-button:hover{
   color:white;
-}
-
-.region-name-button[data-info]::after{
-  content:attr(data-info);
-  position:absolute;
-  left:0;
-  top:calc(100% + 7px);
-  width:250px;
-  max-width:min(250px, 72vw);
-  padding:9px 10px;
-  border:1px solid #555;
-  border-radius:8px;
-  background:#171717;
-  color:#ddd;
-  font-size:11px;
-  font-weight:normal;
-  line-height:1.4;
-  white-space:normal;
-  text-align:left;
-  box-shadow:0 8px 20px rgba(0,0,0,.35);
-  opacity:0;
-  visibility:hidden;
-  transform:translateY(-3px);
-  transition:opacity .12s ease, transform .12s ease, visibility .12s ease;
-  pointer-events:none;
-}
-
-.region-name-button[data-info]:hover::after,
-.region-name-button[data-info]:focus-visible::after{
-  opacity:1;
-  visibility:visible;
-  transform:translateY(0);
 }
 
 .region-row.active .region-name-button{
@@ -519,7 +474,6 @@ tbody tr:hover{
   color:white;
 }
 
-
 /* =========================================================
    WERTE
 ========================================================= */
@@ -644,21 +598,44 @@ tbody tr:hover{
   white-space:nowrap;
 }
 
+.info-modal-compact .modal-section{
+  margin-bottom:14px;
+}
 
+.info-modal-compact .modal-section h3{
+  margin:0 0 8px;
+  font-size:16px;
+}
 
+.info-modal-compact .modal-meta{
+  gap:8px 18px;
+  margin-bottom:14px;
+  font-size:13px;
+}
 
+.info-modal-compact .profile-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:7px;
+}
 
+.info-modal-compact .profile-item{
+  padding:7px 9px;
+  min-height:34px;
+}
 
+.info-modal-compact .profile-item-name{
+  font-size:12px;
+}
 
+.info-modal-compact .profile-item-score{
+  font-size:13px;
+}
 
-
-
-
-
-
-
-
-
+.info-modal-compact .temperature-note{
+  margin-top:7px;
+  color:#999;
+  font-size:11px;
+}
 
 /* =========================================================
    TEMPERATUR RANGE
@@ -744,14 +721,6 @@ tbody tr:hover{
 .temperature-handle-right{
   border-radius:0 50% 50% 0;
   border-left:none;
-}
-
-
-.filter-explanation{
-  margin:8px 2px 0;
-  color:#777;
-  font-size:10px;
-  line-height:1.4;
 }
 
 .temperature-scale{
@@ -962,6 +931,19 @@ tbody tr:hover{
   letter-spacing:1px;
 }
 
+.modal-link{
+  display:inline-block;
+  padding:9px 12px;
+  background:#4f46e5;
+  border-radius:8px;
+  color:white;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+.modal-link:hover{
+  background:#5b52ef;
+}
 
 /* =========================================================
    SCROLL TOP
@@ -1046,7 +1028,6 @@ tbody tr:hover{
 .result-summary b{
   color:#eee;
 }
-
 
 
 @media(min-width:701px){
@@ -1272,16 +1253,10 @@ tbody tr:hover{
 
 }
 
-
-
-
-
-
 </style>
 </head>
 
 <body>
-
 
 
 <button
@@ -1308,7 +1283,7 @@ tbody tr:hover{
 
     <div class="topbar">
       <div class="topbar-main">
-        <h1>DnD 5e Kreaturensuche</h1>
+        <h1>Kreaturensuche Dessarin Banner</h1>
         <button
           type="button"
           id="randomMonsterButton"
@@ -1395,10 +1370,7 @@ tbody tr:hover{
     ></div>
 
   </div>
-
-
-  <div class="sidebar">
-
+<div class="sidebar">
 
 
     <!-- CR -->
@@ -1502,8 +1474,7 @@ tbody tr:hover{
         <select id="presetRegionSelect">
           <option value="">Vorlage wählen…</option>
         </select>
-        
-<!-- Regionsauswahl: Zum Ausblenden class="world-region-hidden" ergänzen -->
+
         <select
           id="worldRegionSelect"
           style="margin-top:7px"
@@ -1597,28 +1568,18 @@ tbody tr:hover{
         </div>
 
         <div class="temperature-scale">
-          <span>0.00 · Arktisch</span>
+          <span>0.10 · Arktisch</span>
           <span>0.20 · Kalt</span>
           <span>0.50 · Gemäßigt</span>
           <span>0.80 · Heiß</span>
           <span>1.00 · Vulkanisch</span>
         </div>
 
-        <p class="filter-explanation">
-          Die Werte von 0 bis 1 sind eine <b>grobe, gefühlte Einschätzung</b> der Region und keine Prozentwerte.
-          Sie beschreiben, wie stark ein Landschaftsmerkmal vertreten ist, und müssen zusammen <b>nicht 1 ergeben</b>.
-          <br>
-          <b>Beispiel:</b> sehr viel Wald → 1,00 · etwas Fluss → 0,20 · recht bergig → 0,50.
-          <br>
-          Die Vorlagen sind nur Ausgangspunkte und lassen sich mit den Schiebereglern jederzeit anpassen.
-        </p>
-
       </div>
 
       </div>
 
     </div>
-
 
 
   </div>
@@ -1679,74 +1640,26 @@ const SHEET_NAME =
 const REGION_SHEET_NAME =
   "Regionen";
 
-
-
+// Einmalig die Google-Apps-Script-Web-App-URL eintragen,
+// damit Schnellkorrekturen direkt ins Sheet geschrieben werden können.
 /* =========================================================
    HABITATE
 ========================================================= */
 
 const HABITATS = [
 
-  {
-    label:"Wald",
-    columnIndex:5,
-    info:"Waldreiche Landschaft mit dichter oder lockerer Baumbedeckung. Entscheidend ist das Vorhandensein von Wald, nicht eine bestimmte Baumart."
-  },
-  {
-    label:"Grasland",
-    columnIndex:6,
-    info:"Offene Landschaft, die überwiegend von Gräsern und niedriger Vegetation geprägt ist. Dazu zählen z. B. Wiesen, Steppen und Savannen."
-  },
-  {
-    label:"Ödland",
-    columnIndex:7,
-    info:"Sehr trockene Landschaft mit wenig Niederschlag und dauerhaft wenig Vegetation. Eine Ödland kann heiß oder kalt sein und aus Sand, Fels oder anderem Untergrund bestehen."
-  },
-  {
-    label:"Sumpf",
-    columnIndex:8,
-    info:"Dauerhaft oder regelmäßig sehr feuchte Landschaft mit stehendem oder langsam fließendem Wasser. Dazu zählen z. B. Sümpfe, Moore und feuchte Niederungen."
-  },
-  {
-    label:"Gebirge",
-    columnIndex:9,
-    info:"Landschaft mit deutlichen Höhenunterschieden, Bergen, Hügeln oder felsigem Gelände. Entscheidend ist die Geländeform, nicht die Temperatur."
-  },
-  {
-    label:"Küste",
-    columnIndex:10,
-    info:"Übergangsbereich zwischen Land und größerem Gewässer. Dazu zählen z. B. Strände, Klippen, felsige Ufer und Küstengebiete."
-  },
-  {
-    label:"Fluss/See",
-    columnIndex:11,
-    info:"Süßwasser in Form von Flüssen, Bächen, Seen oder vergleichbaren Binnengewässern."
-  },
-  {
-    label:"Meer",
-    columnIndex:12,
-    info:"Salzwasser und die direkt damit verbundenen Lebensräume. Dazu gehören sowohl das offene Meer als auch küstennahe Meeresgebiete."
-  },
-  {
-    label:"Höhle",
-    columnIndex:13,
-    info:"Natürliche unterirdische Hohlräume wie Höhlen, Grotten oder größere natürliche Felsspalten."
-  },
-  {
-    label:"Untergrund",
-    columnIndex:14,
-    info:"Bereiche unter der Oberfläche, etwa Kanalisation, Tunnel, tiefe Stollen oder andere unterirdische Anlagen."
-  },
-  {
-    label:"Ruinen",
-    columnIndex:15,
-    info:"Verfallene oder aufgegebene Bauwerke und Siedlungsreste. Der Schwerpunkt liegt auf dem Zustand bzw. der Nutzung."
-  },
-  {
-    label:"Siedlung",
-    columnIndex:16,
-    info:"Bewohnte oder regelmäßig genutzte Orte wie Dörfer, Städte, Lager oder andere dauerhaft bewohnte Gebiete."
-  }
+  { label:"Wald",       columnIndex:5  },
+  { label:"Grasland",   columnIndex:6  },
+  { label:"Ödland",      columnIndex:7  },
+  { label:"Sumpf",      columnIndex:8  },
+  { label:"Gebirge",    columnIndex:9  },
+  { label:"Küste",      columnIndex:10 },
+  { label:"Fluss/See",  columnIndex:11 },
+  { label:"Meer",       columnIndex:12 },
+  { label:"Höhle",      columnIndex:13 },
+  { label:"Untergrund", columnIndex:14 },
+  { label:"Ruinen",     columnIndex:15 },
+  { label:"Siedlung",   columnIndex:16 }
 
 ];
 
@@ -1987,9 +1900,9 @@ function parseRegionTemperature(cells, headerMap){
   }
 
   const oldColumns = [
-    ["kalt",0.25],
+    ["kalt",0.20],
     ["gemäßigt",0.50],
-    ["heiß",0.75]
+    ["heiß",0.80]
   ];
 
   let bestLabel = null;
@@ -2202,7 +2115,7 @@ async function loadRegionPresets(preloadedJson = null){
 
 }
 
-function applyRegionPresetToEditor(
+function applyRegionPreset(
   preset
 ){
 
@@ -2360,8 +2273,7 @@ async function loadSheet(){
 
           monster.temperature =
             parseTemperatureValues(
-              temperatureCell?.f ??
-              temperatureCell?.v
+              getSheetCellValue(temperatureCell)
             );
 
 
@@ -2722,39 +2634,17 @@ function normalizeTemperature01(value){
   }
 
   const raw = String(value).trim();
-
   if(!raw) return null;
 
   const number = Number(raw.replace(",", "."));
 
-  if(!Number.isFinite(number)) return null;
-
-  /*
-     Neue Temperatur-Schwerpunkt-Skala: 0–1.
-     Semantische Anker:
-       1 -> 0.00  Arktisch
-       2 -> 0.20  Kalt
-       3 -> 0.50  Gemäßigt
-       4 -> 0.80  Heiß
-       5 -> 1.00  Vulkanisch / extrem heiß
-     Neue 0–1-Werte bleiben unverändert.
-  */
-  if(number > 1){
-    const legacyMap = {
-      1: 0.00,
-      2: 0.20,
-      3: 0.50,
-      4: 0.80,
-      5: 1.00
-    };
-    const rounded = Math.round(number * 100) / 100;
-    if(Object.prototype.hasOwnProperty.call(legacyMap, rounded)){
-      return legacyMap[rounded];
-    }
-    return Math.max(0, Math.min(1, (number - 1) / 4));
+  // Neue Skala: 0.10 bis 1.00. Keine automatische Umrechnung
+  // alter 1–5-Werte: Ein aktueller Wert von 1 bedeutet 1.00.
+  if(!Number.isFinite(number) || number < 0.10 || number > 1.00){
+    return null;
   }
 
-  return Math.max(0, Math.min(1, number));
+  return Math.round(number * 100) / 100;
 }
 
 function parseTemperatureScalar(value){
@@ -2763,53 +2653,10 @@ function parseTemperatureScalar(value){
 
 function parseTemperatureValues(value){
 
-  if(value === undefined || value === null || value === ""){
-    return null;
-  }
-
-  const raw = String(value).trim();
-  if(!raw) return null;
-
-  /*
-     Temperatur ist jetzt ein einzelner Schwerpunkt auf 0–1.
-     Alte Mehrfachangaben wie 2,3,4 werden auf die neue
-     semantische 0–1-Skala übertragen und gemittelt: 2/3/4 -> 0.50.
-     Neue Dezimalwerte wie 0.65 oder 0,65 bleiben Einzelwerte.
-  */
-  const newDecimalPattern = /^0?(?:[.,]\d+)?$/;
-  const singleNewPattern = /^(?:0[.,]\d+|1(?:[.,]0+)?)$/;
-
-  if(singleNewPattern.test(raw)){
-    const value01 = normalizeTemperature01(raw);
-    return value01 === null ? null : [Math.round(value01 * 100) / 100];
-  }
-
-  const oldValues = raw
-    .split(/[;,]/)
-    .map(item => Number(item.trim().replace(",", ".")))
-    .filter(value => Number.isFinite(value) && value >= 1 && value <= 5)
-    .map(value => Math.round(value));
-
-  if(oldValues.length === 0){
-    const value01 = normalizeTemperature01(raw);
-    return value01 === null ? null : [Math.round(value01 * 100) / 100];
-  }
-
-  const legacyMap = {
-    1: 0.00,
-    2: 0.20,
-    3: 0.50,
-    4: 0.80,
-    5: 1.00
-  };
-
-  const mappedValues = oldValues
-    .map(value => legacyMap[value])
-    .filter(value => Number.isFinite(value));
-
-  const average01 = mappedValues.reduce((sum, value) => sum + value, 0) / mappedValues.length;
-
-  return [Math.round(Math.max(0, Math.min(1, average01)) * 100) / 100];
+  // Im Sheet steht nur noch ein Temperatur-Schwerpunkt als Zahl
+  // zwischen 0.10 und 1.00. Dezimalkomma wird unterstützt.
+  const temperature = normalizeTemperature01(value);
+  return temperature === null ? null : [temperature];
 }
 
 /* =========================================================
@@ -2851,13 +2698,6 @@ function buildHabitatUI(){
     nameButton.textContent =
       habitat.label;
 
-    if(habitat.info){
-      nameButton.dataset.info =
-        habitat.info;
-      nameButton.title =
-        habitat.info;
-    }
-
 
     const active =
       Number(regionWeights[habitat.label] ?? 0) > 0;
@@ -2872,10 +2712,10 @@ function buildHabitatUI(){
     }
 
 
-    nameButton.setAttribute(
-      "aria-label",
-      `${habitat.label}: ${habitat.info || ""}`
-    );
+    nameButton.title =
+      active
+        ? "Lebensraum ausgewählt"
+        : "Lebensraum auswählen";
 
 
     nameButton.addEventListener(
@@ -3046,7 +2886,6 @@ function buildRegionStars(
 }
 
 
-
 /* =========================================================
    ALLE
 ========================================================= */
@@ -3118,7 +2957,7 @@ document
 ========================================================= */
 
 const TEMPERATURE_LABELS = {
-  0:"Arktisch",
+  0.1:"Arktisch",
   0.2:"Kalt",
   0.4:"Kühl",
   0.5:"Gemäßigt",
@@ -3172,7 +3011,7 @@ function temperaturePercent(
   value
 ){
 
-  return Number(value) * 100;
+  return ((Number(value) - 0.10) / 0.90) * 100;
 
 }
 
@@ -3200,7 +3039,7 @@ function temperatureFromPointer(
   const percent =
     rect.width > 0 ? x / rect.width : 0;
 
-  return Math.round(percent * 20) / 20;
+  return Math.round((0.10 + percent * 0.90) * 10) / 10;
 
 }
 
@@ -3477,7 +3316,7 @@ document
 
         selectedTemperatureMin =
           Math.max(
-            0,
+            0.10,
             selectedTemperatureMin - 0.1
           );
 
@@ -3591,7 +3430,7 @@ function handleRegionSelection(
       Number(value)
     ];
 
-  applyRegionPresetToEditor(
+  applyRegionPreset(
     preset
   );
 
@@ -3802,7 +3641,6 @@ function habitatMatch(regionValue, monsterValue){
 
 function getHabitatScore(monster){
 
-  let positiveEvidence = 0;
   let productRemaining = 1;
 
   let monsterMass = 0;
@@ -3860,8 +3698,6 @@ function getHabitatScore(monster){
     );
 
     if(evidence <= 0) continue;
-
-    positiveEvidence += evidence;
 
     /*
        Sättigende Zusammenführung:
@@ -3937,7 +3773,9 @@ function getHabitatScore(monster){
 
 function temperatureMatch(regionValue, monsterValue){
 
-  const difference = Math.abs(Number(regionValue) - Number(monsterValue));
+  const difference = Math.round(
+  Math.abs(Number(regionValue) - Number(monsterValue)) * 100
+) / 100;
 
   if(!Number.isFinite(difference)) return 0;
 
@@ -4003,7 +3841,7 @@ function calculateScores(monster){
   }else if(climate === null){
     total = habitat;
   }else{
-    total = habitat * 0.75 + climate * 0.25;
+    total = Math.pow(habitat, 0.7) * Math.pow(climate, 0.3);
   }
 
   return { habitat, climate, total };
@@ -4069,7 +3907,7 @@ function formatScoredValue(score, contextLabel="Wertung"){
   return `${getScoreMarkerHTML(score, contextLabel)}${formatScore(score)}`;
 }
 
-// Rückwärtskompatibel für bestehende Stellen im Profil-Editor.
+// Kompatibilitätshelfer für die Score-Ausgabe.
 function getStars(score){
   return formatScoredValue(score);
 }
@@ -4206,24 +4044,31 @@ function hasActiveFilters(){
 
 }
 
+function normalizeSearchText(value){
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/ß/g, "ss")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim();
+}
+
 function searchMatchesMonsterName(name, query){
-
-  const nameTokens = String(name || "")
-    .toLowerCase()
-    .match(/[\p{L}\p{N}]+/gu) || [];
-
-  const queryTokens = String(query || "")
-    .toLowerCase()
-    .match(/[\p{L}\p{N}]+/gu) || [];
+  const normalizedName = normalizeSearchText(name);
+  const queryTokens = normalizeSearchText(query)
+    .split(/\s+/)
+    .filter(Boolean);
 
   if(!queryTokens.length){
     return true;
   }
 
+  // Jeder Suchteil darf innerhalb eines Namensbestandteils vorkommen:
+  // "rust mo" findet dadurch auch "Rust Monster (Legacy)".
   return queryTokens.every(token =>
-    nameTokens.includes(token)
+    normalizedName.includes(token)
   );
-
 }
 
 function filterMonsters(){
@@ -5143,6 +4988,16 @@ function openInfoModal(
 
     </div>
 
+    <div
+      style="
+        margin-top:8px;
+        color:#aaa;
+        font-size:12px;
+      "
+    >
+      Mehrere Werte möglich, z. B. 1,2,3 oder 2,3,4.
+      Wertebereich: 1 bis 5.
+    </div>
 
   `;
 
@@ -5279,6 +5134,25 @@ function openInfoModal(
       </div>
 
 
+      ${
+        monster.link
+          ? `
+
+            <a
+              class="modal-link"
+              href="${escapeAttribute(
+                monster.link
+              )}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Auf D&D Beyond öffnen
+            </a>
+
+          `
+          : ""
+      }
+
     `;
 
 
@@ -5359,8 +5233,7 @@ document.addEventListener(
 
 [
   "xpMin",
-  "xpMax",
-  "searchInput"
+  "xpMax"
 ]
 .forEach(
   id => {
@@ -5376,6 +5249,21 @@ document.addEventListener(
 
   }
 );
+
+// Freitextsuche erst 300 ms nach dem letzten Tastendruck ausführen.
+// So wird bei schnellem Tippen nicht für jedes Zeichen die gesamte
+// Monsterliste neu gefiltert und bewertet.
+let searchDebounceTimer = null;
+const SEARCH_DEBOUNCE_MS = 300;
+
+document
+  .getElementById("searchInput")
+  .addEventListener("input", () => {
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      filterMonsters();
+    }, SEARCH_DEBOUNCE_MS);
+  });
 
 
 document
@@ -5711,6 +5599,110 @@ function escapeAttribute(
 
 }
 
+
+function openInfoModal(monster){
+
+  if(!monster)
+    return;
+
+  const modal =
+    document.getElementById("infoModal");
+
+  document.getElementById("modalTitle").textContent =
+    monster.name;
+
+  const scores =
+    calculateScores(monster);
+
+  let habitatHTML = "";
+
+  HABITATS.forEach(habitat => {
+
+    const value =
+      Number(monster.habitats[habitat.label]);
+
+    habitatHTML += `
+      <div class="profile-item">
+        <span class="profile-item-name">
+          ${escapeHTML(habitat.label)}
+        </span>
+        <span class="profile-item-score">
+          ${Number.isFinite(value) ? value.toFixed(2) : "0.00"}
+        </span>
+      </div>
+    `;
+
+  });
+
+  const temperature =
+    Array.isArray(monster.temperature) &&
+    monster.temperature.length
+      ? Number(monster.temperature[0])
+      : 0.50;
+
+  document.getElementById("modalBody").innerHTML = `
+
+    <div class="info-modal-compact">
+
+      <div class="modal-meta">
+        <span><strong>CR:</strong> ${formatCR(monster.cr)}</span>
+        <span><strong>XP:</strong> ${monster.xp.toLocaleString("de-DE")}</span>
+        <span><strong>Einzigartig:</strong> ${escapeHTML(monster.unique || "-")}</span>
+      </div>
+
+      <div class="modal-section">
+        <h3>Aktuelle Bewertung</h3>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-item-name">Gesamt</span>
+            <span class="profile-item-score">
+              ${formatScoredValue(scores.total, "Gesamt")}
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-item-name">Lebensraum</span>
+            <span class="profile-item-score">
+              ${formatScoredValue(scores.habitat, "Lebensraum")}
+            </span>
+          </div>
+
+          <div class="profile-item">
+            <span class="profile-item-name">Klima</span>
+            <span class="profile-item-score">
+              ${formatScoredValue(scores.climate, "Klima")}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Lebensräume</h3>
+
+        <div class="profile-grid">
+          ${habitatHTML}
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <h3>Klima</h3>
+
+        <div class="profile-grid">
+          <div class="profile-item">
+            <span class="profile-item-name">Temperatur</span>
+            <span class="profile-item-score">
+              ${Number.isFinite(temperature) ? temperature.toFixed(2) : "0.50"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  modal.classList.add("open");
+}
 
 /* =========================================================
    START
