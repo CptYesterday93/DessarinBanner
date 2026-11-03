@@ -366,8 +366,22 @@
           "delta": -1
         }
       ]
+    },
+    {
+      "id": "event_80fc1f04-0c2e-416f-bc1e-28a0decb9145",
+      "date": "2026-11-03",
+      "mission": "afd",
+      "reason": "",
+      "valid": true,
+      "createdAt": "2026-11-03T08:08:42.839Z",
+      "changes": [
+        {
+          "factionId": "nasenbohrer",
+          "delta": 3
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-11-03T08:06:43.494Z"
+  "updatedAt": "2026-11-03T08:08:42.839Z"
 }
