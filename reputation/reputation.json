@@ -380,8 +380,22 @@
           "delta": 3
         }
       ]
+    },
+    {
+      "id": "event_68e05525-1f9b-4243-a189-7864298d43cd",
+      "date": "2026-11-03",
+      "mission": "nas",
+      "reason": "",
+      "valid": true,
+      "createdAt": "2026-11-03T08:09:06.073Z",
+      "changes": [
+        {
+          "factionId": "nasenbohrer",
+          "delta": 1
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-11-03T08:08:42.839Z"
+  "updatedAt": "2026-11-03T08:09:06.073Z"
 }
