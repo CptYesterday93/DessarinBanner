@@ -352,8 +352,22 @@
           "delta": -1
         }
       ]
+    },
+    {
+      "id": "event_7de2656d-0d5d-43f4-ac18-c308e702dd22",
+      "date": "2026-11-03",
+      "mission": "SDDS",
+      "reason": "",
+      "valid": true,
+      "createdAt": "2026-11-03T08:06:43.494Z",
+      "changes": [
+        {
+          "factionId": "nasenbohrer",
+          "delta": -1
+        }
+      ]
     }
   ],
   "restore": null,
-  "updatedAt": "2026-11-03T08:06:27.428Z"
+  "updatedAt": "2026-11-03T08:06:43.494Z"
 }
